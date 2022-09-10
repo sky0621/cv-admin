@@ -10,8 +10,15 @@ package swagger
 
 // １ユーザーの属性情報群
 type UserAttribute struct {
-	Name      string    `json:"name,omitempty"`
-	Nickname  string    `json:"nickname,omitempty"`
-	AvatarUrl string    `json:"avatarUrl,omitempty"`
-	Birthday  *BirthDay `json:"birthday,omitempty"`
+	Name string `json:"name,omitempty"`
+
+	Nickname string `json:"nickname,omitempty"`
+
+	AvatarUrl string `json:"avatarUrl,omitempty"`
+
+	Birthday *BirthDay `json:"birthday,omitempty"`
+
+	Job string `json:"job,omitempty"`
+
+	BelongTo string `json:"belongTo,omitempty"`
 }

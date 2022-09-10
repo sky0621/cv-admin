@@ -10,7 +10,9 @@ package swagger
 
 // 生年月日
 type BirthDay struct {
-	Year  int32 `json:"year,omitempty"`
+	Year int32 `json:"year,omitempty"`
+
 	Month int32 `json:"month,omitempty"`
-	Day   int32 `json:"day,omitempty"`
+
+	Day int32 `json:"day,omitempty"`
 }

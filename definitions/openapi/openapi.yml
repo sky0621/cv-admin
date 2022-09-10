@@ -6,17 +6,13 @@ info:
   version: 1.0.0
 
 servers:
-  - url: 'http://localhost:{port}/{version}'
+  - url: 'http://localhost:{port}'
     description: "ローカル環境"
     variables:
       port:
         description: "ポート番号"
         enum: ["8080","3000"]
         default: "8080"
-      version:
-        description: "APIバージョン"
-        enum: ["v1"]
-        default: "v1"
 
 tags:
   - name: "users"
@@ -39,7 +35,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserAttribute"
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserAttribute"
         "404":
           description: "指定ユーザー自身、または、その属性群が存在しない。"
 
@@ -71,6 +69,7 @@ components:
       maxLength: 100
     Url:
       type: string
+      format: url
       description: "URL"
       nullable: true
       deprecated: false
@@ -117,6 +116,20 @@ components:
           $ref: "#/components/schemas/Month"
         day:
           $ref: "#/components/schemas/Day"
+    Job:
+      type: string
+      description: "職業"
+      nullable: true
+      deprecated: false
+      example: "エンジニア"
+      maxLength: 400
+    BelongTo:
+      type: string
+      description: "所属"
+      nullable: true
+      deprecated: false
+      example: "フリー"
+      maxLength: 400
     UserAttribute:
       type: object
       description: "１ユーザーの属性情報群"
@@ -129,6 +142,10 @@ components:
           $ref: "#/components/schemas/Url"
         birthday:
           $ref: "#/components/schemas/BirthDay"
+        job:
+          $ref: "#/components/schemas/Job"
+        belongTo:
+          $ref: "#/components/schemas/BelongTo"
   parameters:
     userId:
       name: "userId"
