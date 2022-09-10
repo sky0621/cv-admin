@@ -1,14 +1,25 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/go-chi/chi/v5"
 	"github.com/sky0621/cv-admin/generated/swagger"
 )
 
+type ServerImpl struct {
+}
+
+func (s *ServerImpl) GetUsersUserIdAttributes(w http.ResponseWriter, r *http.Request, userId swagger.UserId) {
+	fmt.Println(userId)
+	w.WriteHeader(200)
+	w.Write([]byte("OK2"))
+}
+
 func main() {
-	router := swagger.NewRouter()
-	log.Fatal(http.ListenAndServe(":8080", router))
+	si := &ServerImpl{}
+	r := chi.NewRouter()
+	r.Mount("/", swagger.Handler(si))
+	http.ListenAndServe(":3000", r)
 }

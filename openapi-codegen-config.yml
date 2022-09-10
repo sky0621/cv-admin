@@ -1,0 +1,6 @@
+package: swagger
+generate:
+  chi-server: true
+  client: false
+  models: true
+  embedded-spec: true
