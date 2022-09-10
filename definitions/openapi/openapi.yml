@@ -1,0 +1,139 @@
+openapi: 3.0.3
+
+info:
+  title: CV API
+  description: CV API
+  version: 1.0.0
+
+servers:
+  - url: 'http://localhost:{port}/{version}'
+    description: "ローカル環境"
+    variables:
+      port:
+        description: "ポート番号"
+        enum: ["8080","3000"]
+        default: "8080"
+      version:
+        description: "APIバージョン"
+        enum: ["v1"]
+        default: "v1"
+
+tags:
+  - name: "users"
+    description: "ユーザーに対するCRUD"
+
+security: []
+
+paths:
+  "/users/{userId}/attributes":
+    parameters:
+      - $ref: "#/components/parameters/userId"
+    get:
+      summary: "属性情報群取得"
+      description: "氏名や生年月日等の属性情報群を取得する。"
+      tags: ["users"]
+      deprecated: false
+      responses:
+        "200":
+          description: "指定ユーザーの属性群を返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAttribute"
+        "404":
+          description: "指定ユーザー自身、または、その属性群が存在しない。"
+
+components:
+  schemas:
+    UserId:
+      type: string
+      description: "ユーザーを一意に識別するID"
+      nullable: false
+      deprecated: false
+      example: "9m4e2mr0ui3e8a215n4g"
+      minLength: 20
+      maxLength: 20
+    UserName:
+      type: string
+      description: "ユーザーの本名"
+      nullable: false
+      deprecated: false
+      example: "山田太郎"
+      minLength: 1
+      maxLength: 100
+    UserNickName:
+      type: string
+      description: "ユーザーのニックネーム"
+      nullable: true
+      deprecated: false
+      example: "ドカベン"
+      minLength: 0
+      maxLength: 100
+    Url:
+      type: string
+      description: "URL"
+      nullable: true
+      deprecated: false
+      example: "https://www.gravatar.com/avatar/205e460b479e2e2248aec07710c08d50"
+      minLength: 0
+      maxLength: 4096
+    Year:
+      type: integer
+      format: int32
+      description: "生年月日の「年」"
+      nullable: false
+      deprecated: false
+      example: "2022"
+      minimum: 1900
+      maximum: 9999
+    Month:
+      type: integer
+      format: int32
+      description: "生年月日の「月」"
+      nullable: false
+      deprecated: false
+      example: "9"
+      minimum: 1
+      maximum: 12
+    Day:
+      type: integer
+      format: int32
+      description: "生年月日の「日」"
+      nullable: false
+      deprecated: false
+      example: "10"
+      minimum: 1
+      maximum: 31
+    BirthDay:
+      type: object
+      description: "生年月日"
+      nullable: false
+      deprecated: false
+      example: "{year: 2022, month: 9, day:10}"
+      properties:
+        year:
+          $ref: "#/components/schemas/Year"
+        month:
+          $ref: "#/components/schemas/Month"
+        day:
+          $ref: "#/components/schemas/Day"
+    UserAttribute:
+      type: object
+      description: "１ユーザーの属性情報群"
+      properties:
+        name:
+          $ref: "#/components/schemas/UserName"
+        nickname:
+          $ref: "#/components/schemas/UserNickName"
+        avatarUrl:
+          $ref: "#/components/schemas/Url"
+        birthday:
+          $ref: "#/components/schemas/BirthDay"
+  parameters:
+    userId:
+      name: "userId"
+      in: "path"
+      required: true
+      schema:
+        $ref: "#/components/schemas/UserId"
+      example: "9m4e2mr0ui3e8a215n4g"
