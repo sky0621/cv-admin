@@ -38,6 +38,7 @@ paths:
           description: "Created: ユーザーを新規登録済み。"
         "400":
           $ref: "#/components/responses/400-BadRequest"
+
   "/users/{userId}":
     parameters:
       - $ref: "#/components/parameters/userId"
@@ -51,6 +52,7 @@ paths:
           description: "No Content: 指定ユーザーの削除に成功。"
         "404":
           $ref: "#/components/responses/404-NotFound-NoUser"
+
   "/users/{userId}/attributes":
     parameters:
       - $ref: "#/components/parameters/userId"
@@ -83,6 +85,7 @@ paths:
           $ref: "#/components/responses/200-OK-GotUserAttribute"
         "404":
           $ref: "#/components/responses/404-NotFound-NoUser"
+
   "/users/{userId}/activities":
     parameters:
       - $ref: "#/components/parameters/userId"
@@ -115,6 +118,7 @@ paths:
           $ref: "#/components/responses/200-OK-GotUserActivities"
         "404":
           $ref: "#/components/responses/404-NotFound-NoUser"
+
   "/users/{userId}/qualifications":
     parameters:
       - $ref: "#/components/parameters/userId"
@@ -353,6 +357,7 @@ components:
             properties:
               field: { type: string }
               code: { type: string }
+
   parameters:
     userId:
       name: "userId"
@@ -361,6 +366,7 @@ components:
       schema:
         $ref: "#/components/schemas/UserId"
       example: "9m4e2mr0ui3e8a215n4g"
+
   responses:
     200-OK-GotUserAttribute:
       description: "OK: 指定ユーザーの属性を返却する。"
