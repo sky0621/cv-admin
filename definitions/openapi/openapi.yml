@@ -50,7 +50,7 @@ paths:
         "204":
           description: "No Content: 指定ユーザーの削除に成功。"
         "404":
-          description: "Not Found: 指定ユーザーが存在しない。"
+          $ref: "#/components/responses/404-NotFound-NoUser"
   "/users/{userId}/attributes":
     parameters:
       - $ref: "#/components/parameters/userId"
@@ -72,7 +72,7 @@ paths:
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
-          description: "指定ユーザー自身、または、その属性が存在しない。"
+          $ref: "#/components/responses/404-NotFound-NoUser"
     get:
       summary: "属性取得"
       description: "指定ユーザーの属性を取得する。"
@@ -82,7 +82,7 @@ paths:
         "200":
           $ref: "#/components/responses/200-OK-GotUserAttribute"
         "404":
-          description: "指定ユーザー自身、または、その属性が存在しない。"
+          $ref: "#/components/responses/404-NotFound-NoUser"
   "/users/{userId}/activities":
     parameters:
       - $ref: "#/components/parameters/userId"
@@ -104,7 +104,7 @@ paths:
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
-          description: "指定ユーザー自身、または、そのアクティビティ群が存在しない。"
+          $ref: "#/components/responses/404-NotFound-NoUser"
     get:
       summary: "アクティビティ群取得"
       description: "指定ユーザーのアクティビティ群を取得する。"
@@ -114,7 +114,39 @@ paths:
         "200":
           $ref: "#/components/responses/200-OK-GotUserActivities"
         "404":
-          description: "指定ユーザー自身、または、そのアクティビティ群が存在しない。"
+          $ref: "#/components/responses/404-NotFound-NoUser"
+  "/users/{userId}/qualifications":
+    parameters:
+      - $ref: "#/components/parameters/userId"
+    put:
+      summary: "資格情報群更新"
+      description: "指定ユーザーの資格情報群を更新する。"
+      tags: ["users"]
+      deprecated: false
+      requestBody:
+        description: "資格情報群"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserQualifications"
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-GotUserQualifications"
+        "400":
+          $ref: "#/components/responses/400-BadRequest"
+        "404":
+          $ref: "#/components/responses/404-NotFound-NoUser"
+    get:
+      summary: "資格情報群取得"
+      description: "指定ユーザーの資格情報群を取得する。"
+      tags: ["users"]
+      deprecated: false
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-GotUserQualifications"
+        "404":
+          $ref: "#/components/responses/404-NotFound-NoUser"
 
 components:
   schemas:
@@ -144,7 +176,7 @@ components:
       maxLength: 100
     Url:
       type: string
-      format: url
+      format: uri
       description: "URL"
       nullable: true
       deprecated: false
@@ -219,7 +251,7 @@ components:
       deprecated: false
       example: "GitHub"
       minLength: 1
-      maxLength: 400
+      maxLength: 80
     ActivityIcon:
       type: string
       description: "アクティビティアイコン"
@@ -227,6 +259,35 @@ components:
       deprecated: false
       example: "github"
       maxLength: 40
+    QualificationName:
+      type: string
+      description: "資格名"
+      nullable: false
+      deprecated: false
+      example: "Oracle Master"
+      minLength: 1
+      maxLength: 80
+    QualificationOrg:
+      type: string
+      description: "組織名"
+      nullable: true
+      deprecated: false
+      example: "Oracle"
+      maxLength: 80
+    QualificationGotDate:
+      type: string
+      format: date
+      description: "取得日"
+      nullable: true
+      deprecated: false
+      example: "2022-09-10"
+    QualificationNote:
+      type: string
+      description: "注釈"
+      nullable: true
+      deprecated: false
+      example: "期限切れ"
+      maxLength: 400
     UserAttribute:
       type: object
       description: "１ユーザーの属性"
@@ -260,6 +321,25 @@ components:
       description: "１ユーザーのアクティビティ群"
       items:
         $ref: "#/components/schemas/UserActivity"
+    UserQualification:
+      type: object
+      description: "１ユーザーの資格情報"
+      properties:
+        name:
+          $ref: "#/components/schemas/QualificationName"
+        organization:
+          $ref: "#/components/schemas/QualificationOrg"
+        url:
+          $ref: "#/components/schemas/Url"
+        gotDate:
+          $ref: "#/components/schemas/QualificationGotDate"
+        note:
+          $ref: "#/components/schemas/QualificationNote"
+    UserQualifications:
+      type: array
+      description: "１ユーザーの資格情報群"
+      items:
+        $ref: "#/components/schemas/UserQualification"
     ClientError:
       type: object
       properties:
@@ -294,9 +374,17 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/UserActivities"
+    200-OK-GotUserQualifications:
+      description: "OK: 指定ユーザーの資格情報群を返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserQualifications"
     400-BadRequest:
       description: "Bad Request: 属性に誤りがある。"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/ClientError"
+    404-NotFound-NoUser:
+      description: "Not Found: 指定ユーザーが存在しない。"

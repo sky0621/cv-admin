@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
+	openapi_types "github.com/deepmap/oapi-codegen/pkg/types"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/labstack/echo/v4"
 )
@@ -61,6 +62,18 @@ type Month = int32
 
 // PR
 type PR = string
+
+// 取得日
+type QualificationGotDate = openapi_types.Date
+
+// 資格名
+type QualificationName = string
+
+// 注釈
+type QualificationNote = string
+
+// 組織名
+type QualificationOrg = string
 
 // URL
 type Url = string
@@ -113,6 +126,27 @@ type UserName = string
 // ユーザーのニックネーム
 type UserNickName = string
 
+// １ユーザーの資格情報
+type UserQualification struct {
+	// 取得日
+	GotDate *QualificationGotDate `json:"gotDate"`
+
+	// 資格名
+	Name *QualificationName `json:"name,omitempty"`
+
+	// 注釈
+	Note *QualificationNote `json:"note"`
+
+	// 組織名
+	Organization *QualificationOrg `json:"organization"`
+
+	// URL
+	Url *Url `json:"url"`
+}
+
+// １ユーザーの資格情報群
+type UserQualifications = []UserQualification
+
 // 生年月日の「年」
 type Year = int32
 
@@ -121,6 +155,9 @@ type N200OKGotUserActivities = UserActivities
 
 // １ユーザーの属性
 type N200OKGotUserAttribute = UserAttribute
+
+// １ユーザーの資格情報群
+type N200OKGotUserQualifications = UserQualifications
 
 // N400BadRequest defines model for 400-BadRequest.
 type N400BadRequest = ClientError
@@ -134,6 +171,9 @@ type PutUsersUserIdActivitiesJSONBody = UserActivities
 // PutUsersUserIdAttributesJSONBody defines parameters for PutUsersUserIdAttributes.
 type PutUsersUserIdAttributesJSONBody = UserAttribute
 
+// PutUsersUserIdQualificationsJSONBody defines parameters for PutUsersUserIdQualifications.
+type PutUsersUserIdQualificationsJSONBody = UserQualifications
+
 // PostUsersJSONRequestBody defines body for PostUsers for application/json ContentType.
 type PostUsersJSONRequestBody = PostUsersJSONBody
 
@@ -142,6 +182,9 @@ type PutUsersUserIdActivitiesJSONRequestBody = PutUsersUserIdActivitiesJSONBody
 
 // PutUsersUserIdAttributesJSONRequestBody defines body for PutUsersUserIdAttributes for application/json ContentType.
 type PutUsersUserIdAttributesJSONRequestBody = PutUsersUserIdAttributesJSONBody
+
+// PutUsersUserIdQualificationsJSONRequestBody defines body for PutUsersUserIdQualifications for application/json ContentType.
+type PutUsersUserIdQualificationsJSONRequestBody = PutUsersUserIdQualificationsJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -163,6 +206,12 @@ type ServerInterface interface {
 	// 属性更新
 	// (PUT /users/{userId}/attributes)
 	PutUsersUserIdAttributes(ctx echo.Context, userId UserId) error
+	// 資格情報群取得
+	// (GET /users/{userId}/qualifications)
+	GetUsersUserIdQualifications(ctx echo.Context, userId UserId) error
+	// 資格情報群更新
+	// (PUT /users/{userId}/qualifications)
+	PutUsersUserIdQualifications(ctx echo.Context, userId UserId) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -259,6 +308,38 @@ func (w *ServerInterfaceWrapper) PutUsersUserIdAttributes(ctx echo.Context) erro
 	return err
 }
 
+// GetUsersUserIdQualifications converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersUserIdQualifications(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetUsersUserIdQualifications(ctx, userId)
+	return err
+}
+
+// PutUsersUserIdQualifications converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersUserIdQualifications(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PutUsersUserIdQualifications(ctx, userId)
+	return err
+}
+
 // This is a simple interface which specifies echo.Route addition functions which
 // are present on both echo.Echo and echo.Group, since we want to allow using
 // either of them for path registration
@@ -293,41 +374,47 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/users/:userId/activities", wrapper.PutUsersUserIdActivities)
 	router.GET(baseURL+"/users/:userId/attributes", wrapper.GetUsersUserIdAttributes)
 	router.PUT(baseURL+"/users/:userId/attributes", wrapper.PutUsersUserIdAttributes)
+	router.GET(baseURL+"/users/:userId/qualifications", wrapper.GetUsersUserIdQualifications)
+	router.PUT(baseURL+"/users/:userId/qualifications", wrapper.PutUsersUserIdQualifications)
 
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"/BkAAP//ntxEcWsaAAA=",
+	"H4sIAAAAAAAC/8RabXPTyB3/Kp5tXyqx7Jgj1rsLaSm9A9JM05kbhhcbeWOL0xOrFXNpxjO2REvgQqEp",
+	"B5c2PSgX7pikOUiT9mCO4T7MIjl51a/QWUl+WEmWZc6UNxlb3v3//s9PyhqQDc00dKQTC0hrwIQYaogg",
+	"HHyzLYTP1dgn9BnUTBUBCVS1CiprWLSVGTQLy6VTeqUOBKDoQAImJA0gAB1q7GR0WwAYXbUVjGpAIthG",
+	"ArDkBtIgI/tzjFaABH5W7HNRDH+1ikvh9WazyShYpqFbKOCqLIpTFz+aOmsQduRDmSjXFKKEv8mGTpBO",
+	"2EdomqoiQ6IYevGKZejsWX7kAbIBBzVkyVgxGTUggYsfSQV/44b33V+p+w11X1HnP+xv+zvqPKbOM+r+",
+	"kTpfU/cv4YfO6x3qbB7/eM+7fUTbW9T5nLYc0BTikhCClWWboMkK0qM6jhzewVd+69s8XP/GhqqyEvE3",
+	"WRvESI/D//HhDf/RK9/9g/foYKj6K6I4NQdri+iqjSwyMdbPqArSyS8wNnAaz3OwVoggpUKk5/be8e4O",
+	"dW7R9gZtO4McVqYuGOSXhq3Xpi4YTCkMnSd4wSCF4ES6Lja8/S+97ae0/YC2d2n7ekC62Y3CwGKRs6+e",
+	"k0M5efqpPh083KHOIXUPgTCQH+oKadjLQAAa/OxjpNdJA0gVUQC6rapwmR0JkwBZNdlxi2BFrzNZu0xc",
+	"CLJHLia8u7c57LMK+VUce1YUgKbo3a+lFOQ5pBp6/bdGEtW/2fIOvuIwqPsFdXep+youYh4Z5xRMGvNw",
+	"NYnUuffQe3nkb6/7D55weGurCGKpUBbLZaGgGTppSIWqUKjBVakkNoEATGyYCHcTYC0knuWfDL8pgIDW",
+	"qLPng0NNATAuRh3+hJ1hrhXJbSxfQTJhtwdDglUZjmXZqAUGT2gLsfPBEYUgzRrj5oqC1FrKL2m8RQ8g",
+	"xpFekGXBejrd8EEusiOtzKpFa4N9aPFeXBKBAFYMrEECJKDoZKYc+pqi2RqQZkqBQ4df+u6s6ATVEWbQ",
+	"vzaWk9DH7e/9J/u8KztPqXtInRfU/Zw6j9/Goc93nWiknNvrcTmrmWKWyqPEXFhMAi8schCdb9u0/aws",
+	"ei+P3vzw5M2LW0GJ3qfu1yyGWUrZ9DfatP0P2mrT1jZtbSeUkEcLXKE6a5B5SFJSmHfnvvf6QTy+WWBP",
+	"idUp3uo1RmFc5PTMGZbCeKq8iKGsosJ5aBGEx86YPKyRJq1/+PTkxjqH6W8/PNm6663foM7G2zgbh3oR",
+	"11P87t/XOy/vpcuaFHIk4BJWkxhLix9z1BuEmJZUjB5My4ZWLIunUOUDcblyuorKqFyuzEIki6dPl0RZ",
+	"nK2d4ixtYyWui+oHeXhL9L48m/999eecvSnr3rv5NWdbvJqWOLnf35afREFTop4kizOuf2l2B5B8d4Kg",
+	"aQrADm2dqQCspuf6RPc+SvSw7UvICq9BAvFSTk4EsDzQuGQd7zU47A5rQXJ0Cb1WpSmAK2FByTrOak5O",
+	"zTNtdbWuK/Knue8o8qfde+bIZmRhcbitwpk21mAOWsjZfPOi5V+/wxrz/S+99Sfh3HBuni9g6aPwQCyX",
+	"+VTKvqYG8pCel3caf/uf8czmHRx07j33dnZP3D/xyCVxdBbnlDoKnfUIrhsE7G32xH0Ua4tvUmePulvh",
+	"PBDnJFc64/J7njAanPISwVTv1+EsP0mt3Tk9OVl92UVjTNCgfjYFYOA61JXf96TPTYCVwglksOQkP47+",
+	"xywkvK1Tqskn0cAxqrH0Xh7FG0vWUmX2ltVqtTrYXVZFMdlgMj0p+krKVHjmd4UPF84BARCFBIC9B9cQ",
+	"tsIzpWlxWgysaiIdmgqQwMy0OD3D3BSSRqCjom1FizbTCPcPmSnJv//8+Js7na0fTjb+1d9jBAg4UCNL",
+	"a2DBsIK9jBUt3pBF5oza6rvcKfH7veS6rpSiQowgQTWpkCGj/2Kdtn/s72qGcdZDK8YWOsGWw9Y0iFdj",
+	"2hyEYXaEdQtIl0Boj8vsXmib4lq4xGyGEqgotdNNLl2cTe/mrZOtneFmmg+IBYZa6u9JObVV0lY9hTOh",
+	"EYft7SLYPX/9rnfrYX+NlEd5yV0Tr8EkYgiXokGB2yRfSsfuHylGu+Lm5aTqi5DrcuuI5DJB5i42HMWG",
+	"W+csIgOmGWizk6vo0Yoduq+enGWGiRrKOUn7CMC0J2AA/29H/v3nGVnMzjDAO0pqmRv/jOFpVPr7yS7y",
+	"FpnvnXtWaMBcubMIu+VizADuvYQYM1z7cBOwRb/UTUynoVzvNzZ7uh0zEnnd/l/ai9gWrTs6Tz7seFO/",
+	"z6gLhRwnxq4mmvf8cZZ8WTZewMUGh59uifiLv4npNSbp+w3BpNrHi8UUtb+beBz9HjY5CE48OtN84n2G",
+	"aEzk4bHKbiF8retJ8RFvP3CJPerudTafe49dEA3ywV5ZKhZVQ4Zqw7CItGYamDTZlAmxApdVFI2OOHK4",
+	"FWirbNydFWdFkOhf3L8HW5v1zhe73p3v2byss9n3Uvf4jCiKAbuXezJkb4T2vGevQ1c9s7g0z//bh8U6",
+	"+f8FAAD//+2gLx1cIgAA",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

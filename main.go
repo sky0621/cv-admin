@@ -47,6 +47,18 @@ func (s *ServerImpl) PutUsersUserIdAttributes(ctx echo.Context, userId swagger.U
 	return ctx.String(http.StatusOK, userId)
 }
 
+// 資格情報群取得
+// (GET /users/{userId}/qualifications)
+func (s *ServerImpl) GetUsersUserIdQualifications(ctx echo.Context, userId swagger.UserId) error {
+	return ctx.String(http.StatusOK, userId)
+}
+
+// 資格情報群更新
+// (PUT /users/{userId}/qualifications)
+func (s *ServerImpl) PutUsersUserIdQualifications(ctx echo.Context, userId swagger.UserId) error {
+	return ctx.String(http.StatusOK, userId)
+}
+
 func main() {
 	si := &ServerImpl{}
 	e := echo.New()
