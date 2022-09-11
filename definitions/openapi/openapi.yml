@@ -35,38 +35,86 @@ paths:
               $ref: "#/components/schemas/UserAttribute"
       responses:
         "201":
-          description: "ユーザーを新規登録済み。"
+          description: "Created: ユーザーを新規登録済み。"
         "400":
-          description: "属性情報に誤りがある。"
+          $ref: "#/components/responses/400-BadRequest"
+  "/users/{userId}":
+    parameters:
+      - $ref: "#/components/parameters/userId"
+    delete:
+      summary: "指定ユーザー削除"
+      description: "指定ユーザーを削除する。"
+      tags: ["users"]
+      deprecated: false
+      responses:
+        "204":
+          description: "No Content: 指定ユーザーの削除に成功。"
+        "404":
+          description: "Not Found: 指定ユーザーが存在しない。"
   "/users/{userId}/attributes":
     parameters:
       - $ref: "#/components/parameters/userId"
     put:
-      summary: "属性情報更新"
-      description: "氏名や生年月日等の属性情報を更新する。"
+      summary: "属性更新"
+      description: "指定ユーザーの属性を更新する。"
       tags: ["users"]
       deprecated: false
       requestBody:
-        description: "属性情報"
+        description: "属性"
         required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/UserAttribute"
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-GotUserAttribute"
+        "400":
+          $ref: "#/components/responses/400-BadRequest"
+        "404":
+          description: "指定ユーザー自身、または、その属性が存在しない。"
     get:
-      summary: "属性情報群取得"
-      description: "氏名や生年月日等の属性情報群を取得する。"
+      summary: "属性取得"
+      description: "指定ユーザーの属性を取得する。"
       tags: ["users"]
       deprecated: false
       responses:
         "200":
-          description: "指定ユーザーの属性群を返却する。"
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserAttribute"
+          $ref: "#/components/responses/200-OK-GotUserAttribute"
         "404":
-          description: "指定ユーザー自身、または、その属性群が存在しない。"
+          description: "指定ユーザー自身、または、その属性が存在しない。"
+  "/users/{userId}/activities":
+    parameters:
+      - $ref: "#/components/parameters/userId"
+    put:
+      summary: "アクティビティ群更新"
+      description: "指定ユーザーのアクティビティ群を更新する。"
+      tags: ["users"]
+      deprecated: false
+      requestBody:
+        description: "アクティビティ群"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserActivities"
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-GotUserActivities"
+        "400":
+          $ref: "#/components/responses/400-BadRequest"
+        "404":
+          description: "指定ユーザー自身、または、そのアクティビティ群が存在しない。"
+    get:
+      summary: "アクティビティ群取得"
+      description: "指定ユーザーのアクティビティ群を取得する。"
+      tags: ["users"]
+      deprecated: false
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-GotUserActivities"
+        "404":
+          description: "指定ユーザー自身、または、そのアクティビティ群が存在しない。"
 
 components:
   schemas:
@@ -100,7 +148,7 @@ components:
       description: "URL"
       nullable: true
       deprecated: false
-      example: "https://www.gravatar.com/avatar/205e460b479e2e2248aec07710c08d50"
+      example: "https:/example.com/205e460b479e2e2248aec07710c08d50"
       minLength: 0
       maxLength: 4096
     Year:
@@ -157,9 +205,31 @@ components:
       deprecated: false
       example: "フリー"
       maxLength: 400
+    PR:
+      type: string
+      description: "PR"
+      nullable: true
+      deprecated: false
+      example: "私は20年以上のキャリアを持ち、〜〜"
+      maxLength: 4000
+    ActivityName:
+      type: string
+      description: "アクティビティ名"
+      nullable: false
+      deprecated: false
+      example: "GitHub"
+      minLength: 1
+      maxLength: 400
+    ActivityIcon:
+      type: string
+      description: "アクティビティアイコン"
+      nullable: true
+      deprecated: false
+      example: "github"
+      maxLength: 40
     UserAttribute:
       type: object
-      description: "１ユーザーの属性情報群"
+      description: "１ユーザーの属性"
       properties:
         name:
           $ref: "#/components/schemas/UserName"
@@ -173,6 +243,36 @@ components:
           $ref: "#/components/schemas/Job"
         belongTo:
           $ref: "#/components/schemas/BelongTo"
+        pr:
+          $ref: "#/components/schemas/PR"
+    UserActivity:
+      type: object
+      description: "１ユーザーのアクティビティ"
+      properties:
+        name:
+          $ref: "#/components/schemas/ActivityName"
+        url:
+          $ref: "#/components/schemas/Url"
+        icon:
+          $ref: "#/components/schemas/ActivityIcon"
+    UserActivities:
+      type: array
+      description: "１ユーザーのアクティビティ群"
+      items:
+        $ref: "#/components/schemas/UserActivity"
+    ClientError:
+      type: object
+      properties:
+        code: { type: string }
+        type: { type: string }
+        message: { type: string }
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field: { type: string }
+              code: { type: string }
   parameters:
     userId:
       name: "userId"
@@ -181,3 +281,22 @@ components:
       schema:
         $ref: "#/components/schemas/UserId"
       example: "9m4e2mr0ui3e8a215n4g"
+  responses:
+    200-OK-GotUserAttribute:
+      description: "OK: 指定ユーザーの属性を返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserAttribute"
+    200-OK-GotUserActivities:
+      description: "OK: 指定ユーザーのアクティビティ群を返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserActivities"
+    400-BadRequest:
+      description: "Bad Request: 属性に誤りがある。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ClientError"

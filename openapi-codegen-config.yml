@@ -1,6 +1,6 @@
 package: swagger
 generate:
-  chi-server: true
+  echo-server: true
   client: false
   models: true
   embedded-spec: true

@@ -27,6 +27,9 @@ go: creating new go.mod: module github.com/sky0621/cv-admin
 
 ### open-api-codegen
 
+https://github.com/getkin/kin-openapi
+https://github.com/deepmap/oapi-codegen
+
 ```
 go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
 ```

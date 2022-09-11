@@ -15,8 +15,14 @@ import (
 
 	"github.com/deepmap/oapi-codegen/pkg/runtime"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/go-chi/chi/v5"
+	"github.com/labstack/echo/v4"
 )
+
+// アクティビティアイコン
+type ActivityIcon = string
+
+// アクティビティ名
+type ActivityName = string
 
 // 所属
 type BelongTo = string
@@ -33,6 +39,17 @@ type BirthDay struct {
 	Year *Year `json:"year,omitempty"`
 }
 
+// ClientError defines model for ClientError.
+type ClientError struct {
+	Code   *string `json:"code,omitempty"`
+	Errors *[]struct {
+		Code  *string `json:"code,omitempty"`
+		Field *string `json:"field,omitempty"`
+	} `json:"errors,omitempty"`
+	Message *string `json:"message,omitempty"`
+	Type    *string `json:"type,omitempty"`
+}
+
 // 生年月日の「日」
 type Day = int32
 
@@ -42,10 +59,28 @@ type Job = string
 // 生年月日の「月」
 type Month = int32
 
+// PR
+type PR = string
+
 // URL
 type Url = string
 
-// １ユーザーの属性情報群
+// １ユーザーのアクティビティ群
+type UserActivities = []UserActivity
+
+// １ユーザーのアクティビティ
+type UserActivity struct {
+	// アクティビティアイコン
+	Icon *ActivityIcon `json:"icon"`
+
+	// アクティビティ名
+	Name *ActivityName `json:"name,omitempty"`
+
+	// URL
+	Url *Url `json:"url"`
+}
+
+// １ユーザーの属性
 type UserAttribute struct {
 	// URL
 	AvatarUrl *Url `json:"avatarUrl"`
@@ -64,6 +99,9 @@ type UserAttribute struct {
 
 	// ユーザーのニックネーム
 	Nickname *UserNickName `json:"nickname"`
+
+	// PR
+	Pr *PR `json:"pr"`
 }
 
 // ユーザーを一意に識別するID
@@ -78,14 +116,29 @@ type UserNickName = string
 // 生年月日の「年」
 type Year = int32
 
+// １ユーザーのアクティビティ群
+type N200OKGotUserActivities = UserActivities
+
+// １ユーザーの属性
+type N200OKGotUserAttribute = UserAttribute
+
+// N400BadRequest defines model for 400-BadRequest.
+type N400BadRequest = ClientError
+
 // PostUsersJSONBody defines parameters for PostUsers.
 type PostUsersJSONBody = UserAttribute
+
+// PutUsersUserIdActivitiesJSONBody defines parameters for PutUsersUserIdActivities.
+type PutUsersUserIdActivitiesJSONBody = UserActivities
 
 // PutUsersUserIdAttributesJSONBody defines parameters for PutUsersUserIdAttributes.
 type PutUsersUserIdAttributesJSONBody = UserAttribute
 
 // PostUsersJSONRequestBody defines body for PostUsers for application/json ContentType.
 type PostUsersJSONRequestBody = PostUsersJSONBody
+
+// PutUsersUserIdActivitiesJSONRequestBody defines body for PutUsersUserIdActivities for application/json ContentType.
+type PutUsersUserIdActivitiesJSONRequestBody = PutUsersUserIdActivitiesJSONBody
 
 // PutUsersUserIdAttributesJSONRequestBody defines body for PutUsersUserIdAttributes for application/json ContentType.
 type PutUsersUserIdAttributesJSONRequestBody = PutUsersUserIdAttributesJSONBody
@@ -94,242 +147,187 @@ type PutUsersUserIdAttributesJSONRequestBody = PutUsersUserIdAttributesJSONBody
 type ServerInterface interface {
 	// ユーザー新規登録
 	// (POST /users)
-	PostUsers(w http.ResponseWriter, r *http.Request)
-	// 属性情報群取得
+	PostUsers(ctx echo.Context) error
+	// 指定ユーザー削除
+	// (DELETE /users/{userId})
+	DeleteUsersUserId(ctx echo.Context, userId UserId) error
+	// アクティビティ群取得
+	// (GET /users/{userId}/activities)
+	GetUsersUserIdActivities(ctx echo.Context, userId UserId) error
+	// アクティビティ群更新
+	// (PUT /users/{userId}/activities)
+	PutUsersUserIdActivities(ctx echo.Context, userId UserId) error
+	// 属性取得
 	// (GET /users/{userId}/attributes)
-	GetUsersUserIdAttributes(w http.ResponseWriter, r *http.Request, userId UserId)
-	// 属性情報更新
+	GetUsersUserIdAttributes(ctx echo.Context, userId UserId) error
+	// 属性更新
 	// (PUT /users/{userId}/attributes)
-	PutUsersUserIdAttributes(w http.ResponseWriter, r *http.Request, userId UserId)
+	PutUsersUserIdAttributes(ctx echo.Context, userId UserId) error
 }
 
-// ServerInterfaceWrapper converts contexts to parameters.
+// ServerInterfaceWrapper converts echo contexts to parameters.
 type ServerInterfaceWrapper struct {
-	Handler            ServerInterface
-	HandlerMiddlewares []MiddlewareFunc
-	ErrorHandlerFunc   func(w http.ResponseWriter, r *http.Request, err error)
+	Handler ServerInterface
 }
 
-type MiddlewareFunc func(http.HandlerFunc) http.HandlerFunc
-
-// PostUsers operation middleware
-func (siw *ServerInterfaceWrapper) PostUsers(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
-	var handler = func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PostUsers(w, r)
-	}
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler(w, r.WithContext(ctx))
-}
-
-// GetUsersUserIdAttributes operation middleware
-func (siw *ServerInterfaceWrapper) GetUsersUserIdAttributes(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
+// PostUsers converts echo context to params.
+func (w *ServerInterfaceWrapper) PostUsers(ctx echo.Context) error {
 	var err error
 
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostUsers(ctx)
+	return err
+}
+
+// DeleteUsersUserId converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteUsersUserId(ctx echo.Context) error {
+	var err error
 	// ------------- Path parameter "userId" -------------
 	var userId UserId
 
-	err = runtime.BindStyledParameter("simple", false, "userId", chi.URLParam(r, "userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userId", Err: err})
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
 	}
 
-	var handler = func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.GetUsersUserIdAttributes(w, r, userId)
-	}
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
-	}
-
-	handler(w, r.WithContext(ctx))
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.DeleteUsersUserId(ctx, userId)
+	return err
 }
 
-// PutUsersUserIdAttributes operation middleware
-func (siw *ServerInterfaceWrapper) PutUsersUserIdAttributes(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-
+// GetUsersUserIdActivities converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersUserIdActivities(ctx echo.Context) error {
 	var err error
-
 	// ------------- Path parameter "userId" -------------
 	var userId UserId
 
-	err = runtime.BindStyledParameter("simple", false, "userId", chi.URLParam(r, "userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
 	if err != nil {
-		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "userId", Err: err})
-		return
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
 	}
 
-	var handler = func(w http.ResponseWriter, r *http.Request) {
-		siw.Handler.PutUsersUserIdAttributes(w, r, userId)
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetUsersUserIdActivities(ctx, userId)
+	return err
+}
+
+// PutUsersUserIdActivities converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersUserIdActivities(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
 	}
 
-	for _, middleware := range siw.HandlerMiddlewares {
-		handler = middleware(handler)
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PutUsersUserIdActivities(ctx, userId)
+	return err
+}
+
+// GetUsersUserIdAttributes converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersUserIdAttributes(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
 	}
 
-	handler(w, r.WithContext(ctx))
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetUsersUserIdAttributes(ctx, userId)
+	return err
 }
 
-type UnescapedCookieParamError struct {
-	ParamName string
-	Err       error
-}
+// PutUsersUserIdAttributes converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersUserIdAttributes(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
 
-func (e *UnescapedCookieParamError) Error() string {
-	return fmt.Sprintf("error unescaping cookie parameter '%s'", e.ParamName)
-}
-
-func (e *UnescapedCookieParamError) Unwrap() error {
-	return e.Err
-}
-
-type UnmarshalingParamError struct {
-	ParamName string
-	Err       error
-}
-
-func (e *UnmarshalingParamError) Error() string {
-	return fmt.Sprintf("Error unmarshaling parameter %s as JSON: %s", e.ParamName, e.Err.Error())
-}
-
-func (e *UnmarshalingParamError) Unwrap() error {
-	return e.Err
-}
-
-type RequiredParamError struct {
-	ParamName string
-}
-
-func (e *RequiredParamError) Error() string {
-	return fmt.Sprintf("Query argument %s is required, but not found", e.ParamName)
-}
-
-type RequiredHeaderError struct {
-	ParamName string
-	Err       error
-}
-
-func (e *RequiredHeaderError) Error() string {
-	return fmt.Sprintf("Header parameter %s is required, but not found", e.ParamName)
-}
-
-func (e *RequiredHeaderError) Unwrap() error {
-	return e.Err
-}
-
-type InvalidParamFormatError struct {
-	ParamName string
-	Err       error
-}
-
-func (e *InvalidParamFormatError) Error() string {
-	return fmt.Sprintf("Invalid format for parameter %s: %s", e.ParamName, e.Err.Error())
-}
-
-func (e *InvalidParamFormatError) Unwrap() error {
-	return e.Err
-}
-
-type TooManyValuesForParamError struct {
-	ParamName string
-	Count     int
-}
-
-func (e *TooManyValuesForParamError) Error() string {
-	return fmt.Sprintf("Expected one value for %s, got %d", e.ParamName, e.Count)
-}
-
-// Handler creates http.Handler with routing matching OpenAPI spec.
-func Handler(si ServerInterface) http.Handler {
-	return HandlerWithOptions(si, ChiServerOptions{})
-}
-
-type ChiServerOptions struct {
-	BaseURL          string
-	BaseRouter       chi.Router
-	Middlewares      []MiddlewareFunc
-	ErrorHandlerFunc func(w http.ResponseWriter, r *http.Request, err error)
-}
-
-// HandlerFromMux creates http.Handler with routing matching OpenAPI spec based on the provided mux.
-func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
-	return HandlerWithOptions(si, ChiServerOptions{
-		BaseRouter: r,
-	})
-}
-
-func HandlerFromMuxWithBaseURL(si ServerInterface, r chi.Router, baseURL string) http.Handler {
-	return HandlerWithOptions(si, ChiServerOptions{
-		BaseURL:    baseURL,
-		BaseRouter: r,
-	})
-}
-
-// HandlerWithOptions creates http.Handler with additional options
-func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handler {
-	r := options.BaseRouter
-
-	if r == nil {
-		r = chi.NewRouter()
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
 	}
-	if options.ErrorHandlerFunc == nil {
-		options.ErrorHandlerFunc = func(w http.ResponseWriter, r *http.Request, err error) {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-		}
-	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PutUsersUserIdAttributes(ctx, userId)
+	return err
+}
+
+// This is a simple interface which specifies echo.Route addition functions which
+// are present on both echo.Echo and echo.Group, since we want to allow using
+// either of them for path registration
+type EchoRouter interface {
+	CONNECT(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	DELETE(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	GET(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	HEAD(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	OPTIONS(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	PATCH(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	POST(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	PUT(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+	TRACE(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) *echo.Route
+}
+
+// RegisterHandlers adds each server route to the EchoRouter.
+func RegisterHandlers(router EchoRouter, si ServerInterface) {
+	RegisterHandlersWithBaseURL(router, si, "")
+}
+
+// Registers handlers, and prepends BaseURL to the paths, so that the paths
+// can be served under a prefix.
+func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL string) {
+
 	wrapper := ServerInterfaceWrapper{
-		Handler:            si,
-		HandlerMiddlewares: options.Middlewares,
-		ErrorHandlerFunc:   options.ErrorHandlerFunc,
+		Handler: si,
 	}
 
-	r.Group(func(r chi.Router) {
-		r.Post(options.BaseURL+"/users", wrapper.PostUsers)
-	})
-	r.Group(func(r chi.Router) {
-		r.Get(options.BaseURL+"/users/{userId}/attributes", wrapper.GetUsersUserIdAttributes)
-	})
-	r.Group(func(r chi.Router) {
-		r.Put(options.BaseURL+"/users/{userId}/attributes", wrapper.PutUsersUserIdAttributes)
-	})
+	router.POST(baseURL+"/users", wrapper.PostUsers)
+	router.DELETE(baseURL+"/users/:userId", wrapper.DeleteUsersUserId)
+	router.GET(baseURL+"/users/:userId/activities", wrapper.GetUsersUserIdActivities)
+	router.PUT(baseURL+"/users/:userId/activities", wrapper.PutUsersUserIdActivities)
+	router.GET(baseURL+"/users/:userId/attributes", wrapper.GetUsersUserIdAttributes)
+	router.PUT(baseURL+"/users/:userId/attributes", wrapper.PutUsersUserIdAttributes)
 
-	return r
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/7xXbW/TVhT+K9XdPlrxjROg8TdepIkJEELLJIT64ca5TQzxy66vC1VkKbaZKKNdGeJ1",
-	"Ky9CwFCylnZUo2xV+TF3dsKn/YXp+iZpnKRJQdq+VE56jp9zznPOc07qQLMM2zKxSR2g1oGNCDIwxST5",
-	"5DqYnC7zJ3wNGXYNAxUUjDxWDAJdPYdnkZI9YuYrQAK6CVRgI1oFEjCRwS273hIg+DtXJ7gMVEpcLAFH",
-	"q2ID8dd+SfA8UMEX8n4UsvivIxeFu+d5PY8kphO4ZpmVbyz+XMaORnSb6hZHj282oq0nQBoIloX3WNhk",
-	"4S6QgIGuncFmhVaBmodQAqZbq6ESNxNR0UWbuziU6GYFeBI4oRNaPYUWR5Had59G77fjtaX4wcsUXn0R",
-	"I6LOKFBRpBnDMmlVnSlIM2W0qGahByRgE8vGhOo4yaUsXj6pChzfk0Dyrmm2ZxMjTwI8imnGF7kNr203",
-	"b6t0GWuUe09NmfkbrLHMHxorqfSzEEhg3iIGokAFuklziii8brgGUHNZCRi6KT5k+8i6SXEFEw79tVUa",
-	"he747+KX62leg9csfMuCHRbeYsHzz2H3bK+iU/NcWxrOszAxzawyLc0iqY0iFy+cSYFUKbUdVZavXr2a",
-	"qRC0gCgiGc0yZPEoK/AIzh+FpfyxAlawouRnEdbgsWNZqMHZ8pEUFS6pDdeocPQQReIzeJxSopdcikdD",
-	"/mf3Jxa+YuEuC/7gf/2NaOtJ3Pg1Dr+Pnm21916MdLyIvZv/xOknNR5AaWDaJ5n3VYH78Lk9xGj159uT",
-	"wGXReJPMeW96PXGbLl3nuB2317Urh/bRtSvCb9xcFvtqnGYhRUFw5++dRnx9lfmtzvrDaOkl8x+x4Nbp",
-	"U+kGHi/iAw2iwKSJBz+O7Y5z3dQmhORvxGu/RbfTIxRtbbXvbkYvmh/DH9PIWZiGzh6E3CvWNHSuEWHI",
-	"gjcsXOHfhM+GdsRNFrRY+IiFb8dEMnVGLnbFdpqORO+3h3WE74mJUlIoFAqDYlKAcFRPeLPo5vyYjXjy",
-	"25nj508DCVCdJoD9LxYwcYRNNgMzkOdh2dhEtg5UkMvATI6PLqLVZGplvsrFfWA5dGoHxvc3O69W24/+",
-	"+rj8u2g/1ghAgkAQd+FdDM5bDi0m7xUXAnboCaucTK1mmRSbCRCy7ZquJV7yZYej1T/hftjXrqRK6UMk",
-	"+cKxLdMR2qTA7CelFu8sMf8DT82TQB7CUedBNeQD2XzBgh+Yv8z8oFuU5LhxDQORxSGwQSTOIKo4QL0E",
-	"BBNz3E+wItfFneXJqJdskk0FjyEq3lyNbq+w4Ppge7bXb44qNwvuRKv3o70HBxP4FRb8CV06vo8+Ulf4",
-	"X5I6lOHyjWjj57FbSWTV+XA3WtnezyrhLj+mVCMv6txodv5ssYbP/D3mP2X+m+T5cQrAX47WH0Zrr5n/",
-	"gPlN5l8fZXmo0qLMYyiWUtf4pfGF2TeRu/e2NycB2/188nmX/7Id39+cMLruBOb/l0k+eM7A5DHncn4Q",
-	"GSLtccPG+cNkoUfEsESsJz3SYmGrfWczeh4CKbm4xA2nynLN0lCtajlUrdsWofyHwAIiOl8rXVUlXb7m",
-	"kVvjm2AWzvIDbhjocbK/ltr3mtHqO75KTL4WLvXMcxDCJNy5fg6Td2MrerMnaD55oXgq/dPNAd6c928A",
-	"AAD//6uzpWQgDgAA",
+	"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",
+	"/BkAAP//ntxEcWsaAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
