@@ -47,6 +47,36 @@ func (s *ServerImpl) PutUsersUserIdAttributes(ctx echo.Context, userId swagger.U
 	return ctx.String(http.StatusOK, userId)
 }
 
+// 注釈群取得
+// (GET /users/{userId}/notes)
+func (s *ServerImpl) GetUsersUserIdNotes(ctx echo.Context, userId swagger.UserId) error {
+	return ctx.String(http.StatusOK, userId)
+}
+
+// 注釈新規登録
+// (POST /users/{userId}/notes)
+func (s *ServerImpl) PostUsersUserIdNotes(ctx echo.Context, userId swagger.UserId) error {
+	return ctx.String(http.StatusOK, userId)
+}
+
+// 注釈削除
+// (DELETE /users/{userId}/notes/{noteId})
+func (s *ServerImpl) DeleteUsersUserIdNotesNoteId(ctx echo.Context, userId swagger.UserId, noteId swagger.NoteId) error {
+	return ctx.String(http.StatusOK, noteId)
+}
+
+// 注釈更新
+// (PUT /users/{userId}/notes/{noteId})
+func (s *ServerImpl) PutUsersUserIdNotesNoteId(ctx echo.Context, userId swagger.UserId, noteId swagger.NoteId) error {
+	return ctx.String(http.StatusOK, noteId)
+}
+
+// 注釈内要素群更新
+// (PUT /users/{userId}/notes/{noteId}/items)
+func (s *ServerImpl) PutUsersUserIdNotesNoteIdItems(ctx echo.Context, userId swagger.UserId, noteId swagger.NoteId) error {
+	return ctx.String(http.StatusOK, noteId)
+}
+
 // 資格情報群取得
 // (GET /users/{userId}/qualifications)
 func (s *ServerImpl) GetUsersUserIdQualifications(ctx echo.Context, userId swagger.UserId) error {

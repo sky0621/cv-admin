@@ -60,17 +60,29 @@ type Job = string
 // 生年月日の「月」
 type Month = int32
 
+// 注釈を一意に識別するID
+type NoteId = string
+
+// 注釈内の１要素
+type NoteItemText = string
+
+// ラベル
+type NoteLabel = string
+
+// メモ
+type NoteMemo = string
+
 // PR
 type PR = string
 
 // 取得日
 type QualificationGotDate = openapi_types.Date
 
+// メモ
+type QualificationMemo = string
+
 // 資格名
 type QualificationName = string
-
-// 注釈
-type QualificationNote = string
 
 // 組織名
 type QualificationOrg = string
@@ -126,16 +138,49 @@ type UserName = string
 // ユーザーのニックネーム
 type UserNickName = string
 
+// １ユーザーの注釈
+type UserNote struct {
+	// １ユーザーの注釈内の要素群
+	Items *UserNoteItems `json:"items,omitempty"`
+
+	// ラベル
+	Label *NoteLabel `json:"label,omitempty"`
+
+	// メモ
+	Memo *NoteMemo `json:"memo"`
+}
+
+// １ユーザーの注釈内の１要素
+type UserNoteItem struct {
+	// 注釈内の１要素
+	Text *NoteItemText `json:"text,omitempty"`
+}
+
+// １ユーザーの注釈内の要素群
+type UserNoteItems = []UserNoteItem
+
+// １ユーザーの注釈自身
+type UserNoteOwn struct {
+	// ラベル
+	Label *NoteLabel `json:"label,omitempty"`
+
+	// メモ
+	Memo *NoteMemo `json:"memo"`
+}
+
+// １ユーザーの注釈群
+type UserNotes = []UserNote
+
 // １ユーザーの資格情報
 type UserQualification struct {
 	// 取得日
 	GotDate *QualificationGotDate `json:"gotDate"`
 
+	// メモ
+	Memo *QualificationMemo `json:"memo"`
+
 	// 資格名
 	Name *QualificationName `json:"name,omitempty"`
-
-	// 注釈
-	Note *QualificationNote `json:"note"`
 
 	// 組織名
 	Organization *QualificationOrg `json:"organization"`
@@ -156,6 +201,15 @@ type N200OKGotUserActivities = UserActivities
 // １ユーザーの属性
 type N200OKGotUserAttribute = UserAttribute
 
+// １ユーザーの注釈内の要素群
+type N200OKGotUserNoteItems = UserNoteItems
+
+// １ユーザーの注釈自身
+type N200OKGotUserNoteOwn = UserNoteOwn
+
+// １ユーザーの注釈群
+type N200OKGotUserNotes = UserNotes
+
 // １ユーザーの資格情報群
 type N200OKGotUserQualifications = UserQualifications
 
@@ -171,6 +225,15 @@ type PutUsersUserIdActivitiesJSONBody = UserActivities
 // PutUsersUserIdAttributesJSONBody defines parameters for PutUsersUserIdAttributes.
 type PutUsersUserIdAttributesJSONBody = UserAttribute
 
+// PostUsersUserIdNotesJSONBody defines parameters for PostUsersUserIdNotes.
+type PostUsersUserIdNotesJSONBody = UserNote
+
+// PutUsersUserIdNotesNoteIdJSONBody defines parameters for PutUsersUserIdNotesNoteId.
+type PutUsersUserIdNotesNoteIdJSONBody = UserNoteOwn
+
+// PutUsersUserIdNotesNoteIdItemsJSONBody defines parameters for PutUsersUserIdNotesNoteIdItems.
+type PutUsersUserIdNotesNoteIdItemsJSONBody = UserNoteItems
+
 // PutUsersUserIdQualificationsJSONBody defines parameters for PutUsersUserIdQualifications.
 type PutUsersUserIdQualificationsJSONBody = UserQualifications
 
@@ -182,6 +245,15 @@ type PutUsersUserIdActivitiesJSONRequestBody = PutUsersUserIdActivitiesJSONBody
 
 // PutUsersUserIdAttributesJSONRequestBody defines body for PutUsersUserIdAttributes for application/json ContentType.
 type PutUsersUserIdAttributesJSONRequestBody = PutUsersUserIdAttributesJSONBody
+
+// PostUsersUserIdNotesJSONRequestBody defines body for PostUsersUserIdNotes for application/json ContentType.
+type PostUsersUserIdNotesJSONRequestBody = PostUsersUserIdNotesJSONBody
+
+// PutUsersUserIdNotesNoteIdJSONRequestBody defines body for PutUsersUserIdNotesNoteId for application/json ContentType.
+type PutUsersUserIdNotesNoteIdJSONRequestBody = PutUsersUserIdNotesNoteIdJSONBody
+
+// PutUsersUserIdNotesNoteIdItemsJSONRequestBody defines body for PutUsersUserIdNotesNoteIdItems for application/json ContentType.
+type PutUsersUserIdNotesNoteIdItemsJSONRequestBody = PutUsersUserIdNotesNoteIdItemsJSONBody
 
 // PutUsersUserIdQualificationsJSONRequestBody defines body for PutUsersUserIdQualifications for application/json ContentType.
 type PutUsersUserIdQualificationsJSONRequestBody = PutUsersUserIdQualificationsJSONBody
@@ -206,6 +278,21 @@ type ServerInterface interface {
 	// 属性更新
 	// (PUT /users/{userId}/attributes)
 	PutUsersUserIdAttributes(ctx echo.Context, userId UserId) error
+	// 注釈群取得
+	// (GET /users/{userId}/notes)
+	GetUsersUserIdNotes(ctx echo.Context, userId UserId) error
+	// 注釈新規登録
+	// (POST /users/{userId}/notes)
+	PostUsersUserIdNotes(ctx echo.Context, userId UserId) error
+	// 注釈削除
+	// (DELETE /users/{userId}/notes/{noteId})
+	DeleteUsersUserIdNotesNoteId(ctx echo.Context, userId UserId, noteId NoteId) error
+	// 注釈更新
+	// (PUT /users/{userId}/notes/{noteId})
+	PutUsersUserIdNotesNoteId(ctx echo.Context, userId UserId, noteId NoteId) error
+	// 注釈内要素群更新
+	// (PUT /users/{userId}/notes/{noteId}/items)
+	PutUsersUserIdNotesNoteIdItems(ctx echo.Context, userId UserId, noteId NoteId) error
 	// 資格情報群取得
 	// (GET /users/{userId}/qualifications)
 	GetUsersUserIdQualifications(ctx echo.Context, userId UserId) error
@@ -308,6 +395,110 @@ func (w *ServerInterfaceWrapper) PutUsersUserIdAttributes(ctx echo.Context) erro
 	return err
 }
 
+// GetUsersUserIdNotes converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersUserIdNotes(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetUsersUserIdNotes(ctx, userId)
+	return err
+}
+
+// PostUsersUserIdNotes converts echo context to params.
+func (w *ServerInterfaceWrapper) PostUsersUserIdNotes(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostUsersUserIdNotes(ctx, userId)
+	return err
+}
+
+// DeleteUsersUserIdNotesNoteId converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteUsersUserIdNotesNoteId(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	// ------------- Path parameter "noteId" -------------
+	var noteId NoteId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "noteId", runtime.ParamLocationPath, ctx.Param("noteId"), &noteId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter noteId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.DeleteUsersUserIdNotesNoteId(ctx, userId, noteId)
+	return err
+}
+
+// PutUsersUserIdNotesNoteId converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersUserIdNotesNoteId(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	// ------------- Path parameter "noteId" -------------
+	var noteId NoteId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "noteId", runtime.ParamLocationPath, ctx.Param("noteId"), &noteId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter noteId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PutUsersUserIdNotesNoteId(ctx, userId, noteId)
+	return err
+}
+
+// PutUsersUserIdNotesNoteIdItems converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersUserIdNotesNoteIdItems(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	// ------------- Path parameter "noteId" -------------
+	var noteId NoteId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "noteId", runtime.ParamLocationPath, ctx.Param("noteId"), &noteId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter noteId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PutUsersUserIdNotesNoteIdItems(ctx, userId, noteId)
+	return err
+}
+
 // GetUsersUserIdQualifications converts echo context to params.
 func (w *ServerInterfaceWrapper) GetUsersUserIdQualifications(ctx echo.Context) error {
 	var err error
@@ -374,6 +565,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/users/:userId/activities", wrapper.PutUsersUserIdActivities)
 	router.GET(baseURL+"/users/:userId/attributes", wrapper.GetUsersUserIdAttributes)
 	router.PUT(baseURL+"/users/:userId/attributes", wrapper.PutUsersUserIdAttributes)
+	router.GET(baseURL+"/users/:userId/notes", wrapper.GetUsersUserIdNotes)
+	router.POST(baseURL+"/users/:userId/notes", wrapper.PostUsersUserIdNotes)
+	router.DELETE(baseURL+"/users/:userId/notes/:noteId", wrapper.DeleteUsersUserIdNotesNoteId)
+	router.PUT(baseURL+"/users/:userId/notes/:noteId", wrapper.PutUsersUserIdNotesNoteId)
+	router.PUT(baseURL+"/users/:userId/notes/:noteId/items", wrapper.PutUsersUserIdNotesNoteIdItems)
 	router.GET(baseURL+"/users/:userId/qualifications", wrapper.GetUsersUserIdQualifications)
 	router.PUT(baseURL+"/users/:userId/qualifications", wrapper.PutUsersUserIdQualifications)
 
@@ -382,39 +578,46 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"+f8FAAD//+2gLx1cIgAA",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

@@ -152,6 +152,94 @@ paths:
         "404":
           $ref: "#/components/responses/404-NotFound-NoUser"
 
+  "/users/{userId}/notes":
+    parameters:
+      - $ref: "#/components/parameters/userId"
+    post:
+      summary: "注釈新規登録"
+      description: "注釈を新規登録する。"
+      tags: ["users"]
+      deprecated: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserNote"
+      responses:
+        "201":
+          description: "Created: 注釈を新規登録済み。"
+        "400":
+          $ref: "#/components/responses/400-BadRequest"
+        "404":
+          $ref: "#/components/responses/404-NotFound-NoUser"
+    get:
+      summary: "注釈群取得"
+      description: "指定ユーザーの注釈群を取得する。"
+      tags: ["users"]
+      deprecated: false
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-GotUserNotes"
+        "404":
+          $ref: "#/components/responses/404-NotFound-NoUser"
+
+  "/users/{userId}/notes/{noteId}":
+    parameters:
+      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/noteId"
+    put:
+      summary: "注釈更新"
+      description: "１注釈を更新する。"
+      tags: ["users"]
+      deprecated: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserNoteOwn"
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-GotUserNoteOwn"
+        "400":
+          $ref: "#/components/responses/400-BadRequest"
+        "404":
+          $ref: "#/components/responses/404-NotFound-NoUser"
+    delete:
+      summary: "注釈削除"
+      description: "１注釈を削除する。"
+      tags: ["users"]
+      deprecated: false
+      responses:
+        "204":
+          description: "No Content: 指定注釈の削除に成功。"
+        "404":
+          $ref: "#/components/responses/404-NotFound-NoUser"
+
+  "/users/{userId}/notes/{noteId}/items":
+    parameters:
+      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/noteId"
+    put:
+      summary: "注釈内要素群更新"
+      description: "１注釈内の要素群を更新する。"
+      tags: ["users"]
+      deprecated: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserNoteItems"
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-GotUserNoteItems"
+        "400":
+          $ref: "#/components/responses/400-BadRequest"
+        "404":
+          $ref: "#/components/responses/404-NotFound-NoUser"
+
 components:
   schemas:
     UserId:
@@ -285,12 +373,43 @@ components:
       nullable: true
       deprecated: false
       example: "2022-09-10"
-    QualificationNote:
+    QualificationMemo:
       type: string
-      description: "注釈"
+      description: "メモ"
       nullable: true
       deprecated: false
       example: "期限切れ"
+      maxLength: 400
+    NoteId:
+      type: string
+      description: "注釈を一意に識別するID"
+      nullable: false
+      deprecated: false
+      example: "1"
+      minLength: 20
+      maxLength: 20
+    NoteItemText:
+      type: string
+      description: "注釈内の１要素"
+      nullable: false
+      deprecated: false
+      example: "GraphQLを使っている"
+      minLength: 1
+      maxLength: 400
+    NoteLabel:
+      type: string
+      description: "ラベル"
+      nullable: false
+      deprecated: false
+      example: "就労条件"
+      minLength: 1
+      maxLength: 80
+    NoteMemo:
+      type: string
+      description: "メモ"
+      nullable: true
+      deprecated: false
+      example: "以下、順不同。"
       maxLength: 400
     UserAttribute:
       type: object
@@ -337,13 +456,47 @@ components:
           $ref: "#/components/schemas/Url"
         gotDate:
           $ref: "#/components/schemas/QualificationGotDate"
-        note:
-          $ref: "#/components/schemas/QualificationNote"
+        memo:
+          $ref: "#/components/schemas/QualificationMemo"
     UserQualifications:
       type: array
       description: "１ユーザーの資格情報群"
       items:
         $ref: "#/components/schemas/UserQualification"
+    UserNoteItem:
+      type: object
+      description: "１ユーザーの注釈内の１要素"
+      properties:
+        text:
+          $ref: "#/components/schemas/NoteItemText"
+    UserNoteItems:
+      type: array
+      description: "１ユーザーの注釈内の要素群"
+      items:
+        $ref: "#/components/schemas/UserNoteItem"
+    UserNoteOwn:
+      type: object
+      description: "１ユーザーの注釈自身"
+      properties:
+        label:
+          $ref: "#/components/schemas/NoteLabel"
+        memo:
+          $ref: "#/components/schemas/NoteMemo"
+    UserNote:
+      type: object
+      description: "１ユーザーの注釈"
+      properties:
+        label:
+          $ref: "#/components/schemas/NoteLabel"
+        memo:
+          $ref: "#/components/schemas/NoteMemo"
+        items:
+          $ref: "#/components/schemas/UserNoteItems"
+    UserNotes:
+      type: array
+      description: "１ユーザーの注釈群"
+      items:
+        $ref: "#/components/schemas/UserNote"
     ClientError:
       type: object
       properties:
@@ -365,7 +518,12 @@ components:
       required: true
       schema:
         $ref: "#/components/schemas/UserId"
-      example: "9m4e2mr0ui3e8a215n4g"
+    noteId:
+      name: "noteId"
+      in: "path"
+      required: true
+      schema:
+        $ref: "#/components/schemas/NoteId"
 
   responses:
     200-OK-GotUserAttribute:
@@ -386,6 +544,30 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/UserQualifications"
+    200-OK-GotUserNoteItems:
+      description: "OK: 指定ユーザーの１注釈内の要素群を返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserNoteItems"
+    200-OK-GotUserNoteOwn:
+      description: "OK: 指定ユーザーの注釈自身を返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserNoteOwn"
+    200-OK-GotUserNote:
+      description: "OK: 指定ユーザーの注釈を返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserNote"
+    200-OK-GotUserNotes:
+      description: "OK: 指定ユーザーの注釈群を返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserNotes"
     400-BadRequest:
       description: "Bad Request: 属性に誤りがある。"
       content:
