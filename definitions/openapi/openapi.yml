@@ -21,9 +21,38 @@ tags:
 security: []
 
 paths:
+  "/users":
+    post:
+      summary: "ユーザー新規登録"
+      description: "ユーザーを新規登録する。"
+      tags: ["users"]
+      deprecated: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserAttribute"
+      responses:
+        "201":
+          description: "ユーザーを新規登録済み。"
+        "400":
+          description: "属性情報に誤りがある。"
   "/users/{userId}/attributes":
     parameters:
       - $ref: "#/components/parameters/userId"
+    put:
+      summary: "属性情報更新"
+      description: "氏名や生年月日等の属性情報を更新する。"
+      tags: ["users"]
+      deprecated: false
+      requestBody:
+        description: "属性情報"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserAttribute"
     get:
       summary: "属性情報群取得"
       description: "氏名や生年月日等の属性情報群を取得する。"
@@ -35,9 +64,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/UserAttribute"
+                $ref: "#/components/schemas/UserAttribute"
         "404":
           description: "指定ユーザー自身、または、その属性群が存在しない。"
 
