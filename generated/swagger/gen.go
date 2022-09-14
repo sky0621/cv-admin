@@ -40,6 +40,72 @@ type BirthDay struct {
 	Year *Year `json:"year,omitempty"`
 }
 
+// キャリア説明
+type CareerDescriptions = []string
+
+// キャリアグループを一意に識別するID
+type CareerGroupId = string
+
+// キャリアグループラベル
+type CareerGroupLabel = string
+
+// キャリア名
+type CareerName = string
+
+// キャリア期間年月From
+type CareerPeriodFrom struct {
+	// 生年月日の「月」
+	Month *Month `json:"month,omitempty"`
+
+	// 生年月日の「年」
+	Year *Year `json:"year,omitempty"`
+}
+
+// キャリア期間年月To
+type CareerPeriodTo struct {
+	// 生年月日の「月」
+	Month *Month `json:"month,omitempty"`
+
+	// 生年月日の「年」
+	Year *Year `json:"year,omitempty"`
+}
+
+// １キャリアのスキル
+type CareerSkill struct {
+	// スキル名
+	Name *SkillName `json:"name,omitempty"`
+
+	// URL
+	Url *Url `json:"url"`
+
+	// スキルバージョン
+	Version *SkillVersion `json:"version"`
+}
+
+// CareerSkillGroup defines model for CareerSkillGroup.
+type CareerSkillGroup struct {
+	// １キャリアのスキル群
+	Skills *CareerSkills `json:"skills,omitempty"`
+}
+
+// １キャリアのスキルグループ群
+type CareerSkillGroups = interface{}
+
+// １キャリアのスキル群
+type CareerSkills = interface{}
+
+// １キャリアのタスク
+type CareerTask struct {
+	// タスク説明
+	Description *TaskDescriptions `json:"description"`
+
+	// タスク名
+	Name *TaskName `json:"name,omitempty"`
+}
+
+// １キャリアのタスク群
+type CareerTasks = []CareerTask
+
 // ClientError defines model for ClientError.
 type ClientError struct {
 	Code   *string `json:"code,omitempty"`
@@ -59,6 +125,11 @@ type Job = string
 
 // 生年月日の「月」
 type Month = int32
+
+// NotFoundError defines model for NotFoundError.
+type NotFoundError struct {
+	Message *string `json:"message,omitempty"`
+}
 
 // 注釈を一意に識別するID
 type NoteId = string
@@ -86,6 +157,18 @@ type QualificationName = string
 
 // 組織名
 type QualificationOrg = string
+
+// スキル名
+type SkillName = string
+
+// スキルバージョン
+type SkillVersion = string
+
+// タスク説明
+type TaskDescriptions = []string
+
+// タスク名
+type TaskName = string
 
 // URL
 type Url = string
@@ -128,6 +211,48 @@ type UserAttribute struct {
 	// PR
 	Pr *PR `json:"pr"`
 }
+
+// １キャリアグループのキャリア
+type UserCareer struct {
+	// キャリア説明
+	Description *CareerDescriptions `json:"description"`
+
+	// キャリア期間年月From
+	From *CareerPeriodFrom `json:"from,omitempty"`
+
+	// キャリア名
+	Name *CareerName `json:"name,omitempty"`
+
+	// １キャリアのスキルグループ群
+	SkillGroups *CareerSkillGroups `json:"skillGroups,omitempty"`
+
+	// １キャリアのタスク群
+	Tasks *CareerTasks `json:"tasks,omitempty"`
+
+	// キャリア期間年月To
+	To *CareerPeriodTo `json:"to"`
+}
+
+// １ユーザーのキャリアグループ
+type UserCareerGroup struct {
+	// １ユーザーのキャリアグループのキャリア群
+	Careers *UserCareers `json:"careers,omitempty"`
+
+	// キャリアグループラベル
+	Label *CareerGroupLabel `json:"label,omitempty"`
+}
+
+// １ユーザーのキャリアグループ自身
+type UserCareerGroupOwn struct {
+	// キャリアグループラベル
+	Label *CareerGroupLabel `json:"label,omitempty"`
+}
+
+// １ユーザーのキャリアグループ群
+type UserCareerGroups = []UserCareerGroup
+
+// １ユーザーのキャリアグループのキャリア群
+type UserCareers = []UserCareer
 
 // ユーザーを一意に識別するID
 type UserId = string
@@ -196,25 +321,37 @@ type UserQualifications = []UserQualification
 type Year = int32
 
 // １ユーザーのアクティビティ群
-type N200OKGotUserActivities = UserActivities
+type N200OKUserActivities = UserActivities
 
 // １ユーザーの属性
-type N200OKGotUserAttribute = UserAttribute
+type N200OKUserAttribute = UserAttribute
+
+// １ユーザーのキャリアグループ自身
+type N200OKUserCareerGroupOwn = UserCareerGroupOwn
+
+// １ユーザーのキャリアグループ群
+type N200OKUserCareerGroups = UserCareerGroups
+
+// １ユーザーのキャリアグループのキャリア群
+type N200OKUserCareers = UserCareers
 
 // １ユーザーの注釈内の要素群
-type N200OKGotUserNoteItems = UserNoteItems
+type N200OKUserNoteItems = UserNoteItems
 
 // １ユーザーの注釈自身
-type N200OKGotUserNoteOwn = UserNoteOwn
+type N200OKUserNoteOwn = UserNoteOwn
 
 // １ユーザーの注釈群
-type N200OKGotUserNotes = UserNotes
+type N200OKUserNotes = UserNotes
 
 // １ユーザーの資格情報群
-type N200OKGotUserQualifications = UserQualifications
+type N200OKUserQualifications = UserQualifications
 
 // N400BadRequest defines model for 400-BadRequest.
 type N400BadRequest = ClientError
+
+// N404NotFound defines model for 404-NotFound.
+type N404NotFound = NotFoundError
 
 // PostUsersJSONBody defines parameters for PostUsers.
 type PostUsersJSONBody = UserAttribute
@@ -224,6 +361,15 @@ type PutUsersUserIdActivitiesJSONBody = UserActivities
 
 // PutUsersUserIdAttributesJSONBody defines parameters for PutUsersUserIdAttributes.
 type PutUsersUserIdAttributesJSONBody = UserAttribute
+
+// PostUsersUserIdCareergroupsJSONBody defines parameters for PostUsersUserIdCareergroups.
+type PostUsersUserIdCareergroupsJSONBody = UserCareerGroup
+
+// PutUsersUserIdCareergroupsCareerGroupIdJSONBody defines parameters for PutUsersUserIdCareergroupsCareerGroupId.
+type PutUsersUserIdCareergroupsCareerGroupIdJSONBody = UserCareerGroupOwn
+
+// PutUsersUserIdCareergroupsCareerGroupIdCareersJSONBody defines parameters for PutUsersUserIdCareergroupsCareerGroupIdCareers.
+type PutUsersUserIdCareergroupsCareerGroupIdCareersJSONBody = UserCareers
 
 // PostUsersUserIdNotesJSONBody defines parameters for PostUsersUserIdNotes.
 type PostUsersUserIdNotesJSONBody = UserNote
@@ -245,6 +391,15 @@ type PutUsersUserIdActivitiesJSONRequestBody = PutUsersUserIdActivitiesJSONBody
 
 // PutUsersUserIdAttributesJSONRequestBody defines body for PutUsersUserIdAttributes for application/json ContentType.
 type PutUsersUserIdAttributesJSONRequestBody = PutUsersUserIdAttributesJSONBody
+
+// PostUsersUserIdCareergroupsJSONRequestBody defines body for PostUsersUserIdCareergroups for application/json ContentType.
+type PostUsersUserIdCareergroupsJSONRequestBody = PostUsersUserIdCareergroupsJSONBody
+
+// PutUsersUserIdCareergroupsCareerGroupIdJSONRequestBody defines body for PutUsersUserIdCareergroupsCareerGroupId for application/json ContentType.
+type PutUsersUserIdCareergroupsCareerGroupIdJSONRequestBody = PutUsersUserIdCareergroupsCareerGroupIdJSONBody
+
+// PutUsersUserIdCareergroupsCareerGroupIdCareersJSONRequestBody defines body for PutUsersUserIdCareergroupsCareerGroupIdCareers for application/json ContentType.
+type PutUsersUserIdCareergroupsCareerGroupIdCareersJSONRequestBody = PutUsersUserIdCareergroupsCareerGroupIdCareersJSONBody
 
 // PostUsersUserIdNotesJSONRequestBody defines body for PostUsersUserIdNotes for application/json ContentType.
 type PostUsersUserIdNotesJSONRequestBody = PostUsersUserIdNotesJSONBody
@@ -269,7 +424,7 @@ type ServerInterface interface {
 	// アクティビティ群取得
 	// (GET /users/{userId}/activities)
 	GetUsersUserIdActivities(ctx echo.Context, userId UserId) error
-	// アクティビティ群更新
+	// アクティビティ群最新化
 	// (PUT /users/{userId}/activities)
 	PutUsersUserIdActivities(ctx echo.Context, userId UserId) error
 	// 属性取得
@@ -278,6 +433,21 @@ type ServerInterface interface {
 	// 属性更新
 	// (PUT /users/{userId}/attributes)
 	PutUsersUserIdAttributes(ctx echo.Context, userId UserId) error
+	// キャリアグループ群取得
+	// (GET /users/{userId}/careergroups)
+	GetUsersUserIdCareergroups(ctx echo.Context, userId UserId) error
+	// キャリアグループ新規登録
+	// (POST /users/{userId}/careergroups)
+	PostUsersUserIdCareergroups(ctx echo.Context, userId UserId) error
+	// キャリアグループ削除
+	// (DELETE /users/{userId}/careergroups/{careerGroupId})
+	DeleteUsersUserIdCareergroupsCareerGroupId(ctx echo.Context, userId UserId, careerGroupId CareerGroupId) error
+	// キャリアグループ更新
+	// (PUT /users/{userId}/careergroups/{careerGroupId})
+	PutUsersUserIdCareergroupsCareerGroupId(ctx echo.Context, userId UserId, careerGroupId CareerGroupId) error
+	// キャリアグループ内キャリア群最新化
+	// (PUT /users/{userId}/careergroups/{careerGroupId}/careers)
+	PutUsersUserIdCareergroupsCareerGroupIdCareers(ctx echo.Context, userId UserId, careerGroupId CareerGroupId) error
 	// 注釈群取得
 	// (GET /users/{userId}/notes)
 	GetUsersUserIdNotes(ctx echo.Context, userId UserId) error
@@ -290,13 +460,13 @@ type ServerInterface interface {
 	// 注釈更新
 	// (PUT /users/{userId}/notes/{noteId})
 	PutUsersUserIdNotesNoteId(ctx echo.Context, userId UserId, noteId NoteId) error
-	// 注釈内要素群更新
+	// 注釈内要素群最新化
 	// (PUT /users/{userId}/notes/{noteId}/items)
 	PutUsersUserIdNotesNoteIdItems(ctx echo.Context, userId UserId, noteId NoteId) error
 	// 資格情報群取得
 	// (GET /users/{userId}/qualifications)
 	GetUsersUserIdQualifications(ctx echo.Context, userId UserId) error
-	// 資格情報群更新
+	// 資格情報群最新化
 	// (PUT /users/{userId}/qualifications)
 	PutUsersUserIdQualifications(ctx echo.Context, userId UserId) error
 }
@@ -392,6 +562,110 @@ func (w *ServerInterfaceWrapper) PutUsersUserIdAttributes(ctx echo.Context) erro
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.PutUsersUserIdAttributes(ctx, userId)
+	return err
+}
+
+// GetUsersUserIdCareergroups converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersUserIdCareergroups(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetUsersUserIdCareergroups(ctx, userId)
+	return err
+}
+
+// PostUsersUserIdCareergroups converts echo context to params.
+func (w *ServerInterfaceWrapper) PostUsersUserIdCareergroups(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostUsersUserIdCareergroups(ctx, userId)
+	return err
+}
+
+// DeleteUsersUserIdCareergroupsCareerGroupId converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteUsersUserIdCareergroupsCareerGroupId(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	// ------------- Path parameter "careerGroupId" -------------
+	var careerGroupId CareerGroupId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "careerGroupId", runtime.ParamLocationPath, ctx.Param("careerGroupId"), &careerGroupId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter careerGroupId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.DeleteUsersUserIdCareergroupsCareerGroupId(ctx, userId, careerGroupId)
+	return err
+}
+
+// PutUsersUserIdCareergroupsCareerGroupId converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersUserIdCareergroupsCareerGroupId(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	// ------------- Path parameter "careerGroupId" -------------
+	var careerGroupId CareerGroupId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "careerGroupId", runtime.ParamLocationPath, ctx.Param("careerGroupId"), &careerGroupId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter careerGroupId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PutUsersUserIdCareergroupsCareerGroupId(ctx, userId, careerGroupId)
+	return err
+}
+
+// PutUsersUserIdCareergroupsCareerGroupIdCareers converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersUserIdCareergroupsCareerGroupIdCareers(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "userId" -------------
+	var userId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+	}
+
+	// ------------- Path parameter "careerGroupId" -------------
+	var careerGroupId CareerGroupId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "careerGroupId", runtime.ParamLocationPath, ctx.Param("careerGroupId"), &careerGroupId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter careerGroupId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PutUsersUserIdCareergroupsCareerGroupIdCareers(ctx, userId, careerGroupId)
 	return err
 }
 
@@ -565,6 +839,11 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.PUT(baseURL+"/users/:userId/activities", wrapper.PutUsersUserIdActivities)
 	router.GET(baseURL+"/users/:userId/attributes", wrapper.GetUsersUserIdAttributes)
 	router.PUT(baseURL+"/users/:userId/attributes", wrapper.PutUsersUserIdAttributes)
+	router.GET(baseURL+"/users/:userId/careergroups", wrapper.GetUsersUserIdCareergroups)
+	router.POST(baseURL+"/users/:userId/careergroups", wrapper.PostUsersUserIdCareergroups)
+	router.DELETE(baseURL+"/users/:userId/careergroups/:careerGroupId", wrapper.DeleteUsersUserIdCareergroupsCareerGroupId)
+	router.PUT(baseURL+"/users/:userId/careergroups/:careerGroupId", wrapper.PutUsersUserIdCareergroupsCareerGroupId)
+	router.PUT(baseURL+"/users/:userId/careergroups/:careerGroupId/careers", wrapper.PutUsersUserIdCareergroupsCareerGroupIdCareers)
 	router.GET(baseURL+"/users/:userId/notes", wrapper.GetUsersUserIdNotes)
 	router.POST(baseURL+"/users/:userId/notes", wrapper.PostUsersUserIdNotes)
 	router.DELETE(baseURL+"/users/:userId/notes/:noteId", wrapper.DeleteUsersUserIdNotesNoteId)
@@ -578,46 +857,61 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"dPT4xEH2S3g6qJ+s/ycAAP//0JrCNDFQAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

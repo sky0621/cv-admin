@@ -45,7 +45,6 @@
 　　　・name（名前）
 　　　・url（URL）※任意
 　　　・version（バージョン）※任意
-　　　・relatedTask（紐付けタスク）
 
 　　・技術グループ（SkillGroup）
 　　　・label（ラベル）※任意
@@ -53,15 +52,12 @@
 　　・担当タスク（Task）
 　　　・name（名前）
 　　　・detail（詳細）※任意
-　　　・from（期間From）
-　　　・to（期間To）
-
-　　・担当タスクグループ（TaskGroup）
-　　　・label（ラベル）※任意
 
 　　・キャリア（Career）
 　　　・name（名前）
 　　　・description（説明）※任意
+　　　・from（期間From）
+　　　・to（期間To）
 
 　　・キャリアグループ（CareerGroup）
 　　　・label（ラベル）

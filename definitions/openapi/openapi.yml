@@ -51,7 +51,7 @@ paths:
         "204":
           description: "No Content: 指定ユーザーの削除に成功。"
         "404":
-          $ref: "#/components/responses/404-NotFound-NoUser"
+          $ref: "#/components/responses/404-NotFound"
 
   "/users/{userId}/attributes":
     parameters:
@@ -70,11 +70,11 @@ paths:
               $ref: "#/components/schemas/UserAttribute"
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-GotUserAttribute"
+          $ref: "#/components/responses/200-OK-UserAttribute"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
-          $ref: "#/components/responses/404-NotFound-NoUser"
+          $ref: "#/components/responses/404-NotFound"
     get:
       summary: "属性取得"
       description: "指定ユーザーの属性を取得する。"
@@ -82,16 +82,16 @@ paths:
       deprecated: false
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-GotUserAttribute"
+          $ref: "#/components/responses/200-OK-UserAttribute"
         "404":
-          $ref: "#/components/responses/404-NotFound-NoUser"
+          $ref: "#/components/responses/404-NotFound"
 
   "/users/{userId}/activities":
     parameters:
       - $ref: "#/components/parameters/userId"
     put:
-      summary: "アクティビティ群更新"
-      description: "指定ユーザーのアクティビティ群を更新する。"
+      summary: "アクティビティ群最新化"
+      description: "指定ユーザーのアクティビティ群を最新化（総洗い替え）する。"
       tags: ["users"]
       deprecated: false
       requestBody:
@@ -103,11 +103,11 @@ paths:
               $ref: "#/components/schemas/UserActivities"
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-GotUserActivities"
+          $ref: "#/components/responses/200-OK-UserActivities"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
-          $ref: "#/components/responses/404-NotFound-NoUser"
+          $ref: "#/components/responses/404-NotFound"
     get:
       summary: "アクティビティ群取得"
       description: "指定ユーザーのアクティビティ群を取得する。"
@@ -115,16 +115,16 @@ paths:
       deprecated: false
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-GotUserActivities"
+          $ref: "#/components/responses/200-OK-UserActivities"
         "404":
-          $ref: "#/components/responses/404-NotFound-NoUser"
+          $ref: "#/components/responses/404-NotFound"
 
   "/users/{userId}/qualifications":
     parameters:
       - $ref: "#/components/parameters/userId"
     put:
-      summary: "資格情報群更新"
-      description: "指定ユーザーの資格情報群を更新する。"
+      summary: "資格情報群最新化"
+      description: "指定ユーザーの資格情報群を最新化（総洗い替え）する。"
       tags: ["users"]
       deprecated: false
       requestBody:
@@ -136,11 +136,11 @@ paths:
               $ref: "#/components/schemas/UserQualifications"
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-GotUserQualifications"
+          $ref: "#/components/responses/200-OK-UserQualifications"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
-          $ref: "#/components/responses/404-NotFound-NoUser"
+          $ref: "#/components/responses/404-NotFound"
     get:
       summary: "資格情報群取得"
       description: "指定ユーザーの資格情報群を取得する。"
@@ -148,9 +148,97 @@ paths:
       deprecated: false
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-GotUserQualifications"
+          $ref: "#/components/responses/200-OK-UserQualifications"
         "404":
-          $ref: "#/components/responses/404-NotFound-NoUser"
+          $ref: "#/components/responses/404-NotFound"
+
+  "/users/{userId}/careergroups":
+    parameters:
+      - $ref: "#/components/parameters/userId"
+    post:
+      summary: "キャリアグループ新規登録"
+      description: "キャリアグループを新規登録する。"
+      tags: ["users"]
+      deprecated: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCareerGroup"
+      responses:
+        "201":
+          description: "Created: キャリアグループを新規登録済み。"
+        "400":
+          $ref: "#/components/responses/400-BadRequest"
+        "404":
+          $ref: "#/components/responses/404-NotFound"
+    get:
+      summary: "キャリアグループ群取得"
+      description: "指定ユーザーのキャリアグループ群を取得する。"
+      tags: ["users"]
+      deprecated: false
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-UserCareerGroups"
+        "404":
+          $ref: "#/components/responses/404-NotFound"
+
+  "/users/{userId}/careergroups/{careerGroupId}":
+    parameters:
+      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/careerGroupId"
+    put:
+      summary: "キャリアグループ更新"
+      description: "１キャリアグループを更新する。"
+      tags: ["users"]
+      deprecated: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCareerGroupOwn"
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-UserCareerGroupOwn"
+        "400":
+          $ref: "#/components/responses/400-BadRequest"
+        "404":
+          $ref: "#/components/responses/404-NotFound"
+    delete:
+      summary: "キャリアグループ削除"
+      description: "１キャリアグループを削除する。"
+      tags: ["users"]
+      deprecated: false
+      responses:
+        "204":
+          description: "No Content: 指定キャリアグループの削除に成功。"
+        "404":
+          $ref: "#/components/responses/404-NotFound"
+
+  "/users/{userId}/careergroups/{careerGroupId}/careers":
+    parameters:
+      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/careerGroupId"
+    put:
+      summary: "キャリアグループ内キャリア群最新化"
+      description: "１キャリアグループ内のキャリア群を最新化（総洗い替え）する。"
+      tags: ["users"]
+      deprecated: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCareers"
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-UserCareers"
+        "400":
+          $ref: "#/components/responses/400-BadRequest"
+        "404":
+          $ref: "#/components/responses/404-NotFound"
 
   "/users/{userId}/notes":
     parameters:
@@ -172,7 +260,7 @@ paths:
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
-          $ref: "#/components/responses/404-NotFound-NoUser"
+          $ref: "#/components/responses/404-NotFound"
     get:
       summary: "注釈群取得"
       description: "指定ユーザーの注釈群を取得する。"
@@ -180,9 +268,9 @@ paths:
       deprecated: false
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-GotUserNotes"
+          $ref: "#/components/responses/200-OK-UserNotes"
         "404":
-          $ref: "#/components/responses/404-NotFound-NoUser"
+          $ref: "#/components/responses/404-NotFound"
 
   "/users/{userId}/notes/{noteId}":
     parameters:
@@ -201,11 +289,11 @@ paths:
               $ref: "#/components/schemas/UserNoteOwn"
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-GotUserNoteOwn"
+          $ref: "#/components/responses/200-OK-UserNoteOwn"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
-          $ref: "#/components/responses/404-NotFound-NoUser"
+          $ref: "#/components/responses/404-NotFound"
     delete:
       summary: "注釈削除"
       description: "１注釈を削除する。"
@@ -215,15 +303,15 @@ paths:
         "204":
           description: "No Content: 指定注釈の削除に成功。"
         "404":
-          $ref: "#/components/responses/404-NotFound-NoUser"
+          $ref: "#/components/responses/404-NotFound"
 
   "/users/{userId}/notes/{noteId}/items":
     parameters:
       - $ref: "#/components/parameters/userId"
       - $ref: "#/components/parameters/noteId"
     put:
-      summary: "注釈内要素群更新"
-      description: "１注釈内の要素群を更新する。"
+      summary: "注釈内要素群最新化"
+      description: "１注釈内の要素群を最新化（総洗い替え）する。"
       tags: ["users"]
       deprecated: false
       requestBody:
@@ -234,11 +322,11 @@ paths:
               $ref: "#/components/schemas/UserNoteItems"
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-GotUserNoteItems"
+          $ref: "#/components/responses/200-OK-UserNoteItems"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
-          $ref: "#/components/responses/404-NotFound-NoUser"
+          $ref: "#/components/responses/404-NotFound"
 
 components:
   schemas:
@@ -380,14 +468,103 @@ components:
       deprecated: false
       example: "期限切れ"
       maxLength: 400
+    CareerName:
+      type: string
+      description: "キャリア名"
+      nullable: false
+      deprecated: false
+      example: "物流システム開発"
+      minLength: 1
+      maxLength: 100
+    CareerDescriptions:
+      type: array
+      description: "キャリア説明"
+      nullable: true
+      deprecated: false
+      example: "['物流システムを新規開発する。']"
+      maxLength: 400
+      items:
+        type: string
+        description: "キャリア説明１文"
+        nullable: false
+        deprecated: false
+        example: "物流システムを新規開発する。"
+        minLength: 1
+        maxLength: 80
+    CareerPeriodFrom:
+      type: object
+      description: "キャリア期間年月From"
+      nullable: false
+      deprecated: false
+      example: "{year: 2021, month: 9}"
+      properties:
+        year:
+          $ref: "#/components/schemas/Year"
+        month:
+          $ref: "#/components/schemas/Month"
+    CareerPeriodTo:
+      type: object
+      description: "キャリア期間年月To"
+      nullable: true
+      deprecated: false
+      example: "{year: 2022, month: 10}"
+      properties:
+        year:
+          $ref: "#/components/schemas/Year"
+        month:
+          $ref: "#/components/schemas/Month"
+    CareerGroupLabel:
+      type: string
+      description: "キャリアグループラベル"
+      nullable: false
+      deprecated: false
+      example: "某コンサルティング会社にて就労"
+      minLength: 1
+      maxLength: 100
+    TaskName:
+      type: string
+      description: "タスク名"
+      nullable: false
+      deprecated: false
+      example: "バックエンドの機能拡張、不具合改修。"
+      minLength: 1
+      maxLength: 100
+    TaskDescriptions:
+      type: array
+      description: "タスク説明"
+      nullable: true
+      deprecated: false
+      example: "['・分析APIのベース開発', '・各種バッチ開発']"
+      maxLength: 400
+      items:
+        type: string
+        description: "タスク説明１文"
+        nullable: false
+        deprecated: false
+        example: "・分析APIのベース開発"
+        minLength: 1
+        maxLength: 80
+    SkillName:
+      type: string
+      description: "スキル名"
+      nullable: false
+      deprecated: false
+      example: "Golang"
+      minLength: 1
+      maxLength: 100
+    SkillVersion:
+      type: string
+      description: "スキルバージョン"
+      nullable: true
+      deprecated: false
+      example: "v1.19"
+      maxLength: 40
     NoteId:
       type: string
       description: "注釈を一意に識別するID"
       nullable: false
       deprecated: false
       example: "1"
-      minLength: 20
-      maxLength: 20
     NoteItemText:
       type: string
       description: "注釈内の１要素"
@@ -463,6 +640,88 @@ components:
       description: "１ユーザーの資格情報群"
       items:
         $ref: "#/components/schemas/UserQualification"
+    CareerTask:
+      type: object
+      description: "１キャリアのタスク"
+      properties:
+        name:
+          $ref: "#/components/schemas/TaskName"
+        description:
+          $ref: "#/components/schemas/TaskDescriptions"
+    CareerTasks:
+      type: array
+      description: "１キャリアのタスク群"
+      items:
+        $ref: "#/components/schemas/CareerTask"
+    CareerSkill:
+      type: object
+      description: "１キャリアのスキル"
+      properties:
+        name:
+          $ref: "#/components/schemas/SkillName"
+        url:
+          $ref: "#/components/schemas/Url"
+        version:
+          $ref: "#/components/schemas/SkillVersion"
+    CareerSkills:
+      description: "１キャリアのスキル群"
+      items:
+        $ref: "#/components/schemas/CareerSkill"
+    CareerGroupId:
+      type: string
+      description: "キャリアグループを一意に識別するID"
+      nullable: false
+      deprecated: false
+      example: "1"
+    CareerSkillGroup:
+      type: object
+      properties:
+        skills:
+          $ref: "#/components/schemas/CareerSkills"
+    CareerSkillGroups:
+      description: "１キャリアのスキルグループ群"
+      items:
+        $ref: "#/components/schemas/CareerSkillGroup"
+    UserCareer:
+      type: object
+      description: "１キャリアグループのキャリア"
+      properties:
+        name:
+          $ref: "#/components/schemas/CareerName"
+        description:
+          $ref: "#/components/schemas/CareerDescriptions"
+        from:
+          $ref: "#/components/schemas/CareerPeriodFrom"
+        to:
+          $ref: "#/components/schemas/CareerPeriodTo"
+        tasks:
+          $ref: "#/components/schemas/CareerTasks"
+        skillGroups:
+          $ref: "#/components/schemas/CareerSkillGroups"
+    UserCareers:
+      type: array
+      description: "１ユーザーのキャリアグループのキャリア群"
+      items:
+        $ref: "#/components/schemas/UserCareer"
+    UserCareerGroup:
+      type: object
+      description: "１ユーザーのキャリアグループ"
+      properties:
+        label:
+          $ref: "#/components/schemas/CareerGroupLabel"
+        careers:
+          $ref: "#/components/schemas/UserCareers"
+    UserCareerGroups:
+      type: array
+      description: "１ユーザーのキャリアグループ群"
+      items:
+        $ref: "#/components/schemas/UserCareerGroup"
+    UserCareerGroupOwn:
+      type: object
+      description: "１ユーザーのキャリアグループ自身"
+      properties:
+        label:
+          $ref: "#/components/schemas/CareerGroupLabel"
     UserNoteItem:
       type: object
       description: "１ユーザーの注釈内の１要素"
@@ -510,6 +769,10 @@ components:
             properties:
               field: { type: string }
               code: { type: string }
+    NotFoundError:
+      type: object
+      properties:
+        message: { type: string }
 
   parameters:
     userId:
@@ -524,45 +787,69 @@ components:
       required: true
       schema:
         $ref: "#/components/schemas/NoteId"
+    careerGroupId:
+      name: "careerGroupId"
+      in: "path"
+      required: true
+      schema:
+        $ref: "#/components/schemas/CareerGroupId"
 
   responses:
-    200-OK-GotUserAttribute:
+    200-OK-UserAttribute:
       description: "OK: 指定ユーザーの属性を返却する。"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/UserAttribute"
-    200-OK-GotUserActivities:
+    200-OK-UserActivities:
       description: "OK: 指定ユーザーのアクティビティ群を返却する。"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/UserActivities"
-    200-OK-GotUserQualifications:
+    200-OK-UserQualifications:
       description: "OK: 指定ユーザーの資格情報群を返却する。"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/UserQualifications"
-    200-OK-GotUserNoteItems:
+    200-OK-UserCareers:
+      description: "OK: 指定ユーザーの１キャリアグループ内のキャリア群を返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserCareers"
+    200-OK-UserCareerGroups:
+      description: "OK: 指定ユーザーのキャリアグループ群を返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserCareerGroups"
+    200-OK-UserCareerGroupOwn:
+      description: "OK: 指定ユーザーのキャリアグループ自身を返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserCareerGroupOwn"
+    200-OK-UserNoteItems:
       description: "OK: 指定ユーザーの１注釈内の要素群を返却する。"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/UserNoteItems"
-    200-OK-GotUserNoteOwn:
+    200-OK-UserNoteOwn:
       description: "OK: 指定ユーザーの注釈自身を返却する。"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/UserNoteOwn"
-    200-OK-GotUserNote:
+    200-OK-UserNote:
       description: "OK: 指定ユーザーの注釈を返却する。"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/UserNote"
-    200-OK-GotUserNotes:
+    200-OK-UserNotes:
       description: "OK: 指定ユーザーの注釈群を返却する。"
       content:
         application/json:
@@ -574,5 +861,9 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ClientError"
-    404-NotFound-NoUser:
-      description: "Not Found: 指定ユーザーが存在しない。"
+    404-NotFound:
+      description: "Not Found: 指定リソースが存在しない。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NotFoundError"
