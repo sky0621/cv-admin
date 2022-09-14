@@ -559,6 +559,13 @@ components:
       deprecated: false
       example: "v1.19"
       maxLength: 40
+    SkillGroupLabel:
+      type: string
+      description: "スキルグループラベル"
+      nullable: true
+      deprecated: false
+      example: "Backend"
+      maxLength: 100
     NoteId:
       type: string
       description: "注釈を一意に識別するID"
@@ -676,6 +683,8 @@ components:
     CareerSkillGroup:
       type: object
       properties:
+        label:
+          $ref: "#/components/schemas/SkillGroupLabel"
         skills:
           $ref: "#/components/schemas/CareerSkills"
     CareerSkillGroups:

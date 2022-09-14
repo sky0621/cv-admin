@@ -5,7 +5,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/sky0621/cv-admin/generated/swagger"
+	"github.com/sky0621/cv-admin/src/interfaces/swagger"
 )
 
 type ServerImpl struct {
