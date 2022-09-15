@@ -5,8 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/sky0621/cv-admin/src/adapters/controllers/rest"
-	"github.com/sky0621/cv-admin/src/interfaces/swagger"
+	"github.com/sky0621/cv-admin/src/adapter/controller/rest"
+	"github.com/sky0621/cv-admin/src/adapter/controller/swagger"
 )
 
 func main() {
