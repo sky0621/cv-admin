@@ -1,4 +1,4 @@
 #!/bin/bash -e
 
-cd ../src/adapter/gateway
+cd ../src
 go generate ./ent

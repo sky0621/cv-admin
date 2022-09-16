@@ -7,9 +7,9 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/sky0621/cv-admin/src/adapter/controller/rest"
-	"github.com/sky0621/cv-admin/src/adapter/controller/swagger"
-
+	"github.com/sky0621/cv-admin/src/driver"
+	"github.com/sky0621/cv-admin/src/rest"
+	"github.com/sky0621/cv-admin/src/swagger"
 	"github.com/spf13/cobra"
 )
 
@@ -24,10 +24,20 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		si := &rest.ServerImpl{}
+		/*
+		 * DB
+		 */
+		dbClient, closeFunc := driver.MustNewClient()
+		defer closeFunc()
+
+		/*
+		 * API Server
+		 */
 		e := echo.New()
-		swagger.RegisterHandlers(e, si)
-		http.ListenAndServe(":3000", e)
+		swagger.RegisterHandlers(e, rest.NewRESTService(dbClient))
+		if err := http.ListenAndServe(":3000", e); err != nil {
+			panic(err)
+		}
 	},
 }
 

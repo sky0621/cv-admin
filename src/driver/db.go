@@ -2,7 +2,7 @@ package driver
 
 import (
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/sky0621/cv-admin/src/adapter/gateway/ent"
+	"github.com/sky0621/cv-admin/src/ent"
 )
 
 type CloseDBClientFunc = func()
