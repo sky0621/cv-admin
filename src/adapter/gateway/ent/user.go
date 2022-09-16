@@ -5,16 +5,22 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/google/uuid"
 	"github.com/sky0621/cv-admin/src/adapter/gateway/ent/user"
 )
 
 // User is the model entity for the User schema.
 type User struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID uuid.UUID `json:"id,omitempty"`
+	// CreateTime holds the value of the "create_time" field.
+	CreateTime time.Time `json:"create_time,omitempty"`
+	// UpdateTime holds the value of the "update_time" field.
+	UpdateTime time.Time `json:"update_time,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -22,8 +28,10 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case user.FieldCreateTime, user.FieldUpdateTime:
+			values[i] = new(sql.NullTime)
 		case user.FieldID:
-			values[i] = new(sql.NullInt64)
+			values[i] = new(uuid.UUID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type User", columns[i])
 		}
@@ -40,11 +48,23 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case user.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*uuid.UUID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				u.ID = *value
 			}
-			u.ID = int(value.Int64)
+		case user.FieldCreateTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field create_time", values[i])
+			} else if value.Valid {
+				u.CreateTime = value.Time
+			}
+		case user.FieldUpdateTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field update_time", values[i])
+			} else if value.Valid {
+				u.UpdateTime = value.Time
+			}
 		}
 	}
 	return nil
@@ -72,7 +92,12 @@ func (u *User) Unwrap() *User {
 func (u *User) String() string {
 	var builder strings.Builder
 	builder.WriteString("User(")
-	builder.WriteString(fmt.Sprintf("id=%v", u.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", u.ID))
+	builder.WriteString("create_time=")
+	builder.WriteString(u.CreateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("update_time=")
+	builder.WriteString(u.UpdateTime.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

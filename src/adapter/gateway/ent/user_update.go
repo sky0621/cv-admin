@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -27,6 +28,12 @@ func (uu *UserUpdate) Where(ps ...predicate.User) *UserUpdate {
 	return uu
 }
 
+// SetUpdateTime sets the "update_time" field.
+func (uu *UserUpdate) SetUpdateTime(t time.Time) *UserUpdate {
+	uu.mutation.SetUpdateTime(t)
+	return uu
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -38,6 +45,7 @@ func (uu *UserUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	uu.defaults()
 	if len(uu.hooks) == 0 {
 		affected, err = uu.sqlSave(ctx)
 	} else {
@@ -86,13 +94,21 @@ func (uu *UserUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (uu *UserUpdate) defaults() {
+	if _, ok := uu.mutation.UpdateTime(); !ok {
+		v := user.UpdateDefaultUpdateTime()
+		uu.mutation.SetUpdateTime(v)
+	}
+}
+
 func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   user.Table,
 			Columns: user.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: user.FieldID,
 			},
 		},
@@ -103,6 +119,13 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := uu.mutation.UpdateTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: user.FieldUpdateTime,
+		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -123,6 +146,12 @@ type UserUpdateOne struct {
 	mutation *UserMutation
 }
 
+// SetUpdateTime sets the "update_time" field.
+func (uuo *UserUpdateOne) SetUpdateTime(t time.Time) *UserUpdateOne {
+	uuo.mutation.SetUpdateTime(t)
+	return uuo
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -141,6 +170,7 @@ func (uuo *UserUpdateOne) Save(ctx context.Context) (*User, error) {
 		err  error
 		node *User
 	)
+	uuo.defaults()
 	if len(uuo.hooks) == 0 {
 		node, err = uuo.sqlSave(ctx)
 	} else {
@@ -195,13 +225,21 @@ func (uuo *UserUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (uuo *UserUpdateOne) defaults() {
+	if _, ok := uuo.mutation.UpdateTime(); !ok {
+		v := user.UpdateDefaultUpdateTime()
+		uuo.mutation.SetUpdateTime(v)
+	}
+}
+
 func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
 			Table:   user.Table,
 			Columns: user.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeUUID,
 				Column: user.FieldID,
 			},
 		},
@@ -229,6 +267,13 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := uuo.mutation.UpdateTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: user.FieldUpdateTime,
+		})
 	}
 	_node = &User{config: uuo.config}
 	_spec.Assign = _node.assignValues

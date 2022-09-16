@@ -39,9 +39,9 @@ paths:
         "400":
           $ref: "#/components/responses/400-BadRequest"
 
-  "/users/{userId}":
+  "/users/{byUserKey}":
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/userKey"
     delete:
       summary: "指定ユーザー削除"
       description: "指定ユーザーを削除する。"
@@ -53,9 +53,9 @@ paths:
         "404":
           $ref: "#/components/responses/404-NotFound"
 
-  "/users/{userId}/attributes":
+  "/users/{byUserKey}/attributes":
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/userKey"
     put:
       summary: "属性更新"
       description: "指定ユーザーの属性を更新する。"
@@ -86,9 +86,9 @@ paths:
         "404":
           $ref: "#/components/responses/404-NotFound"
 
-  "/users/{userId}/activities":
+  "/users/{byUserKey}/activities":
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/userKey"
     put:
       summary: "アクティビティ群最新化"
       description: "指定ユーザーのアクティビティ群を最新化（総洗い替え）する。"
@@ -119,9 +119,9 @@ paths:
         "404":
           $ref: "#/components/responses/404-NotFound"
 
-  "/users/{userId}/qualifications":
+  "/users/{byUserKey}/qualifications":
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/userKey"
     put:
       summary: "資格情報群最新化"
       description: "指定ユーザーの資格情報群を最新化（総洗い替え）する。"
@@ -152,9 +152,9 @@ paths:
         "404":
           $ref: "#/components/responses/404-NotFound"
 
-  "/users/{userId}/careergroups":
+  "/users/{byUserKey}/careergroups":
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/userKey"
     post:
       summary: "キャリアグループ新規登録"
       description: "キャリアグループを新規登録する。"
@@ -184,9 +184,9 @@ paths:
         "404":
           $ref: "#/components/responses/404-NotFound"
 
-  "/users/{userId}/careergroups/{careerGroupId}":
+  "/users/{byUserKey}/careergroups/{byCid}":
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/userKey"
       - $ref: "#/components/parameters/careerGroupId"
     put:
       summary: "キャリアグループ更新"
@@ -217,9 +217,9 @@ paths:
         "404":
           $ref: "#/components/responses/404-NotFound"
 
-  "/users/{userId}/careergroups/{careerGroupId}/careers":
+  "/users/{byUserKey}/careergroups/{byCid}/careers":
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/userKey"
       - $ref: "#/components/parameters/careerGroupId"
     put:
       summary: "キャリアグループ内キャリア群最新化"
@@ -240,9 +240,9 @@ paths:
         "404":
           $ref: "#/components/responses/404-NotFound"
 
-  "/users/{userId}/notes":
+  "/users/{byUserKey}/notes":
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/userKey"
     post:
       summary: "注釈新規登録"
       description: "注釈を新規登録する。"
@@ -272,9 +272,9 @@ paths:
         "404":
           $ref: "#/components/responses/404-NotFound"
 
-  "/users/{userId}/notes/{noteId}":
+  "/users/{byUserKey}/notes/{byNid}":
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/userKey"
       - $ref: "#/components/parameters/noteId"
     put:
       summary: "注釈更新"
@@ -305,9 +305,9 @@ paths:
         "404":
           $ref: "#/components/responses/404-NotFound"
 
-  "/users/{userId}/notes/{noteId}/items":
+  "/users/{byUserKey}/notes/{byNid}/items":
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/userKey"
       - $ref: "#/components/parameters/noteId"
     put:
       summary: "注釈内要素群最新化"
@@ -330,13 +330,13 @@ paths:
 
 components:
   schemas:
-    UserId:
+    UserKey:
       type: string
-      description: "ユーザーを一意に識別するID"
+      description: "ユーザーを一意に識別するキー"
       nullable: false
       deprecated: false
-      example: "9m4e2mr0ui3e8a215n4g"
-      minLength: 20
+      example: "sky0621"
+      minLength: 1
       maxLength: 20
     UserName:
       type: string
@@ -599,6 +599,8 @@ components:
       type: object
       description: "１ユーザーの属性"
       properties:
+        key:
+          $ref: "#/components/schemas/UserKey"
         name:
           $ref: "#/components/schemas/UserName"
         nickname:
@@ -784,20 +786,20 @@ components:
         message: { type: string }
 
   parameters:
-    userId:
-      name: "userId"
+    userKey:
+      name: "byUserKey"
       in: "path"
       required: true
       schema:
-        $ref: "#/components/schemas/UserId"
+        $ref: "#/components/schemas/UserKey"
     noteId:
-      name: "noteId"
+      name: "byNid"
       in: "path"
       required: true
       schema:
         $ref: "#/components/schemas/NoteId"
     careerGroupId:
-      name: "careerGroupId"
+      name: "byCid"
       in: "path"
       required: true
       schema:

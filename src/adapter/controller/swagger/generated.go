@@ -208,6 +208,9 @@ type UserAttribute struct {
 	// 職業
 	Job *Job `json:"job"`
 
+	// ユーザーを一意に識別するキー
+	Key *UserKey `json:"key,omitempty"`
+
 	// ユーザーの本名
 	Name *UserName `json:"name,omitempty"`
 
@@ -260,8 +263,8 @@ type UserCareerGroups = []UserCareerGroup
 // １ユーザーのキャリアグループのキャリア群
 type UserCareers = []UserCareer
 
-// ユーザーを一意に識別するID
-type UserId = string
+// ユーザーを一意に識別するキー
+type UserKey = string
 
 // ユーザーの本名
 type UserName = string
@@ -362,62 +365,62 @@ type N404NotFound = NotFoundError
 // PostUsersJSONBody defines parameters for PostUsers.
 type PostUsersJSONBody = UserAttribute
 
-// PutUsersUserIdActivitiesJSONBody defines parameters for PutUsersUserIdActivities.
-type PutUsersUserIdActivitiesJSONBody = UserActivities
+// PutUsersByUserKeyActivitiesJSONBody defines parameters for PutUsersByUserKeyActivities.
+type PutUsersByUserKeyActivitiesJSONBody = UserActivities
 
-// PutUsersUserIdAttributesJSONBody defines parameters for PutUsersUserIdAttributes.
-type PutUsersUserIdAttributesJSONBody = UserAttribute
+// PutUsersByUserKeyAttributesJSONBody defines parameters for PutUsersByUserKeyAttributes.
+type PutUsersByUserKeyAttributesJSONBody = UserAttribute
 
-// PostUsersUserIdCareergroupsJSONBody defines parameters for PostUsersUserIdCareergroups.
-type PostUsersUserIdCareergroupsJSONBody = UserCareerGroup
+// PostUsersByUserKeyCareergroupsJSONBody defines parameters for PostUsersByUserKeyCareergroups.
+type PostUsersByUserKeyCareergroupsJSONBody = UserCareerGroup
 
-// PutUsersUserIdCareergroupsCareerGroupIdJSONBody defines parameters for PutUsersUserIdCareergroupsCareerGroupId.
-type PutUsersUserIdCareergroupsCareerGroupIdJSONBody = UserCareerGroupOwn
+// PutUsersByUserKeyCareergroupsByCidJSONBody defines parameters for PutUsersByUserKeyCareergroupsByCid.
+type PutUsersByUserKeyCareergroupsByCidJSONBody = UserCareerGroupOwn
 
-// PutUsersUserIdCareergroupsCareerGroupIdCareersJSONBody defines parameters for PutUsersUserIdCareergroupsCareerGroupIdCareers.
-type PutUsersUserIdCareergroupsCareerGroupIdCareersJSONBody = UserCareers
+// PutUsersByUserKeyCareergroupsByCidCareersJSONBody defines parameters for PutUsersByUserKeyCareergroupsByCidCareers.
+type PutUsersByUserKeyCareergroupsByCidCareersJSONBody = UserCareers
 
-// PostUsersUserIdNotesJSONBody defines parameters for PostUsersUserIdNotes.
-type PostUsersUserIdNotesJSONBody = UserNote
+// PostUsersByUserKeyNotesJSONBody defines parameters for PostUsersByUserKeyNotes.
+type PostUsersByUserKeyNotesJSONBody = UserNote
 
-// PutUsersUserIdNotesNoteIdJSONBody defines parameters for PutUsersUserIdNotesNoteId.
-type PutUsersUserIdNotesNoteIdJSONBody = UserNoteOwn
+// PutUsersByUserKeyNotesByNidJSONBody defines parameters for PutUsersByUserKeyNotesByNid.
+type PutUsersByUserKeyNotesByNidJSONBody = UserNoteOwn
 
-// PutUsersUserIdNotesNoteIdItemsJSONBody defines parameters for PutUsersUserIdNotesNoteIdItems.
-type PutUsersUserIdNotesNoteIdItemsJSONBody = UserNoteItems
+// PutUsersByUserKeyNotesByNidItemsJSONBody defines parameters for PutUsersByUserKeyNotesByNidItems.
+type PutUsersByUserKeyNotesByNidItemsJSONBody = UserNoteItems
 
-// PutUsersUserIdQualificationsJSONBody defines parameters for PutUsersUserIdQualifications.
-type PutUsersUserIdQualificationsJSONBody = UserQualifications
+// PutUsersByUserKeyQualificationsJSONBody defines parameters for PutUsersByUserKeyQualifications.
+type PutUsersByUserKeyQualificationsJSONBody = UserQualifications
 
 // PostUsersJSONRequestBody defines body for PostUsers for application/json ContentType.
 type PostUsersJSONRequestBody = PostUsersJSONBody
 
-// PutUsersUserIdActivitiesJSONRequestBody defines body for PutUsersUserIdActivities for application/json ContentType.
-type PutUsersUserIdActivitiesJSONRequestBody = PutUsersUserIdActivitiesJSONBody
+// PutUsersByUserKeyActivitiesJSONRequestBody defines body for PutUsersByUserKeyActivities for application/json ContentType.
+type PutUsersByUserKeyActivitiesJSONRequestBody = PutUsersByUserKeyActivitiesJSONBody
 
-// PutUsersUserIdAttributesJSONRequestBody defines body for PutUsersUserIdAttributes for application/json ContentType.
-type PutUsersUserIdAttributesJSONRequestBody = PutUsersUserIdAttributesJSONBody
+// PutUsersByUserKeyAttributesJSONRequestBody defines body for PutUsersByUserKeyAttributes for application/json ContentType.
+type PutUsersByUserKeyAttributesJSONRequestBody = PutUsersByUserKeyAttributesJSONBody
 
-// PostUsersUserIdCareergroupsJSONRequestBody defines body for PostUsersUserIdCareergroups for application/json ContentType.
-type PostUsersUserIdCareergroupsJSONRequestBody = PostUsersUserIdCareergroupsJSONBody
+// PostUsersByUserKeyCareergroupsJSONRequestBody defines body for PostUsersByUserKeyCareergroups for application/json ContentType.
+type PostUsersByUserKeyCareergroupsJSONRequestBody = PostUsersByUserKeyCareergroupsJSONBody
 
-// PutUsersUserIdCareergroupsCareerGroupIdJSONRequestBody defines body for PutUsersUserIdCareergroupsCareerGroupId for application/json ContentType.
-type PutUsersUserIdCareergroupsCareerGroupIdJSONRequestBody = PutUsersUserIdCareergroupsCareerGroupIdJSONBody
+// PutUsersByUserKeyCareergroupsByCidJSONRequestBody defines body for PutUsersByUserKeyCareergroupsByCid for application/json ContentType.
+type PutUsersByUserKeyCareergroupsByCidJSONRequestBody = PutUsersByUserKeyCareergroupsByCidJSONBody
 
-// PutUsersUserIdCareergroupsCareerGroupIdCareersJSONRequestBody defines body for PutUsersUserIdCareergroupsCareerGroupIdCareers for application/json ContentType.
-type PutUsersUserIdCareergroupsCareerGroupIdCareersJSONRequestBody = PutUsersUserIdCareergroupsCareerGroupIdCareersJSONBody
+// PutUsersByUserKeyCareergroupsByCidCareersJSONRequestBody defines body for PutUsersByUserKeyCareergroupsByCidCareers for application/json ContentType.
+type PutUsersByUserKeyCareergroupsByCidCareersJSONRequestBody = PutUsersByUserKeyCareergroupsByCidCareersJSONBody
 
-// PostUsersUserIdNotesJSONRequestBody defines body for PostUsersUserIdNotes for application/json ContentType.
-type PostUsersUserIdNotesJSONRequestBody = PostUsersUserIdNotesJSONBody
+// PostUsersByUserKeyNotesJSONRequestBody defines body for PostUsersByUserKeyNotes for application/json ContentType.
+type PostUsersByUserKeyNotesJSONRequestBody = PostUsersByUserKeyNotesJSONBody
 
-// PutUsersUserIdNotesNoteIdJSONRequestBody defines body for PutUsersUserIdNotesNoteId for application/json ContentType.
-type PutUsersUserIdNotesNoteIdJSONRequestBody = PutUsersUserIdNotesNoteIdJSONBody
+// PutUsersByUserKeyNotesByNidJSONRequestBody defines body for PutUsersByUserKeyNotesByNid for application/json ContentType.
+type PutUsersByUserKeyNotesByNidJSONRequestBody = PutUsersByUserKeyNotesByNidJSONBody
 
-// PutUsersUserIdNotesNoteIdItemsJSONRequestBody defines body for PutUsersUserIdNotesNoteIdItems for application/json ContentType.
-type PutUsersUserIdNotesNoteIdItemsJSONRequestBody = PutUsersUserIdNotesNoteIdItemsJSONBody
+// PutUsersByUserKeyNotesByNidItemsJSONRequestBody defines body for PutUsersByUserKeyNotesByNidItems for application/json ContentType.
+type PutUsersByUserKeyNotesByNidItemsJSONRequestBody = PutUsersByUserKeyNotesByNidItemsJSONBody
 
-// PutUsersUserIdQualificationsJSONRequestBody defines body for PutUsersUserIdQualifications for application/json ContentType.
-type PutUsersUserIdQualificationsJSONRequestBody = PutUsersUserIdQualificationsJSONBody
+// PutUsersByUserKeyQualificationsJSONRequestBody defines body for PutUsersByUserKeyQualifications for application/json ContentType.
+type PutUsersByUserKeyQualificationsJSONRequestBody = PutUsersByUserKeyQualificationsJSONBody
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
@@ -425,56 +428,56 @@ type ServerInterface interface {
 	// (POST /users)
 	PostUsers(ctx echo.Context) error
 	// 指定ユーザー削除
-	// (DELETE /users/{userId})
-	DeleteUsersUserId(ctx echo.Context, userId UserId) error
+	// (DELETE /users/{byUserKey})
+	DeleteUsersByUserKey(ctx echo.Context, byUserKey UserKey) error
 	// アクティビティ群取得
-	// (GET /users/{userId}/activities)
-	GetUsersUserIdActivities(ctx echo.Context, userId UserId) error
+	// (GET /users/{byUserKey}/activities)
+	GetUsersByUserKeyActivities(ctx echo.Context, byUserKey UserKey) error
 	// アクティビティ群最新化
-	// (PUT /users/{userId}/activities)
-	PutUsersUserIdActivities(ctx echo.Context, userId UserId) error
+	// (PUT /users/{byUserKey}/activities)
+	PutUsersByUserKeyActivities(ctx echo.Context, byUserKey UserKey) error
 	// 属性取得
-	// (GET /users/{userId}/attributes)
-	GetUsersUserIdAttributes(ctx echo.Context, userId UserId) error
+	// (GET /users/{byUserKey}/attributes)
+	GetUsersByUserKeyAttributes(ctx echo.Context, byUserKey UserKey) error
 	// 属性更新
-	// (PUT /users/{userId}/attributes)
-	PutUsersUserIdAttributes(ctx echo.Context, userId UserId) error
+	// (PUT /users/{byUserKey}/attributes)
+	PutUsersByUserKeyAttributes(ctx echo.Context, byUserKey UserKey) error
 	// キャリアグループ群取得
-	// (GET /users/{userId}/careergroups)
-	GetUsersUserIdCareergroups(ctx echo.Context, userId UserId) error
+	// (GET /users/{byUserKey}/careergroups)
+	GetUsersByUserKeyCareergroups(ctx echo.Context, byUserKey UserKey) error
 	// キャリアグループ新規登録
-	// (POST /users/{userId}/careergroups)
-	PostUsersUserIdCareergroups(ctx echo.Context, userId UserId) error
+	// (POST /users/{byUserKey}/careergroups)
+	PostUsersByUserKeyCareergroups(ctx echo.Context, byUserKey UserKey) error
 	// キャリアグループ削除
-	// (DELETE /users/{userId}/careergroups/{careerGroupId})
-	DeleteUsersUserIdCareergroupsCareerGroupId(ctx echo.Context, userId UserId, careerGroupId CareerGroupId) error
+	// (DELETE /users/{byUserKey}/careergroups/{byCid})
+	DeleteUsersByUserKeyCareergroupsByCid(ctx echo.Context, byUserKey UserKey, byCid CareerGroupId) error
 	// キャリアグループ更新
-	// (PUT /users/{userId}/careergroups/{careerGroupId})
-	PutUsersUserIdCareergroupsCareerGroupId(ctx echo.Context, userId UserId, careerGroupId CareerGroupId) error
+	// (PUT /users/{byUserKey}/careergroups/{byCid})
+	PutUsersByUserKeyCareergroupsByCid(ctx echo.Context, byUserKey UserKey, byCid CareerGroupId) error
 	// キャリアグループ内キャリア群最新化
-	// (PUT /users/{userId}/careergroups/{careerGroupId}/careers)
-	PutUsersUserIdCareergroupsCareerGroupIdCareers(ctx echo.Context, userId UserId, careerGroupId CareerGroupId) error
+	// (PUT /users/{byUserKey}/careergroups/{byCid}/careers)
+	PutUsersByUserKeyCareergroupsByCidCareers(ctx echo.Context, byUserKey UserKey, byCid CareerGroupId) error
 	// 注釈群取得
-	// (GET /users/{userId}/notes)
-	GetUsersUserIdNotes(ctx echo.Context, userId UserId) error
+	// (GET /users/{byUserKey}/notes)
+	GetUsersByUserKeyNotes(ctx echo.Context, byUserKey UserKey) error
 	// 注釈新規登録
-	// (POST /users/{userId}/notes)
-	PostUsersUserIdNotes(ctx echo.Context, userId UserId) error
+	// (POST /users/{byUserKey}/notes)
+	PostUsersByUserKeyNotes(ctx echo.Context, byUserKey UserKey) error
 	// 注釈削除
-	// (DELETE /users/{userId}/notes/{noteId})
-	DeleteUsersUserIdNotesNoteId(ctx echo.Context, userId UserId, noteId NoteId) error
+	// (DELETE /users/{byUserKey}/notes/{byNid})
+	DeleteUsersByUserKeyNotesByNid(ctx echo.Context, byUserKey UserKey, byNid NoteId) error
 	// 注釈更新
-	// (PUT /users/{userId}/notes/{noteId})
-	PutUsersUserIdNotesNoteId(ctx echo.Context, userId UserId, noteId NoteId) error
+	// (PUT /users/{byUserKey}/notes/{byNid})
+	PutUsersByUserKeyNotesByNid(ctx echo.Context, byUserKey UserKey, byNid NoteId) error
 	// 注釈内要素群最新化
-	// (PUT /users/{userId}/notes/{noteId}/items)
-	PutUsersUserIdNotesNoteIdItems(ctx echo.Context, userId UserId, noteId NoteId) error
+	// (PUT /users/{byUserKey}/notes/{byNid}/items)
+	PutUsersByUserKeyNotesByNidItems(ctx echo.Context, byUserKey UserKey, byNid NoteId) error
 	// 資格情報群取得
-	// (GET /users/{userId}/qualifications)
-	GetUsersUserIdQualifications(ctx echo.Context, userId UserId) error
+	// (GET /users/{byUserKey}/qualifications)
+	GetUsersByUserKeyQualifications(ctx echo.Context, byUserKey UserKey) error
 	// 資格情報群最新化
-	// (PUT /users/{userId}/qualifications)
-	PutUsersUserIdQualifications(ctx echo.Context, userId UserId) error
+	// (PUT /users/{byUserKey}/qualifications)
+	PutUsersByUserKeyQualifications(ctx echo.Context, byUserKey UserKey) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -491,323 +494,323 @@ func (w *ServerInterfaceWrapper) PostUsers(ctx echo.Context) error {
 	return err
 }
 
-// DeleteUsersUserId converts echo context to params.
-func (w *ServerInterfaceWrapper) DeleteUsersUserId(ctx echo.Context) error {
+// DeleteUsersByUserKey converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteUsersByUserKey(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.DeleteUsersUserId(ctx, userId)
+	err = w.Handler.DeleteUsersByUserKey(ctx, byUserKey)
 	return err
 }
 
-// GetUsersUserIdActivities converts echo context to params.
-func (w *ServerInterfaceWrapper) GetUsersUserIdActivities(ctx echo.Context) error {
+// GetUsersByUserKeyActivities converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersByUserKeyActivities(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetUsersUserIdActivities(ctx, userId)
+	err = w.Handler.GetUsersByUserKeyActivities(ctx, byUserKey)
 	return err
 }
 
-// PutUsersUserIdActivities converts echo context to params.
-func (w *ServerInterfaceWrapper) PutUsersUserIdActivities(ctx echo.Context) error {
+// PutUsersByUserKeyActivities converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersByUserKeyActivities(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PutUsersUserIdActivities(ctx, userId)
+	err = w.Handler.PutUsersByUserKeyActivities(ctx, byUserKey)
 	return err
 }
 
-// GetUsersUserIdAttributes converts echo context to params.
-func (w *ServerInterfaceWrapper) GetUsersUserIdAttributes(ctx echo.Context) error {
+// GetUsersByUserKeyAttributes converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersByUserKeyAttributes(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetUsersUserIdAttributes(ctx, userId)
+	err = w.Handler.GetUsersByUserKeyAttributes(ctx, byUserKey)
 	return err
 }
 
-// PutUsersUserIdAttributes converts echo context to params.
-func (w *ServerInterfaceWrapper) PutUsersUserIdAttributes(ctx echo.Context) error {
+// PutUsersByUserKeyAttributes converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersByUserKeyAttributes(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PutUsersUserIdAttributes(ctx, userId)
+	err = w.Handler.PutUsersByUserKeyAttributes(ctx, byUserKey)
 	return err
 }
 
-// GetUsersUserIdCareergroups converts echo context to params.
-func (w *ServerInterfaceWrapper) GetUsersUserIdCareergroups(ctx echo.Context) error {
+// GetUsersByUserKeyCareergroups converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersByUserKeyCareergroups(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetUsersUserIdCareergroups(ctx, userId)
+	err = w.Handler.GetUsersByUserKeyCareergroups(ctx, byUserKey)
 	return err
 }
 
-// PostUsersUserIdCareergroups converts echo context to params.
-func (w *ServerInterfaceWrapper) PostUsersUserIdCareergroups(ctx echo.Context) error {
+// PostUsersByUserKeyCareergroups converts echo context to params.
+func (w *ServerInterfaceWrapper) PostUsersByUserKeyCareergroups(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PostUsersUserIdCareergroups(ctx, userId)
+	err = w.Handler.PostUsersByUserKeyCareergroups(ctx, byUserKey)
 	return err
 }
 
-// DeleteUsersUserIdCareergroupsCareerGroupId converts echo context to params.
-func (w *ServerInterfaceWrapper) DeleteUsersUserIdCareergroupsCareerGroupId(ctx echo.Context) error {
+// DeleteUsersByUserKeyCareergroupsByCid converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteUsersByUserKeyCareergroupsByCid(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
-	// ------------- Path parameter "careerGroupId" -------------
-	var careerGroupId CareerGroupId
+	// ------------- Path parameter "byCid" -------------
+	var byCid CareerGroupId
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "careerGroupId", runtime.ParamLocationPath, ctx.Param("careerGroupId"), &careerGroupId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byCid", runtime.ParamLocationPath, ctx.Param("byCid"), &byCid)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter careerGroupId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byCid: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.DeleteUsersUserIdCareergroupsCareerGroupId(ctx, userId, careerGroupId)
+	err = w.Handler.DeleteUsersByUserKeyCareergroupsByCid(ctx, byUserKey, byCid)
 	return err
 }
 
-// PutUsersUserIdCareergroupsCareerGroupId converts echo context to params.
-func (w *ServerInterfaceWrapper) PutUsersUserIdCareergroupsCareerGroupId(ctx echo.Context) error {
+// PutUsersByUserKeyCareergroupsByCid converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersByUserKeyCareergroupsByCid(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
-	// ------------- Path parameter "careerGroupId" -------------
-	var careerGroupId CareerGroupId
+	// ------------- Path parameter "byCid" -------------
+	var byCid CareerGroupId
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "careerGroupId", runtime.ParamLocationPath, ctx.Param("careerGroupId"), &careerGroupId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byCid", runtime.ParamLocationPath, ctx.Param("byCid"), &byCid)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter careerGroupId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byCid: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PutUsersUserIdCareergroupsCareerGroupId(ctx, userId, careerGroupId)
+	err = w.Handler.PutUsersByUserKeyCareergroupsByCid(ctx, byUserKey, byCid)
 	return err
 }
 
-// PutUsersUserIdCareergroupsCareerGroupIdCareers converts echo context to params.
-func (w *ServerInterfaceWrapper) PutUsersUserIdCareergroupsCareerGroupIdCareers(ctx echo.Context) error {
+// PutUsersByUserKeyCareergroupsByCidCareers converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersByUserKeyCareergroupsByCidCareers(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
-	// ------------- Path parameter "careerGroupId" -------------
-	var careerGroupId CareerGroupId
+	// ------------- Path parameter "byCid" -------------
+	var byCid CareerGroupId
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "careerGroupId", runtime.ParamLocationPath, ctx.Param("careerGroupId"), &careerGroupId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byCid", runtime.ParamLocationPath, ctx.Param("byCid"), &byCid)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter careerGroupId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byCid: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PutUsersUserIdCareergroupsCareerGroupIdCareers(ctx, userId, careerGroupId)
+	err = w.Handler.PutUsersByUserKeyCareergroupsByCidCareers(ctx, byUserKey, byCid)
 	return err
 }
 
-// GetUsersUserIdNotes converts echo context to params.
-func (w *ServerInterfaceWrapper) GetUsersUserIdNotes(ctx echo.Context) error {
+// GetUsersByUserKeyNotes converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersByUserKeyNotes(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetUsersUserIdNotes(ctx, userId)
+	err = w.Handler.GetUsersByUserKeyNotes(ctx, byUserKey)
 	return err
 }
 
-// PostUsersUserIdNotes converts echo context to params.
-func (w *ServerInterfaceWrapper) PostUsersUserIdNotes(ctx echo.Context) error {
+// PostUsersByUserKeyNotes converts echo context to params.
+func (w *ServerInterfaceWrapper) PostUsersByUserKeyNotes(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PostUsersUserIdNotes(ctx, userId)
+	err = w.Handler.PostUsersByUserKeyNotes(ctx, byUserKey)
 	return err
 }
 
-// DeleteUsersUserIdNotesNoteId converts echo context to params.
-func (w *ServerInterfaceWrapper) DeleteUsersUserIdNotesNoteId(ctx echo.Context) error {
+// DeleteUsersByUserKeyNotesByNid converts echo context to params.
+func (w *ServerInterfaceWrapper) DeleteUsersByUserKeyNotesByNid(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
-	// ------------- Path parameter "noteId" -------------
-	var noteId NoteId
+	// ------------- Path parameter "byNid" -------------
+	var byNid NoteId
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "noteId", runtime.ParamLocationPath, ctx.Param("noteId"), &noteId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byNid", runtime.ParamLocationPath, ctx.Param("byNid"), &byNid)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter noteId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byNid: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.DeleteUsersUserIdNotesNoteId(ctx, userId, noteId)
+	err = w.Handler.DeleteUsersByUserKeyNotesByNid(ctx, byUserKey, byNid)
 	return err
 }
 
-// PutUsersUserIdNotesNoteId converts echo context to params.
-func (w *ServerInterfaceWrapper) PutUsersUserIdNotesNoteId(ctx echo.Context) error {
+// PutUsersByUserKeyNotesByNid converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersByUserKeyNotesByNid(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
-	// ------------- Path parameter "noteId" -------------
-	var noteId NoteId
+	// ------------- Path parameter "byNid" -------------
+	var byNid NoteId
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "noteId", runtime.ParamLocationPath, ctx.Param("noteId"), &noteId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byNid", runtime.ParamLocationPath, ctx.Param("byNid"), &byNid)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter noteId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byNid: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PutUsersUserIdNotesNoteId(ctx, userId, noteId)
+	err = w.Handler.PutUsersByUserKeyNotesByNid(ctx, byUserKey, byNid)
 	return err
 }
 
-// PutUsersUserIdNotesNoteIdItems converts echo context to params.
-func (w *ServerInterfaceWrapper) PutUsersUserIdNotesNoteIdItems(ctx echo.Context) error {
+// PutUsersByUserKeyNotesByNidItems converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersByUserKeyNotesByNidItems(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
-	// ------------- Path parameter "noteId" -------------
-	var noteId NoteId
+	// ------------- Path parameter "byNid" -------------
+	var byNid NoteId
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "noteId", runtime.ParamLocationPath, ctx.Param("noteId"), &noteId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byNid", runtime.ParamLocationPath, ctx.Param("byNid"), &byNid)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter noteId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byNid: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PutUsersUserIdNotesNoteIdItems(ctx, userId, noteId)
+	err = w.Handler.PutUsersByUserKeyNotesByNidItems(ctx, byUserKey, byNid)
 	return err
 }
 
-// GetUsersUserIdQualifications converts echo context to params.
-func (w *ServerInterfaceWrapper) GetUsersUserIdQualifications(ctx echo.Context) error {
+// GetUsersByUserKeyQualifications converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersByUserKeyQualifications(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetUsersUserIdQualifications(ctx, userId)
+	err = w.Handler.GetUsersByUserKeyQualifications(ctx, byUserKey)
 	return err
 }
 
-// PutUsersUserIdQualifications converts echo context to params.
-func (w *ServerInterfaceWrapper) PutUsersUserIdQualifications(ctx echo.Context) error {
+// PutUsersByUserKeyQualifications converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersByUserKeyQualifications(ctx echo.Context) error {
 	var err error
-	// ------------- Path parameter "userId" -------------
-	var userId UserId
+	// ------------- Path parameter "byUserKey" -------------
+	var byUserKey UserKey
 
-	err = runtime.BindStyledParameterWithLocation("simple", false, "userId", runtime.ParamLocationPath, ctx.Param("userId"), &userId)
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserKey", runtime.ParamLocationPath, ctx.Param("byUserKey"), &byUserKey)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter userId: %s", err))
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserKey: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PutUsersUserIdQualifications(ctx, userId)
+	err = w.Handler.PutUsersByUserKeyQualifications(ctx, byUserKey)
 	return err
 }
 
@@ -840,84 +843,84 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	}
 
 	router.POST(baseURL+"/users", wrapper.PostUsers)
-	router.DELETE(baseURL+"/users/:userId", wrapper.DeleteUsersUserId)
-	router.GET(baseURL+"/users/:userId/activities", wrapper.GetUsersUserIdActivities)
-	router.PUT(baseURL+"/users/:userId/activities", wrapper.PutUsersUserIdActivities)
-	router.GET(baseURL+"/users/:userId/attributes", wrapper.GetUsersUserIdAttributes)
-	router.PUT(baseURL+"/users/:userId/attributes", wrapper.PutUsersUserIdAttributes)
-	router.GET(baseURL+"/users/:userId/careergroups", wrapper.GetUsersUserIdCareergroups)
-	router.POST(baseURL+"/users/:userId/careergroups", wrapper.PostUsersUserIdCareergroups)
-	router.DELETE(baseURL+"/users/:userId/careergroups/:careerGroupId", wrapper.DeleteUsersUserIdCareergroupsCareerGroupId)
-	router.PUT(baseURL+"/users/:userId/careergroups/:careerGroupId", wrapper.PutUsersUserIdCareergroupsCareerGroupId)
-	router.PUT(baseURL+"/users/:userId/careergroups/:careerGroupId/careers", wrapper.PutUsersUserIdCareergroupsCareerGroupIdCareers)
-	router.GET(baseURL+"/users/:userId/notes", wrapper.GetUsersUserIdNotes)
-	router.POST(baseURL+"/users/:userId/notes", wrapper.PostUsersUserIdNotes)
-	router.DELETE(baseURL+"/users/:userId/notes/:noteId", wrapper.DeleteUsersUserIdNotesNoteId)
-	router.PUT(baseURL+"/users/:userId/notes/:noteId", wrapper.PutUsersUserIdNotesNoteId)
-	router.PUT(baseURL+"/users/:userId/notes/:noteId/items", wrapper.PutUsersUserIdNotesNoteIdItems)
-	router.GET(baseURL+"/users/:userId/qualifications", wrapper.GetUsersUserIdQualifications)
-	router.PUT(baseURL+"/users/:userId/qualifications", wrapper.PutUsersUserIdQualifications)
+	router.DELETE(baseURL+"/users/:byUserKey", wrapper.DeleteUsersByUserKey)
+	router.GET(baseURL+"/users/:byUserKey/activities", wrapper.GetUsersByUserKeyActivities)
+	router.PUT(baseURL+"/users/:byUserKey/activities", wrapper.PutUsersByUserKeyActivities)
+	router.GET(baseURL+"/users/:byUserKey/attributes", wrapper.GetUsersByUserKeyAttributes)
+	router.PUT(baseURL+"/users/:byUserKey/attributes", wrapper.PutUsersByUserKeyAttributes)
+	router.GET(baseURL+"/users/:byUserKey/careergroups", wrapper.GetUsersByUserKeyCareergroups)
+	router.POST(baseURL+"/users/:byUserKey/careergroups", wrapper.PostUsersByUserKeyCareergroups)
+	router.DELETE(baseURL+"/users/:byUserKey/careergroups/:byCid", wrapper.DeleteUsersByUserKeyCareergroupsByCid)
+	router.PUT(baseURL+"/users/:byUserKey/careergroups/:byCid", wrapper.PutUsersByUserKeyCareergroupsByCid)
+	router.PUT(baseURL+"/users/:byUserKey/careergroups/:byCid/careers", wrapper.PutUsersByUserKeyCareergroupsByCidCareers)
+	router.GET(baseURL+"/users/:byUserKey/notes", wrapper.GetUsersByUserKeyNotes)
+	router.POST(baseURL+"/users/:byUserKey/notes", wrapper.PostUsersByUserKeyNotes)
+	router.DELETE(baseURL+"/users/:byUserKey/notes/:byNid", wrapper.DeleteUsersByUserKeyNotesByNid)
+	router.PUT(baseURL+"/users/:byUserKey/notes/:byNid", wrapper.PutUsersByUserKeyNotesByNid)
+	router.PUT(baseURL+"/users/:byUserKey/notes/:byNid/items", wrapper.PutUsersByUserKeyNotesByNidItems)
+	router.GET(baseURL+"/users/:byUserKey/qualifications", wrapper.GetUsersByUserKeyQualifications)
+	router.PUT(baseURL+"/users/:byUserKey/qualifications", wrapper.PutUsersByUserKeyQualifications)
 
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"H4sIAAAAAAAC/8xcXXPTxvr/Kpn9/2d6I7Bs0pb4rgmnHE4hpBQ60+lwodhLosaWXEnmNIfxTGTxEkgo",
+	"KaWhtGl5KVCaFAiHUEhJ4cNspCRXfIUzuyvLWr2u/NJwwxB5tc/77u959lmdASW1WlMVqBg6KJ4BNUmT",
+	"qtCAGvmrJGkQagc1tV47VMYPZAUUQU0yJoEAFKkKQRGMT4/IZSAADX5ZlzVYBkVDq0MB6KVJWJXwS/+v",
+	"wVOgCP4v1yaVo7/quRGGQqMhAEU1YAKx0S6IjdKpMZW6DrWP4HQsmRPu752Sar3fwMQ0qNdURYdEpwVR",
+	"3HP0oz14wAclQz4tGzL9oaQqBlQM/F+pVqvIJcmQVSX3ha4q+Bk/Xd+0hHwZ6iVNruHZQBEc/ag44Mxf",
+	"sB/9gKz7yNpAzT/wv+Yj1LyDmo+RdR41f0HWt/Q/W6/uoubV7dfX7MtryLyBmnNopgkaAiOGYWjyeN2A",
+	"vZXCmzWLEPaTn52ZX1NZ9rnd0X8rPeU7MHU2CzxE1i/IWiamWEXWCn5uXd++sLz950oWofR+iaT3RCAe",
+	"r6JE+yFINhnebHwTJ4Z9/lxASB7ByCpkwGpvRWvPmlE45+mDnQuzVJTt++bW2i1eIXodOa05swhAuecM",
+	"EEyg91rXO2CYR8Uf16WKfMrlrbdsB6bOwv/20wvOrQ3HOmffehIrxaAo7hmWysfgl3WoGz1jfaQiQ8X4",
+	"h6apWhTPw1J5wCVZHHA3AnNle/kual5C5jwym34OB/eMqsaHal0p94y/1oSxHI6qxgAZ0VbuMmr+RfS7",
+	"jsx5++H39tIDZF5H5jIyzxJeGy3IQVzA3dunD5UoY+z8kVs4eXgXNZ8i6ykQAPxKqtYqGOVMyMZkfRwI",
+	"oCp9dRgqE8YkKA6KAlDqlYo0jodQxGNM1/Bw3dBkZQIrr8XEKEFLXEzYC5cZ2gdl459B2vtFAVRlpfVn",
+	"PoLyMKyoysRxNUzVuThjP/mZoYGs77B+rY2giDwyDsuaMXlAmg5T2rp2015fc5Zmnev3GHpnpqGkFQcK",
+	"YqEgDFRVxZgsDgwJA2VpupgXG0AANU2tQa2F98p08iSHwvQbAiBzpY09QgY1BIC5SBv8GR6DXcuVWx3/",
+	"ApYM/DbdIg+0JdajLNze8baXf3e+/5rRw+fvbF38zXlmouZz7NbWeWTdQs2rzuLq9v0rO4tzWzf+9FaL",
+	"d04CAcit3TCNDN6uFi8wxPhJZXY2Tp+RNI2aaSSYLcWL40cRqHl188WMc/YKXqwefm/P3qMsHzrACJoH",
+	"ESz6SB6WxmElA1XrN2TdQNYKQ8S5uUAXCtR8RobSIH6KmqubGz9s3X2FzBVk3rdXn9iX1liF5sV0jVJ2",
+	"45aNNqPB1SJsZGrbTjkYg5qslj/U1GoyH87SzZ3Fb2m0k9HR4Z5vh3s4zP/+4KXSRS2ScbIdV1MXMrqC",
+	"BUNgt0X9ZEquRDh9ELNjkL5OnqyE7KO43pjEBiFD3LYhgLpWScVYWgWPPA01Xab7dOrsn7pj04QlsU4q",
+	"NYwUlVb0pxLyLRYYWuBHOl+V5hM6lotDPZNRArmhf0vgZIuqpcFyko2Jzgj7aB6X9Ck+iq8J0cdhSOB/",
+	"M5kFTIzZpRsClyvj96gnx5sRj9EzSZJZd0RXjYg91AfxQ05eUstEvtCqDvF4MsRjgfPNUzKslCN+iVJO",
+	"kNcq1HVpInpe+oBr2lSQiRU9M4//M8Nui3kRCOCUqlUlAxSBrBj7CnRHlKv1Kijuy5PtkP7R3gxlxYAT",
+	"UMOk/6WOh0lvm8+dew9ZJN18QEDAC2TNoeadTvD0kdbekCrn0mxQzqFEMfOFNDHZvCzkHPF2jDLXqFef",
+	"DiQgJLHvBsy1SjjH4VdG3Py0TvNm4xtaqmFzKk2qTX58GLPw12tk/oLM+ziJbM5F2CsFJmFW4gBlJHCk",
+	"iND56fbmyz8yA21M7QisRgEW6zay7jCUNl/e23wxh2bMnVvnN19cthfmQ9iezyPHjoXpjR1jceevJjIf",
+	"F0R7fY2QvRSqaV515k1k3kYzJppZQjNLIUZ4OGHKMQdV44BkRABk+8qi/ep6MOnEIG2POLSHXQvKeIas",
+	"lLlNgKHjjQV79gJqzneieYZqdDZAy0zBPOCoJpUqcOCIpBtQy+xmDNmj2kTEavTs7Nb6tWiqYXKpcgbx",
+	"VgQejwBA0QE2LJWmoFKOyHj42IhLulwGQvUZtSIpE9nzKwbLJshrLZCi1wtk/RosS53O780PdVCVCiGi",
+	"CPIuXIksWiDrpT173vl54YOxQzjOsQ02UHOdpprvCANkxMLZrQePCPsWskz3t8QiBkMzooKRTLfvVQsP",
+	"EMazHnQOV/zmYxcXWBeR+cj57ea29Zczd9veeIZmTLw0n3tuL8w619Y3Xz8KrdE8znRCi4iZE8cOM8xM",
+	"GkZNL+bcB3tLajVXEN+Fg++J44PvD8ECLBQG90uwJL7/fl4sifvL7zIrZV2Tg7429B6Ht4XPb8Ngme98",
+	"lRc4+yhOR8FR5vdO+QmlJHIpPRdhitKceQhTQ86QVUdBstAhdJro9HAgJKt0WjIk7QR3fj/uq0YnDfeq",
+	"1vgdWTMmOUq/Xv25IYAvKExPGo6RfEMAU3CauzOBz07klMu1kSKXprjfkUtTrfdqqXWesWPxlqUJY3o6",
+	"6t9CWZjWTZ4dUQ/HaaNbOkx/01dq5NS4r0jaKtC0SypZyiGEU6OVy/Pl5PQdNYts2K+TbefVrNKXpGh7",
+	"hgxYajcHcJ/5C3xFslBJnUc49yi8U/no+XVIyv7xq3fDbcY9y+8DMduWr9ejU6bCjRjZeYxjz20UC+ZF",
+	"Pr5isn7C0QYDV/SpafG9Qp7FHAUOLKTHHpwEGgyWfg/iNfvJk61rq/bd5R3r6w5QmH81T6OOrDkXGlqX",
+	"iWFuBZDjRdRcIRD3aSepTKvngsdTaMEkDGh4fcLXUcO5dLSrJqQ6WFV5XiBZd2zMtpjgFzhcIWLlN9zq",
+	"UmqjZKsSlcqbnpU5r80oS4h6mogJUl9HEh8v3Sy6fbJ0Bk12oL04zTF1ER4O/D1AIf1NtOtXSUxF1rw4",
+	"lRmuWnFCq3DhqSEAVZuQFPk/Eg8aDJWQepC5hPu8sug/ox+wto5wiM/cU9m0Mr29vhYs0xfEQiGxUj80",
+	"NDTkr9UP4TU/WK7HepKVUxGVyJFPBz4YOwQEYMgGIeg98A5aQX6vuFckVq1BRarJoAj27RX37sNuKhmT",
+	"REe5uu6CjZqqG6k7O20m2brxcmf+v/5mEuz0RI2HyqAIxlTdOEHmpS3jUDeG1fJ0P1ui2c70cJ95PkKF",
+	"GpQMWC4OJMjovJhF5ut2J18cZx61XKDdj7Ss1atVSZsOaNNPBttRmtBB8XNA7XESv0dtkzvjdeA3qBAV",
+	"GLXpR3QoNq/aFy/t3Lgbb6kDZDJiq2Gmz59R3mCY2qg6MEJNGdd87lJecWYX7Es3262GPCr09SOyCgyT",
+	"onQiFCgw9zc+jybaHpJr3YJonIxUfU5iClwT0OAyQeJVAnqKEW+dg9BgTeMrsoVvUqQrNvq6RQ/MEicj",
+	"FbCnxhFArd4D1TtLM87iqj2/+GZjduv5FWftOjLPOj++Rubsm42LCUtbPdkkfVrsEm+xJBRT05bF7pym",
+	"g+Wwf77mWZR3Mc1JrS0kY0R792qyx2+bYremaG9/3auUCrTLwepp1flxzVlczRKCrFb/FrwROI5u1dB7",
+	"HG+skXcl3Kho1CbckUVLkhNedS3Lbpl0SypzwI34GenSGuzNr14sZLGi9icUowF+fCd2RrAfr/T+RCRT",
+	"S+06B+BTQ/f5QP/8ppOEgolU/MOIXE7MMpIOmjpLN/zeMuzdn+4g/4gvhvcnF4m9CdnzjERIHcpeTo/d",
+	"eJOtl3njjTZd36PduxfZ2902SOHtC/DON+FWaOd8h4VvsTPGXSbuWdYW8tzWqVu/HVjvn+fqb6HLYkOy",
+	"Vsyepilq5gzNf7E4M2akhw9dmsS9DN2DildLlL8RE3rt250iwLYK+xNL9ASnW8wXKebbgPAoYx3hORIs",
+	"+MloOpDz5O8EthETD3ufoMmO11zqfasU0zPWXcBi7kd7kva9tudlhVwBtfcvvPoEsrypdzu4smEpJqxy",
+	"7YtVu+5D4W+V9AwjtV2NNjb0199832vpvcd5rSu76nP2+XOeobLDoC9DR+P8eCj8oZLMqChwMt+lUYIf",
+	"XelexQERd7mYHVZ4z8IywhD9icr0D+OEey96G7pRXrIr8RsQNDF48YtQO91yr2A7xUPiJivIWtm6umrf",
+	"sYDbNEPubhRzuYpakiqTqm4Uz9RUzWgAAZyWNFkar0C3TUNznfCUVK8YoAj2i/tFEDoTtH4iGdjs1nfL",
+	"9pXnQABQqVcxo+7wfaIoEnZPejIktzOu2I9fUTcdOXbiQPv7gFTwxsnG/wIAAP//yZZC9D9RAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
