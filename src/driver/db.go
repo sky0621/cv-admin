@@ -8,7 +8,7 @@ import (
 type CloseDBClientFunc = func()
 
 func MustNewClient() (*ent.Client, CloseDBClientFunc) {
-	client, err := ent.Open("sqlite3", "file:ent?mode=memory&cache=shared&_fk=1")
+	client, err := ent.Open("sqlite3", "file:db/ent?cache=shared&_fk=1")
 	if err != nil {
 		panic(err)
 	}
