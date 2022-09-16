@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/google/uuid"
 	"github.com/sky0621/cv-admin/src/adapter/gateway/ent/user"
 )
 
@@ -55,17 +54,9 @@ func (uc *UserCreate) SetKey(s string) *UserCreate {
 	return uc
 }
 
-// SetID sets the "id" field.
-func (uc *UserCreate) SetID(u uuid.UUID) *UserCreate {
-	uc.mutation.SetID(u)
-	return uc
-}
-
-// SetNillableID sets the "id" field if the given value is not nil.
-func (uc *UserCreate) SetNillableID(u *uuid.UUID) *UserCreate {
-	if u != nil {
-		uc.SetID(*u)
-	}
+// SetName sets the "name" field.
+func (uc *UserCreate) SetName(s string) *UserCreate {
+	uc.mutation.SetName(s)
 	return uc
 }
 
@@ -154,10 +145,6 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultUpdateTime()
 		uc.mutation.SetUpdateTime(v)
 	}
-	if _, ok := uc.mutation.ID(); !ok {
-		v := user.DefaultID()
-		uc.mutation.SetID(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -171,6 +158,9 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Key(); !ok {
 		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "User.key"`)}
 	}
+	if _, ok := uc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "User.name"`)}
+	}
 	return nil
 }
 
@@ -182,13 +172,8 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 		}
 		return nil, err
 	}
-	if _spec.ID.Value != nil {
-		if id, ok := _spec.ID.Value.(*uuid.UUID); ok {
-			_node.ID = *id
-		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
-			return nil, err
-		}
-	}
+	id := _spec.ID.Value.(int64)
+	_node.ID = int(id)
 	return _node, nil
 }
 
@@ -198,15 +183,11 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: user.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: user.FieldID,
 			},
 		}
 	)
-	if id, ok := uc.mutation.ID(); ok {
-		_node.ID = id
-		_spec.ID.Value = &id
-	}
 	if value, ok := uc.mutation.CreateTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -230,6 +211,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldKey,
 		})
 		_node.Key = value
+	}
+	if value, ok := uc.mutation.Name(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldName,
+		})
+		_node.Name = value
 	}
 	return _node, _spec
 }
@@ -275,6 +264,10 @@ func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
+				if specs[i].ID.Value != nil {
+					id := specs[i].ID.Value.(int64)
+					nodes[i].ID = int(id)
+				}
 				mutation.done = true
 				return nodes[i], nil
 			})

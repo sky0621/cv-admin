@@ -40,6 +40,12 @@ func (uu *UserUpdate) SetKey(s string) *UserUpdate {
 	return uu
 }
 
+// SetName sets the "name" field.
+func (uu *UserUpdate) SetName(s string) *UserUpdate {
+	uu.mutation.SetName(s)
+	return uu
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -114,7 +120,7 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   user.Table,
 			Columns: user.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: user.FieldID,
 			},
 		},
@@ -138,6 +144,13 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: user.FieldKey,
+		})
+	}
+	if value, ok := uu.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldName,
 		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
@@ -168,6 +181,12 @@ func (uuo *UserUpdateOne) SetUpdateTime(t time.Time) *UserUpdateOne {
 // SetKey sets the "key" field.
 func (uuo *UserUpdateOne) SetKey(s string) *UserUpdateOne {
 	uuo.mutation.SetKey(s)
+	return uuo
+}
+
+// SetName sets the "name" field.
+func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
+	uuo.mutation.SetName(s)
 	return uuo
 }
 
@@ -258,7 +277,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Table:   user.Table,
 			Columns: user.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUUID,
+				Type:   field.TypeInt,
 				Column: user.FieldID,
 			},
 		},
@@ -299,6 +318,13 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: user.FieldKey,
+		})
+	}
+	if value, ok := uuo.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldName,
 		})
 	}
 	_node = &User{config: uuo.config}

@@ -4,8 +4,6 @@ package user
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 const (
@@ -19,6 +17,8 @@ const (
 	FieldUpdateTime = "update_time"
 	// FieldKey holds the string denoting the key field in the database.
 	FieldKey = "key"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 )
@@ -29,6 +29,7 @@ var Columns = []string{
 	FieldCreateTime,
 	FieldUpdateTime,
 	FieldKey,
+	FieldName,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -48,6 +49,4 @@ var (
 	DefaultUpdateTime func() time.Time
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
-	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() uuid.UUID
 )

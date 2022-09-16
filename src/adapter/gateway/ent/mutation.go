@@ -9,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/sky0621/cv-admin/src/adapter/gateway/ent/predicate"
 	"github.com/sky0621/cv-admin/src/adapter/gateway/ent/user"
 
@@ -789,10 +788,11 @@ type UserMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *uuid.UUID
+	id            *int
 	create_time   *time.Time
 	update_time   *time.Time
 	key           *string
+	name          *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*User, error)
@@ -819,7 +819,7 @@ func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
 }
 
 // withUserID sets the ID field of the mutation.
-func withUserID(id uuid.UUID) userOption {
+func withUserID(id int) userOption {
 	return func(m *UserMutation) {
 		var (
 			err   error
@@ -869,15 +869,9 @@ func (m UserMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of User entities.
-func (m *UserMutation) SetID(id uuid.UUID) {
-	m.id = &id
-}
-
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *UserMutation) ID() (id uuid.UUID, exists bool) {
+func (m *UserMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -888,12 +882,12 @@ func (m *UserMutation) ID() (id uuid.UUID, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *UserMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+func (m *UserMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []uuid.UUID{id}, nil
+			return []int{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1011,6 +1005,42 @@ func (m *UserMutation) ResetKey() {
 	m.key = nil
 }
 
+// SetName sets the "name" field.
+func (m *UserMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *UserMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *UserMutation) ResetName() {
+	m.name = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -1030,7 +1060,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.create_time != nil {
 		fields = append(fields, user.FieldCreateTime)
 	}
@@ -1039,6 +1069,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.key != nil {
 		fields = append(fields, user.FieldKey)
+	}
+	if m.name != nil {
+		fields = append(fields, user.FieldName)
 	}
 	return fields
 }
@@ -1054,6 +1087,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdateTime()
 	case user.FieldKey:
 		return m.Key()
+	case user.FieldName:
+		return m.Name()
 	}
 	return nil, false
 }
@@ -1069,6 +1104,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldUpdateTime(ctx)
 	case user.FieldKey:
 		return m.OldKey(ctx)
+	case user.FieldName:
+		return m.OldName(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -1098,6 +1135,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetKey(v)
+		return nil
+	case user.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
@@ -1156,6 +1200,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldKey:
 		m.ResetKey()
+		return nil
+	case user.FieldName:
+		m.ResetName()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
