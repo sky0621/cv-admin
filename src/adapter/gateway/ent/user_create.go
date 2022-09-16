@@ -49,6 +49,12 @@ func (uc *UserCreate) SetNillableUpdateTime(t *time.Time) *UserCreate {
 	return uc
 }
 
+// SetKey sets the "key" field.
+func (uc *UserCreate) SetKey(s string) *UserCreate {
+	uc.mutation.SetKey(s)
+	return uc
+}
+
 // SetID sets the "id" field.
 func (uc *UserCreate) SetID(u uuid.UUID) *UserCreate {
 	uc.mutation.SetID(u)
@@ -162,6 +168,9 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "User.update_time"`)}
 	}
+	if _, ok := uc.mutation.Key(); !ok {
+		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "User.key"`)}
+	}
 	return nil
 }
 
@@ -213,6 +222,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldUpdateTime,
 		})
 		_node.UpdateTime = value
+	}
+	if value, ok := uc.mutation.Key(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldKey,
+		})
+		_node.Key = value
 	}
 	return _node, _spec
 }

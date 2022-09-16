@@ -21,6 +21,8 @@ type User struct {
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
+	// Key holds the value of the "key" field.
+	Key string `json:"key,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -28,6 +30,8 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case user.FieldKey:
+			values[i] = new(sql.NullString)
 		case user.FieldCreateTime, user.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
 		case user.FieldID:
@@ -65,6 +69,12 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				u.UpdateTime = value.Time
 			}
+		case user.FieldKey:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field key", values[i])
+			} else if value.Valid {
+				u.Key = value.String
+			}
 		}
 	}
 	return nil
@@ -98,6 +108,9 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("update_time=")
 	builder.WriteString(u.UpdateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("key=")
+	builder.WriteString(u.Key)
 	builder.WriteByte(')')
 	return builder.String()
 }

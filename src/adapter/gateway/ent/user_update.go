@@ -34,6 +34,12 @@ func (uu *UserUpdate) SetUpdateTime(t time.Time) *UserUpdate {
 	return uu
 }
 
+// SetKey sets the "key" field.
+func (uu *UserUpdate) SetKey(s string) *UserUpdate {
+	uu.mutation.SetKey(s)
+	return uu
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -127,6 +133,13 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldUpdateTime,
 		})
 	}
+	if value, ok := uu.mutation.Key(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldKey,
+		})
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -149,6 +162,12 @@ type UserUpdateOne struct {
 // SetUpdateTime sets the "update_time" field.
 func (uuo *UserUpdateOne) SetUpdateTime(t time.Time) *UserUpdateOne {
 	uuo.mutation.SetUpdateTime(t)
+	return uuo
+}
+
+// SetKey sets the "key" field.
+func (uuo *UserUpdateOne) SetKey(s string) *UserUpdateOne {
+	uuo.mutation.SetKey(s)
 	return uuo
 }
 
@@ -273,6 +292,13 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: user.FieldUpdateTime,
+		})
+	}
+	if value, ok := uuo.mutation.Key(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldKey,
 		})
 	}
 	_node = &User{config: uuo.config}
