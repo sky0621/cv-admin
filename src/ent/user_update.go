@@ -46,6 +46,75 @@ func (uu *UserUpdate) SetName(s string) *UserUpdate {
 	return uu
 }
 
+// SetNickname sets the "nickname" field.
+func (uu *UserUpdate) SetNickname(s string) *UserUpdate {
+	uu.mutation.SetNickname(s)
+	return uu
+}
+
+// SetAvatarURL sets the "avatar_url" field.
+func (uu *UserUpdate) SetAvatarURL(s string) *UserUpdate {
+	uu.mutation.SetAvatarURL(s)
+	return uu
+}
+
+// SetBirthdayYear sets the "birthday_year" field.
+func (uu *UserUpdate) SetBirthdayYear(i int) *UserUpdate {
+	uu.mutation.ResetBirthdayYear()
+	uu.mutation.SetBirthdayYear(i)
+	return uu
+}
+
+// AddBirthdayYear adds i to the "birthday_year" field.
+func (uu *UserUpdate) AddBirthdayYear(i int) *UserUpdate {
+	uu.mutation.AddBirthdayYear(i)
+	return uu
+}
+
+// SetBirthdayMonth sets the "birthday_month" field.
+func (uu *UserUpdate) SetBirthdayMonth(i int) *UserUpdate {
+	uu.mutation.ResetBirthdayMonth()
+	uu.mutation.SetBirthdayMonth(i)
+	return uu
+}
+
+// AddBirthdayMonth adds i to the "birthday_month" field.
+func (uu *UserUpdate) AddBirthdayMonth(i int) *UserUpdate {
+	uu.mutation.AddBirthdayMonth(i)
+	return uu
+}
+
+// SetBirthdayDay sets the "birthday_day" field.
+func (uu *UserUpdate) SetBirthdayDay(i int) *UserUpdate {
+	uu.mutation.ResetBirthdayDay()
+	uu.mutation.SetBirthdayDay(i)
+	return uu
+}
+
+// AddBirthdayDay adds i to the "birthday_day" field.
+func (uu *UserUpdate) AddBirthdayDay(i int) *UserUpdate {
+	uu.mutation.AddBirthdayDay(i)
+	return uu
+}
+
+// SetJob sets the "job" field.
+func (uu *UserUpdate) SetJob(s string) *UserUpdate {
+	uu.mutation.SetJob(s)
+	return uu
+}
+
+// SetBelongTo sets the "belong_to" field.
+func (uu *UserUpdate) SetBelongTo(s string) *UserUpdate {
+	uu.mutation.SetBelongTo(s)
+	return uu
+}
+
+// SetPr sets the "pr" field.
+func (uu *UserUpdate) SetPr(s string) *UserUpdate {
+	uu.mutation.SetPr(s)
+	return uu
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -59,12 +128,18 @@ func (uu *UserUpdate) Save(ctx context.Context) (int, error) {
 	)
 	uu.defaults()
 	if len(uu.hooks) == 0 {
+		if err = uu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = uu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*UserMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = uu.check(); err != nil {
+				return 0, err
 			}
 			uu.mutation = mutation
 			affected, err = uu.sqlSave(ctx)
@@ -114,6 +189,16 @@ func (uu *UserUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (uu *UserUpdate) check() error {
+	if v, ok := uu.mutation.Key(); ok {
+		if err := user.KeyValidator(v); err != nil {
+			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "User.key": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -153,6 +238,83 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldName,
 		})
 	}
+	if value, ok := uu.mutation.Nickname(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldNickname,
+		})
+	}
+	if value, ok := uu.mutation.AvatarURL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldAvatarURL,
+		})
+	}
+	if value, ok := uu.mutation.BirthdayYear(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayYear,
+		})
+	}
+	if value, ok := uu.mutation.AddedBirthdayYear(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayYear,
+		})
+	}
+	if value, ok := uu.mutation.BirthdayMonth(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayMonth,
+		})
+	}
+	if value, ok := uu.mutation.AddedBirthdayMonth(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayMonth,
+		})
+	}
+	if value, ok := uu.mutation.BirthdayDay(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayDay,
+		})
+	}
+	if value, ok := uu.mutation.AddedBirthdayDay(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayDay,
+		})
+	}
+	if value, ok := uu.mutation.Job(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldJob,
+		})
+	}
+	if value, ok := uu.mutation.BelongTo(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldBelongTo,
+		})
+	}
+	if value, ok := uu.mutation.Pr(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldPr,
+		})
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -190,6 +352,75 @@ func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
 	return uuo
 }
 
+// SetNickname sets the "nickname" field.
+func (uuo *UserUpdateOne) SetNickname(s string) *UserUpdateOne {
+	uuo.mutation.SetNickname(s)
+	return uuo
+}
+
+// SetAvatarURL sets the "avatar_url" field.
+func (uuo *UserUpdateOne) SetAvatarURL(s string) *UserUpdateOne {
+	uuo.mutation.SetAvatarURL(s)
+	return uuo
+}
+
+// SetBirthdayYear sets the "birthday_year" field.
+func (uuo *UserUpdateOne) SetBirthdayYear(i int) *UserUpdateOne {
+	uuo.mutation.ResetBirthdayYear()
+	uuo.mutation.SetBirthdayYear(i)
+	return uuo
+}
+
+// AddBirthdayYear adds i to the "birthday_year" field.
+func (uuo *UserUpdateOne) AddBirthdayYear(i int) *UserUpdateOne {
+	uuo.mutation.AddBirthdayYear(i)
+	return uuo
+}
+
+// SetBirthdayMonth sets the "birthday_month" field.
+func (uuo *UserUpdateOne) SetBirthdayMonth(i int) *UserUpdateOne {
+	uuo.mutation.ResetBirthdayMonth()
+	uuo.mutation.SetBirthdayMonth(i)
+	return uuo
+}
+
+// AddBirthdayMonth adds i to the "birthday_month" field.
+func (uuo *UserUpdateOne) AddBirthdayMonth(i int) *UserUpdateOne {
+	uuo.mutation.AddBirthdayMonth(i)
+	return uuo
+}
+
+// SetBirthdayDay sets the "birthday_day" field.
+func (uuo *UserUpdateOne) SetBirthdayDay(i int) *UserUpdateOne {
+	uuo.mutation.ResetBirthdayDay()
+	uuo.mutation.SetBirthdayDay(i)
+	return uuo
+}
+
+// AddBirthdayDay adds i to the "birthday_day" field.
+func (uuo *UserUpdateOne) AddBirthdayDay(i int) *UserUpdateOne {
+	uuo.mutation.AddBirthdayDay(i)
+	return uuo
+}
+
+// SetJob sets the "job" field.
+func (uuo *UserUpdateOne) SetJob(s string) *UserUpdateOne {
+	uuo.mutation.SetJob(s)
+	return uuo
+}
+
+// SetBelongTo sets the "belong_to" field.
+func (uuo *UserUpdateOne) SetBelongTo(s string) *UserUpdateOne {
+	uuo.mutation.SetBelongTo(s)
+	return uuo
+}
+
+// SetPr sets the "pr" field.
+func (uuo *UserUpdateOne) SetPr(s string) *UserUpdateOne {
+	uuo.mutation.SetPr(s)
+	return uuo
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -210,12 +441,18 @@ func (uuo *UserUpdateOne) Save(ctx context.Context) (*User, error) {
 	)
 	uuo.defaults()
 	if len(uuo.hooks) == 0 {
+		if err = uuo.check(); err != nil {
+			return nil, err
+		}
 		node, err = uuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*UserMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = uuo.check(); err != nil {
+				return nil, err
 			}
 			uuo.mutation = mutation
 			node, err = uuo.sqlSave(ctx)
@@ -269,6 +506,16 @@ func (uuo *UserUpdateOne) defaults() {
 		v := user.UpdateDefaultUpdateTime()
 		uuo.mutation.SetUpdateTime(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (uuo *UserUpdateOne) check() error {
+	if v, ok := uuo.mutation.Key(); ok {
+		if err := user.KeyValidator(v); err != nil {
+			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "User.key": %w`, err)}
+		}
+	}
+	return nil
 }
 
 func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
@@ -325,6 +572,83 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Type:   field.TypeString,
 			Value:  value,
 			Column: user.FieldName,
+		})
+	}
+	if value, ok := uuo.mutation.Nickname(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldNickname,
+		})
+	}
+	if value, ok := uuo.mutation.AvatarURL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldAvatarURL,
+		})
+	}
+	if value, ok := uuo.mutation.BirthdayYear(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayYear,
+		})
+	}
+	if value, ok := uuo.mutation.AddedBirthdayYear(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayYear,
+		})
+	}
+	if value, ok := uuo.mutation.BirthdayMonth(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayMonth,
+		})
+	}
+	if value, ok := uuo.mutation.AddedBirthdayMonth(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayMonth,
+		})
+	}
+	if value, ok := uuo.mutation.BirthdayDay(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayDay,
+		})
+	}
+	if value, ok := uuo.mutation.AddedBirthdayDay(); ok {
+		_spec.Fields.Add = append(_spec.Fields.Add, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayDay,
+		})
+	}
+	if value, ok := uuo.mutation.Job(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldJob,
+		})
+	}
+	if value, ok := uuo.mutation.BelongTo(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldBelongTo,
+		})
+	}
+	if value, ok := uuo.mutation.Pr(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldPr,
 		})
 	}
 	_node = &User{config: uuo.config}

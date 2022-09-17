@@ -43,8 +43,16 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
-		{Name: "key", Type: field.TypeString},
+		{Name: "key", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString},
+		{Name: "nickname", Type: field.TypeString},
+		{Name: "avatar_url", Type: field.TypeString},
+		{Name: "birthday_year", Type: field.TypeInt},
+		{Name: "birthday_month", Type: field.TypeInt},
+		{Name: "birthday_day", Type: field.TypeInt},
+		{Name: "job", Type: field.TypeString},
+		{Name: "belong_to", Type: field.TypeString},
+		{Name: "pr", Type: field.TypeString},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{

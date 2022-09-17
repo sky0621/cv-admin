@@ -20,10 +20,26 @@ type User struct {
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
-	// Key holds the value of the "key" field.
+	// ユーザー識別キー
 	Key string `json:"key,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// Nickname holds the value of the "nickname" field.
+	Nickname string `json:"nickname,omitempty"`
+	// AvatarURL holds the value of the "avatar_url" field.
+	AvatarURL string `json:"avatar_url,omitempty"`
+	// BirthdayYear holds the value of the "birthday_year" field.
+	BirthdayYear int `json:"birthday_year,omitempty"`
+	// BirthdayMonth holds the value of the "birthday_month" field.
+	BirthdayMonth int `json:"birthday_month,omitempty"`
+	// BirthdayDay holds the value of the "birthday_day" field.
+	BirthdayDay int `json:"birthday_day,omitempty"`
+	// Job holds the value of the "job" field.
+	Job string `json:"job,omitempty"`
+	// BelongTo holds the value of the "belong_to" field.
+	BelongTo string `json:"belong_to,omitempty"`
+	// Pr holds the value of the "pr" field.
+	Pr string `json:"pr,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -31,9 +47,9 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldID:
+		case user.FieldID, user.FieldBirthdayYear, user.FieldBirthdayMonth, user.FieldBirthdayDay:
 			values[i] = new(sql.NullInt64)
-		case user.FieldKey, user.FieldName:
+		case user.FieldKey, user.FieldName, user.FieldNickname, user.FieldAvatarURL, user.FieldJob, user.FieldBelongTo, user.FieldPr:
 			values[i] = new(sql.NullString)
 		case user.FieldCreateTime, user.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -82,6 +98,54 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				u.Name = value.String
 			}
+		case user.FieldNickname:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field nickname", values[i])
+			} else if value.Valid {
+				u.Nickname = value.String
+			}
+		case user.FieldAvatarURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field avatar_url", values[i])
+			} else if value.Valid {
+				u.AvatarURL = value.String
+			}
+		case user.FieldBirthdayYear:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field birthday_year", values[i])
+			} else if value.Valid {
+				u.BirthdayYear = int(value.Int64)
+			}
+		case user.FieldBirthdayMonth:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field birthday_month", values[i])
+			} else if value.Valid {
+				u.BirthdayMonth = int(value.Int64)
+			}
+		case user.FieldBirthdayDay:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field birthday_day", values[i])
+			} else if value.Valid {
+				u.BirthdayDay = int(value.Int64)
+			}
+		case user.FieldJob:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field job", values[i])
+			} else if value.Valid {
+				u.Job = value.String
+			}
+		case user.FieldBelongTo:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field belong_to", values[i])
+			} else if value.Valid {
+				u.BelongTo = value.String
+			}
+		case user.FieldPr:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field pr", values[i])
+			} else if value.Valid {
+				u.Pr = value.String
+			}
 		}
 	}
 	return nil
@@ -121,6 +185,30 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(u.Name)
+	builder.WriteString(", ")
+	builder.WriteString("nickname=")
+	builder.WriteString(u.Nickname)
+	builder.WriteString(", ")
+	builder.WriteString("avatar_url=")
+	builder.WriteString(u.AvatarURL)
+	builder.WriteString(", ")
+	builder.WriteString("birthday_year=")
+	builder.WriteString(fmt.Sprintf("%v", u.BirthdayYear))
+	builder.WriteString(", ")
+	builder.WriteString("birthday_month=")
+	builder.WriteString(fmt.Sprintf("%v", u.BirthdayMonth))
+	builder.WriteString(", ")
+	builder.WriteString("birthday_day=")
+	builder.WriteString(fmt.Sprintf("%v", u.BirthdayDay))
+	builder.WriteString(", ")
+	builder.WriteString("job=")
+	builder.WriteString(u.Job)
+	builder.WriteString(", ")
+	builder.WriteString("belong_to=")
+	builder.WriteString(u.BelongTo)
+	builder.WriteString(", ")
+	builder.WriteString("pr=")
+	builder.WriteString(u.Pr)
 	builder.WriteByte(')')
 	return builder.String()
 }

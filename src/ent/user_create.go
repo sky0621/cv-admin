@@ -60,6 +60,54 @@ func (uc *UserCreate) SetName(s string) *UserCreate {
 	return uc
 }
 
+// SetNickname sets the "nickname" field.
+func (uc *UserCreate) SetNickname(s string) *UserCreate {
+	uc.mutation.SetNickname(s)
+	return uc
+}
+
+// SetAvatarURL sets the "avatar_url" field.
+func (uc *UserCreate) SetAvatarURL(s string) *UserCreate {
+	uc.mutation.SetAvatarURL(s)
+	return uc
+}
+
+// SetBirthdayYear sets the "birthday_year" field.
+func (uc *UserCreate) SetBirthdayYear(i int) *UserCreate {
+	uc.mutation.SetBirthdayYear(i)
+	return uc
+}
+
+// SetBirthdayMonth sets the "birthday_month" field.
+func (uc *UserCreate) SetBirthdayMonth(i int) *UserCreate {
+	uc.mutation.SetBirthdayMonth(i)
+	return uc
+}
+
+// SetBirthdayDay sets the "birthday_day" field.
+func (uc *UserCreate) SetBirthdayDay(i int) *UserCreate {
+	uc.mutation.SetBirthdayDay(i)
+	return uc
+}
+
+// SetJob sets the "job" field.
+func (uc *UserCreate) SetJob(s string) *UserCreate {
+	uc.mutation.SetJob(s)
+	return uc
+}
+
+// SetBelongTo sets the "belong_to" field.
+func (uc *UserCreate) SetBelongTo(s string) *UserCreate {
+	uc.mutation.SetBelongTo(s)
+	return uc
+}
+
+// SetPr sets the "pr" field.
+func (uc *UserCreate) SetPr(s string) *UserCreate {
+	uc.mutation.SetPr(s)
+	return uc
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uc *UserCreate) Mutation() *UserMutation {
 	return uc.mutation
@@ -158,8 +206,37 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Key(); !ok {
 		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "User.key"`)}
 	}
+	if v, ok := uc.mutation.Key(); ok {
+		if err := user.KeyValidator(v); err != nil {
+			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "User.key": %w`, err)}
+		}
+	}
 	if _, ok := uc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "User.name"`)}
+	}
+	if _, ok := uc.mutation.Nickname(); !ok {
+		return &ValidationError{Name: "nickname", err: errors.New(`ent: missing required field "User.nickname"`)}
+	}
+	if _, ok := uc.mutation.AvatarURL(); !ok {
+		return &ValidationError{Name: "avatar_url", err: errors.New(`ent: missing required field "User.avatar_url"`)}
+	}
+	if _, ok := uc.mutation.BirthdayYear(); !ok {
+		return &ValidationError{Name: "birthday_year", err: errors.New(`ent: missing required field "User.birthday_year"`)}
+	}
+	if _, ok := uc.mutation.BirthdayMonth(); !ok {
+		return &ValidationError{Name: "birthday_month", err: errors.New(`ent: missing required field "User.birthday_month"`)}
+	}
+	if _, ok := uc.mutation.BirthdayDay(); !ok {
+		return &ValidationError{Name: "birthday_day", err: errors.New(`ent: missing required field "User.birthday_day"`)}
+	}
+	if _, ok := uc.mutation.Job(); !ok {
+		return &ValidationError{Name: "job", err: errors.New(`ent: missing required field "User.job"`)}
+	}
+	if _, ok := uc.mutation.BelongTo(); !ok {
+		return &ValidationError{Name: "belong_to", err: errors.New(`ent: missing required field "User.belong_to"`)}
+	}
+	if _, ok := uc.mutation.Pr(); !ok {
+		return &ValidationError{Name: "pr", err: errors.New(`ent: missing required field "User.pr"`)}
 	}
 	return nil
 }
@@ -219,6 +296,70 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldName,
 		})
 		_node.Name = value
+	}
+	if value, ok := uc.mutation.Nickname(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldNickname,
+		})
+		_node.Nickname = value
+	}
+	if value, ok := uc.mutation.AvatarURL(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldAvatarURL,
+		})
+		_node.AvatarURL = value
+	}
+	if value, ok := uc.mutation.BirthdayYear(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayYear,
+		})
+		_node.BirthdayYear = value
+	}
+	if value, ok := uc.mutation.BirthdayMonth(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayMonth,
+		})
+		_node.BirthdayMonth = value
+	}
+	if value, ok := uc.mutation.BirthdayDay(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeInt,
+			Value:  value,
+			Column: user.FieldBirthdayDay,
+		})
+		_node.BirthdayDay = value
+	}
+	if value, ok := uc.mutation.Job(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldJob,
+		})
+		_node.Job = value
+	}
+	if value, ok := uc.mutation.BelongTo(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldBelongTo,
+		})
+		_node.BelongTo = value
+	}
+	if value, ok := uc.mutation.Pr(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: user.FieldPr,
+		})
+		_node.Pr = value
 	}
 	return _node, _spec
 }

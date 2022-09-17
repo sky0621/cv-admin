@@ -19,6 +19,22 @@ const (
 	FieldKey = "key"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldNickname holds the string denoting the nickname field in the database.
+	FieldNickname = "nickname"
+	// FieldAvatarURL holds the string denoting the avatar_url field in the database.
+	FieldAvatarURL = "avatar_url"
+	// FieldBirthdayYear holds the string denoting the birthday_year field in the database.
+	FieldBirthdayYear = "birthday_year"
+	// FieldBirthdayMonth holds the string denoting the birthday_month field in the database.
+	FieldBirthdayMonth = "birthday_month"
+	// FieldBirthdayDay holds the string denoting the birthday_day field in the database.
+	FieldBirthdayDay = "birthday_day"
+	// FieldJob holds the string denoting the job field in the database.
+	FieldJob = "job"
+	// FieldBelongTo holds the string denoting the belong_to field in the database.
+	FieldBelongTo = "belong_to"
+	// FieldPr holds the string denoting the pr field in the database.
+	FieldPr = "pr"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 )
@@ -30,6 +46,14 @@ var Columns = []string{
 	FieldUpdateTime,
 	FieldKey,
 	FieldName,
+	FieldNickname,
+	FieldAvatarURL,
+	FieldBirthdayYear,
+	FieldBirthdayMonth,
+	FieldBirthdayDay,
+	FieldJob,
+	FieldBelongTo,
+	FieldPr,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -49,4 +73,6 @@ var (
 	DefaultUpdateTime func() time.Time
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
+	// KeyValidator is a validator for the "key" field. It is called by the builders before save.
+	KeyValidator func(string) error
 )
