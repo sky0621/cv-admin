@@ -271,6 +271,16 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
 		}
 	}
+	if v, ok := uu.mutation.Nickname(); ok {
+		if err := user.NicknameValidator(v); err != nil {
+			return &ValidationError{Name: "nickname", err: fmt.Errorf(`ent: validator failed for field "User.nickname": %w`, err)}
+		}
+	}
+	if v, ok := uu.mutation.AvatarURL(); ok {
+		if err := user.AvatarURLValidator(v); err != nil {
+			return &ValidationError{Name: "avatar_url", err: fmt.Errorf(`ent: validator failed for field "User.avatar_url": %w`, err)}
+		}
+	}
 	if v, ok := uu.mutation.BirthdayYear(); ok {
 		if err := user.BirthdayYearValidator(v); err != nil {
 			return &ValidationError{Name: "birthday_year", err: fmt.Errorf(`ent: validator failed for field "User.birthday_year": %w`, err)}
@@ -284,6 +294,21 @@ func (uu *UserUpdate) check() error {
 	if v, ok := uu.mutation.BirthdayDay(); ok {
 		if err := user.BirthdayDayValidator(v); err != nil {
 			return &ValidationError{Name: "birthday_day", err: fmt.Errorf(`ent: validator failed for field "User.birthday_day": %w`, err)}
+		}
+	}
+	if v, ok := uu.mutation.Job(); ok {
+		if err := user.JobValidator(v); err != nil {
+			return &ValidationError{Name: "job", err: fmt.Errorf(`ent: validator failed for field "User.job": %w`, err)}
+		}
+	}
+	if v, ok := uu.mutation.BelongTo(); ok {
+		if err := user.BelongToValidator(v); err != nil {
+			return &ValidationError{Name: "belong_to", err: fmt.Errorf(`ent: validator failed for field "User.belong_to": %w`, err)}
+		}
+	}
+	if v, ok := uu.mutation.Pr(); ok {
+		if err := user.PrValidator(v); err != nil {
+			return &ValidationError{Name: "pr", err: fmt.Errorf(`ent: validator failed for field "User.pr": %w`, err)}
 		}
 	}
 	return nil
@@ -710,6 +735,16 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
 		}
 	}
+	if v, ok := uuo.mutation.Nickname(); ok {
+		if err := user.NicknameValidator(v); err != nil {
+			return &ValidationError{Name: "nickname", err: fmt.Errorf(`ent: validator failed for field "User.nickname": %w`, err)}
+		}
+	}
+	if v, ok := uuo.mutation.AvatarURL(); ok {
+		if err := user.AvatarURLValidator(v); err != nil {
+			return &ValidationError{Name: "avatar_url", err: fmt.Errorf(`ent: validator failed for field "User.avatar_url": %w`, err)}
+		}
+	}
 	if v, ok := uuo.mutation.BirthdayYear(); ok {
 		if err := user.BirthdayYearValidator(v); err != nil {
 			return &ValidationError{Name: "birthday_year", err: fmt.Errorf(`ent: validator failed for field "User.birthday_year": %w`, err)}
@@ -723,6 +758,21 @@ func (uuo *UserUpdateOne) check() error {
 	if v, ok := uuo.mutation.BirthdayDay(); ok {
 		if err := user.BirthdayDayValidator(v); err != nil {
 			return &ValidationError{Name: "birthday_day", err: fmt.Errorf(`ent: validator failed for field "User.birthday_day": %w`, err)}
+		}
+	}
+	if v, ok := uuo.mutation.Job(); ok {
+		if err := user.JobValidator(v); err != nil {
+			return &ValidationError{Name: "job", err: fmt.Errorf(`ent: validator failed for field "User.job": %w`, err)}
+		}
+	}
+	if v, ok := uuo.mutation.BelongTo(); ok {
+		if err := user.BelongToValidator(v); err != nil {
+			return &ValidationError{Name: "belong_to", err: fmt.Errorf(`ent: validator failed for field "User.belong_to": %w`, err)}
+		}
+	}
+	if v, ok := uuo.mutation.Pr(); ok {
+		if err := user.PrValidator(v); err != nil {
+			return &ValidationError{Name: "pr", err: fmt.Errorf(`ent: validator failed for field "User.pr": %w`, err)}
 		}
 	}
 	return nil

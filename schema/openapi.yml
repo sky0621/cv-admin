@@ -767,23 +767,24 @@ components:
       description: "１ユーザーの注釈群"
       items:
         $ref: "#/components/schemas/UserNote"
+    ErrorMessage:
+      type: string
+      description: "エラーメッセージ"
+      nullable: false
+      deprecated: false
+      example: "xxxx"
+      minLength: 1
+      maxLength: 80
     ClientError:
       type: object
       properties:
-        code: { type: string }
-        type: { type: string }
-        message: { type: string }
-        errors:
-          type: array
-          items:
-            type: object
-            properties:
-              field: { type: string }
-              code: { type: string }
+        message:
+          $ref: "#/components/schemas/ErrorMessage"
     NotFoundError:
       type: object
       properties:
-        message: { type: string }
+        message:
+          $ref: "#/components/schemas/ErrorMessage"
 
   parameters:
     userKey:

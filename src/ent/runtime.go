@@ -64,6 +64,14 @@ func init() {
 			return nil
 		}
 	}()
+	// userDescNickname is the schema descriptor for nickname field.
+	userDescNickname := userFields[2].Descriptor()
+	// user.NicknameValidator is a validator for the "nickname" field. It is called by the builders before save.
+	user.NicknameValidator = userDescNickname.Validators[0].(func(string) error)
+	// userDescAvatarURL is the schema descriptor for avatar_url field.
+	userDescAvatarURL := userFields[3].Descriptor()
+	// user.AvatarURLValidator is a validator for the "avatar_url" field. It is called by the builders before save.
+	user.AvatarURLValidator = userDescAvatarURL.Validators[0].(func(string) error)
 	// userDescBirthdayYear is the schema descriptor for birthday_year field.
 	userDescBirthdayYear := userFields[4].Descriptor()
 	// user.BirthdayYearValidator is a validator for the "birthday_year" field. It is called by the builders before save.
@@ -76,4 +84,16 @@ func init() {
 	userDescBirthdayDay := userFields[6].Descriptor()
 	// user.BirthdayDayValidator is a validator for the "birthday_day" field. It is called by the builders before save.
 	user.BirthdayDayValidator = userDescBirthdayDay.Validators[0].(func(int) error)
+	// userDescJob is the schema descriptor for job field.
+	userDescJob := userFields[7].Descriptor()
+	// user.JobValidator is a validator for the "job" field. It is called by the builders before save.
+	user.JobValidator = userDescJob.Validators[0].(func(string) error)
+	// userDescBelongTo is the schema descriptor for belong_to field.
+	userDescBelongTo := userFields[8].Descriptor()
+	// user.BelongToValidator is a validator for the "belong_to" field. It is called by the builders before save.
+	user.BelongToValidator = userDescBelongTo.Validators[0].(func(string) error)
+	// userDescPr is the schema descriptor for pr field.
+	userDescPr := userFields[9].Descriptor()
+	// user.PrValidator is a validator for the "pr" field. It is called by the builders before save.
+	user.PrValidator = userDescPr.Validators[0].(func(string) error)
 }

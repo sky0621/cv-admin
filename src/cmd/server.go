@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	echomiddleware "github.com/labstack/echo/v4/middleware"
 	"github.com/sky0621/cv-admin/src/driver"
 	"github.com/sky0621/cv-admin/src/rest"
 	"github.com/sky0621/cv-admin/src/swagger"
@@ -34,6 +35,7 @@ to quickly create a Cobra application.`,
 		 * API Server
 		 */
 		e := echo.New()
+		e.Use(echomiddleware.Logger())
 		swagger.RegisterHandlers(e, rest.NewRESTService(dbClient))
 		if err := http.ListenAndServe(":3000", e); err != nil {
 			panic(err)

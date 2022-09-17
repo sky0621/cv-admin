@@ -15,14 +15,14 @@ func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("key").NotEmpty().Validate(maxRuneCount(20)).Unique().Comment("ユーザーを一意に識別するキー。\n各URLのパスパラメーターに使う。"),
 		field.String("name").NotEmpty().Validate(maxRuneCount(100)),
-		field.String("nickname").Optional().Nillable(),
-		field.String("avatar_url").Optional().Nillable(),
-		field.Int("birthday_year").Min(1900),
+		field.String("nickname").Validate(rangeRuneCount(1, 100)).Optional().Nillable(),
+		field.String("avatar_url").Validate(rangeRuneCount(1, 4096)).Optional().Nillable(),
+		field.Int("birthday_year").Range(1900, 3000),
 		field.Int("birthday_month").Range(1, 12),
 		field.Int("birthday_day").Range(1, 31),
-		field.String("job").Optional().Nillable(),
-		field.String("belong_to").Optional().Nillable(),
-		field.String("pr").Optional().Nillable(),
+		field.String("job").Validate(rangeRuneCount(1, 400)).Optional().Nillable(),
+		field.String("belong_to").Validate(rangeRuneCount(1, 400)).Optional().Nillable(),
+		field.String("pr").Validate(rangeRuneCount(1, 4000)).Optional().Nillable(),
 	}
 }
 

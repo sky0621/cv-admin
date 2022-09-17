@@ -77,10 +77,20 @@ var (
 	KeyValidator func(string) error
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
+	// NicknameValidator is a validator for the "nickname" field. It is called by the builders before save.
+	NicknameValidator func(string) error
+	// AvatarURLValidator is a validator for the "avatar_url" field. It is called by the builders before save.
+	AvatarURLValidator func(string) error
 	// BirthdayYearValidator is a validator for the "birthday_year" field. It is called by the builders before save.
 	BirthdayYearValidator func(int) error
 	// BirthdayMonthValidator is a validator for the "birthday_month" field. It is called by the builders before save.
 	BirthdayMonthValidator func(int) error
 	// BirthdayDayValidator is a validator for the "birthday_day" field. It is called by the builders before save.
 	BirthdayDayValidator func(int) error
+	// JobValidator is a validator for the "job" field. It is called by the builders before save.
+	JobValidator func(string) error
+	// BelongToValidator is a validator for the "belong_to" field. It is called by the builders before save.
+	BelongToValidator func(string) error
+	// PrValidator is a validator for the "pr" field. It is called by the builders before save.
+	PrValidator func(string) error
 )

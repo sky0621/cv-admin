@@ -11,6 +11,12 @@ import (
 // ユーザー新規登録
 // (POST /users)
 func (s *ServerImpl) PostUsers(ctx echo.Context) error {
+	var userAttribute swagger.UserAttribute
+	if err := ctx.Bind(&userAttribute); err != nil {
+		return sendClientError(ctx, http.StatusBadRequest, "can not bind request")
+	}
+
+	s.dbClient.User.Create()
 	return ctx.String(http.StatusOK, "ok")
 }
 

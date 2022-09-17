@@ -259,6 +259,16 @@ func (uc *UserCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
 		}
 	}
+	if v, ok := uc.mutation.Nickname(); ok {
+		if err := user.NicknameValidator(v); err != nil {
+			return &ValidationError{Name: "nickname", err: fmt.Errorf(`ent: validator failed for field "User.nickname": %w`, err)}
+		}
+	}
+	if v, ok := uc.mutation.AvatarURL(); ok {
+		if err := user.AvatarURLValidator(v); err != nil {
+			return &ValidationError{Name: "avatar_url", err: fmt.Errorf(`ent: validator failed for field "User.avatar_url": %w`, err)}
+		}
+	}
 	if _, ok := uc.mutation.BirthdayYear(); !ok {
 		return &ValidationError{Name: "birthday_year", err: errors.New(`ent: missing required field "User.birthday_year"`)}
 	}
@@ -281,6 +291,21 @@ func (uc *UserCreate) check() error {
 	if v, ok := uc.mutation.BirthdayDay(); ok {
 		if err := user.BirthdayDayValidator(v); err != nil {
 			return &ValidationError{Name: "birthday_day", err: fmt.Errorf(`ent: validator failed for field "User.birthday_day": %w`, err)}
+		}
+	}
+	if v, ok := uc.mutation.Job(); ok {
+		if err := user.JobValidator(v); err != nil {
+			return &ValidationError{Name: "job", err: fmt.Errorf(`ent: validator failed for field "User.job": %w`, err)}
+		}
+	}
+	if v, ok := uc.mutation.BelongTo(); ok {
+		if err := user.BelongToValidator(v); err != nil {
+			return &ValidationError{Name: "belong_to", err: fmt.Errorf(`ent: validator failed for field "User.belong_to": %w`, err)}
+		}
+	}
+	if v, ok := uc.mutation.Pr(); ok {
+		if err := user.PrValidator(v); err != nil {
+			return &ValidationError{Name: "pr", err: fmt.Errorf(`ent: validator failed for field "User.pr": %w`, err)}
 		}
 	}
 	return nil
