@@ -75,4 +75,12 @@ var (
 	UpdateDefaultUpdateTime func() time.Time
 	// KeyValidator is a validator for the "key" field. It is called by the builders before save.
 	KeyValidator func(string) error
+	// NameValidator is a validator for the "name" field. It is called by the builders before save.
+	NameValidator func(string) error
+	// BirthdayYearValidator is a validator for the "birthday_year" field. It is called by the builders before save.
+	BirthdayYearValidator func(int) error
+	// BirthdayMonthValidator is a validator for the "birthday_month" field. It is called by the builders before save.
+	BirthdayMonthValidator func(int) error
+	// BirthdayDayValidator is a validator for the "birthday_day" field. It is called by the builders before save.
+	BirthdayDayValidator func(int) error
 )

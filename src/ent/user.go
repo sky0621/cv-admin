@@ -20,14 +20,15 @@ type User struct {
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
-	// ユーザー識別キー
+	// ユーザーを一意に識別するキー。
+	// 各URLのパスパラメーターに使う。
 	Key string `json:"key,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Nickname holds the value of the "nickname" field.
-	Nickname string `json:"nickname,omitempty"`
+	Nickname *string `json:"nickname,omitempty"`
 	// AvatarURL holds the value of the "avatar_url" field.
-	AvatarURL string `json:"avatar_url,omitempty"`
+	AvatarURL *string `json:"avatar_url,omitempty"`
 	// BirthdayYear holds the value of the "birthday_year" field.
 	BirthdayYear int `json:"birthday_year,omitempty"`
 	// BirthdayMonth holds the value of the "birthday_month" field.
@@ -35,11 +36,11 @@ type User struct {
 	// BirthdayDay holds the value of the "birthday_day" field.
 	BirthdayDay int `json:"birthday_day,omitempty"`
 	// Job holds the value of the "job" field.
-	Job string `json:"job,omitempty"`
+	Job *string `json:"job,omitempty"`
 	// BelongTo holds the value of the "belong_to" field.
-	BelongTo string `json:"belong_to,omitempty"`
+	BelongTo *string `json:"belong_to,omitempty"`
 	// Pr holds the value of the "pr" field.
-	Pr string `json:"pr,omitempty"`
+	Pr *string `json:"pr,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -102,13 +103,15 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field nickname", values[i])
 			} else if value.Valid {
-				u.Nickname = value.String
+				u.Nickname = new(string)
+				*u.Nickname = value.String
 			}
 		case user.FieldAvatarURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field avatar_url", values[i])
 			} else if value.Valid {
-				u.AvatarURL = value.String
+				u.AvatarURL = new(string)
+				*u.AvatarURL = value.String
 			}
 		case user.FieldBirthdayYear:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -132,19 +135,22 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field job", values[i])
 			} else if value.Valid {
-				u.Job = value.String
+				u.Job = new(string)
+				*u.Job = value.String
 			}
 		case user.FieldBelongTo:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field belong_to", values[i])
 			} else if value.Valid {
-				u.BelongTo = value.String
+				u.BelongTo = new(string)
+				*u.BelongTo = value.String
 			}
 		case user.FieldPr:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field pr", values[i])
 			} else if value.Valid {
-				u.Pr = value.String
+				u.Pr = new(string)
+				*u.Pr = value.String
 			}
 		}
 	}
@@ -186,11 +192,15 @@ func (u *User) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(u.Name)
 	builder.WriteString(", ")
-	builder.WriteString("nickname=")
-	builder.WriteString(u.Nickname)
+	if v := u.Nickname; v != nil {
+		builder.WriteString("nickname=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("avatar_url=")
-	builder.WriteString(u.AvatarURL)
+	if v := u.AvatarURL; v != nil {
+		builder.WriteString("avatar_url=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	builder.WriteString("birthday_year=")
 	builder.WriteString(fmt.Sprintf("%v", u.BirthdayYear))
@@ -201,14 +211,20 @@ func (u *User) String() string {
 	builder.WriteString("birthday_day=")
 	builder.WriteString(fmt.Sprintf("%v", u.BirthdayDay))
 	builder.WriteString(", ")
-	builder.WriteString("job=")
-	builder.WriteString(u.Job)
+	if v := u.Job; v != nil {
+		builder.WriteString("job=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("belong_to=")
-	builder.WriteString(u.BelongTo)
+	if v := u.BelongTo; v != nil {
+		builder.WriteString("belong_to=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
-	builder.WriteString("pr=")
-	builder.WriteString(u.Pr)
+	if v := u.Pr; v != nil {
+		builder.WriteString("pr=")
+		builder.WriteString(*v)
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -52,9 +52,37 @@ func (uu *UserUpdate) SetNickname(s string) *UserUpdate {
 	return uu
 }
 
+// SetNillableNickname sets the "nickname" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableNickname(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetNickname(*s)
+	}
+	return uu
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (uu *UserUpdate) ClearNickname() *UserUpdate {
+	uu.mutation.ClearNickname()
+	return uu
+}
+
 // SetAvatarURL sets the "avatar_url" field.
 func (uu *UserUpdate) SetAvatarURL(s string) *UserUpdate {
 	uu.mutation.SetAvatarURL(s)
+	return uu
+}
+
+// SetNillableAvatarURL sets the "avatar_url" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableAvatarURL(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetAvatarURL(*s)
+	}
+	return uu
+}
+
+// ClearAvatarURL clears the value of the "avatar_url" field.
+func (uu *UserUpdate) ClearAvatarURL() *UserUpdate {
+	uu.mutation.ClearAvatarURL()
 	return uu
 }
 
@@ -103,15 +131,57 @@ func (uu *UserUpdate) SetJob(s string) *UserUpdate {
 	return uu
 }
 
+// SetNillableJob sets the "job" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableJob(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetJob(*s)
+	}
+	return uu
+}
+
+// ClearJob clears the value of the "job" field.
+func (uu *UserUpdate) ClearJob() *UserUpdate {
+	uu.mutation.ClearJob()
+	return uu
+}
+
 // SetBelongTo sets the "belong_to" field.
 func (uu *UserUpdate) SetBelongTo(s string) *UserUpdate {
 	uu.mutation.SetBelongTo(s)
 	return uu
 }
 
+// SetNillableBelongTo sets the "belong_to" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBelongTo(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetBelongTo(*s)
+	}
+	return uu
+}
+
+// ClearBelongTo clears the value of the "belong_to" field.
+func (uu *UserUpdate) ClearBelongTo() *UserUpdate {
+	uu.mutation.ClearBelongTo()
+	return uu
+}
+
 // SetPr sets the "pr" field.
 func (uu *UserUpdate) SetPr(s string) *UserUpdate {
 	uu.mutation.SetPr(s)
+	return uu
+}
+
+// SetNillablePr sets the "pr" field if the given value is not nil.
+func (uu *UserUpdate) SetNillablePr(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetPr(*s)
+	}
+	return uu
+}
+
+// ClearPr clears the value of the "pr" field.
+func (uu *UserUpdate) ClearPr() *UserUpdate {
+	uu.mutation.ClearPr()
 	return uu
 }
 
@@ -196,6 +266,26 @@ func (uu *UserUpdate) check() error {
 			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "User.key": %w`, err)}
 		}
 	}
+	if v, ok := uu.mutation.Name(); ok {
+		if err := user.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
+		}
+	}
+	if v, ok := uu.mutation.BirthdayYear(); ok {
+		if err := user.BirthdayYearValidator(v); err != nil {
+			return &ValidationError{Name: "birthday_year", err: fmt.Errorf(`ent: validator failed for field "User.birthday_year": %w`, err)}
+		}
+	}
+	if v, ok := uu.mutation.BirthdayMonth(); ok {
+		if err := user.BirthdayMonthValidator(v); err != nil {
+			return &ValidationError{Name: "birthday_month", err: fmt.Errorf(`ent: validator failed for field "User.birthday_month": %w`, err)}
+		}
+	}
+	if v, ok := uu.mutation.BirthdayDay(); ok {
+		if err := user.BirthdayDayValidator(v); err != nil {
+			return &ValidationError{Name: "birthday_day", err: fmt.Errorf(`ent: validator failed for field "User.birthday_day": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -245,10 +335,22 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldNickname,
 		})
 	}
+	if uu.mutation.NicknameCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: user.FieldNickname,
+		})
+	}
 	if value, ok := uu.mutation.AvatarURL(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: user.FieldAvatarURL,
+		})
+	}
+	if uu.mutation.AvatarURLCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: user.FieldAvatarURL,
 		})
 	}
@@ -301,6 +403,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldJob,
 		})
 	}
+	if uu.mutation.JobCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: user.FieldJob,
+		})
+	}
 	if value, ok := uu.mutation.BelongTo(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -308,10 +416,22 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: user.FieldBelongTo,
 		})
 	}
+	if uu.mutation.BelongToCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: user.FieldBelongTo,
+		})
+	}
 	if value, ok := uu.mutation.Pr(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: user.FieldPr,
+		})
+	}
+	if uu.mutation.PrCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: user.FieldPr,
 		})
 	}
@@ -358,9 +478,37 @@ func (uuo *UserUpdateOne) SetNickname(s string) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableNickname sets the "nickname" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableNickname(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetNickname(*s)
+	}
+	return uuo
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (uuo *UserUpdateOne) ClearNickname() *UserUpdateOne {
+	uuo.mutation.ClearNickname()
+	return uuo
+}
+
 // SetAvatarURL sets the "avatar_url" field.
 func (uuo *UserUpdateOne) SetAvatarURL(s string) *UserUpdateOne {
 	uuo.mutation.SetAvatarURL(s)
+	return uuo
+}
+
+// SetNillableAvatarURL sets the "avatar_url" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableAvatarURL(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetAvatarURL(*s)
+	}
+	return uuo
+}
+
+// ClearAvatarURL clears the value of the "avatar_url" field.
+func (uuo *UserUpdateOne) ClearAvatarURL() *UserUpdateOne {
+	uuo.mutation.ClearAvatarURL()
 	return uuo
 }
 
@@ -409,15 +557,57 @@ func (uuo *UserUpdateOne) SetJob(s string) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableJob sets the "job" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableJob(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetJob(*s)
+	}
+	return uuo
+}
+
+// ClearJob clears the value of the "job" field.
+func (uuo *UserUpdateOne) ClearJob() *UserUpdateOne {
+	uuo.mutation.ClearJob()
+	return uuo
+}
+
 // SetBelongTo sets the "belong_to" field.
 func (uuo *UserUpdateOne) SetBelongTo(s string) *UserUpdateOne {
 	uuo.mutation.SetBelongTo(s)
 	return uuo
 }
 
+// SetNillableBelongTo sets the "belong_to" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBelongTo(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetBelongTo(*s)
+	}
+	return uuo
+}
+
+// ClearBelongTo clears the value of the "belong_to" field.
+func (uuo *UserUpdateOne) ClearBelongTo() *UserUpdateOne {
+	uuo.mutation.ClearBelongTo()
+	return uuo
+}
+
 // SetPr sets the "pr" field.
 func (uuo *UserUpdateOne) SetPr(s string) *UserUpdateOne {
 	uuo.mutation.SetPr(s)
+	return uuo
+}
+
+// SetNillablePr sets the "pr" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillablePr(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetPr(*s)
+	}
+	return uuo
+}
+
+// ClearPr clears the value of the "pr" field.
+func (uuo *UserUpdateOne) ClearPr() *UserUpdateOne {
+	uuo.mutation.ClearPr()
 	return uuo
 }
 
@@ -515,6 +705,26 @@ func (uuo *UserUpdateOne) check() error {
 			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "User.key": %w`, err)}
 		}
 	}
+	if v, ok := uuo.mutation.Name(); ok {
+		if err := user.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "User.name": %w`, err)}
+		}
+	}
+	if v, ok := uuo.mutation.BirthdayYear(); ok {
+		if err := user.BirthdayYearValidator(v); err != nil {
+			return &ValidationError{Name: "birthday_year", err: fmt.Errorf(`ent: validator failed for field "User.birthday_year": %w`, err)}
+		}
+	}
+	if v, ok := uuo.mutation.BirthdayMonth(); ok {
+		if err := user.BirthdayMonthValidator(v); err != nil {
+			return &ValidationError{Name: "birthday_month", err: fmt.Errorf(`ent: validator failed for field "User.birthday_month": %w`, err)}
+		}
+	}
+	if v, ok := uuo.mutation.BirthdayDay(); ok {
+		if err := user.BirthdayDayValidator(v); err != nil {
+			return &ValidationError{Name: "birthday_day", err: fmt.Errorf(`ent: validator failed for field "User.birthday_day": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -581,10 +791,22 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Column: user.FieldNickname,
 		})
 	}
+	if uuo.mutation.NicknameCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: user.FieldNickname,
+		})
+	}
 	if value, ok := uuo.mutation.AvatarURL(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: user.FieldAvatarURL,
+		})
+	}
+	if uuo.mutation.AvatarURLCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: user.FieldAvatarURL,
 		})
 	}
@@ -637,6 +859,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Column: user.FieldJob,
 		})
 	}
+	if uuo.mutation.JobCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: user.FieldJob,
+		})
+	}
 	if value, ok := uuo.mutation.BelongTo(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -644,10 +872,22 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Column: user.FieldBelongTo,
 		})
 	}
+	if uuo.mutation.BelongToCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: user.FieldBelongTo,
+		})
+	}
 	if value, ok := uuo.mutation.Pr(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: user.FieldPr,
+		})
+	}
+	if uuo.mutation.PrCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: user.FieldPr,
 		})
 	}

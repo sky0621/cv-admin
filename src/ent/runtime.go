@@ -31,5 +31,49 @@ func init() {
 	// userDescKey is the schema descriptor for key field.
 	userDescKey := userFields[0].Descriptor()
 	// user.KeyValidator is a validator for the "key" field. It is called by the builders before save.
-	user.KeyValidator = userDescKey.Validators[0].(func(string) error)
+	user.KeyValidator = func() func(string) error {
+		validators := userDescKey.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(key string) error {
+			for _, fn := range fns {
+				if err := fn(key); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// userDescName is the schema descriptor for name field.
+	userDescName := userFields[1].Descriptor()
+	// user.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	user.NameValidator = func() func(string) error {
+		validators := userDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// userDescBirthdayYear is the schema descriptor for birthday_year field.
+	userDescBirthdayYear := userFields[4].Descriptor()
+	// user.BirthdayYearValidator is a validator for the "birthday_year" field. It is called by the builders before save.
+	user.BirthdayYearValidator = userDescBirthdayYear.Validators[0].(func(int) error)
+	// userDescBirthdayMonth is the schema descriptor for birthday_month field.
+	userDescBirthdayMonth := userFields[5].Descriptor()
+	// user.BirthdayMonthValidator is a validator for the "birthday_month" field. It is called by the builders before save.
+	user.BirthdayMonthValidator = userDescBirthdayMonth.Validators[0].(func(int) error)
+	// userDescBirthdayDay is the schema descriptor for birthday_day field.
+	userDescBirthdayDay := userFields[6].Descriptor()
+	// user.BirthdayDayValidator is a validator for the "birthday_day" field. It is called by the builders before save.
+	user.BirthdayDayValidator = userDescBirthdayDay.Validators[0].(func(int) error)
 }

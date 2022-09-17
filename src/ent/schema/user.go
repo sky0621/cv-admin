@@ -13,16 +13,16 @@ type User struct {
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("key").NotEmpty().Unique().Comment("ユーザー識別キー"),
-		field.String("name"),
-		field.String("nickname"),
-		field.String("avatar_url"),
-		field.Int("birthday_year"),
-		field.Int("birthday_month"),
-		field.Int("birthday_day"),
-		field.String("job"),
-		field.String("belong_to"),
-		field.String("pr"),
+		field.String("key").NotEmpty().Validate(maxRuneCount(20)).Unique().Comment("ユーザーを一意に識別するキー。\n各URLのパスパラメーターに使う。"),
+		field.String("name").NotEmpty().Validate(maxRuneCount(100)),
+		field.String("nickname").Optional().Nillable(),
+		field.String("avatar_url").Optional().Nillable(),
+		field.Int("birthday_year").Min(1900),
+		field.Int("birthday_month").Range(1, 12),
+		field.Int("birthday_day").Range(1, 31),
+		field.String("job").Optional().Nillable(),
+		field.String("belong_to").Optional().Nillable(),
+		field.String("pr").Optional().Nillable(),
 	}
 }
 

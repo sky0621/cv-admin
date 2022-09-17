@@ -575,6 +575,20 @@ func NicknameHasSuffix(v string) predicate.User {
 	})
 }
 
+// NicknameIsNil applies the IsNil predicate on the "nickname" field.
+func NicknameIsNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldNickname)))
+	})
+}
+
+// NicknameNotNil applies the NotNil predicate on the "nickname" field.
+func NicknameNotNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldNickname)))
+	})
+}
+
 // NicknameEqualFold applies the EqualFold predicate on the "nickname" field.
 func NicknameEqualFold(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
@@ -671,6 +685,20 @@ func AvatarURLHasPrefix(v string) predicate.User {
 func AvatarURLHasSuffix(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.HasSuffix(s.C(FieldAvatarURL), v))
+	})
+}
+
+// AvatarURLIsNil applies the IsNil predicate on the "avatar_url" field.
+func AvatarURLIsNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldAvatarURL)))
+	})
+}
+
+// AvatarURLNotNil applies the NotNil predicate on the "avatar_url" field.
+func AvatarURLNotNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldAvatarURL)))
 	})
 }
 
@@ -965,6 +993,20 @@ func JobHasSuffix(v string) predicate.User {
 	})
 }
 
+// JobIsNil applies the IsNil predicate on the "job" field.
+func JobIsNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldJob)))
+	})
+}
+
+// JobNotNil applies the NotNil predicate on the "job" field.
+func JobNotNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldJob)))
+	})
+}
+
 // JobEqualFold applies the EqualFold predicate on the "job" field.
 func JobEqualFold(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
@@ -1064,6 +1106,20 @@ func BelongToHasSuffix(v string) predicate.User {
 	})
 }
 
+// BelongToIsNil applies the IsNil predicate on the "belong_to" field.
+func BelongToIsNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldBelongTo)))
+	})
+}
+
+// BelongToNotNil applies the NotNil predicate on the "belong_to" field.
+func BelongToNotNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldBelongTo)))
+	})
+}
+
 // BelongToEqualFold applies the EqualFold predicate on the "belong_to" field.
 func BelongToEqualFold(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
@@ -1160,6 +1216,20 @@ func PrHasPrefix(v string) predicate.User {
 func PrHasSuffix(v string) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		s.Where(sql.HasSuffix(s.C(FieldPr), v))
+	})
+}
+
+// PrIsNil applies the IsNil predicate on the "pr" field.
+func PrIsNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPr)))
+	})
+}
+
+// PrNotNil applies the NotNil predicate on the "pr" field.
+func PrNotNil() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPr)))
 	})
 }
 

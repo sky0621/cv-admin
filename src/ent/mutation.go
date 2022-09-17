@@ -1069,7 +1069,7 @@ func (m *UserMutation) Nickname() (r string, exists bool) {
 // OldNickname returns the old "nickname" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldNickname(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldNickname(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldNickname is only allowed on UpdateOne operations")
 	}
@@ -1083,9 +1083,22 @@ func (m *UserMutation) OldNickname(ctx context.Context) (v string, err error) {
 	return oldValue.Nickname, nil
 }
 
+// ClearNickname clears the value of the "nickname" field.
+func (m *UserMutation) ClearNickname() {
+	m.nickname = nil
+	m.clearedFields[user.FieldNickname] = struct{}{}
+}
+
+// NicknameCleared returns if the "nickname" field was cleared in this mutation.
+func (m *UserMutation) NicknameCleared() bool {
+	_, ok := m.clearedFields[user.FieldNickname]
+	return ok
+}
+
 // ResetNickname resets all changes to the "nickname" field.
 func (m *UserMutation) ResetNickname() {
 	m.nickname = nil
+	delete(m.clearedFields, user.FieldNickname)
 }
 
 // SetAvatarURL sets the "avatar_url" field.
@@ -1105,7 +1118,7 @@ func (m *UserMutation) AvatarURL() (r string, exists bool) {
 // OldAvatarURL returns the old "avatar_url" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldAvatarURL(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldAvatarURL(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldAvatarURL is only allowed on UpdateOne operations")
 	}
@@ -1119,9 +1132,22 @@ func (m *UserMutation) OldAvatarURL(ctx context.Context) (v string, err error) {
 	return oldValue.AvatarURL, nil
 }
 
+// ClearAvatarURL clears the value of the "avatar_url" field.
+func (m *UserMutation) ClearAvatarURL() {
+	m.avatar_url = nil
+	m.clearedFields[user.FieldAvatarURL] = struct{}{}
+}
+
+// AvatarURLCleared returns if the "avatar_url" field was cleared in this mutation.
+func (m *UserMutation) AvatarURLCleared() bool {
+	_, ok := m.clearedFields[user.FieldAvatarURL]
+	return ok
+}
+
 // ResetAvatarURL resets all changes to the "avatar_url" field.
 func (m *UserMutation) ResetAvatarURL() {
 	m.avatar_url = nil
+	delete(m.clearedFields, user.FieldAvatarURL)
 }
 
 // SetBirthdayYear sets the "birthday_year" field.
@@ -1309,7 +1335,7 @@ func (m *UserMutation) Job() (r string, exists bool) {
 // OldJob returns the old "job" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldJob(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldJob(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldJob is only allowed on UpdateOne operations")
 	}
@@ -1323,9 +1349,22 @@ func (m *UserMutation) OldJob(ctx context.Context) (v string, err error) {
 	return oldValue.Job, nil
 }
 
+// ClearJob clears the value of the "job" field.
+func (m *UserMutation) ClearJob() {
+	m.job = nil
+	m.clearedFields[user.FieldJob] = struct{}{}
+}
+
+// JobCleared returns if the "job" field was cleared in this mutation.
+func (m *UserMutation) JobCleared() bool {
+	_, ok := m.clearedFields[user.FieldJob]
+	return ok
+}
+
 // ResetJob resets all changes to the "job" field.
 func (m *UserMutation) ResetJob() {
 	m.job = nil
+	delete(m.clearedFields, user.FieldJob)
 }
 
 // SetBelongTo sets the "belong_to" field.
@@ -1345,7 +1384,7 @@ func (m *UserMutation) BelongTo() (r string, exists bool) {
 // OldBelongTo returns the old "belong_to" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldBelongTo(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldBelongTo(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldBelongTo is only allowed on UpdateOne operations")
 	}
@@ -1359,9 +1398,22 @@ func (m *UserMutation) OldBelongTo(ctx context.Context) (v string, err error) {
 	return oldValue.BelongTo, nil
 }
 
+// ClearBelongTo clears the value of the "belong_to" field.
+func (m *UserMutation) ClearBelongTo() {
+	m.belong_to = nil
+	m.clearedFields[user.FieldBelongTo] = struct{}{}
+}
+
+// BelongToCleared returns if the "belong_to" field was cleared in this mutation.
+func (m *UserMutation) BelongToCleared() bool {
+	_, ok := m.clearedFields[user.FieldBelongTo]
+	return ok
+}
+
 // ResetBelongTo resets all changes to the "belong_to" field.
 func (m *UserMutation) ResetBelongTo() {
 	m.belong_to = nil
+	delete(m.clearedFields, user.FieldBelongTo)
 }
 
 // SetPr sets the "pr" field.
@@ -1381,7 +1433,7 @@ func (m *UserMutation) Pr() (r string, exists bool) {
 // OldPr returns the old "pr" field's value of the User entity.
 // If the User object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldPr(ctx context.Context) (v string, err error) {
+func (m *UserMutation) OldPr(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPr is only allowed on UpdateOne operations")
 	}
@@ -1395,9 +1447,22 @@ func (m *UserMutation) OldPr(ctx context.Context) (v string, err error) {
 	return oldValue.Pr, nil
 }
 
+// ClearPr clears the value of the "pr" field.
+func (m *UserMutation) ClearPr() {
+	m.pr = nil
+	m.clearedFields[user.FieldPr] = struct{}{}
+}
+
+// PrCleared returns if the "pr" field was cleared in this mutation.
+func (m *UserMutation) PrCleared() bool {
+	_, ok := m.clearedFields[user.FieldPr]
+	return ok
+}
+
 // ResetPr resets all changes to the "pr" field.
 func (m *UserMutation) ResetPr() {
 	m.pr = nil
+	delete(m.clearedFields, user.FieldPr)
 }
 
 // Where appends a list predicates to the UserMutation builder.
@@ -1682,7 +1747,23 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(user.FieldNickname) {
+		fields = append(fields, user.FieldNickname)
+	}
+	if m.FieldCleared(user.FieldAvatarURL) {
+		fields = append(fields, user.FieldAvatarURL)
+	}
+	if m.FieldCleared(user.FieldJob) {
+		fields = append(fields, user.FieldJob)
+	}
+	if m.FieldCleared(user.FieldBelongTo) {
+		fields = append(fields, user.FieldBelongTo)
+	}
+	if m.FieldCleared(user.FieldPr) {
+		fields = append(fields, user.FieldPr)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1695,6 +1776,23 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
+	switch name {
+	case user.FieldNickname:
+		m.ClearNickname()
+		return nil
+	case user.FieldAvatarURL:
+		m.ClearAvatarURL()
+		return nil
+	case user.FieldJob:
+		m.ClearJob()
+		return nil
+	case user.FieldBelongTo:
+		m.ClearBelongTo()
+		return nil
+	case user.FieldPr:
+		m.ClearPr()
+		return nil
+	}
 	return fmt.Errorf("unknown User nullable field %s", name)
 }
 
