@@ -13,10 +13,12 @@ import (
 func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 	var userAttribute swagger.UserAttribute
 	if err := ctx.Bind(&userAttribute); err != nil {
-		return sendClientError(ctx, http.StatusBadRequest, "can not bind request")
+		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	// TODO: validation
+	if err := userAttribute.Validate(); err != nil {
+		return sendClientError(ctx, http.StatusBadRequest, err.Error())
+	}
 
 	_, err := s.dbClient.User.Create().
 		SetKey(*userAttribute.Key).

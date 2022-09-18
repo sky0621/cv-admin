@@ -6,6 +6,7 @@ require (
 	entgo.io/ent v0.11.2
 	github.com/deepmap/oapi-codegen v1.11.0
 	github.com/getkin/kin-openapi v0.100.0
+	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/mattn/go-sqlite3 v1.14.15
 	github.com/spf13/cobra v1.5.0
@@ -15,6 +16,7 @@ require (
 	ariga.io/atlas v0.5.1-0.20220717122844-8593d7eb1a8e // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
+	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/swag v0.21.1 // indirect
