@@ -16,8 +16,25 @@ func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 		return sendClientError(ctx, http.StatusBadRequest, "can not bind request")
 	}
 
-	s.dbClient.User.Create()
-	return ctx.String(http.StatusOK, "ok")
+	// TODO: validation
+
+	_, err := s.dbClient.User.Create().
+		SetKey(*userAttribute.Key).
+		SetName(*userAttribute.Name).
+		SetNillableNickname(userAttribute.Nickname).
+		SetNillableAvatarURL(userAttribute.AvatarUrl).
+		SetBirthdayYear(int(*userAttribute.Birthday.Year)).
+		SetBirthdayMonth(int(*userAttribute.Birthday.Month)).
+		SetBirthdayDay(int(*userAttribute.Birthday.Day)).
+		SetNillableJob(userAttribute.Job).
+		SetNillableBelongTo(userAttribute.BelongTo).
+		SetNillablePr(userAttribute.Pr).
+		Save(ctx.Request().Context())
+	if err != nil {
+		return sendClientError(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	return ctx.String(http.StatusCreated, "Created")
 }
 
 // 指定ユーザー削除

@@ -37,7 +37,7 @@ to quickly create a Cobra application.`,
 		e := echo.New()
 		e.Use(echomiddleware.Logger())
 		swagger.RegisterHandlers(e, rest.NewRESTService(dbClient))
-		if err := http.ListenAndServe(":3000", e); err != nil {
+		if err := http.ListenAndServe(":8080", e); err != nil {
 			panic(err)
 		}
 	},
