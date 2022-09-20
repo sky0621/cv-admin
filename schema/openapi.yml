@@ -35,7 +35,7 @@ paths:
               $ref: "#/components/schemas/UserAttribute"
       responses:
         "201":
-          description: "Created: ユーザーを新規登録済み。"
+          $ref: "#/components/responses/201-Created-UserAttribute"
         "400":
           $ref: "#/components/responses/400-BadRequest"
 
@@ -807,6 +807,12 @@ components:
         $ref: "#/components/schemas/CareerGroupId"
 
   responses:
+    201-Created-UserAttribute:
+      description: "Created: 指定ユーザーの属性を返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserAttribute"
     200-OK-UserAttribute:
       description: "OK: 指定ユーザーの属性を返却する。"
       content:

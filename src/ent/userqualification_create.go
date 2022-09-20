@@ -4,8 +4,10 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
@@ -16,6 +18,7 @@ type UserQualificationCreate struct {
 	config
 	mutation *UserQualificationMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // Mutation returns the UserQualificationMutation object of the builder.
@@ -121,13 +124,131 @@ func (uqc *UserQualificationCreate) createSpec() (*UserQualification, *sqlgraph.
 			},
 		}
 	)
+	_spec.OnConflict = uqc.conflict
 	return _node, _spec
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.UserQualification.Create().
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (uqc *UserQualificationCreate) OnConflict(opts ...sql.ConflictOption) *UserQualificationUpsertOne {
+	uqc.conflict = opts
+	return &UserQualificationUpsertOne{
+		create: uqc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.UserQualification.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (uqc *UserQualificationCreate) OnConflictColumns(columns ...string) *UserQualificationUpsertOne {
+	uqc.conflict = append(uqc.conflict, sql.ConflictColumns(columns...))
+	return &UserQualificationUpsertOne{
+		create: uqc,
+	}
+}
+
+type (
+	// UserQualificationUpsertOne is the builder for "upsert"-ing
+	//  one UserQualification node.
+	UserQualificationUpsertOne struct {
+		create *UserQualificationCreate
+	}
+
+	// UserQualificationUpsert is the "OnConflict" setter.
+	UserQualificationUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// Using this option is equivalent to using:
+//
+//	client.UserQualification.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (u *UserQualificationUpsertOne) UpdateNewValues() *UserQualificationUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.UserQualification.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
+func (u *UserQualificationUpsertOne) Ignore() *UserQualificationUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *UserQualificationUpsertOne) DoNothing() *UserQualificationUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the UserQualificationCreate.OnConflict
+// documentation for more info.
+func (u *UserQualificationUpsertOne) Update(set func(*UserQualificationUpsert)) *UserQualificationUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&UserQualificationUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// Exec executes the query.
+func (u *UserQualificationUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for UserQualificationCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *UserQualificationUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *UserQualificationUpsertOne) ID(ctx context.Context) (id int, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *UserQualificationUpsertOne) IDX(ctx context.Context) int {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
 }
 
 // UserQualificationCreateBulk is the builder for creating many UserQualification entities in bulk.
 type UserQualificationCreateBulk struct {
 	config
 	builders []*UserQualificationCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the UserQualification entities in the database.
@@ -153,6 +274,7 @@ func (uqcb *UserQualificationCreateBulk) Save(ctx context.Context) ([]*UserQuali
 					_, err = mutators[i+1].Mutate(root, uqcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = uqcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, uqcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -203,6 +325,102 @@ func (uqcb *UserQualificationCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (uqcb *UserQualificationCreateBulk) ExecX(ctx context.Context) {
 	if err := uqcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.UserQualification.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (uqcb *UserQualificationCreateBulk) OnConflict(opts ...sql.ConflictOption) *UserQualificationUpsertBulk {
+	uqcb.conflict = opts
+	return &UserQualificationUpsertBulk{
+		create: uqcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.UserQualification.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (uqcb *UserQualificationCreateBulk) OnConflictColumns(columns ...string) *UserQualificationUpsertBulk {
+	uqcb.conflict = append(uqcb.conflict, sql.ConflictColumns(columns...))
+	return &UserQualificationUpsertBulk{
+		create: uqcb,
+	}
+}
+
+// UserQualificationUpsertBulk is the builder for "upsert"-ing
+// a bulk of UserQualification nodes.
+type UserQualificationUpsertBulk struct {
+	create *UserQualificationCreateBulk
+}
+
+// UpdateNewValues updates the mutable fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.UserQualification.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (u *UserQualificationUpsertBulk) UpdateNewValues() *UserQualificationUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.UserQualification.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+func (u *UserQualificationUpsertBulk) Ignore() *UserQualificationUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *UserQualificationUpsertBulk) DoNothing() *UserQualificationUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the UserQualificationCreateBulk.OnConflict
+// documentation for more info.
+func (u *UserQualificationUpsertBulk) Update(set func(*UserQualificationUpsert)) *UserQualificationUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&UserQualificationUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// Exec executes the query.
+func (u *UserQualificationUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserQualificationCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for UserQualificationCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *UserQualificationUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

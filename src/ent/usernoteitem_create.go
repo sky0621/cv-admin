@@ -4,8 +4,10 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
@@ -16,6 +18,7 @@ type UserNoteItemCreate struct {
 	config
 	mutation *UserNoteItemMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // Mutation returns the UserNoteItemMutation object of the builder.
@@ -121,13 +124,131 @@ func (unic *UserNoteItemCreate) createSpec() (*UserNoteItem, *sqlgraph.CreateSpe
 			},
 		}
 	)
+	_spec.OnConflict = unic.conflict
 	return _node, _spec
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.UserNoteItem.Create().
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (unic *UserNoteItemCreate) OnConflict(opts ...sql.ConflictOption) *UserNoteItemUpsertOne {
+	unic.conflict = opts
+	return &UserNoteItemUpsertOne{
+		create: unic,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.UserNoteItem.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (unic *UserNoteItemCreate) OnConflictColumns(columns ...string) *UserNoteItemUpsertOne {
+	unic.conflict = append(unic.conflict, sql.ConflictColumns(columns...))
+	return &UserNoteItemUpsertOne{
+		create: unic,
+	}
+}
+
+type (
+	// UserNoteItemUpsertOne is the builder for "upsert"-ing
+	//  one UserNoteItem node.
+	UserNoteItemUpsertOne struct {
+		create *UserNoteItemCreate
+	}
+
+	// UserNoteItemUpsert is the "OnConflict" setter.
+	UserNoteItemUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// Using this option is equivalent to using:
+//
+//	client.UserNoteItem.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (u *UserNoteItemUpsertOne) UpdateNewValues() *UserNoteItemUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.UserNoteItem.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
+func (u *UserNoteItemUpsertOne) Ignore() *UserNoteItemUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *UserNoteItemUpsertOne) DoNothing() *UserNoteItemUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the UserNoteItemCreate.OnConflict
+// documentation for more info.
+func (u *UserNoteItemUpsertOne) Update(set func(*UserNoteItemUpsert)) *UserNoteItemUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&UserNoteItemUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// Exec executes the query.
+func (u *UserNoteItemUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for UserNoteItemCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *UserNoteItemUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *UserNoteItemUpsertOne) ID(ctx context.Context) (id int, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *UserNoteItemUpsertOne) IDX(ctx context.Context) int {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
 }
 
 // UserNoteItemCreateBulk is the builder for creating many UserNoteItem entities in bulk.
 type UserNoteItemCreateBulk struct {
 	config
 	builders []*UserNoteItemCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the UserNoteItem entities in the database.
@@ -153,6 +274,7 @@ func (unicb *UserNoteItemCreateBulk) Save(ctx context.Context) ([]*UserNoteItem,
 					_, err = mutators[i+1].Mutate(root, unicb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = unicb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, unicb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -203,6 +325,102 @@ func (unicb *UserNoteItemCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (unicb *UserNoteItemCreateBulk) ExecX(ctx context.Context) {
 	if err := unicb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.UserNoteItem.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (unicb *UserNoteItemCreateBulk) OnConflict(opts ...sql.ConflictOption) *UserNoteItemUpsertBulk {
+	unicb.conflict = opts
+	return &UserNoteItemUpsertBulk{
+		create: unicb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.UserNoteItem.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (unicb *UserNoteItemCreateBulk) OnConflictColumns(columns ...string) *UserNoteItemUpsertBulk {
+	unicb.conflict = append(unicb.conflict, sql.ConflictColumns(columns...))
+	return &UserNoteItemUpsertBulk{
+		create: unicb,
+	}
+}
+
+// UserNoteItemUpsertBulk is the builder for "upsert"-ing
+// a bulk of UserNoteItem nodes.
+type UserNoteItemUpsertBulk struct {
+	create *UserNoteItemCreateBulk
+}
+
+// UpdateNewValues updates the mutable fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.UserNoteItem.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (u *UserNoteItemUpsertBulk) UpdateNewValues() *UserNoteItemUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.UserNoteItem.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+func (u *UserNoteItemUpsertBulk) Ignore() *UserNoteItemUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *UserNoteItemUpsertBulk) DoNothing() *UserNoteItemUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the UserNoteItemCreateBulk.OnConflict
+// documentation for more info.
+func (u *UserNoteItemUpsertBulk) Update(set func(*UserNoteItemUpsert)) *UserNoteItemUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&UserNoteItemUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// Exec executes the query.
+func (u *UserNoteItemUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserNoteItemCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for UserNoteItemCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *UserNoteItemUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

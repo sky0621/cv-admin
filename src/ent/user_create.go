@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"time"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/user"
@@ -18,6 +19,7 @@ type UserCreate struct {
 	config
 	mutation *UserMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreateTime sets the "create_time" field.
@@ -335,6 +337,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.OnConflict = uc.conflict
 	if value, ok := uc.mutation.CreateTime(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -434,10 +437,554 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.User.Create().
+//		SetCreateTime(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.UserUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+func (uc *UserCreate) OnConflict(opts ...sql.ConflictOption) *UserUpsertOne {
+	uc.conflict = opts
+	return &UserUpsertOne{
+		create: uc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.User.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (uc *UserCreate) OnConflictColumns(columns ...string) *UserUpsertOne {
+	uc.conflict = append(uc.conflict, sql.ConflictColumns(columns...))
+	return &UserUpsertOne{
+		create: uc,
+	}
+}
+
+type (
+	// UserUpsertOne is the builder for "upsert"-ing
+	//  one User node.
+	UserUpsertOne struct {
+		create *UserCreate
+	}
+
+	// UserUpsert is the "OnConflict" setter.
+	UserUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreateTime sets the "create_time" field.
+func (u *UserUpsert) SetCreateTime(v time.Time) *UserUpsert {
+	u.Set(user.FieldCreateTime, v)
+	return u
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserUpsert) UpdateCreateTime() *UserUpsert {
+	u.SetExcluded(user.FieldCreateTime)
+	return u
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserUpsert) SetUpdateTime(v time.Time) *UserUpsert {
+	u.Set(user.FieldUpdateTime, v)
+	return u
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserUpsert) UpdateUpdateTime() *UserUpsert {
+	u.SetExcluded(user.FieldUpdateTime)
+	return u
+}
+
+// SetKey sets the "key" field.
+func (u *UserUpsert) SetKey(v string) *UserUpsert {
+	u.Set(user.FieldKey, v)
+	return u
+}
+
+// UpdateKey sets the "key" field to the value that was provided on create.
+func (u *UserUpsert) UpdateKey() *UserUpsert {
+	u.SetExcluded(user.FieldKey)
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *UserUpsert) SetName(v string) *UserUpsert {
+	u.Set(user.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *UserUpsert) UpdateName() *UserUpsert {
+	u.SetExcluded(user.FieldName)
+	return u
+}
+
+// SetNickname sets the "nickname" field.
+func (u *UserUpsert) SetNickname(v string) *UserUpsert {
+	u.Set(user.FieldNickname, v)
+	return u
+}
+
+// UpdateNickname sets the "nickname" field to the value that was provided on create.
+func (u *UserUpsert) UpdateNickname() *UserUpsert {
+	u.SetExcluded(user.FieldNickname)
+	return u
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (u *UserUpsert) ClearNickname() *UserUpsert {
+	u.SetNull(user.FieldNickname)
+	return u
+}
+
+// SetAvatarURL sets the "avatar_url" field.
+func (u *UserUpsert) SetAvatarURL(v string) *UserUpsert {
+	u.Set(user.FieldAvatarURL, v)
+	return u
+}
+
+// UpdateAvatarURL sets the "avatar_url" field to the value that was provided on create.
+func (u *UserUpsert) UpdateAvatarURL() *UserUpsert {
+	u.SetExcluded(user.FieldAvatarURL)
+	return u
+}
+
+// ClearAvatarURL clears the value of the "avatar_url" field.
+func (u *UserUpsert) ClearAvatarURL() *UserUpsert {
+	u.SetNull(user.FieldAvatarURL)
+	return u
+}
+
+// SetBirthdayYear sets the "birthday_year" field.
+func (u *UserUpsert) SetBirthdayYear(v int) *UserUpsert {
+	u.Set(user.FieldBirthdayYear, v)
+	return u
+}
+
+// UpdateBirthdayYear sets the "birthday_year" field to the value that was provided on create.
+func (u *UserUpsert) UpdateBirthdayYear() *UserUpsert {
+	u.SetExcluded(user.FieldBirthdayYear)
+	return u
+}
+
+// AddBirthdayYear adds v to the "birthday_year" field.
+func (u *UserUpsert) AddBirthdayYear(v int) *UserUpsert {
+	u.Add(user.FieldBirthdayYear, v)
+	return u
+}
+
+// SetBirthdayMonth sets the "birthday_month" field.
+func (u *UserUpsert) SetBirthdayMonth(v int) *UserUpsert {
+	u.Set(user.FieldBirthdayMonth, v)
+	return u
+}
+
+// UpdateBirthdayMonth sets the "birthday_month" field to the value that was provided on create.
+func (u *UserUpsert) UpdateBirthdayMonth() *UserUpsert {
+	u.SetExcluded(user.FieldBirthdayMonth)
+	return u
+}
+
+// AddBirthdayMonth adds v to the "birthday_month" field.
+func (u *UserUpsert) AddBirthdayMonth(v int) *UserUpsert {
+	u.Add(user.FieldBirthdayMonth, v)
+	return u
+}
+
+// SetBirthdayDay sets the "birthday_day" field.
+func (u *UserUpsert) SetBirthdayDay(v int) *UserUpsert {
+	u.Set(user.FieldBirthdayDay, v)
+	return u
+}
+
+// UpdateBirthdayDay sets the "birthday_day" field to the value that was provided on create.
+func (u *UserUpsert) UpdateBirthdayDay() *UserUpsert {
+	u.SetExcluded(user.FieldBirthdayDay)
+	return u
+}
+
+// AddBirthdayDay adds v to the "birthday_day" field.
+func (u *UserUpsert) AddBirthdayDay(v int) *UserUpsert {
+	u.Add(user.FieldBirthdayDay, v)
+	return u
+}
+
+// SetJob sets the "job" field.
+func (u *UserUpsert) SetJob(v string) *UserUpsert {
+	u.Set(user.FieldJob, v)
+	return u
+}
+
+// UpdateJob sets the "job" field to the value that was provided on create.
+func (u *UserUpsert) UpdateJob() *UserUpsert {
+	u.SetExcluded(user.FieldJob)
+	return u
+}
+
+// ClearJob clears the value of the "job" field.
+func (u *UserUpsert) ClearJob() *UserUpsert {
+	u.SetNull(user.FieldJob)
+	return u
+}
+
+// SetBelongTo sets the "belong_to" field.
+func (u *UserUpsert) SetBelongTo(v string) *UserUpsert {
+	u.Set(user.FieldBelongTo, v)
+	return u
+}
+
+// UpdateBelongTo sets the "belong_to" field to the value that was provided on create.
+func (u *UserUpsert) UpdateBelongTo() *UserUpsert {
+	u.SetExcluded(user.FieldBelongTo)
+	return u
+}
+
+// ClearBelongTo clears the value of the "belong_to" field.
+func (u *UserUpsert) ClearBelongTo() *UserUpsert {
+	u.SetNull(user.FieldBelongTo)
+	return u
+}
+
+// SetPr sets the "pr" field.
+func (u *UserUpsert) SetPr(v string) *UserUpsert {
+	u.Set(user.FieldPr, v)
+	return u
+}
+
+// UpdatePr sets the "pr" field to the value that was provided on create.
+func (u *UserUpsert) UpdatePr() *UserUpsert {
+	u.SetExcluded(user.FieldPr)
+	return u
+}
+
+// ClearPr clears the value of the "pr" field.
+func (u *UserUpsert) ClearPr() *UserUpsert {
+	u.SetNull(user.FieldPr)
+	return u
+}
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// Using this option is equivalent to using:
+//
+//	client.User.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (u *UserUpsertOne) UpdateNewValues() *UserUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreateTime(); exists {
+			s.SetIgnore(user.FieldCreateTime)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.User.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
+func (u *UserUpsertOne) Ignore() *UserUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *UserUpsertOne) DoNothing() *UserUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the UserCreate.OnConflict
+// documentation for more info.
+func (u *UserUpsertOne) Update(set func(*UserUpsert)) *UserUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&UserUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *UserUpsertOne) SetCreateTime(v time.Time) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateCreateTime() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserUpsertOne) SetUpdateTime(v time.Time) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateUpdateTime() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateUpdateTime()
+	})
+}
+
+// SetKey sets the "key" field.
+func (u *UserUpsertOne) SetKey(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetKey(v)
+	})
+}
+
+// UpdateKey sets the "key" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateKey() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateKey()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *UserUpsertOne) SetName(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateName() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetNickname sets the "nickname" field.
+func (u *UserUpsertOne) SetNickname(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetNickname(v)
+	})
+}
+
+// UpdateNickname sets the "nickname" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateNickname() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateNickname()
+	})
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (u *UserUpsertOne) ClearNickname() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearNickname()
+	})
+}
+
+// SetAvatarURL sets the "avatar_url" field.
+func (u *UserUpsertOne) SetAvatarURL(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetAvatarURL(v)
+	})
+}
+
+// UpdateAvatarURL sets the "avatar_url" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateAvatarURL() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateAvatarURL()
+	})
+}
+
+// ClearAvatarURL clears the value of the "avatar_url" field.
+func (u *UserUpsertOne) ClearAvatarURL() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearAvatarURL()
+	})
+}
+
+// SetBirthdayYear sets the "birthday_year" field.
+func (u *UserUpsertOne) SetBirthdayYear(v int) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetBirthdayYear(v)
+	})
+}
+
+// AddBirthdayYear adds v to the "birthday_year" field.
+func (u *UserUpsertOne) AddBirthdayYear(v int) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.AddBirthdayYear(v)
+	})
+}
+
+// UpdateBirthdayYear sets the "birthday_year" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateBirthdayYear() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateBirthdayYear()
+	})
+}
+
+// SetBirthdayMonth sets the "birthday_month" field.
+func (u *UserUpsertOne) SetBirthdayMonth(v int) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetBirthdayMonth(v)
+	})
+}
+
+// AddBirthdayMonth adds v to the "birthday_month" field.
+func (u *UserUpsertOne) AddBirthdayMonth(v int) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.AddBirthdayMonth(v)
+	})
+}
+
+// UpdateBirthdayMonth sets the "birthday_month" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateBirthdayMonth() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateBirthdayMonth()
+	})
+}
+
+// SetBirthdayDay sets the "birthday_day" field.
+func (u *UserUpsertOne) SetBirthdayDay(v int) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetBirthdayDay(v)
+	})
+}
+
+// AddBirthdayDay adds v to the "birthday_day" field.
+func (u *UserUpsertOne) AddBirthdayDay(v int) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.AddBirthdayDay(v)
+	})
+}
+
+// UpdateBirthdayDay sets the "birthday_day" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateBirthdayDay() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateBirthdayDay()
+	})
+}
+
+// SetJob sets the "job" field.
+func (u *UserUpsertOne) SetJob(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetJob(v)
+	})
+}
+
+// UpdateJob sets the "job" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateJob() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateJob()
+	})
+}
+
+// ClearJob clears the value of the "job" field.
+func (u *UserUpsertOne) ClearJob() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearJob()
+	})
+}
+
+// SetBelongTo sets the "belong_to" field.
+func (u *UserUpsertOne) SetBelongTo(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetBelongTo(v)
+	})
+}
+
+// UpdateBelongTo sets the "belong_to" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateBelongTo() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateBelongTo()
+	})
+}
+
+// ClearBelongTo clears the value of the "belong_to" field.
+func (u *UserUpsertOne) ClearBelongTo() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearBelongTo()
+	})
+}
+
+// SetPr sets the "pr" field.
+func (u *UserUpsertOne) SetPr(v string) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetPr(v)
+	})
+}
+
+// UpdatePr sets the "pr" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdatePr() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdatePr()
+	})
+}
+
+// ClearPr clears the value of the "pr" field.
+func (u *UserUpsertOne) ClearPr() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearPr()
+	})
+}
+
+// Exec executes the query.
+func (u *UserUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for UserCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *UserUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *UserUpsertOne) ID(ctx context.Context) (id int, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *UserUpsertOne) IDX(ctx context.Context) int {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // UserCreateBulk is the builder for creating many User entities in bulk.
 type UserCreateBulk struct {
 	config
 	builders []*UserCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the User entities in the database.
@@ -464,6 +1011,7 @@ func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 					_, err = mutators[i+1].Mutate(root, ucb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = ucb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, ucb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -514,6 +1062,338 @@ func (ucb *UserCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (ucb *UserCreateBulk) ExecX(ctx context.Context) {
 	if err := ucb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.User.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.UserUpsert) {
+//			SetCreateTime(v+v).
+//		}).
+//		Exec(ctx)
+func (ucb *UserCreateBulk) OnConflict(opts ...sql.ConflictOption) *UserUpsertBulk {
+	ucb.conflict = opts
+	return &UserUpsertBulk{
+		create: ucb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.User.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (ucb *UserCreateBulk) OnConflictColumns(columns ...string) *UserUpsertBulk {
+	ucb.conflict = append(ucb.conflict, sql.ConflictColumns(columns...))
+	return &UserUpsertBulk{
+		create: ucb,
+	}
+}
+
+// UserUpsertBulk is the builder for "upsert"-ing
+// a bulk of User nodes.
+type UserUpsertBulk struct {
+	create *UserCreateBulk
+}
+
+// UpdateNewValues updates the mutable fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.User.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (u *UserUpsertBulk) UpdateNewValues() *UserUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreateTime(); exists {
+				s.SetIgnore(user.FieldCreateTime)
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.User.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+func (u *UserUpsertBulk) Ignore() *UserUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *UserUpsertBulk) DoNothing() *UserUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the UserCreateBulk.OnConflict
+// documentation for more info.
+func (u *UserUpsertBulk) Update(set func(*UserUpsert)) *UserUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&UserUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *UserUpsertBulk) SetCreateTime(v time.Time) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateCreateTime() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserUpsertBulk) SetUpdateTime(v time.Time) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateUpdateTime() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateUpdateTime()
+	})
+}
+
+// SetKey sets the "key" field.
+func (u *UserUpsertBulk) SetKey(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetKey(v)
+	})
+}
+
+// UpdateKey sets the "key" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateKey() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateKey()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *UserUpsertBulk) SetName(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateName() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetNickname sets the "nickname" field.
+func (u *UserUpsertBulk) SetNickname(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetNickname(v)
+	})
+}
+
+// UpdateNickname sets the "nickname" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateNickname() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateNickname()
+	})
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (u *UserUpsertBulk) ClearNickname() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearNickname()
+	})
+}
+
+// SetAvatarURL sets the "avatar_url" field.
+func (u *UserUpsertBulk) SetAvatarURL(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetAvatarURL(v)
+	})
+}
+
+// UpdateAvatarURL sets the "avatar_url" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateAvatarURL() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateAvatarURL()
+	})
+}
+
+// ClearAvatarURL clears the value of the "avatar_url" field.
+func (u *UserUpsertBulk) ClearAvatarURL() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearAvatarURL()
+	})
+}
+
+// SetBirthdayYear sets the "birthday_year" field.
+func (u *UserUpsertBulk) SetBirthdayYear(v int) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetBirthdayYear(v)
+	})
+}
+
+// AddBirthdayYear adds v to the "birthday_year" field.
+func (u *UserUpsertBulk) AddBirthdayYear(v int) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.AddBirthdayYear(v)
+	})
+}
+
+// UpdateBirthdayYear sets the "birthday_year" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateBirthdayYear() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateBirthdayYear()
+	})
+}
+
+// SetBirthdayMonth sets the "birthday_month" field.
+func (u *UserUpsertBulk) SetBirthdayMonth(v int) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetBirthdayMonth(v)
+	})
+}
+
+// AddBirthdayMonth adds v to the "birthday_month" field.
+func (u *UserUpsertBulk) AddBirthdayMonth(v int) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.AddBirthdayMonth(v)
+	})
+}
+
+// UpdateBirthdayMonth sets the "birthday_month" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateBirthdayMonth() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateBirthdayMonth()
+	})
+}
+
+// SetBirthdayDay sets the "birthday_day" field.
+func (u *UserUpsertBulk) SetBirthdayDay(v int) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetBirthdayDay(v)
+	})
+}
+
+// AddBirthdayDay adds v to the "birthday_day" field.
+func (u *UserUpsertBulk) AddBirthdayDay(v int) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.AddBirthdayDay(v)
+	})
+}
+
+// UpdateBirthdayDay sets the "birthday_day" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateBirthdayDay() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateBirthdayDay()
+	})
+}
+
+// SetJob sets the "job" field.
+func (u *UserUpsertBulk) SetJob(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetJob(v)
+	})
+}
+
+// UpdateJob sets the "job" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateJob() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateJob()
+	})
+}
+
+// ClearJob clears the value of the "job" field.
+func (u *UserUpsertBulk) ClearJob() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearJob()
+	})
+}
+
+// SetBelongTo sets the "belong_to" field.
+func (u *UserUpsertBulk) SetBelongTo(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetBelongTo(v)
+	})
+}
+
+// UpdateBelongTo sets the "belong_to" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateBelongTo() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateBelongTo()
+	})
+}
+
+// ClearBelongTo clears the value of the "belong_to" field.
+func (u *UserUpsertBulk) ClearBelongTo() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearBelongTo()
+	})
+}
+
+// SetPr sets the "pr" field.
+func (u *UserUpsertBulk) SetPr(v string) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetPr(v)
+	})
+}
+
+// UpdatePr sets the "pr" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdatePr() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdatePr()
+	})
+}
+
+// ClearPr clears the value of the "pr" field.
+func (u *UserUpsertBulk) ClearPr() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearPr()
+	})
+}
+
+// Exec executes the query.
+func (u *UserUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for UserCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *UserUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

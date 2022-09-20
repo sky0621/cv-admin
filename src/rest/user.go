@@ -23,13 +23,13 @@ func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	_, err := helper.ConvertUserAttribute(userAttribute, s.dbClient.User.Create()).
+	entUser, err := helper.ConvertUserAttribute(userAttribute, s.dbClient.User.Create()).
 		Save(ctx.Request().Context())
 	if err != nil {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.String(http.StatusCreated, "Created")
+	return ctx.JSON(http.StatusCreated, helper.ConvertEntUserAttribute(entUser))
 }
 
 // 指定ユーザー削除
@@ -43,18 +43,6 @@ func (s *ServerImpl) DeleteUsersByUserKey(ctx echo.Context, byUserKey swagger.Us
 		return sendClientError(ctx, http.StatusNotFound, "user is none")
 	}
 	return ctx.NoContent(http.StatusNoContent)
-}
-
-// アクティビティ群取得
-// (GET /users/{byUserKey}/activities)
-func (s *ServerImpl) GetUsersByUserKeyActivities(ctx echo.Context, byUserKey swagger.UserKey) error {
-	return ctx.String(http.StatusOK, byUserKey)
-}
-
-// アクティビティ群最新化
-// (PUT /users/{byUserKey}/activities)
-func (s *ServerImpl) PutUsersByUserKeyActivities(ctx echo.Context, byUserKey swagger.UserKey) error {
-	return ctx.String(http.StatusOK, byUserKey)
 }
 
 // 属性取得
@@ -77,6 +65,37 @@ func (s *ServerImpl) GetUsersByUserKeyAttributes(ctx echo.Context, byUserKey swa
 // 属性更新
 // (PUT /users/{byUserKey}/attributes)
 func (s *ServerImpl) PutUsersByUserKeyAttributes(ctx echo.Context, byUserKey swagger.UserKey) error {
+	var userAttribute swagger.UserAttribute
+	if err := ctx.Bind(&userAttribute); err != nil {
+		return sendClientError(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if err := userAttribute.Validate(); err != nil {
+		return sendClientError(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	id, err := helper.ConvertUserAttribute(userAttribute, s.dbClient.User.Create()).OnConflict().UpdateNewValues().ID(ctx.Request().Context())
+	if err != nil {
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	entUser, err := s.dbClient.User.Get(ctx.Request().Context(), id)
+	if err != nil {
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, helper.ConvertEntUserAttribute(entUser))
+}
+
+// アクティビティ群取得
+// (GET /users/{byUserKey}/activities)
+func (s *ServerImpl) GetUsersByUserKeyActivities(ctx echo.Context, byUserKey swagger.UserKey) error {
+	return ctx.String(http.StatusOK, byUserKey)
+}
+
+// アクティビティ群最新化
+// (PUT /users/{byUserKey}/activities)
+func (s *ServerImpl) PutUsersByUserKeyActivities(ctx echo.Context, byUserKey swagger.UserKey) error {
 	return ctx.String(http.StatusOK, byUserKey)
 }
 

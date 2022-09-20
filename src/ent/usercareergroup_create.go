@@ -4,8 +4,10 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
@@ -16,6 +18,7 @@ type UserCareerGroupCreate struct {
 	config
 	mutation *UserCareerGroupMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // Mutation returns the UserCareerGroupMutation object of the builder.
@@ -121,13 +124,131 @@ func (ucgc *UserCareerGroupCreate) createSpec() (*UserCareerGroup, *sqlgraph.Cre
 			},
 		}
 	)
+	_spec.OnConflict = ucgc.conflict
 	return _node, _spec
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.UserCareerGroup.Create().
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (ucgc *UserCareerGroupCreate) OnConflict(opts ...sql.ConflictOption) *UserCareerGroupUpsertOne {
+	ucgc.conflict = opts
+	return &UserCareerGroupUpsertOne{
+		create: ucgc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.UserCareerGroup.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (ucgc *UserCareerGroupCreate) OnConflictColumns(columns ...string) *UserCareerGroupUpsertOne {
+	ucgc.conflict = append(ucgc.conflict, sql.ConflictColumns(columns...))
+	return &UserCareerGroupUpsertOne{
+		create: ucgc,
+	}
+}
+
+type (
+	// UserCareerGroupUpsertOne is the builder for "upsert"-ing
+	//  one UserCareerGroup node.
+	UserCareerGroupUpsertOne struct {
+		create *UserCareerGroupCreate
+	}
+
+	// UserCareerGroupUpsert is the "OnConflict" setter.
+	UserCareerGroupUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// UpdateNewValues updates the mutable fields using the new values that were set on create.
+// Using this option is equivalent to using:
+//
+//	client.UserCareerGroup.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (u *UserCareerGroupUpsertOne) UpdateNewValues() *UserCareerGroupUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.UserCareerGroup.Create().
+//	    OnConflict(sql.ResolveWithIgnore()).
+//	    Exec(ctx)
+func (u *UserCareerGroupUpsertOne) Ignore() *UserCareerGroupUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *UserCareerGroupUpsertOne) DoNothing() *UserCareerGroupUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the UserCareerGroupCreate.OnConflict
+// documentation for more info.
+func (u *UserCareerGroupUpsertOne) Update(set func(*UserCareerGroupUpsert)) *UserCareerGroupUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&UserCareerGroupUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// Exec executes the query.
+func (u *UserCareerGroupUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for UserCareerGroupCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *UserCareerGroupUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *UserCareerGroupUpsertOne) ID(ctx context.Context) (id int, err error) {
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *UserCareerGroupUpsertOne) IDX(ctx context.Context) int {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
 }
 
 // UserCareerGroupCreateBulk is the builder for creating many UserCareerGroup entities in bulk.
 type UserCareerGroupCreateBulk struct {
 	config
 	builders []*UserCareerGroupCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the UserCareerGroup entities in the database.
@@ -153,6 +274,7 @@ func (ucgcb *UserCareerGroupCreateBulk) Save(ctx context.Context) ([]*UserCareer
 					_, err = mutators[i+1].Mutate(root, ucgcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = ucgcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, ucgcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -203,6 +325,102 @@ func (ucgcb *UserCareerGroupCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (ucgcb *UserCareerGroupCreateBulk) ExecX(ctx context.Context) {
 	if err := ucgcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.UserCareerGroup.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (ucgcb *UserCareerGroupCreateBulk) OnConflict(opts ...sql.ConflictOption) *UserCareerGroupUpsertBulk {
+	ucgcb.conflict = opts
+	return &UserCareerGroupUpsertBulk{
+		create: ucgcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.UserCareerGroup.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+func (ucgcb *UserCareerGroupCreateBulk) OnConflictColumns(columns ...string) *UserCareerGroupUpsertBulk {
+	ucgcb.conflict = append(ucgcb.conflict, sql.ConflictColumns(columns...))
+	return &UserCareerGroupUpsertBulk{
+		create: ucgcb,
+	}
+}
+
+// UserCareerGroupUpsertBulk is the builder for "upsert"-ing
+// a bulk of UserCareerGroup nodes.
+type UserCareerGroupUpsertBulk struct {
+	create *UserCareerGroupCreateBulk
+}
+
+// UpdateNewValues updates the mutable fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.UserCareerGroup.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//		).
+//		Exec(ctx)
+func (u *UserCareerGroupUpsertBulk) UpdateNewValues() *UserCareerGroupUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.UserCareerGroup.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+func (u *UserCareerGroupUpsertBulk) Ignore() *UserCareerGroupUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *UserCareerGroupUpsertBulk) DoNothing() *UserCareerGroupUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the UserCareerGroupCreateBulk.OnConflict
+// documentation for more info.
+func (u *UserCareerGroupUpsertBulk) Update(set func(*UserCareerGroupUpsert)) *UserCareerGroupUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&UserCareerGroupUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// Exec executes the query.
+func (u *UserCareerGroupUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserCareerGroupCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for UserCareerGroupCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *UserCareerGroupUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

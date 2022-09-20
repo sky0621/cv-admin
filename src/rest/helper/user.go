@@ -5,7 +5,21 @@ import (
 	"github.com/sky0621/cv-admin/src/swagger"
 )
 
-func ConvertUserAttribute(userAttribute swagger.UserAttribute, c *ent.UserCreate) *ent.UserCreate {
+func ConvertSwaggerUserAttributeToEntUserCreate(userAttribute swagger.UserAttribute, c *ent.UserCreate) *ent.UserCreate {
+	return c.
+		SetKey(*userAttribute.Key).
+		SetName(*userAttribute.Name).
+		SetNillableNickname(userAttribute.Nickname).
+		SetNillableAvatarURL(userAttribute.AvatarUrl).
+		SetBirthdayYear(int(*userAttribute.Birthday.Year)).
+		SetBirthdayMonth(int(*userAttribute.Birthday.Month)).
+		SetBirthdayDay(int(*userAttribute.Birthday.Day)).
+		SetNillableJob(userAttribute.Job).
+		SetNillableBelongTo(userAttribute.BelongTo).
+		SetNillablePr(userAttribute.Pr)
+}
+
+func ConvertSwaggerUserAttributeToEntUserUpdate(userAttribute swagger.UserAttribute, c *ent.UserUpdate) *ent.UserUpdate {
 	return c.
 		SetKey(*userAttribute.Key).
 		SetName(*userAttribute.Name).
