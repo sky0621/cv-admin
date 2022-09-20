@@ -3,9 +3,10 @@ package rest
 import (
 	"net/http"
 
-	"github.com/sky0621/cv-admin/src/swagger"
-
 	"github.com/labstack/echo/v4"
+
+	"github.com/sky0621/cv-admin/src/rest/helper"
+	"github.com/sky0621/cv-admin/src/swagger"
 )
 
 // ユーザー新規登録
@@ -20,17 +21,7 @@ func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	_, err := s.dbClient.User.Create().
-		SetKey(*userAttribute.Key).
-		SetName(*userAttribute.Name).
-		SetNillableNickname(userAttribute.Nickname).
-		SetNillableAvatarURL(userAttribute.AvatarUrl).
-		SetBirthdayYear(int(*userAttribute.Birthday.Year)).
-		SetBirthdayMonth(int(*userAttribute.Birthday.Month)).
-		SetBirthdayDay(int(*userAttribute.Birthday.Day)).
-		SetNillableJob(userAttribute.Job).
-		SetNillableBelongTo(userAttribute.BelongTo).
-		SetNillablePr(userAttribute.Pr).
+	_, err := helper.ConvertUserAttribute(userAttribute, s.dbClient.User.Create()).
 		Save(ctx.Request().Context())
 	if err != nil {
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
