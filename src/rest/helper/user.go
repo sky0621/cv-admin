@@ -21,7 +21,6 @@ func ConvertSwaggerUserAttributeToEntUserCreate(userAttribute swagger.UserAttrib
 
 func ConvertSwaggerUserAttributeToEntUserUpdate(userAttribute swagger.UserAttribute, c *ent.UserUpdate) *ent.UserUpdate {
 	return c.
-		SetKey(*userAttribute.Key).
 		SetName(*userAttribute.Name).
 		SetNillableNickname(userAttribute.Nickname).
 		SetNillableAvatarURL(userAttribute.AvatarUrl).
@@ -33,7 +32,7 @@ func ConvertSwaggerUserAttributeToEntUserUpdate(userAttribute swagger.UserAttrib
 		SetNillablePr(userAttribute.Pr)
 }
 
-func ConvertEntUserAttribute(user *ent.User) swagger.UserAttribute {
+func ConvertEntUserToSwaggerUserAttribute(user *ent.User) swagger.UserAttribute {
 	var userAttribute swagger.UserAttribute
 	userAttribute.Key = &user.Key
 	userAttribute.Name = &user.Name

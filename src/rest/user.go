@@ -23,13 +23,13 @@ func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	entUser, err := helper.ConvertUserAttribute(userAttribute, s.dbClient.User.Create()).
+	entUser, err := helper.ConvertSwaggerUserAttributeToEntUserCreate(userAttribute, s.dbClient.User.Create()).
 		Save(ctx.Request().Context())
 	if err != nil {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, helper.ConvertEntUserAttribute(entUser))
+	return ctx.JSON(http.StatusCreated, helper.ConvertEntUserToSwaggerUserAttribute(entUser))
 }
 
 // 指定ユーザー削除
@@ -39,16 +39,18 @@ func (s *ServerImpl) DeleteUsersByUserKey(ctx echo.Context, byUserKey swagger.Us
 	if err != nil {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
+
 	if cnt != 1 {
 		return sendClientError(ctx, http.StatusNotFound, "user is none")
 	}
+
 	return ctx.NoContent(http.StatusNoContent)
 }
 
 // 属性取得
 // (GET /users/{byUserKey}/attributes)
 func (s *ServerImpl) GetUsersByUserKeyAttributes(ctx echo.Context, byUserKey swagger.UserKey) error {
-	u, err := s.dbClient.User.Query().Where(user.Key(byUserKey)).Only(ctx.Request().Context())
+	entUser, err := s.dbClient.User.Query().Where(user.Key(byUserKey)).Only(ctx.Request().Context())
 	if err != nil {
 		switch {
 		case errors.As(err, &notFound):
@@ -56,10 +58,12 @@ func (s *ServerImpl) GetUsersByUserKeyAttributes(ctx echo.Context, byUserKey swa
 		}
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
-	if u == nil {
+
+	if entUser == nil {
 		return sendClientError(ctx, http.StatusNotFound, "user is none")
 	}
-	return ctx.JSON(http.StatusOK, helper.ConvertEntUserAttribute(u))
+
+	return ctx.JSON(http.StatusOK, helper.ConvertEntUserToSwaggerUserAttribute(entUser))
 }
 
 // 属性更新
@@ -74,17 +78,26 @@ func (s *ServerImpl) PutUsersByUserKeyAttributes(ctx echo.Context, byUserKey swa
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	id, err := helper.ConvertUserAttribute(userAttribute, s.dbClient.User.Create()).OnConflict().UpdateNewValues().ID(ctx.Request().Context())
+	cnt, err := helper.ConvertSwaggerUserAttributeToEntUserUpdate(userAttribute,
+		s.dbClient.User.Update().Where(user.Key(byUserKey))).Save(ctx.Request().Context())
 	if err != nil {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	entUser, err := s.dbClient.User.Get(ctx.Request().Context(), id)
+	if cnt != 1 {
+		return sendClientError(ctx, http.StatusNotFound, "user is none")
+	}
+
+	entUser, err := s.dbClient.User.Query().Where(user.Key(byUserKey)).Only(ctx.Request().Context())
 	if err != nil {
+		switch {
+		case errors.As(err, &notFound):
+			return sendClientError(ctx, http.StatusNotFound, "user is none")
+		}
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, helper.ConvertEntUserAttribute(entUser))
+	return ctx.JSON(http.StatusOK, helper.ConvertEntUserToSwaggerUserAttribute(entUser))
 }
 
 // アクティビティ群取得
