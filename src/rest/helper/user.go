@@ -18,3 +18,23 @@ func ConvertUserAttribute(userAttribute swagger.UserAttribute, c *ent.UserCreate
 		SetNillableBelongTo(userAttribute.BelongTo).
 		SetNillablePr(userAttribute.Pr)
 }
+
+func ConvertEntUserAttribute(user *ent.User) swagger.UserAttribute {
+	var userAttribute swagger.UserAttribute
+	userAttribute.Key = &user.Key
+	userAttribute.Name = &user.Name
+	userAttribute.Nickname = user.Nickname
+	userAttribute.AvatarUrl = user.AvatarURL
+	year := int32(user.BirthdayYear)
+	month := int32(user.BirthdayMonth)
+	day := int32(user.BirthdayDay)
+	userAttribute.Birthday = &swagger.BirthDay{
+		Year:  &year,
+		Month: &month,
+		Day:   &day,
+	}
+	userAttribute.Job = user.Job
+	userAttribute.BelongTo = user.BelongTo
+	userAttribute.Pr = user.Pr
+	return userAttribute
+}

@@ -1,10 +1,12 @@
 package rest
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 
+	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/rest/helper"
 	"github.com/sky0621/cv-admin/src/swagger"
 )
@@ -24,7 +26,7 @@ func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 	_, err := helper.ConvertUserAttribute(userAttribute, s.dbClient.User.Create()).
 		Save(ctx.Request().Context())
 	if err != nil {
-		return sendClientError(ctx, http.StatusBadRequest, err.Error())
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
 	return ctx.String(http.StatusCreated, "Created")
@@ -33,7 +35,14 @@ func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 // 指定ユーザー削除
 // (DELETE /users/{byUserKey})
 func (s *ServerImpl) DeleteUsersByUserKey(ctx echo.Context, byUserKey swagger.UserKey) error {
-	return ctx.String(http.StatusOK, byUserKey)
+	cnt, err := s.dbClient.User.Delete().Where(user.Key(byUserKey)).Exec(ctx.Request().Context())
+	if err != nil {
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+	}
+	if cnt != 1 {
+		return sendClientError(ctx, http.StatusNotFound, "user is none")
+	}
+	return ctx.NoContent(http.StatusNoContent)
 }
 
 // アクティビティ群取得
@@ -51,7 +60,18 @@ func (s *ServerImpl) PutUsersByUserKeyActivities(ctx echo.Context, byUserKey swa
 // 属性取得
 // (GET /users/{byUserKey}/attributes)
 func (s *ServerImpl) GetUsersByUserKeyAttributes(ctx echo.Context, byUserKey swagger.UserKey) error {
-	return ctx.String(http.StatusOK, byUserKey)
+	u, err := s.dbClient.User.Query().Where(user.Key(byUserKey)).Only(ctx.Request().Context())
+	if err != nil {
+		switch {
+		case errors.As(err, &notFound):
+			return sendClientError(ctx, http.StatusNotFound, "user is none")
+		}
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+	}
+	if u == nil {
+		return sendClientError(ctx, http.StatusNotFound, "user is none")
+	}
+	return ctx.JSON(http.StatusOK, helper.ConvertEntUserAttribute(u))
 }
 
 // 属性更新
