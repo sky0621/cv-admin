@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -27,6 +28,12 @@ func (ucgu *UserCareerGroupUpdate) Where(ps ...predicate.UserCareerGroup) *UserC
 	return ucgu
 }
 
+// SetUpdateTime sets the "update_time" field.
+func (ucgu *UserCareerGroupUpdate) SetUpdateTime(t time.Time) *UserCareerGroupUpdate {
+	ucgu.mutation.SetUpdateTime(t)
+	return ucgu
+}
+
 // Mutation returns the UserCareerGroupMutation object of the builder.
 func (ucgu *UserCareerGroupUpdate) Mutation() *UserCareerGroupMutation {
 	return ucgu.mutation
@@ -38,6 +45,7 @@ func (ucgu *UserCareerGroupUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	ucgu.defaults()
 	if len(ucgu.hooks) == 0 {
 		affected, err = ucgu.sqlSave(ctx)
 	} else {
@@ -86,6 +94,14 @@ func (ucgu *UserCareerGroupUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ucgu *UserCareerGroupUpdate) defaults() {
+	if _, ok := ucgu.mutation.UpdateTime(); !ok {
+		v := usercareergroup.UpdateDefaultUpdateTime()
+		ucgu.mutation.SetUpdateTime(v)
+	}
+}
+
 func (ucgu *UserCareerGroupUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -103,6 +119,13 @@ func (ucgu *UserCareerGroupUpdate) sqlSave(ctx context.Context) (n int, err erro
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := ucgu.mutation.UpdateTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: usercareergroup.FieldUpdateTime,
+		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ucgu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -123,6 +146,12 @@ type UserCareerGroupUpdateOne struct {
 	mutation *UserCareerGroupMutation
 }
 
+// SetUpdateTime sets the "update_time" field.
+func (ucguo *UserCareerGroupUpdateOne) SetUpdateTime(t time.Time) *UserCareerGroupUpdateOne {
+	ucguo.mutation.SetUpdateTime(t)
+	return ucguo
+}
+
 // Mutation returns the UserCareerGroupMutation object of the builder.
 func (ucguo *UserCareerGroupUpdateOne) Mutation() *UserCareerGroupMutation {
 	return ucguo.mutation
@@ -141,6 +170,7 @@ func (ucguo *UserCareerGroupUpdateOne) Save(ctx context.Context) (*UserCareerGro
 		err  error
 		node *UserCareerGroup
 	)
+	ucguo.defaults()
 	if len(ucguo.hooks) == 0 {
 		node, err = ucguo.sqlSave(ctx)
 	} else {
@@ -195,6 +225,14 @@ func (ucguo *UserCareerGroupUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ucguo *UserCareerGroupUpdateOne) defaults() {
+	if _, ok := ucguo.mutation.UpdateTime(); !ok {
+		v := usercareergroup.UpdateDefaultUpdateTime()
+		ucguo.mutation.SetUpdateTime(v)
+	}
+}
+
 func (ucguo *UserCareerGroupUpdateOne) sqlSave(ctx context.Context) (_node *UserCareerGroup, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -229,6 +267,13 @@ func (ucguo *UserCareerGroupUpdateOne) sqlSave(ctx context.Context) (_node *User
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := ucguo.mutation.UpdateTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: usercareergroup.FieldUpdateTime,
+		})
 	}
 	_node = &UserCareerGroup{config: ucguo.config}
 	_spec.Assign = _node.assignValues

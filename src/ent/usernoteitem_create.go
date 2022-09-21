@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -21,6 +22,34 @@ type UserNoteItemCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetCreateTime sets the "create_time" field.
+func (unic *UserNoteItemCreate) SetCreateTime(t time.Time) *UserNoteItemCreate {
+	unic.mutation.SetCreateTime(t)
+	return unic
+}
+
+// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
+func (unic *UserNoteItemCreate) SetNillableCreateTime(t *time.Time) *UserNoteItemCreate {
+	if t != nil {
+		unic.SetCreateTime(*t)
+	}
+	return unic
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (unic *UserNoteItemCreate) SetUpdateTime(t time.Time) *UserNoteItemCreate {
+	unic.mutation.SetUpdateTime(t)
+	return unic
+}
+
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (unic *UserNoteItemCreate) SetNillableUpdateTime(t *time.Time) *UserNoteItemCreate {
+	if t != nil {
+		unic.SetUpdateTime(*t)
+	}
+	return unic
+}
+
 // Mutation returns the UserNoteItemMutation object of the builder.
 func (unic *UserNoteItemCreate) Mutation() *UserNoteItemMutation {
 	return unic.mutation
@@ -32,6 +61,7 @@ func (unic *UserNoteItemCreate) Save(ctx context.Context) (*UserNoteItem, error)
 		err  error
 		node *UserNoteItem
 	)
+	unic.defaults()
 	if len(unic.hooks) == 0 {
 		if err = unic.check(); err != nil {
 			return nil, err
@@ -95,8 +125,26 @@ func (unic *UserNoteItemCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (unic *UserNoteItemCreate) defaults() {
+	if _, ok := unic.mutation.CreateTime(); !ok {
+		v := usernoteitem.DefaultCreateTime()
+		unic.mutation.SetCreateTime(v)
+	}
+	if _, ok := unic.mutation.UpdateTime(); !ok {
+		v := usernoteitem.DefaultUpdateTime()
+		unic.mutation.SetUpdateTime(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (unic *UserNoteItemCreate) check() error {
+	if _, ok := unic.mutation.CreateTime(); !ok {
+		return &ValidationError{Name: "create_time", err: errors.New(`ent: missing required field "UserNoteItem.create_time"`)}
+	}
+	if _, ok := unic.mutation.UpdateTime(); !ok {
+		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "UserNoteItem.update_time"`)}
+	}
 	return nil
 }
 
@@ -125,6 +173,22 @@ func (unic *UserNoteItemCreate) createSpec() (*UserNoteItem, *sqlgraph.CreateSpe
 		}
 	)
 	_spec.OnConflict = unic.conflict
+	if value, ok := unic.mutation.CreateTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: usernoteitem.FieldCreateTime,
+		})
+		_node.CreateTime = value
+	}
+	if value, ok := unic.mutation.UpdateTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: usernoteitem.FieldUpdateTime,
+		})
+		_node.UpdateTime = value
+	}
 	return _node, _spec
 }
 
@@ -132,11 +196,17 @@ func (unic *UserNoteItemCreate) createSpec() (*UserNoteItem, *sqlgraph.CreateSpe
 // of the `INSERT` statement. For example:
 //
 //	client.UserNoteItem.Create().
+//		SetCreateTime(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
 //			sql.ResolveWithNewValues(),
 //		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.UserNoteItemUpsert) {
+//			SetCreateTime(v+v).
+//		}).
 //		Exec(ctx)
 func (unic *UserNoteItemCreate) OnConflict(opts ...sql.ConflictOption) *UserNoteItemUpsertOne {
 	unic.conflict = opts
@@ -171,6 +241,30 @@ type (
 	}
 )
 
+// SetCreateTime sets the "create_time" field.
+func (u *UserNoteItemUpsert) SetCreateTime(v time.Time) *UserNoteItemUpsert {
+	u.Set(usernoteitem.FieldCreateTime, v)
+	return u
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserNoteItemUpsert) UpdateCreateTime() *UserNoteItemUpsert {
+	u.SetExcluded(usernoteitem.FieldCreateTime)
+	return u
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserNoteItemUpsert) SetUpdateTime(v time.Time) *UserNoteItemUpsert {
+	u.Set(usernoteitem.FieldUpdateTime, v)
+	return u
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserNoteItemUpsert) UpdateUpdateTime() *UserNoteItemUpsert {
+	u.SetExcluded(usernoteitem.FieldUpdateTime)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -181,6 +275,11 @@ type (
 //		Exec(ctx)
 func (u *UserNoteItemUpsertOne) UpdateNewValues() *UserNoteItemUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreateTime(); exists {
+			s.SetIgnore(usernoteitem.FieldCreateTime)
+		}
+	}))
 	return u
 }
 
@@ -209,6 +308,34 @@ func (u *UserNoteItemUpsertOne) Update(set func(*UserNoteItemUpsert)) *UserNoteI
 		set(&UserNoteItemUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *UserNoteItemUpsertOne) SetCreateTime(v time.Time) *UserNoteItemUpsertOne {
+	return u.Update(func(s *UserNoteItemUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserNoteItemUpsertOne) UpdateCreateTime() *UserNoteItemUpsertOne {
+	return u.Update(func(s *UserNoteItemUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserNoteItemUpsertOne) SetUpdateTime(v time.Time) *UserNoteItemUpsertOne {
+	return u.Update(func(s *UserNoteItemUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserNoteItemUpsertOne) UpdateUpdateTime() *UserNoteItemUpsertOne {
+	return u.Update(func(s *UserNoteItemUpsert) {
+		s.UpdateUpdateTime()
+	})
 }
 
 // Exec executes the query.
@@ -259,6 +386,7 @@ func (unicb *UserNoteItemCreateBulk) Save(ctx context.Context) ([]*UserNoteItem,
 	for i := range unicb.builders {
 		func(i int, root context.Context) {
 			builder := unicb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*UserNoteItemMutation)
 				if !ok {
@@ -338,6 +466,11 @@ func (unicb *UserNoteItemCreateBulk) ExecX(ctx context.Context) {
 //			// the was proposed for insertion.
 //			sql.ResolveWithNewValues(),
 //		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.UserNoteItemUpsert) {
+//			SetCreateTime(v+v).
+//		}).
 //		Exec(ctx)
 func (unicb *UserNoteItemCreateBulk) OnConflict(opts ...sql.ConflictOption) *UserNoteItemUpsertBulk {
 	unicb.conflict = opts
@@ -375,6 +508,13 @@ type UserNoteItemUpsertBulk struct {
 //		Exec(ctx)
 func (u *UserNoteItemUpsertBulk) UpdateNewValues() *UserNoteItemUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreateTime(); exists {
+				s.SetIgnore(usernoteitem.FieldCreateTime)
+			}
+		}
+	}))
 	return u
 }
 
@@ -403,6 +543,34 @@ func (u *UserNoteItemUpsertBulk) Update(set func(*UserNoteItemUpsert)) *UserNote
 		set(&UserNoteItemUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *UserNoteItemUpsertBulk) SetCreateTime(v time.Time) *UserNoteItemUpsertBulk {
+	return u.Update(func(s *UserNoteItemUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserNoteItemUpsertBulk) UpdateCreateTime() *UserNoteItemUpsertBulk {
+	return u.Update(func(s *UserNoteItemUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserNoteItemUpsertBulk) SetUpdateTime(v time.Time) *UserNoteItemUpsertBulk {
+	return u.Update(func(s *UserNoteItemUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserNoteItemUpsertBulk) UpdateUpdateTime() *UserNoteItemUpsertBulk {
+	return u.Update(func(s *UserNoteItemUpsert) {
+		s.UpdateUpdateTime()
+	})
 }
 
 // Exec executes the query.

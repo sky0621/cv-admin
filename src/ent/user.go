@@ -41,6 +41,27 @@ type User struct {
 	BelongTo *string `json:"belong_to,omitempty"`
 	// Pr holds the value of the "pr" field.
 	Pr *string `json:"pr,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the UserQuery when eager-loading is set.
+	Edges UserEdges `json:"edges"`
+}
+
+// UserEdges holds the relations/edges for other nodes in the graph.
+type UserEdges struct {
+	// Activities holds the value of the activities edge.
+	Activities []*UserActivity `json:"activities,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// ActivitiesOrErr returns the Activities value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ActivitiesOrErr() ([]*UserActivity, error) {
+	if e.loadedTypes[0] {
+		return e.Activities, nil
+	}
+	return nil, &NotLoadedError{edge: "activities"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -155,6 +176,11 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 		}
 	}
 	return nil
+}
+
+// QueryActivities queries the "activities" edge of the User entity.
+func (u *User) QueryActivities() *UserActivityQuery {
+	return (&UserClient{config: u.config}).QueryActivities(u)
 }
 
 // Update returns a builder for updating this User.

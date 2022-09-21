@@ -249,6 +249,18 @@ func (csq *CareerSkillQuery) Clone() *CareerSkillQuery {
 
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		CreateTime time.Time `json:"create_time,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.CareerSkill.Query().
+//		GroupBy(careerskill.FieldCreateTime).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (csq *CareerSkillQuery) GroupBy(field string, fields ...string) *CareerSkillGroupBy {
 	grbuild := &CareerSkillGroupBy{config: csq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -265,6 +277,16 @@ func (csq *CareerSkillQuery) GroupBy(field string, fields ...string) *CareerSkil
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		CreateTime time.Time `json:"create_time,omitempty"`
+//	}
+//
+//	client.CareerSkill.Query().
+//		Select(careerskill.FieldCreateTime).
+//		Scan(ctx, &v)
 func (csq *CareerSkillQuery) Select(fields ...string) *CareerSkillSelect {
 	csq.fields = append(csq.fields, fields...)
 	selbuild := &CareerSkillSelect{CareerSkillQuery: csq}

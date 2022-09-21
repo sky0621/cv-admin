@@ -2,18 +2,52 @@
 
 package useractivity
 
+import (
+	"time"
+)
+
 const (
 	// Label holds the string label denoting the useractivity type in the database.
 	Label = "user_activity"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldCreateTime holds the string denoting the create_time field in the database.
+	FieldCreateTime = "create_time"
+	// FieldUpdateTime holds the string denoting the update_time field in the database.
+	FieldUpdateTime = "update_time"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
+	// FieldURL holds the string denoting the url field in the database.
+	FieldURL = "url"
+	// FieldIcon holds the string denoting the icon field in the database.
+	FieldIcon = "icon"
+	// EdgeUser holds the string denoting the user edge name in mutations.
+	EdgeUser = "user"
 	// Table holds the table name of the useractivity in the database.
 	Table = "user_activities"
+	// UserTable is the table that holds the user relation/edge.
+	UserTable = "user_activities"
+	// UserInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UserInverseTable = "users"
+	// UserColumn is the table column denoting the user relation/edge.
+	UserColumn = "user_activities"
 )
 
 // Columns holds all SQL columns for useractivity fields.
 var Columns = []string{
 	FieldID,
+	FieldCreateTime,
+	FieldUpdateTime,
+	FieldName,
+	FieldURL,
+	FieldIcon,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "user_activities"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"user_activities",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -23,5 +57,25 @@ func ValidColumn(column string) bool {
 			return true
 		}
 	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
+			return true
+		}
+	}
 	return false
 }
+
+var (
+	// DefaultCreateTime holds the default value on creation for the "create_time" field.
+	DefaultCreateTime func() time.Time
+	// DefaultUpdateTime holds the default value on creation for the "update_time" field.
+	DefaultUpdateTime func() time.Time
+	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
+	UpdateDefaultUpdateTime func() time.Time
+	// NameValidator is a validator for the "name" field. It is called by the builders before save.
+	NameValidator func(string) error
+	// URLValidator is a validator for the "url" field. It is called by the builders before save.
+	URLValidator func(string) error
+	// IconValidator is a validator for the "icon" field. It is called by the builders before save.
+	IconValidator func(string) error
+)

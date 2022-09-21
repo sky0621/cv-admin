@@ -249,6 +249,18 @@ func (ucgq *UserCareerGroupQuery) Clone() *UserCareerGroupQuery {
 
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		CreateTime time.Time `json:"create_time,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.UserCareerGroup.Query().
+//		GroupBy(usercareergroup.FieldCreateTime).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (ucgq *UserCareerGroupQuery) GroupBy(field string, fields ...string) *UserCareerGroupGroupBy {
 	grbuild := &UserCareerGroupGroupBy{config: ucgq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -265,6 +277,16 @@ func (ucgq *UserCareerGroupQuery) GroupBy(field string, fields ...string) *UserC
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		CreateTime time.Time `json:"create_time,omitempty"`
+//	}
+//
+//	client.UserCareerGroup.Query().
+//		Select(usercareergroup.FieldCreateTime).
+//		Scan(ctx, &v)
 func (ucgq *UserCareerGroupQuery) Select(fields ...string) *UserCareerGroupSelect {
 	ucgq.fields = append(ucgq.fields, fields...)
 	selbuild := &UserCareerGroupSelect{UserCareerGroupQuery: ucgq}

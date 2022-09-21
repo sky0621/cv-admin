@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -21,6 +22,34 @@ type UserQualificationCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetCreateTime sets the "create_time" field.
+func (uqc *UserQualificationCreate) SetCreateTime(t time.Time) *UserQualificationCreate {
+	uqc.mutation.SetCreateTime(t)
+	return uqc
+}
+
+// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
+func (uqc *UserQualificationCreate) SetNillableCreateTime(t *time.Time) *UserQualificationCreate {
+	if t != nil {
+		uqc.SetCreateTime(*t)
+	}
+	return uqc
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (uqc *UserQualificationCreate) SetUpdateTime(t time.Time) *UserQualificationCreate {
+	uqc.mutation.SetUpdateTime(t)
+	return uqc
+}
+
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (uqc *UserQualificationCreate) SetNillableUpdateTime(t *time.Time) *UserQualificationCreate {
+	if t != nil {
+		uqc.SetUpdateTime(*t)
+	}
+	return uqc
+}
+
 // Mutation returns the UserQualificationMutation object of the builder.
 func (uqc *UserQualificationCreate) Mutation() *UserQualificationMutation {
 	return uqc.mutation
@@ -32,6 +61,7 @@ func (uqc *UserQualificationCreate) Save(ctx context.Context) (*UserQualificatio
 		err  error
 		node *UserQualification
 	)
+	uqc.defaults()
 	if len(uqc.hooks) == 0 {
 		if err = uqc.check(); err != nil {
 			return nil, err
@@ -95,8 +125,26 @@ func (uqc *UserQualificationCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (uqc *UserQualificationCreate) defaults() {
+	if _, ok := uqc.mutation.CreateTime(); !ok {
+		v := userqualification.DefaultCreateTime()
+		uqc.mutation.SetCreateTime(v)
+	}
+	if _, ok := uqc.mutation.UpdateTime(); !ok {
+		v := userqualification.DefaultUpdateTime()
+		uqc.mutation.SetUpdateTime(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (uqc *UserQualificationCreate) check() error {
+	if _, ok := uqc.mutation.CreateTime(); !ok {
+		return &ValidationError{Name: "create_time", err: errors.New(`ent: missing required field "UserQualification.create_time"`)}
+	}
+	if _, ok := uqc.mutation.UpdateTime(); !ok {
+		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "UserQualification.update_time"`)}
+	}
 	return nil
 }
 
@@ -125,6 +173,22 @@ func (uqc *UserQualificationCreate) createSpec() (*UserQualification, *sqlgraph.
 		}
 	)
 	_spec.OnConflict = uqc.conflict
+	if value, ok := uqc.mutation.CreateTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: userqualification.FieldCreateTime,
+		})
+		_node.CreateTime = value
+	}
+	if value, ok := uqc.mutation.UpdateTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: userqualification.FieldUpdateTime,
+		})
+		_node.UpdateTime = value
+	}
 	return _node, _spec
 }
 
@@ -132,11 +196,17 @@ func (uqc *UserQualificationCreate) createSpec() (*UserQualification, *sqlgraph.
 // of the `INSERT` statement. For example:
 //
 //	client.UserQualification.Create().
+//		SetCreateTime(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
 //			sql.ResolveWithNewValues(),
 //		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.UserQualificationUpsert) {
+//			SetCreateTime(v+v).
+//		}).
 //		Exec(ctx)
 func (uqc *UserQualificationCreate) OnConflict(opts ...sql.ConflictOption) *UserQualificationUpsertOne {
 	uqc.conflict = opts
@@ -171,6 +241,30 @@ type (
 	}
 )
 
+// SetCreateTime sets the "create_time" field.
+func (u *UserQualificationUpsert) SetCreateTime(v time.Time) *UserQualificationUpsert {
+	u.Set(userqualification.FieldCreateTime, v)
+	return u
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserQualificationUpsert) UpdateCreateTime() *UserQualificationUpsert {
+	u.SetExcluded(userqualification.FieldCreateTime)
+	return u
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserQualificationUpsert) SetUpdateTime(v time.Time) *UserQualificationUpsert {
+	u.Set(userqualification.FieldUpdateTime, v)
+	return u
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserQualificationUpsert) UpdateUpdateTime() *UserQualificationUpsert {
+	u.SetExcluded(userqualification.FieldUpdateTime)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -181,6 +275,11 @@ type (
 //		Exec(ctx)
 func (u *UserQualificationUpsertOne) UpdateNewValues() *UserQualificationUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreateTime(); exists {
+			s.SetIgnore(userqualification.FieldCreateTime)
+		}
+	}))
 	return u
 }
 
@@ -209,6 +308,34 @@ func (u *UserQualificationUpsertOne) Update(set func(*UserQualificationUpsert)) 
 		set(&UserQualificationUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *UserQualificationUpsertOne) SetCreateTime(v time.Time) *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserQualificationUpsertOne) UpdateCreateTime() *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserQualificationUpsertOne) SetUpdateTime(v time.Time) *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserQualificationUpsertOne) UpdateUpdateTime() *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.UpdateUpdateTime()
+	})
 }
 
 // Exec executes the query.
@@ -259,6 +386,7 @@ func (uqcb *UserQualificationCreateBulk) Save(ctx context.Context) ([]*UserQuali
 	for i := range uqcb.builders {
 		func(i int, root context.Context) {
 			builder := uqcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*UserQualificationMutation)
 				if !ok {
@@ -338,6 +466,11 @@ func (uqcb *UserQualificationCreateBulk) ExecX(ctx context.Context) {
 //			// the was proposed for insertion.
 //			sql.ResolveWithNewValues(),
 //		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.UserQualificationUpsert) {
+//			SetCreateTime(v+v).
+//		}).
 //		Exec(ctx)
 func (uqcb *UserQualificationCreateBulk) OnConflict(opts ...sql.ConflictOption) *UserQualificationUpsertBulk {
 	uqcb.conflict = opts
@@ -375,6 +508,13 @@ type UserQualificationUpsertBulk struct {
 //		Exec(ctx)
 func (u *UserQualificationUpsertBulk) UpdateNewValues() *UserQualificationUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreateTime(); exists {
+				s.SetIgnore(userqualification.FieldCreateTime)
+			}
+		}
+	}))
 	return u
 }
 
@@ -403,6 +543,34 @@ func (u *UserQualificationUpsertBulk) Update(set func(*UserQualificationUpsert))
 		set(&UserQualificationUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *UserQualificationUpsertBulk) SetCreateTime(v time.Time) *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserQualificationUpsertBulk) UpdateCreateTime() *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserQualificationUpsertBulk) SetUpdateTime(v time.Time) *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserQualificationUpsertBulk) UpdateUpdateTime() *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.UpdateUpdateTime()
+	})
 }
 
 // Exec executes the query.

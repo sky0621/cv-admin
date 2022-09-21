@@ -249,6 +249,18 @@ func (uniq *UserNoteItemQuery) Clone() *UserNoteItemQuery {
 
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		CreateTime time.Time `json:"create_time,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.UserNoteItem.Query().
+//		GroupBy(usernoteitem.FieldCreateTime).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (uniq *UserNoteItemQuery) GroupBy(field string, fields ...string) *UserNoteItemGroupBy {
 	grbuild := &UserNoteItemGroupBy{config: uniq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -265,6 +277,16 @@ func (uniq *UserNoteItemQuery) GroupBy(field string, fields ...string) *UserNote
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		CreateTime time.Time `json:"create_time,omitempty"`
+//	}
+//
+//	client.UserNoteItem.Query().
+//		Select(usernoteitem.FieldCreateTime).
+//		Scan(ctx, &v)
 func (uniq *UserNoteItemQuery) Select(fields ...string) *UserNoteItemSelect {
 	uniq.fields = append(uniq.fields, fields...)
 	selbuild := &UserNoteItemSelect{UserNoteItemQuery: uniq}

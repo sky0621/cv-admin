@@ -12,6 +12,12 @@ func (CareerSkillGroup) Fields() []ent.Field {
 	return nil
 }
 
+func (CareerSkillGroup) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		TimeMixin{},
+	}
+}
+
 // Edges of the CareerSkillGroup.
 func (CareerSkillGroup) Edges() []ent.Edge {
 	return nil

@@ -249,6 +249,18 @@ func (ctq *CareerTaskQuery) Clone() *CareerTaskQuery {
 
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		CreateTime time.Time `json:"create_time,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.CareerTask.Query().
+//		GroupBy(careertask.FieldCreateTime).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (ctq *CareerTaskQuery) GroupBy(field string, fields ...string) *CareerTaskGroupBy {
 	grbuild := &CareerTaskGroupBy{config: ctq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -265,6 +277,16 @@ func (ctq *CareerTaskQuery) GroupBy(field string, fields ...string) *CareerTaskG
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		CreateTime time.Time `json:"create_time,omitempty"`
+//	}
+//
+//	client.CareerTask.Query().
+//		Select(careertask.FieldCreateTime).
+//		Scan(ctx, &v)
 func (ctq *CareerTaskQuery) Select(fields ...string) *CareerTaskSelect {
 	ctq.fields = append(ctq.fields, fields...)
 	selbuild := &CareerTaskSelect{CareerTaskQuery: ctq}

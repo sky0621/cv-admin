@@ -11,6 +11,8 @@ var (
 	// CareerSkillsColumns holds the columns for the "career_skills" table.
 	CareerSkillsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
 	}
 	// CareerSkillsTable holds the schema information for the "career_skills" table.
 	CareerSkillsTable = &schema.Table{
@@ -21,6 +23,8 @@ var (
 	// CareerSkillGroupsColumns holds the columns for the "career_skill_groups" table.
 	CareerSkillGroupsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
 	}
 	// CareerSkillGroupsTable holds the schema information for the "career_skill_groups" table.
 	CareerSkillGroupsTable = &schema.Table{
@@ -31,6 +35,8 @@ var (
 	// CareerTasksColumns holds the columns for the "career_tasks" table.
 	CareerTasksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
 	}
 	// CareerTasksTable holds the schema information for the "career_tasks" table.
 	CareerTasksTable = &schema.Table{
@@ -63,16 +69,32 @@ var (
 	// UserActivitiesColumns holds the columns for the "user_activities" table.
 	UserActivitiesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString},
+		{Name: "url", Type: field.TypeString, Nullable: true},
+		{Name: "icon", Type: field.TypeString, Nullable: true},
+		{Name: "user_activities", Type: field.TypeInt, Nullable: true},
 	}
 	// UserActivitiesTable holds the schema information for the "user_activities" table.
 	UserActivitiesTable = &schema.Table{
 		Name:       "user_activities",
 		Columns:    UserActivitiesColumns,
 		PrimaryKey: []*schema.Column{UserActivitiesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_activities_users_activities",
+				Columns:    []*schema.Column{UserActivitiesColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// UserCareersColumns holds the columns for the "user_careers" table.
 	UserCareersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
 	}
 	// UserCareersTable holds the schema information for the "user_careers" table.
 	UserCareersTable = &schema.Table{
@@ -83,6 +105,8 @@ var (
 	// UserCareerGroupsColumns holds the columns for the "user_career_groups" table.
 	UserCareerGroupsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
 	}
 	// UserCareerGroupsTable holds the schema information for the "user_career_groups" table.
 	UserCareerGroupsTable = &schema.Table{
@@ -93,6 +117,8 @@ var (
 	// UserNotesColumns holds the columns for the "user_notes" table.
 	UserNotesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
 	}
 	// UserNotesTable holds the schema information for the "user_notes" table.
 	UserNotesTable = &schema.Table{
@@ -103,6 +129,8 @@ var (
 	// UserNoteItemsColumns holds the columns for the "user_note_items" table.
 	UserNoteItemsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
 	}
 	// UserNoteItemsTable holds the schema information for the "user_note_items" table.
 	UserNoteItemsTable = &schema.Table{
@@ -113,6 +141,8 @@ var (
 	// UserQualificationsColumns holds the columns for the "user_qualifications" table.
 	UserQualificationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
 	}
 	// UserQualificationsTable holds the schema information for the "user_qualifications" table.
 	UserQualificationsTable = &schema.Table{
@@ -136,4 +166,5 @@ var (
 )
 
 func init() {
+	UserActivitiesTable.ForeignKeys[0].RefTable = UsersTable
 }

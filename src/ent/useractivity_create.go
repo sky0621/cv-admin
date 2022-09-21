@@ -6,10 +6,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
 )
 
@@ -19,6 +21,87 @@ type UserActivityCreate struct {
 	mutation *UserActivityMutation
 	hooks    []Hook
 	conflict []sql.ConflictOption
+}
+
+// SetCreateTime sets the "create_time" field.
+func (uac *UserActivityCreate) SetCreateTime(t time.Time) *UserActivityCreate {
+	uac.mutation.SetCreateTime(t)
+	return uac
+}
+
+// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
+func (uac *UserActivityCreate) SetNillableCreateTime(t *time.Time) *UserActivityCreate {
+	if t != nil {
+		uac.SetCreateTime(*t)
+	}
+	return uac
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (uac *UserActivityCreate) SetUpdateTime(t time.Time) *UserActivityCreate {
+	uac.mutation.SetUpdateTime(t)
+	return uac
+}
+
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (uac *UserActivityCreate) SetNillableUpdateTime(t *time.Time) *UserActivityCreate {
+	if t != nil {
+		uac.SetUpdateTime(*t)
+	}
+	return uac
+}
+
+// SetName sets the "name" field.
+func (uac *UserActivityCreate) SetName(s string) *UserActivityCreate {
+	uac.mutation.SetName(s)
+	return uac
+}
+
+// SetURL sets the "url" field.
+func (uac *UserActivityCreate) SetURL(s string) *UserActivityCreate {
+	uac.mutation.SetURL(s)
+	return uac
+}
+
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (uac *UserActivityCreate) SetNillableURL(s *string) *UserActivityCreate {
+	if s != nil {
+		uac.SetURL(*s)
+	}
+	return uac
+}
+
+// SetIcon sets the "icon" field.
+func (uac *UserActivityCreate) SetIcon(s string) *UserActivityCreate {
+	uac.mutation.SetIcon(s)
+	return uac
+}
+
+// SetNillableIcon sets the "icon" field if the given value is not nil.
+func (uac *UserActivityCreate) SetNillableIcon(s *string) *UserActivityCreate {
+	if s != nil {
+		uac.SetIcon(*s)
+	}
+	return uac
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (uac *UserActivityCreate) SetUserID(id int) *UserActivityCreate {
+	uac.mutation.SetUserID(id)
+	return uac
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (uac *UserActivityCreate) SetNillableUserID(id *int) *UserActivityCreate {
+	if id != nil {
+		uac = uac.SetUserID(*id)
+	}
+	return uac
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (uac *UserActivityCreate) SetUser(u *User) *UserActivityCreate {
+	return uac.SetUserID(u.ID)
 }
 
 // Mutation returns the UserActivityMutation object of the builder.
@@ -32,6 +115,7 @@ func (uac *UserActivityCreate) Save(ctx context.Context) (*UserActivity, error) 
 		err  error
 		node *UserActivity
 	)
+	uac.defaults()
 	if len(uac.hooks) == 0 {
 		if err = uac.check(); err != nil {
 			return nil, err
@@ -95,8 +179,44 @@ func (uac *UserActivityCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (uac *UserActivityCreate) defaults() {
+	if _, ok := uac.mutation.CreateTime(); !ok {
+		v := useractivity.DefaultCreateTime()
+		uac.mutation.SetCreateTime(v)
+	}
+	if _, ok := uac.mutation.UpdateTime(); !ok {
+		v := useractivity.DefaultUpdateTime()
+		uac.mutation.SetUpdateTime(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (uac *UserActivityCreate) check() error {
+	if _, ok := uac.mutation.CreateTime(); !ok {
+		return &ValidationError{Name: "create_time", err: errors.New(`ent: missing required field "UserActivity.create_time"`)}
+	}
+	if _, ok := uac.mutation.UpdateTime(); !ok {
+		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "UserActivity.update_time"`)}
+	}
+	if _, ok := uac.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "UserActivity.name"`)}
+	}
+	if v, ok := uac.mutation.Name(); ok {
+		if err := useractivity.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "UserActivity.name": %w`, err)}
+		}
+	}
+	if v, ok := uac.mutation.URL(); ok {
+		if err := useractivity.URLValidator(v); err != nil {
+			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "UserActivity.url": %w`, err)}
+		}
+	}
+	if v, ok := uac.mutation.Icon(); ok {
+		if err := useractivity.IconValidator(v); err != nil {
+			return &ValidationError{Name: "icon", err: fmt.Errorf(`ent: validator failed for field "UserActivity.icon": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -125,6 +245,66 @@ func (uac *UserActivityCreate) createSpec() (*UserActivity, *sqlgraph.CreateSpec
 		}
 	)
 	_spec.OnConflict = uac.conflict
+	if value, ok := uac.mutation.CreateTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: useractivity.FieldCreateTime,
+		})
+		_node.CreateTime = value
+	}
+	if value, ok := uac.mutation.UpdateTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: useractivity.FieldUpdateTime,
+		})
+		_node.UpdateTime = value
+	}
+	if value, ok := uac.mutation.Name(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: useractivity.FieldName,
+		})
+		_node.Name = value
+	}
+	if value, ok := uac.mutation.URL(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: useractivity.FieldURL,
+		})
+		_node.URL = &value
+	}
+	if value, ok := uac.mutation.Icon(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: useractivity.FieldIcon,
+		})
+		_node.Icon = &value
+	}
+	if nodes := uac.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   useractivity.UserTable,
+			Columns: []string{useractivity.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_activities = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -132,11 +312,17 @@ func (uac *UserActivityCreate) createSpec() (*UserActivity, *sqlgraph.CreateSpec
 // of the `INSERT` statement. For example:
 //
 //	client.UserActivity.Create().
+//		SetCreateTime(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
 //			sql.ResolveWithNewValues(),
 //		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.UserActivityUpsert) {
+//			SetCreateTime(v+v).
+//		}).
 //		Exec(ctx)
 func (uac *UserActivityCreate) OnConflict(opts ...sql.ConflictOption) *UserActivityUpsertOne {
 	uac.conflict = opts
@@ -171,6 +357,78 @@ type (
 	}
 )
 
+// SetCreateTime sets the "create_time" field.
+func (u *UserActivityUpsert) SetCreateTime(v time.Time) *UserActivityUpsert {
+	u.Set(useractivity.FieldCreateTime, v)
+	return u
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserActivityUpsert) UpdateCreateTime() *UserActivityUpsert {
+	u.SetExcluded(useractivity.FieldCreateTime)
+	return u
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserActivityUpsert) SetUpdateTime(v time.Time) *UserActivityUpsert {
+	u.Set(useractivity.FieldUpdateTime, v)
+	return u
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserActivityUpsert) UpdateUpdateTime() *UserActivityUpsert {
+	u.SetExcluded(useractivity.FieldUpdateTime)
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *UserActivityUpsert) SetName(v string) *UserActivityUpsert {
+	u.Set(useractivity.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *UserActivityUpsert) UpdateName() *UserActivityUpsert {
+	u.SetExcluded(useractivity.FieldName)
+	return u
+}
+
+// SetURL sets the "url" field.
+func (u *UserActivityUpsert) SetURL(v string) *UserActivityUpsert {
+	u.Set(useractivity.FieldURL, v)
+	return u
+}
+
+// UpdateURL sets the "url" field to the value that was provided on create.
+func (u *UserActivityUpsert) UpdateURL() *UserActivityUpsert {
+	u.SetExcluded(useractivity.FieldURL)
+	return u
+}
+
+// ClearURL clears the value of the "url" field.
+func (u *UserActivityUpsert) ClearURL() *UserActivityUpsert {
+	u.SetNull(useractivity.FieldURL)
+	return u
+}
+
+// SetIcon sets the "icon" field.
+func (u *UserActivityUpsert) SetIcon(v string) *UserActivityUpsert {
+	u.Set(useractivity.FieldIcon, v)
+	return u
+}
+
+// UpdateIcon sets the "icon" field to the value that was provided on create.
+func (u *UserActivityUpsert) UpdateIcon() *UserActivityUpsert {
+	u.SetExcluded(useractivity.FieldIcon)
+	return u
+}
+
+// ClearIcon clears the value of the "icon" field.
+func (u *UserActivityUpsert) ClearIcon() *UserActivityUpsert {
+	u.SetNull(useractivity.FieldIcon)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -181,6 +439,11 @@ type (
 //		Exec(ctx)
 func (u *UserActivityUpsertOne) UpdateNewValues() *UserActivityUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreateTime(); exists {
+			s.SetIgnore(useractivity.FieldCreateTime)
+		}
+	}))
 	return u
 }
 
@@ -209,6 +472,90 @@ func (u *UserActivityUpsertOne) Update(set func(*UserActivityUpsert)) *UserActiv
 		set(&UserActivityUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *UserActivityUpsertOne) SetCreateTime(v time.Time) *UserActivityUpsertOne {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserActivityUpsertOne) UpdateCreateTime() *UserActivityUpsertOne {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserActivityUpsertOne) SetUpdateTime(v time.Time) *UserActivityUpsertOne {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserActivityUpsertOne) UpdateUpdateTime() *UserActivityUpsertOne {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.UpdateUpdateTime()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *UserActivityUpsertOne) SetName(v string) *UserActivityUpsertOne {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *UserActivityUpsertOne) UpdateName() *UserActivityUpsertOne {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetURL sets the "url" field.
+func (u *UserActivityUpsertOne) SetURL(v string) *UserActivityUpsertOne {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.SetURL(v)
+	})
+}
+
+// UpdateURL sets the "url" field to the value that was provided on create.
+func (u *UserActivityUpsertOne) UpdateURL() *UserActivityUpsertOne {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.UpdateURL()
+	})
+}
+
+// ClearURL clears the value of the "url" field.
+func (u *UserActivityUpsertOne) ClearURL() *UserActivityUpsertOne {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.ClearURL()
+	})
+}
+
+// SetIcon sets the "icon" field.
+func (u *UserActivityUpsertOne) SetIcon(v string) *UserActivityUpsertOne {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.SetIcon(v)
+	})
+}
+
+// UpdateIcon sets the "icon" field to the value that was provided on create.
+func (u *UserActivityUpsertOne) UpdateIcon() *UserActivityUpsertOne {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.UpdateIcon()
+	})
+}
+
+// ClearIcon clears the value of the "icon" field.
+func (u *UserActivityUpsertOne) ClearIcon() *UserActivityUpsertOne {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.ClearIcon()
+	})
 }
 
 // Exec executes the query.
@@ -259,6 +606,7 @@ func (uacb *UserActivityCreateBulk) Save(ctx context.Context) ([]*UserActivity, 
 	for i := range uacb.builders {
 		func(i int, root context.Context) {
 			builder := uacb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*UserActivityMutation)
 				if !ok {
@@ -338,6 +686,11 @@ func (uacb *UserActivityCreateBulk) ExecX(ctx context.Context) {
 //			// the was proposed for insertion.
 //			sql.ResolveWithNewValues(),
 //		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.UserActivityUpsert) {
+//			SetCreateTime(v+v).
+//		}).
 //		Exec(ctx)
 func (uacb *UserActivityCreateBulk) OnConflict(opts ...sql.ConflictOption) *UserActivityUpsertBulk {
 	uacb.conflict = opts
@@ -375,6 +728,13 @@ type UserActivityUpsertBulk struct {
 //		Exec(ctx)
 func (u *UserActivityUpsertBulk) UpdateNewValues() *UserActivityUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreateTime(); exists {
+				s.SetIgnore(useractivity.FieldCreateTime)
+			}
+		}
+	}))
 	return u
 }
 
@@ -403,6 +763,90 @@ func (u *UserActivityUpsertBulk) Update(set func(*UserActivityUpsert)) *UserActi
 		set(&UserActivityUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *UserActivityUpsertBulk) SetCreateTime(v time.Time) *UserActivityUpsertBulk {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserActivityUpsertBulk) UpdateCreateTime() *UserActivityUpsertBulk {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserActivityUpsertBulk) SetUpdateTime(v time.Time) *UserActivityUpsertBulk {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserActivityUpsertBulk) UpdateUpdateTime() *UserActivityUpsertBulk {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.UpdateUpdateTime()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *UserActivityUpsertBulk) SetName(v string) *UserActivityUpsertBulk {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *UserActivityUpsertBulk) UpdateName() *UserActivityUpsertBulk {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetURL sets the "url" field.
+func (u *UserActivityUpsertBulk) SetURL(v string) *UserActivityUpsertBulk {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.SetURL(v)
+	})
+}
+
+// UpdateURL sets the "url" field to the value that was provided on create.
+func (u *UserActivityUpsertBulk) UpdateURL() *UserActivityUpsertBulk {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.UpdateURL()
+	})
+}
+
+// ClearURL clears the value of the "url" field.
+func (u *UserActivityUpsertBulk) ClearURL() *UserActivityUpsertBulk {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.ClearURL()
+	})
+}
+
+// SetIcon sets the "icon" field.
+func (u *UserActivityUpsertBulk) SetIcon(v string) *UserActivityUpsertBulk {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.SetIcon(v)
+	})
+}
+
+// UpdateIcon sets the "icon" field to the value that was provided on create.
+func (u *UserActivityUpsertBulk) UpdateIcon() *UserActivityUpsertBulk {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.UpdateIcon()
+	})
+}
+
+// ClearIcon clears the value of the "icon" field.
+func (u *UserActivityUpsertBulk) ClearIcon() *UserActivityUpsertBulk {
+	return u.Update(func(s *UserActivityUpsert) {
+		s.ClearIcon()
+	})
 }
 
 // Exec executes the query.

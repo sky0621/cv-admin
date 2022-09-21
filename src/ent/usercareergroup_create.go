@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -21,6 +22,34 @@ type UserCareerGroupCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetCreateTime sets the "create_time" field.
+func (ucgc *UserCareerGroupCreate) SetCreateTime(t time.Time) *UserCareerGroupCreate {
+	ucgc.mutation.SetCreateTime(t)
+	return ucgc
+}
+
+// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
+func (ucgc *UserCareerGroupCreate) SetNillableCreateTime(t *time.Time) *UserCareerGroupCreate {
+	if t != nil {
+		ucgc.SetCreateTime(*t)
+	}
+	return ucgc
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (ucgc *UserCareerGroupCreate) SetUpdateTime(t time.Time) *UserCareerGroupCreate {
+	ucgc.mutation.SetUpdateTime(t)
+	return ucgc
+}
+
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (ucgc *UserCareerGroupCreate) SetNillableUpdateTime(t *time.Time) *UserCareerGroupCreate {
+	if t != nil {
+		ucgc.SetUpdateTime(*t)
+	}
+	return ucgc
+}
+
 // Mutation returns the UserCareerGroupMutation object of the builder.
 func (ucgc *UserCareerGroupCreate) Mutation() *UserCareerGroupMutation {
 	return ucgc.mutation
@@ -32,6 +61,7 @@ func (ucgc *UserCareerGroupCreate) Save(ctx context.Context) (*UserCareerGroup, 
 		err  error
 		node *UserCareerGroup
 	)
+	ucgc.defaults()
 	if len(ucgc.hooks) == 0 {
 		if err = ucgc.check(); err != nil {
 			return nil, err
@@ -95,8 +125,26 @@ func (ucgc *UserCareerGroupCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ucgc *UserCareerGroupCreate) defaults() {
+	if _, ok := ucgc.mutation.CreateTime(); !ok {
+		v := usercareergroup.DefaultCreateTime()
+		ucgc.mutation.SetCreateTime(v)
+	}
+	if _, ok := ucgc.mutation.UpdateTime(); !ok {
+		v := usercareergroup.DefaultUpdateTime()
+		ucgc.mutation.SetUpdateTime(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (ucgc *UserCareerGroupCreate) check() error {
+	if _, ok := ucgc.mutation.CreateTime(); !ok {
+		return &ValidationError{Name: "create_time", err: errors.New(`ent: missing required field "UserCareerGroup.create_time"`)}
+	}
+	if _, ok := ucgc.mutation.UpdateTime(); !ok {
+		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "UserCareerGroup.update_time"`)}
+	}
 	return nil
 }
 
@@ -125,6 +173,22 @@ func (ucgc *UserCareerGroupCreate) createSpec() (*UserCareerGroup, *sqlgraph.Cre
 		}
 	)
 	_spec.OnConflict = ucgc.conflict
+	if value, ok := ucgc.mutation.CreateTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: usercareergroup.FieldCreateTime,
+		})
+		_node.CreateTime = value
+	}
+	if value, ok := ucgc.mutation.UpdateTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: usercareergroup.FieldUpdateTime,
+		})
+		_node.UpdateTime = value
+	}
 	return _node, _spec
 }
 
@@ -132,11 +196,17 @@ func (ucgc *UserCareerGroupCreate) createSpec() (*UserCareerGroup, *sqlgraph.Cre
 // of the `INSERT` statement. For example:
 //
 //	client.UserCareerGroup.Create().
+//		SetCreateTime(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
 //			sql.ResolveWithNewValues(),
 //		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.UserCareerGroupUpsert) {
+//			SetCreateTime(v+v).
+//		}).
 //		Exec(ctx)
 func (ucgc *UserCareerGroupCreate) OnConflict(opts ...sql.ConflictOption) *UserCareerGroupUpsertOne {
 	ucgc.conflict = opts
@@ -171,6 +241,30 @@ type (
 	}
 )
 
+// SetCreateTime sets the "create_time" field.
+func (u *UserCareerGroupUpsert) SetCreateTime(v time.Time) *UserCareerGroupUpsert {
+	u.Set(usercareergroup.FieldCreateTime, v)
+	return u
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserCareerGroupUpsert) UpdateCreateTime() *UserCareerGroupUpsert {
+	u.SetExcluded(usercareergroup.FieldCreateTime)
+	return u
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserCareerGroupUpsert) SetUpdateTime(v time.Time) *UserCareerGroupUpsert {
+	u.Set(usercareergroup.FieldUpdateTime, v)
+	return u
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserCareerGroupUpsert) UpdateUpdateTime() *UserCareerGroupUpsert {
+	u.SetExcluded(usercareergroup.FieldUpdateTime)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -181,6 +275,11 @@ type (
 //		Exec(ctx)
 func (u *UserCareerGroupUpsertOne) UpdateNewValues() *UserCareerGroupUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreateTime(); exists {
+			s.SetIgnore(usercareergroup.FieldCreateTime)
+		}
+	}))
 	return u
 }
 
@@ -209,6 +308,34 @@ func (u *UserCareerGroupUpsertOne) Update(set func(*UserCareerGroupUpsert)) *Use
 		set(&UserCareerGroupUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *UserCareerGroupUpsertOne) SetCreateTime(v time.Time) *UserCareerGroupUpsertOne {
+	return u.Update(func(s *UserCareerGroupUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserCareerGroupUpsertOne) UpdateCreateTime() *UserCareerGroupUpsertOne {
+	return u.Update(func(s *UserCareerGroupUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserCareerGroupUpsertOne) SetUpdateTime(v time.Time) *UserCareerGroupUpsertOne {
+	return u.Update(func(s *UserCareerGroupUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserCareerGroupUpsertOne) UpdateUpdateTime() *UserCareerGroupUpsertOne {
+	return u.Update(func(s *UserCareerGroupUpsert) {
+		s.UpdateUpdateTime()
+	})
 }
 
 // Exec executes the query.
@@ -259,6 +386,7 @@ func (ucgcb *UserCareerGroupCreateBulk) Save(ctx context.Context) ([]*UserCareer
 	for i := range ucgcb.builders {
 		func(i int, root context.Context) {
 			builder := ucgcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*UserCareerGroupMutation)
 				if !ok {
@@ -338,6 +466,11 @@ func (ucgcb *UserCareerGroupCreateBulk) ExecX(ctx context.Context) {
 //			// the was proposed for insertion.
 //			sql.ResolveWithNewValues(),
 //		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.UserCareerGroupUpsert) {
+//			SetCreateTime(v+v).
+//		}).
 //		Exec(ctx)
 func (ucgcb *UserCareerGroupCreateBulk) OnConflict(opts ...sql.ConflictOption) *UserCareerGroupUpsertBulk {
 	ucgcb.conflict = opts
@@ -375,6 +508,13 @@ type UserCareerGroupUpsertBulk struct {
 //		Exec(ctx)
 func (u *UserCareerGroupUpsertBulk) UpdateNewValues() *UserCareerGroupUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreateTime(); exists {
+				s.SetIgnore(usercareergroup.FieldCreateTime)
+			}
+		}
+	}))
 	return u
 }
 
@@ -403,6 +543,34 @@ func (u *UserCareerGroupUpsertBulk) Update(set func(*UserCareerGroupUpsert)) *Us
 		set(&UserCareerGroupUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *UserCareerGroupUpsertBulk) SetCreateTime(v time.Time) *UserCareerGroupUpsertBulk {
+	return u.Update(func(s *UserCareerGroupUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *UserCareerGroupUpsertBulk) UpdateCreateTime() *UserCareerGroupUpsertBulk {
+	return u.Update(func(s *UserCareerGroupUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *UserCareerGroupUpsertBulk) SetUpdateTime(v time.Time) *UserCareerGroupUpsertBulk {
+	return u.Update(func(s *UserCareerGroupUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *UserCareerGroupUpsertBulk) UpdateUpdateTime() *UserCareerGroupUpsertBulk {
+	return u.Update(func(s *UserCareerGroupUpsert) {
+		s.UpdateUpdateTime()
+	})
 }
 
 // Exec executes the query.

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/user"
+	"github.com/sky0621/cv-admin/src/ent/useractivity"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -148,6 +149,21 @@ func (uc *UserCreate) SetNillablePr(s *string) *UserCreate {
 		uc.SetPr(*s)
 	}
 	return uc
+}
+
+// AddActivityIDs adds the "activities" edge to the UserActivity entity by IDs.
+func (uc *UserCreate) AddActivityIDs(ids ...int) *UserCreate {
+	uc.mutation.AddActivityIDs(ids...)
+	return uc
+}
+
+// AddActivities adds the "activities" edges to the UserActivity entity.
+func (uc *UserCreate) AddActivities(u ...*UserActivity) *UserCreate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uc.AddActivityIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -433,6 +449,25 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldPr,
 		})
 		_node.Pr = &value
+	}
+	if nodes := uc.mutation.ActivitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ActivitiesTable,
+			Columns: []string{user.ActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: useractivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

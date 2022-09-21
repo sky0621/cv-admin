@@ -12,6 +12,12 @@ func (UserCareer) Fields() []ent.Field {
 	return nil
 }
 
+func (UserCareer) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		TimeMixin{},
+	}
+}
+
 // Edges of the UserCareer.
 func (UserCareer) Edges() []ent.Edge {
 	return nil

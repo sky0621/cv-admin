@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -27,6 +28,12 @@ func (unu *UserNoteUpdate) Where(ps ...predicate.UserNote) *UserNoteUpdate {
 	return unu
 }
 
+// SetUpdateTime sets the "update_time" field.
+func (unu *UserNoteUpdate) SetUpdateTime(t time.Time) *UserNoteUpdate {
+	unu.mutation.SetUpdateTime(t)
+	return unu
+}
+
 // Mutation returns the UserNoteMutation object of the builder.
 func (unu *UserNoteUpdate) Mutation() *UserNoteMutation {
 	return unu.mutation
@@ -38,6 +45,7 @@ func (unu *UserNoteUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	unu.defaults()
 	if len(unu.hooks) == 0 {
 		affected, err = unu.sqlSave(ctx)
 	} else {
@@ -86,6 +94,14 @@ func (unu *UserNoteUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (unu *UserNoteUpdate) defaults() {
+	if _, ok := unu.mutation.UpdateTime(); !ok {
+		v := usernote.UpdateDefaultUpdateTime()
+		unu.mutation.SetUpdateTime(v)
+	}
+}
+
 func (unu *UserNoteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -103,6 +119,13 @@ func (unu *UserNoteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := unu.mutation.UpdateTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: usernote.FieldUpdateTime,
+		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, unu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -123,6 +146,12 @@ type UserNoteUpdateOne struct {
 	mutation *UserNoteMutation
 }
 
+// SetUpdateTime sets the "update_time" field.
+func (unuo *UserNoteUpdateOne) SetUpdateTime(t time.Time) *UserNoteUpdateOne {
+	unuo.mutation.SetUpdateTime(t)
+	return unuo
+}
+
 // Mutation returns the UserNoteMutation object of the builder.
 func (unuo *UserNoteUpdateOne) Mutation() *UserNoteMutation {
 	return unuo.mutation
@@ -141,6 +170,7 @@ func (unuo *UserNoteUpdateOne) Save(ctx context.Context) (*UserNote, error) {
 		err  error
 		node *UserNote
 	)
+	unuo.defaults()
 	if len(unuo.hooks) == 0 {
 		node, err = unuo.sqlSave(ctx)
 	} else {
@@ -195,6 +225,14 @@ func (unuo *UserNoteUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (unuo *UserNoteUpdateOne) defaults() {
+	if _, ok := unuo.mutation.UpdateTime(); !ok {
+		v := usernote.UpdateDefaultUpdateTime()
+		unuo.mutation.SetUpdateTime(v)
+	}
+}
+
 func (unuo *UserNoteUpdateOne) sqlSave(ctx context.Context) (_node *UserNote, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -229,6 +267,13 @@ func (unuo *UserNoteUpdateOne) sqlSave(ctx context.Context) (_node *UserNote, er
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := unuo.mutation.UpdateTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: usernote.FieldUpdateTime,
+		})
 	}
 	_node = &UserNote{config: unuo.config}
 	_spec.Assign = _node.assignValues

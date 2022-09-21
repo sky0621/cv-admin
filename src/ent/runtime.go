@@ -5,14 +5,68 @@ package ent
 import (
 	"time"
 
+	"github.com/sky0621/cv-admin/src/ent/careerskill"
+	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
+	"github.com/sky0621/cv-admin/src/ent/careertask"
 	"github.com/sky0621/cv-admin/src/ent/schema"
 	"github.com/sky0621/cv-admin/src/ent/user"
+	"github.com/sky0621/cv-admin/src/ent/useractivity"
+	"github.com/sky0621/cv-admin/src/ent/usercareer"
+	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
+	"github.com/sky0621/cv-admin/src/ent/usernote"
+	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
+	"github.com/sky0621/cv-admin/src/ent/userqualification"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	careerskillMixin := schema.CareerSkill{}.Mixin()
+	careerskillMixinFields0 := careerskillMixin[0].Fields()
+	_ = careerskillMixinFields0
+	careerskillFields := schema.CareerSkill{}.Fields()
+	_ = careerskillFields
+	// careerskillDescCreateTime is the schema descriptor for create_time field.
+	careerskillDescCreateTime := careerskillMixinFields0[0].Descriptor()
+	// careerskill.DefaultCreateTime holds the default value on creation for the create_time field.
+	careerskill.DefaultCreateTime = careerskillDescCreateTime.Default.(func() time.Time)
+	// careerskillDescUpdateTime is the schema descriptor for update_time field.
+	careerskillDescUpdateTime := careerskillMixinFields0[1].Descriptor()
+	// careerskill.DefaultUpdateTime holds the default value on creation for the update_time field.
+	careerskill.DefaultUpdateTime = careerskillDescUpdateTime.Default.(func() time.Time)
+	// careerskill.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	careerskill.UpdateDefaultUpdateTime = careerskillDescUpdateTime.UpdateDefault.(func() time.Time)
+	careerskillgroupMixin := schema.CareerSkillGroup{}.Mixin()
+	careerskillgroupMixinFields0 := careerskillgroupMixin[0].Fields()
+	_ = careerskillgroupMixinFields0
+	careerskillgroupFields := schema.CareerSkillGroup{}.Fields()
+	_ = careerskillgroupFields
+	// careerskillgroupDescCreateTime is the schema descriptor for create_time field.
+	careerskillgroupDescCreateTime := careerskillgroupMixinFields0[0].Descriptor()
+	// careerskillgroup.DefaultCreateTime holds the default value on creation for the create_time field.
+	careerskillgroup.DefaultCreateTime = careerskillgroupDescCreateTime.Default.(func() time.Time)
+	// careerskillgroupDescUpdateTime is the schema descriptor for update_time field.
+	careerskillgroupDescUpdateTime := careerskillgroupMixinFields0[1].Descriptor()
+	// careerskillgroup.DefaultUpdateTime holds the default value on creation for the update_time field.
+	careerskillgroup.DefaultUpdateTime = careerskillgroupDescUpdateTime.Default.(func() time.Time)
+	// careerskillgroup.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	careerskillgroup.UpdateDefaultUpdateTime = careerskillgroupDescUpdateTime.UpdateDefault.(func() time.Time)
+	careertaskMixin := schema.CareerTask{}.Mixin()
+	careertaskMixinFields0 := careertaskMixin[0].Fields()
+	_ = careertaskMixinFields0
+	careertaskFields := schema.CareerTask{}.Fields()
+	_ = careertaskFields
+	// careertaskDescCreateTime is the schema descriptor for create_time field.
+	careertaskDescCreateTime := careertaskMixinFields0[0].Descriptor()
+	// careertask.DefaultCreateTime holds the default value on creation for the create_time field.
+	careertask.DefaultCreateTime = careertaskDescCreateTime.Default.(func() time.Time)
+	// careertaskDescUpdateTime is the schema descriptor for update_time field.
+	careertaskDescUpdateTime := careertaskMixinFields0[1].Descriptor()
+	// careertask.DefaultUpdateTime holds the default value on creation for the update_time field.
+	careertask.DefaultUpdateTime = careertaskDescUpdateTime.Default.(func() time.Time)
+	// careertask.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	careertask.UpdateDefaultUpdateTime = careertaskDescUpdateTime.UpdateDefault.(func() time.Time)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0
@@ -96,4 +150,120 @@ func init() {
 	userDescPr := userFields[9].Descriptor()
 	// user.PrValidator is a validator for the "pr" field. It is called by the builders before save.
 	user.PrValidator = userDescPr.Validators[0].(func(string) error)
+	useractivityMixin := schema.UserActivity{}.Mixin()
+	useractivityMixinFields0 := useractivityMixin[0].Fields()
+	_ = useractivityMixinFields0
+	useractivityFields := schema.UserActivity{}.Fields()
+	_ = useractivityFields
+	// useractivityDescCreateTime is the schema descriptor for create_time field.
+	useractivityDescCreateTime := useractivityMixinFields0[0].Descriptor()
+	// useractivity.DefaultCreateTime holds the default value on creation for the create_time field.
+	useractivity.DefaultCreateTime = useractivityDescCreateTime.Default.(func() time.Time)
+	// useractivityDescUpdateTime is the schema descriptor for update_time field.
+	useractivityDescUpdateTime := useractivityMixinFields0[1].Descriptor()
+	// useractivity.DefaultUpdateTime holds the default value on creation for the update_time field.
+	useractivity.DefaultUpdateTime = useractivityDescUpdateTime.Default.(func() time.Time)
+	// useractivity.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	useractivity.UpdateDefaultUpdateTime = useractivityDescUpdateTime.UpdateDefault.(func() time.Time)
+	// useractivityDescName is the schema descriptor for name field.
+	useractivityDescName := useractivityFields[0].Descriptor()
+	// useractivity.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	useractivity.NameValidator = func() func(string) error {
+		validators := useractivityDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// useractivityDescURL is the schema descriptor for url field.
+	useractivityDescURL := useractivityFields[1].Descriptor()
+	// useractivity.URLValidator is a validator for the "url" field. It is called by the builders before save.
+	useractivity.URLValidator = useractivityDescURL.Validators[0].(func(string) error)
+	// useractivityDescIcon is the schema descriptor for icon field.
+	useractivityDescIcon := useractivityFields[2].Descriptor()
+	// useractivity.IconValidator is a validator for the "icon" field. It is called by the builders before save.
+	useractivity.IconValidator = useractivityDescIcon.Validators[0].(func(string) error)
+	usercareerMixin := schema.UserCareer{}.Mixin()
+	usercareerMixinFields0 := usercareerMixin[0].Fields()
+	_ = usercareerMixinFields0
+	usercareerFields := schema.UserCareer{}.Fields()
+	_ = usercareerFields
+	// usercareerDescCreateTime is the schema descriptor for create_time field.
+	usercareerDescCreateTime := usercareerMixinFields0[0].Descriptor()
+	// usercareer.DefaultCreateTime holds the default value on creation for the create_time field.
+	usercareer.DefaultCreateTime = usercareerDescCreateTime.Default.(func() time.Time)
+	// usercareerDescUpdateTime is the schema descriptor for update_time field.
+	usercareerDescUpdateTime := usercareerMixinFields0[1].Descriptor()
+	// usercareer.DefaultUpdateTime holds the default value on creation for the update_time field.
+	usercareer.DefaultUpdateTime = usercareerDescUpdateTime.Default.(func() time.Time)
+	// usercareer.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	usercareer.UpdateDefaultUpdateTime = usercareerDescUpdateTime.UpdateDefault.(func() time.Time)
+	usercareergroupMixin := schema.UserCareerGroup{}.Mixin()
+	usercareergroupMixinFields0 := usercareergroupMixin[0].Fields()
+	_ = usercareergroupMixinFields0
+	usercareergroupFields := schema.UserCareerGroup{}.Fields()
+	_ = usercareergroupFields
+	// usercareergroupDescCreateTime is the schema descriptor for create_time field.
+	usercareergroupDescCreateTime := usercareergroupMixinFields0[0].Descriptor()
+	// usercareergroup.DefaultCreateTime holds the default value on creation for the create_time field.
+	usercareergroup.DefaultCreateTime = usercareergroupDescCreateTime.Default.(func() time.Time)
+	// usercareergroupDescUpdateTime is the schema descriptor for update_time field.
+	usercareergroupDescUpdateTime := usercareergroupMixinFields0[1].Descriptor()
+	// usercareergroup.DefaultUpdateTime holds the default value on creation for the update_time field.
+	usercareergroup.DefaultUpdateTime = usercareergroupDescUpdateTime.Default.(func() time.Time)
+	// usercareergroup.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	usercareergroup.UpdateDefaultUpdateTime = usercareergroupDescUpdateTime.UpdateDefault.(func() time.Time)
+	usernoteMixin := schema.UserNote{}.Mixin()
+	usernoteMixinFields0 := usernoteMixin[0].Fields()
+	_ = usernoteMixinFields0
+	usernoteFields := schema.UserNote{}.Fields()
+	_ = usernoteFields
+	// usernoteDescCreateTime is the schema descriptor for create_time field.
+	usernoteDescCreateTime := usernoteMixinFields0[0].Descriptor()
+	// usernote.DefaultCreateTime holds the default value on creation for the create_time field.
+	usernote.DefaultCreateTime = usernoteDescCreateTime.Default.(func() time.Time)
+	// usernoteDescUpdateTime is the schema descriptor for update_time field.
+	usernoteDescUpdateTime := usernoteMixinFields0[1].Descriptor()
+	// usernote.DefaultUpdateTime holds the default value on creation for the update_time field.
+	usernote.DefaultUpdateTime = usernoteDescUpdateTime.Default.(func() time.Time)
+	// usernote.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	usernote.UpdateDefaultUpdateTime = usernoteDescUpdateTime.UpdateDefault.(func() time.Time)
+	usernoteitemMixin := schema.UserNoteItem{}.Mixin()
+	usernoteitemMixinFields0 := usernoteitemMixin[0].Fields()
+	_ = usernoteitemMixinFields0
+	usernoteitemFields := schema.UserNoteItem{}.Fields()
+	_ = usernoteitemFields
+	// usernoteitemDescCreateTime is the schema descriptor for create_time field.
+	usernoteitemDescCreateTime := usernoteitemMixinFields0[0].Descriptor()
+	// usernoteitem.DefaultCreateTime holds the default value on creation for the create_time field.
+	usernoteitem.DefaultCreateTime = usernoteitemDescCreateTime.Default.(func() time.Time)
+	// usernoteitemDescUpdateTime is the schema descriptor for update_time field.
+	usernoteitemDescUpdateTime := usernoteitemMixinFields0[1].Descriptor()
+	// usernoteitem.DefaultUpdateTime holds the default value on creation for the update_time field.
+	usernoteitem.DefaultUpdateTime = usernoteitemDescUpdateTime.Default.(func() time.Time)
+	// usernoteitem.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	usernoteitem.UpdateDefaultUpdateTime = usernoteitemDescUpdateTime.UpdateDefault.(func() time.Time)
+	userqualificationMixin := schema.UserQualification{}.Mixin()
+	userqualificationMixinFields0 := userqualificationMixin[0].Fields()
+	_ = userqualificationMixinFields0
+	userqualificationFields := schema.UserQualification{}.Fields()
+	_ = userqualificationFields
+	// userqualificationDescCreateTime is the schema descriptor for create_time field.
+	userqualificationDescCreateTime := userqualificationMixinFields0[0].Descriptor()
+	// userqualification.DefaultCreateTime holds the default value on creation for the create_time field.
+	userqualification.DefaultCreateTime = userqualificationDescCreateTime.Default.(func() time.Time)
+	// userqualificationDescUpdateTime is the schema descriptor for update_time field.
+	userqualificationDescUpdateTime := userqualificationMixinFields0[1].Descriptor()
+	// userqualification.DefaultUpdateTime holds the default value on creation for the update_time field.
+	userqualification.DefaultUpdateTime = userqualificationDescUpdateTime.Default.(func() time.Time)
+	// userqualification.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	userqualification.UpdateDefaultUpdateTime = userqualificationDescUpdateTime.UpdateDefault.(func() time.Time)
 }

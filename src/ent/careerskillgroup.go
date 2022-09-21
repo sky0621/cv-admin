@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
@@ -12,9 +13,13 @@ import (
 
 // CareerSkillGroup is the model entity for the CareerSkillGroup schema.
 type CareerSkillGroup struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// CreateTime holds the value of the "create_time" field.
+	CreateTime time.Time `json:"create_time,omitempty"`
+	// UpdateTime holds the value of the "update_time" field.
+	UpdateTime time.Time `json:"update_time,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -24,6 +29,8 @@ func (*CareerSkillGroup) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case careerskillgroup.FieldID:
 			values[i] = new(sql.NullInt64)
+		case careerskillgroup.FieldCreateTime, careerskillgroup.FieldUpdateTime:
+			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type CareerSkillGroup", columns[i])
 		}
@@ -45,6 +52,18 @@ func (csg *CareerSkillGroup) assignValues(columns []string, values []interface{}
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			csg.ID = int(value.Int64)
+		case careerskillgroup.FieldCreateTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field create_time", values[i])
+			} else if value.Valid {
+				csg.CreateTime = value.Time
+			}
+		case careerskillgroup.FieldUpdateTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field update_time", values[i])
+			} else if value.Valid {
+				csg.UpdateTime = value.Time
+			}
 		}
 	}
 	return nil
@@ -72,7 +91,12 @@ func (csg *CareerSkillGroup) Unwrap() *CareerSkillGroup {
 func (csg *CareerSkillGroup) String() string {
 	var builder strings.Builder
 	builder.WriteString("CareerSkillGroup(")
-	builder.WriteString(fmt.Sprintf("id=%v", csg.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", csg.ID))
+	builder.WriteString("create_time=")
+	builder.WriteString(csg.CreateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("update_time=")
+	builder.WriteString(csg.UpdateTime.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

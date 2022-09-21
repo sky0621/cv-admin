@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
@@ -12,9 +13,13 @@ import (
 
 // UserQualification is the model entity for the UserQualification schema.
 type UserQualification struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
+	// CreateTime holds the value of the "create_time" field.
+	CreateTime time.Time `json:"create_time,omitempty"`
+	// UpdateTime holds the value of the "update_time" field.
+	UpdateTime time.Time `json:"update_time,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -24,6 +29,8 @@ func (*UserQualification) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case userqualification.FieldID:
 			values[i] = new(sql.NullInt64)
+		case userqualification.FieldCreateTime, userqualification.FieldUpdateTime:
+			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type UserQualification", columns[i])
 		}
@@ -45,6 +52,18 @@ func (uq *UserQualification) assignValues(columns []string, values []interface{}
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			uq.ID = int(value.Int64)
+		case userqualification.FieldCreateTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field create_time", values[i])
+			} else if value.Valid {
+				uq.CreateTime = value.Time
+			}
+		case userqualification.FieldUpdateTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field update_time", values[i])
+			} else if value.Valid {
+				uq.UpdateTime = value.Time
+			}
 		}
 	}
 	return nil
@@ -72,7 +91,12 @@ func (uq *UserQualification) Unwrap() *UserQualification {
 func (uq *UserQualification) String() string {
 	var builder strings.Builder
 	builder.WriteString("UserQualification(")
-	builder.WriteString(fmt.Sprintf("id=%v", uq.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", uq.ID))
+	builder.WriteString("create_time=")
+	builder.WriteString(uq.CreateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("update_time=")
+	builder.WriteString(uq.UpdateTime.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

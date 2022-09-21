@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -27,6 +28,12 @@ func (uqu *UserQualificationUpdate) Where(ps ...predicate.UserQualification) *Us
 	return uqu
 }
 
+// SetUpdateTime sets the "update_time" field.
+func (uqu *UserQualificationUpdate) SetUpdateTime(t time.Time) *UserQualificationUpdate {
+	uqu.mutation.SetUpdateTime(t)
+	return uqu
+}
+
 // Mutation returns the UserQualificationMutation object of the builder.
 func (uqu *UserQualificationUpdate) Mutation() *UserQualificationMutation {
 	return uqu.mutation
@@ -38,6 +45,7 @@ func (uqu *UserQualificationUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	uqu.defaults()
 	if len(uqu.hooks) == 0 {
 		affected, err = uqu.sqlSave(ctx)
 	} else {
@@ -86,6 +94,14 @@ func (uqu *UserQualificationUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (uqu *UserQualificationUpdate) defaults() {
+	if _, ok := uqu.mutation.UpdateTime(); !ok {
+		v := userqualification.UpdateDefaultUpdateTime()
+		uqu.mutation.SetUpdateTime(v)
+	}
+}
+
 func (uqu *UserQualificationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -103,6 +119,13 @@ func (uqu *UserQualificationUpdate) sqlSave(ctx context.Context) (n int, err err
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := uqu.mutation.UpdateTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: userqualification.FieldUpdateTime,
+		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uqu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -123,6 +146,12 @@ type UserQualificationUpdateOne struct {
 	mutation *UserQualificationMutation
 }
 
+// SetUpdateTime sets the "update_time" field.
+func (uquo *UserQualificationUpdateOne) SetUpdateTime(t time.Time) *UserQualificationUpdateOne {
+	uquo.mutation.SetUpdateTime(t)
+	return uquo
+}
+
 // Mutation returns the UserQualificationMutation object of the builder.
 func (uquo *UserQualificationUpdateOne) Mutation() *UserQualificationMutation {
 	return uquo.mutation
@@ -141,6 +170,7 @@ func (uquo *UserQualificationUpdateOne) Save(ctx context.Context) (*UserQualific
 		err  error
 		node *UserQualification
 	)
+	uquo.defaults()
 	if len(uquo.hooks) == 0 {
 		node, err = uquo.sqlSave(ctx)
 	} else {
@@ -195,6 +225,14 @@ func (uquo *UserQualificationUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (uquo *UserQualificationUpdateOne) defaults() {
+	if _, ok := uquo.mutation.UpdateTime(); !ok {
+		v := userqualification.UpdateDefaultUpdateTime()
+		uquo.mutation.SetUpdateTime(v)
+	}
+}
+
 func (uquo *UserQualificationUpdateOne) sqlSave(ctx context.Context) (_node *UserQualification, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -229,6 +267,13 @@ func (uquo *UserQualificationUpdateOne) sqlSave(ctx context.Context) (_node *Use
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := uquo.mutation.UpdateTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: userqualification.FieldUpdateTime,
+		})
 	}
 	_node = &UserQualification{config: uquo.config}
 	_spec.Assign = _node.assignValues

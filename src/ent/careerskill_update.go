@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -27,6 +28,12 @@ func (csu *CareerSkillUpdate) Where(ps ...predicate.CareerSkill) *CareerSkillUpd
 	return csu
 }
 
+// SetUpdateTime sets the "update_time" field.
+func (csu *CareerSkillUpdate) SetUpdateTime(t time.Time) *CareerSkillUpdate {
+	csu.mutation.SetUpdateTime(t)
+	return csu
+}
+
 // Mutation returns the CareerSkillMutation object of the builder.
 func (csu *CareerSkillUpdate) Mutation() *CareerSkillMutation {
 	return csu.mutation
@@ -38,6 +45,7 @@ func (csu *CareerSkillUpdate) Save(ctx context.Context) (int, error) {
 		err      error
 		affected int
 	)
+	csu.defaults()
 	if len(csu.hooks) == 0 {
 		affected, err = csu.sqlSave(ctx)
 	} else {
@@ -86,6 +94,14 @@ func (csu *CareerSkillUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (csu *CareerSkillUpdate) defaults() {
+	if _, ok := csu.mutation.UpdateTime(); !ok {
+		v := careerskill.UpdateDefaultUpdateTime()
+		csu.mutation.SetUpdateTime(v)
+	}
+}
+
 func (csu *CareerSkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -103,6 +119,13 @@ func (csu *CareerSkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := csu.mutation.UpdateTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: careerskill.FieldUpdateTime,
+		})
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, csu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -123,6 +146,12 @@ type CareerSkillUpdateOne struct {
 	mutation *CareerSkillMutation
 }
 
+// SetUpdateTime sets the "update_time" field.
+func (csuo *CareerSkillUpdateOne) SetUpdateTime(t time.Time) *CareerSkillUpdateOne {
+	csuo.mutation.SetUpdateTime(t)
+	return csuo
+}
+
 // Mutation returns the CareerSkillMutation object of the builder.
 func (csuo *CareerSkillUpdateOne) Mutation() *CareerSkillMutation {
 	return csuo.mutation
@@ -141,6 +170,7 @@ func (csuo *CareerSkillUpdateOne) Save(ctx context.Context) (*CareerSkill, error
 		err  error
 		node *CareerSkill
 	)
+	csuo.defaults()
 	if len(csuo.hooks) == 0 {
 		node, err = csuo.sqlSave(ctx)
 	} else {
@@ -195,6 +225,14 @@ func (csuo *CareerSkillUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (csuo *CareerSkillUpdateOne) defaults() {
+	if _, ok := csuo.mutation.UpdateTime(); !ok {
+		v := careerskill.UpdateDefaultUpdateTime()
+		csuo.mutation.SetUpdateTime(v)
+	}
+}
+
 func (csuo *CareerSkillUpdateOne) sqlSave(ctx context.Context) (_node *CareerSkill, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -229,6 +267,13 @@ func (csuo *CareerSkillUpdateOne) sqlSave(ctx context.Context) (_node *CareerSki
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := csuo.mutation.UpdateTime(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: careerskill.FieldUpdateTime,
+		})
 	}
 	_node = &CareerSkill{config: csuo.config}
 	_spec.Assign = _node.assignValues

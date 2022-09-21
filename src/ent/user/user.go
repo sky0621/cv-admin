@@ -35,8 +35,17 @@ const (
 	FieldBelongTo = "belong_to"
 	// FieldPr holds the string denoting the pr field in the database.
 	FieldPr = "pr"
+	// EdgeActivities holds the string denoting the activities edge name in mutations.
+	EdgeActivities = "activities"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// ActivitiesTable is the table that holds the activities relation/edge.
+	ActivitiesTable = "user_activities"
+	// ActivitiesInverseTable is the table name for the UserActivity entity.
+	// It exists in this package in order to avoid circular dependency with the "useractivity" package.
+	ActivitiesInverseTable = "user_activities"
+	// ActivitiesColumn is the table column denoting the activities relation/edge.
+	ActivitiesColumn = "user_activities"
 )
 
 // Columns holds all SQL columns for user fields.

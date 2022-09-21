@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
+	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
 )
 
@@ -23,6 +24,8 @@ type UserActivityQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.UserActivity
+	withUser   *UserQuery
+	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -57,6 +60,28 @@ func (uaq *UserActivityQuery) Unique(unique bool) *UserActivityQuery {
 func (uaq *UserActivityQuery) Order(o ...OrderFunc) *UserActivityQuery {
 	uaq.order = append(uaq.order, o...)
 	return uaq
+}
+
+// QueryUser chains the current query on the "user" edge.
+func (uaq *UserActivityQuery) QueryUser() *UserQuery {
+	query := &UserQuery{config: uaq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uaq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uaq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(useractivity.Table, useractivity.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, useractivity.UserTable, useractivity.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uaq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first UserActivity entity from the query.
@@ -240,6 +265,7 @@ func (uaq *UserActivityQuery) Clone() *UserActivityQuery {
 		offset:     uaq.offset,
 		order:      append([]OrderFunc{}, uaq.order...),
 		predicates: append([]predicate.UserActivity{}, uaq.predicates...),
+		withUser:   uaq.withUser.Clone(),
 		// clone intermediate query.
 		sql:    uaq.sql.Clone(),
 		path:   uaq.path,
@@ -247,8 +273,31 @@ func (uaq *UserActivityQuery) Clone() *UserActivityQuery {
 	}
 }
 
+// WithUser tells the query-builder to eager-load the nodes that are connected to
+// the "user" edge. The optional arguments are used to configure the query builder of the edge.
+func (uaq *UserActivityQuery) WithUser(opts ...func(*UserQuery)) *UserActivityQuery {
+	query := &UserQuery{config: uaq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	uaq.withUser = query
+	return uaq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		CreateTime time.Time `json:"create_time,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.UserActivity.Query().
+//		GroupBy(useractivity.FieldCreateTime).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (uaq *UserActivityQuery) GroupBy(field string, fields ...string) *UserActivityGroupBy {
 	grbuild := &UserActivityGroupBy{config: uaq.config}
 	grbuild.fields = append([]string{field}, fields...)
@@ -265,6 +314,16 @@ func (uaq *UserActivityQuery) GroupBy(field string, fields ...string) *UserActiv
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		CreateTime time.Time `json:"create_time,omitempty"`
+//	}
+//
+//	client.UserActivity.Query().
+//		Select(useractivity.FieldCreateTime).
+//		Scan(ctx, &v)
 func (uaq *UserActivityQuery) Select(fields ...string) *UserActivitySelect {
 	uaq.fields = append(uaq.fields, fields...)
 	selbuild := &UserActivitySelect{UserActivityQuery: uaq}
@@ -291,15 +350,26 @@ func (uaq *UserActivityQuery) prepareQuery(ctx context.Context) error {
 
 func (uaq *UserActivityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*UserActivity, error) {
 	var (
-		nodes = []*UserActivity{}
-		_spec = uaq.querySpec()
+		nodes       = []*UserActivity{}
+		withFKs     = uaq.withFKs
+		_spec       = uaq.querySpec()
+		loadedTypes = [1]bool{
+			uaq.withUser != nil,
+		}
 	)
+	if uaq.withUser != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, useractivity.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		return (*UserActivity).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []interface{}) error {
 		node := &UserActivity{config: uaq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -311,7 +381,43 @@ func (uaq *UserActivityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := uaq.withUser; query != nil {
+		if err := uaq.loadUser(ctx, query, nodes, nil,
+			func(n *UserActivity, e *User) { n.Edges.User = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (uaq *UserActivityQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*UserActivity, init func(*UserActivity), assign func(*UserActivity, *User)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*UserActivity)
+	for i := range nodes {
+		if nodes[i].user_activities == nil {
+			continue
+		}
+		fk := *nodes[i].user_activities
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_activities" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (uaq *UserActivityQuery) sqlCount(ctx context.Context) (int, error) {

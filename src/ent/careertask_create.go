@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -21,6 +22,34 @@ type CareerTaskCreate struct {
 	conflict []sql.ConflictOption
 }
 
+// SetCreateTime sets the "create_time" field.
+func (ctc *CareerTaskCreate) SetCreateTime(t time.Time) *CareerTaskCreate {
+	ctc.mutation.SetCreateTime(t)
+	return ctc
+}
+
+// SetNillableCreateTime sets the "create_time" field if the given value is not nil.
+func (ctc *CareerTaskCreate) SetNillableCreateTime(t *time.Time) *CareerTaskCreate {
+	if t != nil {
+		ctc.SetCreateTime(*t)
+	}
+	return ctc
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (ctc *CareerTaskCreate) SetUpdateTime(t time.Time) *CareerTaskCreate {
+	ctc.mutation.SetUpdateTime(t)
+	return ctc
+}
+
+// SetNillableUpdateTime sets the "update_time" field if the given value is not nil.
+func (ctc *CareerTaskCreate) SetNillableUpdateTime(t *time.Time) *CareerTaskCreate {
+	if t != nil {
+		ctc.SetUpdateTime(*t)
+	}
+	return ctc
+}
+
 // Mutation returns the CareerTaskMutation object of the builder.
 func (ctc *CareerTaskCreate) Mutation() *CareerTaskMutation {
 	return ctc.mutation
@@ -32,6 +61,7 @@ func (ctc *CareerTaskCreate) Save(ctx context.Context) (*CareerTask, error) {
 		err  error
 		node *CareerTask
 	)
+	ctc.defaults()
 	if len(ctc.hooks) == 0 {
 		if err = ctc.check(); err != nil {
 			return nil, err
@@ -95,8 +125,26 @@ func (ctc *CareerTaskCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ctc *CareerTaskCreate) defaults() {
+	if _, ok := ctc.mutation.CreateTime(); !ok {
+		v := careertask.DefaultCreateTime()
+		ctc.mutation.SetCreateTime(v)
+	}
+	if _, ok := ctc.mutation.UpdateTime(); !ok {
+		v := careertask.DefaultUpdateTime()
+		ctc.mutation.SetUpdateTime(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (ctc *CareerTaskCreate) check() error {
+	if _, ok := ctc.mutation.CreateTime(); !ok {
+		return &ValidationError{Name: "create_time", err: errors.New(`ent: missing required field "CareerTask.create_time"`)}
+	}
+	if _, ok := ctc.mutation.UpdateTime(); !ok {
+		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "CareerTask.update_time"`)}
+	}
 	return nil
 }
 
@@ -125,6 +173,22 @@ func (ctc *CareerTaskCreate) createSpec() (*CareerTask, *sqlgraph.CreateSpec) {
 		}
 	)
 	_spec.OnConflict = ctc.conflict
+	if value, ok := ctc.mutation.CreateTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: careertask.FieldCreateTime,
+		})
+		_node.CreateTime = value
+	}
+	if value, ok := ctc.mutation.UpdateTime(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: careertask.FieldUpdateTime,
+		})
+		_node.UpdateTime = value
+	}
 	return _node, _spec
 }
 
@@ -132,11 +196,17 @@ func (ctc *CareerTaskCreate) createSpec() (*CareerTask, *sqlgraph.CreateSpec) {
 // of the `INSERT` statement. For example:
 //
 //	client.CareerTask.Create().
+//		SetCreateTime(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
 //			sql.ResolveWithNewValues(),
 //		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.CareerTaskUpsert) {
+//			SetCreateTime(v+v).
+//		}).
 //		Exec(ctx)
 func (ctc *CareerTaskCreate) OnConflict(opts ...sql.ConflictOption) *CareerTaskUpsertOne {
 	ctc.conflict = opts
@@ -171,6 +241,30 @@ type (
 	}
 )
 
+// SetCreateTime sets the "create_time" field.
+func (u *CareerTaskUpsert) SetCreateTime(v time.Time) *CareerTaskUpsert {
+	u.Set(careertask.FieldCreateTime, v)
+	return u
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *CareerTaskUpsert) UpdateCreateTime() *CareerTaskUpsert {
+	u.SetExcluded(careertask.FieldCreateTime)
+	return u
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *CareerTaskUpsert) SetUpdateTime(v time.Time) *CareerTaskUpsert {
+	u.Set(careertask.FieldUpdateTime, v)
+	return u
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *CareerTaskUpsert) UpdateUpdateTime() *CareerTaskUpsert {
+	u.SetExcluded(careertask.FieldUpdateTime)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -181,6 +275,11 @@ type (
 //		Exec(ctx)
 func (u *CareerTaskUpsertOne) UpdateNewValues() *CareerTaskUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.CreateTime(); exists {
+			s.SetIgnore(careertask.FieldCreateTime)
+		}
+	}))
 	return u
 }
 
@@ -209,6 +308,34 @@ func (u *CareerTaskUpsertOne) Update(set func(*CareerTaskUpsert)) *CareerTaskUps
 		set(&CareerTaskUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *CareerTaskUpsertOne) SetCreateTime(v time.Time) *CareerTaskUpsertOne {
+	return u.Update(func(s *CareerTaskUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *CareerTaskUpsertOne) UpdateCreateTime() *CareerTaskUpsertOne {
+	return u.Update(func(s *CareerTaskUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *CareerTaskUpsertOne) SetUpdateTime(v time.Time) *CareerTaskUpsertOne {
+	return u.Update(func(s *CareerTaskUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *CareerTaskUpsertOne) UpdateUpdateTime() *CareerTaskUpsertOne {
+	return u.Update(func(s *CareerTaskUpsert) {
+		s.UpdateUpdateTime()
+	})
 }
 
 // Exec executes the query.
@@ -259,6 +386,7 @@ func (ctcb *CareerTaskCreateBulk) Save(ctx context.Context) ([]*CareerTask, erro
 	for i := range ctcb.builders {
 		func(i int, root context.Context) {
 			builder := ctcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*CareerTaskMutation)
 				if !ok {
@@ -338,6 +466,11 @@ func (ctcb *CareerTaskCreateBulk) ExecX(ctx context.Context) {
 //			// the was proposed for insertion.
 //			sql.ResolveWithNewValues(),
 //		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.CareerTaskUpsert) {
+//			SetCreateTime(v+v).
+//		}).
 //		Exec(ctx)
 func (ctcb *CareerTaskCreateBulk) OnConflict(opts ...sql.ConflictOption) *CareerTaskUpsertBulk {
 	ctcb.conflict = opts
@@ -375,6 +508,13 @@ type CareerTaskUpsertBulk struct {
 //		Exec(ctx)
 func (u *CareerTaskUpsertBulk) UpdateNewValues() *CareerTaskUpsertBulk {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.CreateTime(); exists {
+				s.SetIgnore(careertask.FieldCreateTime)
+			}
+		}
+	}))
 	return u
 }
 
@@ -403,6 +543,34 @@ func (u *CareerTaskUpsertBulk) Update(set func(*CareerTaskUpsert)) *CareerTaskUp
 		set(&CareerTaskUpsert{UpdateSet: update})
 	}))
 	return u
+}
+
+// SetCreateTime sets the "create_time" field.
+func (u *CareerTaskUpsertBulk) SetCreateTime(v time.Time) *CareerTaskUpsertBulk {
+	return u.Update(func(s *CareerTaskUpsert) {
+		s.SetCreateTime(v)
+	})
+}
+
+// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
+func (u *CareerTaskUpsertBulk) UpdateCreateTime() *CareerTaskUpsertBulk {
+	return u.Update(func(s *CareerTaskUpsert) {
+		s.UpdateCreateTime()
+	})
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (u *CareerTaskUpsertBulk) SetUpdateTime(v time.Time) *CareerTaskUpsertBulk {
+	return u.Update(func(s *CareerTaskUpsert) {
+		s.SetUpdateTime(v)
+	})
+}
+
+// UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
+func (u *CareerTaskUpsertBulk) UpdateUpdateTime() *CareerTaskUpsertBulk {
+	return u.Update(func(s *CareerTaskUpsert) {
+		s.UpdateUpdateTime()
+	})
 }
 
 // Exec executes the query.
