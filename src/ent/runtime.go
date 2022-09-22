@@ -82,26 +82,8 @@ func init() {
 	user.DefaultUpdateTime = userDescUpdateTime.Default.(func() time.Time)
 	// user.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	user.UpdateDefaultUpdateTime = userDescUpdateTime.UpdateDefault.(func() time.Time)
-	// userDescKey is the schema descriptor for key field.
-	userDescKey := userFields[0].Descriptor()
-	// user.KeyValidator is a validator for the "key" field. It is called by the builders before save.
-	user.KeyValidator = func() func(string) error {
-		validators := userDescKey.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(key string) error {
-			for _, fn := range fns {
-				if err := fn(key); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
 	// userDescName is the schema descriptor for name field.
-	userDescName := userFields[1].Descriptor()
+	userDescName := userFields[0].Descriptor()
 	// user.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	user.NameValidator = func() func(string) error {
 		validators := userDescName.Validators
@@ -119,35 +101,35 @@ func init() {
 		}
 	}()
 	// userDescNickname is the schema descriptor for nickname field.
-	userDescNickname := userFields[2].Descriptor()
+	userDescNickname := userFields[1].Descriptor()
 	// user.NicknameValidator is a validator for the "nickname" field. It is called by the builders before save.
 	user.NicknameValidator = userDescNickname.Validators[0].(func(string) error)
 	// userDescAvatarURL is the schema descriptor for avatar_url field.
-	userDescAvatarURL := userFields[3].Descriptor()
+	userDescAvatarURL := userFields[2].Descriptor()
 	// user.AvatarURLValidator is a validator for the "avatar_url" field. It is called by the builders before save.
 	user.AvatarURLValidator = userDescAvatarURL.Validators[0].(func(string) error)
 	// userDescBirthdayYear is the schema descriptor for birthday_year field.
-	userDescBirthdayYear := userFields[4].Descriptor()
+	userDescBirthdayYear := userFields[3].Descriptor()
 	// user.BirthdayYearValidator is a validator for the "birthday_year" field. It is called by the builders before save.
 	user.BirthdayYearValidator = userDescBirthdayYear.Validators[0].(func(int) error)
 	// userDescBirthdayMonth is the schema descriptor for birthday_month field.
-	userDescBirthdayMonth := userFields[5].Descriptor()
+	userDescBirthdayMonth := userFields[4].Descriptor()
 	// user.BirthdayMonthValidator is a validator for the "birthday_month" field. It is called by the builders before save.
 	user.BirthdayMonthValidator = userDescBirthdayMonth.Validators[0].(func(int) error)
 	// userDescBirthdayDay is the schema descriptor for birthday_day field.
-	userDescBirthdayDay := userFields[6].Descriptor()
+	userDescBirthdayDay := userFields[5].Descriptor()
 	// user.BirthdayDayValidator is a validator for the "birthday_day" field. It is called by the builders before save.
 	user.BirthdayDayValidator = userDescBirthdayDay.Validators[0].(func(int) error)
 	// userDescJob is the schema descriptor for job field.
-	userDescJob := userFields[7].Descriptor()
+	userDescJob := userFields[6].Descriptor()
 	// user.JobValidator is a validator for the "job" field. It is called by the builders before save.
 	user.JobValidator = userDescJob.Validators[0].(func(string) error)
 	// userDescBelongTo is the schema descriptor for belong_to field.
-	userDescBelongTo := userFields[8].Descriptor()
+	userDescBelongTo := userFields[7].Descriptor()
 	// user.BelongToValidator is a validator for the "belong_to" field. It is called by the builders before save.
 	user.BelongToValidator = userDescBelongTo.Validators[0].(func(string) error)
 	// userDescPr is the schema descriptor for pr field.
-	userDescPr := userFields[9].Descriptor()
+	userDescPr := userFields[8].Descriptor()
 	// user.PrValidator is a validator for the "pr" field. It is called by the builders before save.
 	user.PrValidator = userDescPr.Validators[0].(func(string) error)
 	useractivityMixin := schema.UserActivity{}.Mixin()

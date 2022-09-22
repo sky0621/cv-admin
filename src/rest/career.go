@@ -9,31 +9,31 @@ import (
 )
 
 // キャリアグループ群取得
-// (GET /users/{byUserKey}/careergroups)
-func (s *ServerImpl) GetUsersByUserKeyCareergroups(ctx echo.Context, byUserKey swagger.UserKey) error {
-	return ctx.String(http.StatusOK, byUserKey)
+// (GET /users/{byUserId}/careergroups)
+func (s *ServerImpl) GetUsersByUserIdCareergroups(ctx echo.Context, byUserId swagger.UserId) error {
+	return ctx.String(http.StatusOK, "")
 }
 
 // キャリアグループ新規登録
-// (POST /users/{byUserKey}/careergroups)
-func (s *ServerImpl) PostUsersByUserKeyCareergroups(ctx echo.Context, byUserKey swagger.UserKey) error {
-	return ctx.String(http.StatusOK, byUserKey)
+// (POST /users/{byUserId}/careergroups)
+func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId swagger.UserId) error {
+	return ctx.String(http.StatusOK, "")
 }
 
 // キャリアグループ削除
-// (DELETE /users/{byUserKey}/careergroups/{byCid})
-func (s *ServerImpl) DeleteUsersByUserKeyCareergroupsByCid(ctx echo.Context, byUserKey swagger.UserKey, byCid swagger.CareerGroupId) error {
-	return ctx.String(http.StatusOK, byUserKey)
+// (DELETE /users/{byUserId}/careergroups/{byCareerGroupId})
+func (s *ServerImpl) DeleteUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context, byUserId swagger.UserId, byCareerGroupId swagger.CareerGroupId) error {
+	return ctx.String(http.StatusOK, "")
 }
 
 // キャリアグループ更新
-// (PUT /users/{byUserKey}/careergroups/{byCid})
-func (s *ServerImpl) PutUsersByUserKeyCareergroupsByCid(ctx echo.Context, byUserKey swagger.UserKey, byCid swagger.CareerGroupId) error {
-	return ctx.String(http.StatusOK, byUserKey)
+// (PUT /users/{byUserId}/careergroups/{byCareerGroupId})
+func (s *ServerImpl) PutUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context, byUserId swagger.UserId, byCareerGroupId swagger.CareerGroupId) error {
+	return ctx.String(http.StatusOK, "")
 }
 
 // キャリアグループ内キャリア群最新化
-// (PUT /users/{byUserKey}/careergroups/{byCid}/careers)
-func (s *ServerImpl) PutUsersByUserKeyCareergroupsByCidCareers(ctx echo.Context, byUserKey swagger.UserKey, byCid swagger.CareerGroupId) error {
-	return ctx.String(http.StatusOK, byUserKey)
+// (PUT /users/{byUserId}/careergroups/{byCareerGroupId}/careers)
+func (s *ServerImpl) PutUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx echo.Context, byUserId swagger.UserId, byCareerGroupId swagger.CareerGroupId) error {
+	return ctx.String(http.StatusOK, "")
 }

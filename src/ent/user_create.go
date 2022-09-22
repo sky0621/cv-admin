@@ -51,12 +51,6 @@ func (uc *UserCreate) SetNillableUpdateTime(t *time.Time) *UserCreate {
 	return uc
 }
 
-// SetKey sets the "key" field.
-func (uc *UserCreate) SetKey(s string) *UserCreate {
-	uc.mutation.SetKey(s)
-	return uc
-}
-
 // SetName sets the "name" field.
 func (uc *UserCreate) SetName(s string) *UserCreate {
 	uc.mutation.SetName(s)
@@ -261,14 +255,6 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "User.update_time"`)}
 	}
-	if _, ok := uc.mutation.Key(); !ok {
-		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "User.key"`)}
-	}
-	if v, ok := uc.mutation.Key(); ok {
-		if err := user.KeyValidator(v); err != nil {
-			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "User.key": %w`, err)}
-		}
-	}
 	if _, ok := uc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "User.name"`)}
 	}
@@ -369,14 +355,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Column: user.FieldUpdateTime,
 		})
 		_node.UpdateTime = value
-	}
-	if value, ok := uc.mutation.Key(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldKey,
-		})
-		_node.Key = value
 	}
 	if value, ok := uc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -542,18 +520,6 @@ func (u *UserUpsert) SetUpdateTime(v time.Time) *UserUpsert {
 // UpdateUpdateTime sets the "update_time" field to the value that was provided on create.
 func (u *UserUpsert) UpdateUpdateTime() *UserUpsert {
 	u.SetExcluded(user.FieldUpdateTime)
-	return u
-}
-
-// SetKey sets the "key" field.
-func (u *UserUpsert) SetKey(v string) *UserUpsert {
-	u.Set(user.FieldKey, v)
-	return u
-}
-
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *UserUpsert) UpdateKey() *UserUpsert {
-	u.SetExcluded(user.FieldKey)
 	return u
 }
 
@@ -783,20 +749,6 @@ func (u *UserUpsertOne) SetUpdateTime(v time.Time) *UserUpsertOne {
 func (u *UserUpsertOne) UpdateUpdateTime() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateUpdateTime()
-	})
-}
-
-// SetKey sets the "key" field.
-func (u *UserUpsertOne) SetKey(v string) *UserUpsertOne {
-	return u.Update(func(s *UserUpsert) {
-		s.SetKey(v)
-	})
-}
-
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *UserUpsertOne) UpdateKey() *UserUpsertOne {
-	return u.Update(func(s *UserUpsert) {
-		s.UpdateKey()
 	})
 }
 
@@ -1214,20 +1166,6 @@ func (u *UserUpsertBulk) SetUpdateTime(v time.Time) *UserUpsertBulk {
 func (u *UserUpsertBulk) UpdateUpdateTime() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
 		s.UpdateUpdateTime()
-	})
-}
-
-// SetKey sets the "key" field.
-func (u *UserUpsertBulk) SetKey(v string) *UserUpsertBulk {
-	return u.Update(func(s *UserUpsert) {
-		s.SetKey(v)
-	})
-}
-
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *UserUpsertBulk) UpdateKey() *UserUpsertBulk {
-	return u.Update(func(s *UserUpsert) {
-		s.UpdateKey()
 	})
 }
 

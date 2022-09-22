@@ -9,31 +9,31 @@ import (
 )
 
 // 注釈群取得
-// (GET /users/{byUserKey}/notes)
-func (s *ServerImpl) GetUsersByUserKeyNotes(ctx echo.Context, byUserKey swagger.UserKey) error {
-	return ctx.String(http.StatusOK, byUserKey)
+// (GET /users/{byUserId}/notes)
+func (s *ServerImpl) GetUsersByUserIdNotes(ctx echo.Context, byUserId swagger.UserId) error {
+	return ctx.String(http.StatusOK, "")
 }
 
 // 注釈新規登録
-// (POST /users/{byUserKey}/notes)
-func (s *ServerImpl) PostUsersByUserKeyNotes(ctx echo.Context, byUserKey swagger.UserKey) error {
-	return ctx.String(http.StatusOK, byUserKey)
+// (POST /users/{byUserId}/notes)
+func (s *ServerImpl) PostUsersByUserIdNotes(ctx echo.Context, byUserId swagger.UserId) error {
+	return ctx.String(http.StatusOK, "")
 }
 
 // 注釈削除
-// (DELETE /users/{byUserKey}/notes/{byNid})
-func (s *ServerImpl) DeleteUsersByUserKeyNotesByNid(ctx echo.Context, byUserKey swagger.UserKey, byNid swagger.NoteId) error {
-	return ctx.String(http.StatusOK, byUserKey)
+// (DELETE /users/{byUserId}/notes/{byNoteId})
+func (s *ServerImpl) DeleteUsersByUserIdNotesByNoteId(ctx echo.Context, byUserId swagger.UserId, byNoteId swagger.NoteId) error {
+	return ctx.String(http.StatusOK, "")
 }
 
 // 注釈更新
-// (PUT /users/{byUserKey}/notes/{byNid})
-func (s *ServerImpl) PutUsersByUserKeyNotesByNid(ctx echo.Context, byUserKey swagger.UserKey, byNid swagger.NoteId) error {
-	return ctx.String(http.StatusOK, byUserKey)
+// (PUT /users/{byUserId}/notes/{byNoteId})
+func (s *ServerImpl) PutUsersByUserIdNotesByNoteId(ctx echo.Context, byUserId swagger.UserId, byNoteId swagger.NoteId) error {
+	return ctx.String(http.StatusOK, "")
 }
 
 // 注釈内要素群最新化
-// (PUT /users/{byUserKey}/notes/{byNid}/items)
-func (s *ServerImpl) PutUsersByUserKeyNotesByNidItems(ctx echo.Context, byUserKey swagger.UserKey, byNid swagger.NoteId) error {
-	return ctx.String(http.StatusOK, byUserKey)
+// (PUT /users/{byUserId}/notes/{byNoteId}/items)
+func (s *ServerImpl) PutUsersByUserIdNotesByNoteIdItems(ctx echo.Context, byUserId swagger.UserId, byNoteId swagger.NoteId) error {
+	return ctx.String(http.StatusOK, "")
 }

@@ -20,9 +20,6 @@ type User struct {
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
-	// ユーザーを一意に識別するキー。
-	// 各URLのパスパラメーターに使う。
-	Key string `json:"key,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Nickname holds the value of the "nickname" field.
@@ -71,7 +68,7 @@ func (*User) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case user.FieldID, user.FieldBirthdayYear, user.FieldBirthdayMonth, user.FieldBirthdayDay:
 			values[i] = new(sql.NullInt64)
-		case user.FieldKey, user.FieldName, user.FieldNickname, user.FieldAvatarURL, user.FieldJob, user.FieldBelongTo, user.FieldPr:
+		case user.FieldName, user.FieldNickname, user.FieldAvatarURL, user.FieldJob, user.FieldBelongTo, user.FieldPr:
 			values[i] = new(sql.NullString)
 		case user.FieldCreateTime, user.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -107,12 +104,6 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field update_time", values[i])
 			} else if value.Valid {
 				u.UpdateTime = value.Time
-			}
-		case user.FieldKey:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field key", values[i])
-			} else if value.Valid {
-				u.Key = value.String
 			}
 		case user.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -211,9 +202,6 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("update_time=")
 	builder.WriteString(u.UpdateTime.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("key=")
-	builder.WriteString(u.Key)
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(u.Name)

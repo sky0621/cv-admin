@@ -15,8 +15,6 @@ const (
 	FieldCreateTime = "create_time"
 	// FieldUpdateTime holds the string denoting the update_time field in the database.
 	FieldUpdateTime = "update_time"
-	// FieldKey holds the string denoting the key field in the database.
-	FieldKey = "key"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldNickname holds the string denoting the nickname field in the database.
@@ -53,7 +51,6 @@ var Columns = []string{
 	FieldID,
 	FieldCreateTime,
 	FieldUpdateTime,
-	FieldKey,
 	FieldName,
 	FieldNickname,
 	FieldAvatarURL,
@@ -82,8 +79,6 @@ var (
 	DefaultUpdateTime func() time.Time
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
-	// KeyValidator is a validator for the "key" field. It is called by the builders before save.
-	KeyValidator func(string) error
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// NicknameValidator is a validator for the "nickname" field. It is called by the builders before save.

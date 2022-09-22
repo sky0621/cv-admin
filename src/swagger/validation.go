@@ -31,13 +31,6 @@ func (b BirthDay) Validate() error {
 func (u UserAttribute) Validate() error {
 	return v.ValidateStruct(&u,
 		v.Field(
-			&u.Key,
-			v.Required,
-			v.RuneLength(1, 20),
-			is.LowerCase,
-			is.Alphanumeric,
-		),
-		v.Field(
 			&u.Name,
 			v.Required,
 			v.RuneLength(1, 100),

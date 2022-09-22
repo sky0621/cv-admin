@@ -14,7 +14,6 @@ type User struct {
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("key").NotEmpty().Validate(maxRuneCount(20)).Unique().Comment("ユーザーを一意に識別するキー。\n各URLのパスパラメーターに使う。"),
 		field.String("name").NotEmpty().Validate(maxRuneCount(100)),
 		field.String("nickname").Validate(rangeRuneCount(1, 100)).Optional().Nillable(),
 		field.String("avatar_url").Validate(rangeRuneCount(1, 4096)).Optional().Nillable(),

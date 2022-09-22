@@ -2,6 +2,7 @@ package rest
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -11,7 +12,7 @@ import (
 	"github.com/sky0621/cv-admin/src/swagger"
 )
 
-// ユーザー新規登録
+// ユーザー登録
 // (POST /users)
 func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 	var userAttribute swagger.UserAttribute
@@ -33,9 +34,9 @@ func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 }
 
 // 指定ユーザー削除
-// (DELETE /users/{byUserKey})
-func (s *ServerImpl) DeleteUsersByUserKey(ctx echo.Context, byUserKey swagger.UserKey) error {
-	cnt, err := s.dbClient.User.Delete().Where(user.Key(byUserKey)).Exec(ctx.Request().Context())
+// (DELETE /users/{byUserId})
+func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId swagger.UserId) error {
+	cnt, err := s.dbClient.User.Delete().Where(user.ID(byUserId)).Exec(ctx.Request().Context())
 	if err != nil {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -48,9 +49,9 @@ func (s *ServerImpl) DeleteUsersByUserKey(ctx echo.Context, byUserKey swagger.Us
 }
 
 // 属性取得
-// (GET /users/{byUserKey}/attributes)
-func (s *ServerImpl) GetUsersByUserKeyAttributes(ctx echo.Context, byUserKey swagger.UserKey) error {
-	entUser, err := s.dbClient.User.Query().Where(user.Key(byUserKey)).Only(ctx.Request().Context())
+// (GET /users/{byUserId}/attribute)
+func (s *ServerImpl) GetUsersByUserIdAttribute(ctx echo.Context, byUserId swagger.UserId) error {
+	entUser, err := s.dbClient.User.Query().Where(user.ID(byUserId)).Only(ctx.Request().Context())
 	if err != nil {
 		switch {
 		case errors.As(err, &notFound):
@@ -67,8 +68,8 @@ func (s *ServerImpl) GetUsersByUserKeyAttributes(ctx echo.Context, byUserKey swa
 }
 
 // 属性更新
-// (PUT /users/{byUserKey}/attributes)
-func (s *ServerImpl) PutUsersByUserKeyAttributes(ctx echo.Context, byUserKey swagger.UserKey) error {
+// (PUT /users/{byUserId}/attribute)
+func (s *ServerImpl) PutUsersByUserIdAttribute(ctx echo.Context, byUserId swagger.UserId) error {
 	var userAttribute swagger.UserAttribute
 	if err := ctx.Bind(&userAttribute); err != nil {
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
@@ -78,17 +79,18 @@ func (s *ServerImpl) PutUsersByUserKeyAttributes(ctx echo.Context, byUserKey swa
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	cnt, err := helper.ConvertSwaggerUserAttributeToEntUserUpdate(userAttribute,
-		s.dbClient.User.Update().Where(user.Key(byUserKey))).Save(ctx.Request().Context())
+	entUser, err := helper.ConvertSwaggerUserAttributeToEntUserUpdate(userAttribute, s.dbClient.User.UpdateOneID(byUserId)).Save(ctx.Request().Context())
 	if err != nil {
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	if cnt != 1 {
-		return sendClientError(ctx, http.StatusNotFound, "user is none")
-	}
+	return ctx.JSON(http.StatusOK, helper.ConvertEntUserToSwaggerUserAttribute(entUser))
+}
 
-	entUser, err := s.dbClient.User.Query().Where(user.Key(byUserKey)).Only(ctx.Request().Context())
+// アクティビティ群取得
+// (GET /users/{byUserId}/activities)
+func (s *ServerImpl) GetUsersByUserIdActivities(ctx echo.Context, byUserId swagger.UserId) error {
+	entUser, err := s.dbClient.User.Query().Where(user.ID(byUserId)).Only(ctx.Request().Context())
 	if err != nil {
 		switch {
 		case errors.As(err, &notFound):
@@ -97,29 +99,37 @@ func (s *ServerImpl) PutUsersByUserKeyAttributes(ctx echo.Context, byUserKey swa
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, helper.ConvertEntUserToSwaggerUserAttribute(entUser))
-}
+	if entUser == nil {
+		return sendClientError(ctx, http.StatusNotFound, "user is none")
+	}
 
-// アクティビティ群取得
-// (GET /users/{byUserKey}/activities)
-func (s *ServerImpl) GetUsersByUserKeyActivities(ctx echo.Context, byUserKey swagger.UserKey) error {
-	return ctx.String(http.StatusOK, byUserKey)
+	activities, err := entUser.QueryActivities().Only(ctx.Request().Context())
+	if err != nil {
+		switch {
+		case errors.As(err, &notFound):
+			return sendClientError(ctx, http.StatusNotFound, "user activities are none")
+		}
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+	}
+	fmt.Println(activities)
+
+	return ctx.String(http.StatusOK, "")
 }
 
 // アクティビティ群最新化
-// (PUT /users/{byUserKey}/activities)
-func (s *ServerImpl) PutUsersByUserKeyActivities(ctx echo.Context, byUserKey swagger.UserKey) error {
-	return ctx.String(http.StatusOK, byUserKey)
+// (PUT /users/{byUserId}/activities)
+func (s *ServerImpl) PutUsersByUserIdActivities(ctx echo.Context, byUserId swagger.UserId) error {
+	return ctx.String(http.StatusOK, "")
 }
 
 // 資格情報群取得
-// (GET /users/{byUserKey}/qualifications)
-func (s *ServerImpl) GetUsersByUserKeyQualifications(ctx echo.Context, byUserKey swagger.UserKey) error {
-	return ctx.String(http.StatusOK, byUserKey)
+// (GET /users/{byUserId}/qualifications)
+func (s *ServerImpl) GetUsersByUserIdQualifications(ctx echo.Context, byUserId swagger.UserId) error {
+	return ctx.String(http.StatusOK, "")
 }
 
 // 資格情報群最新化
-// (PUT /users/{byUserKey}/qualifications)
-func (s *ServerImpl) PutUsersByUserKeyQualifications(ctx echo.Context, byUserKey swagger.UserKey) error {
-	return ctx.String(http.StatusOK, byUserKey)
+// (PUT /users/{byUserId}/qualifications)
+func (s *ServerImpl) PutUsersByUserIdQualifications(ctx echo.Context, byUserId swagger.UserId) error {
+	return ctx.String(http.StatusOK, "")
 }
