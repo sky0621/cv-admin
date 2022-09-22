@@ -7,7 +7,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/rest/helper"
 	"github.com/sky0621/cv-admin/src/swagger"
 )
@@ -47,7 +46,7 @@ func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId swagger.User
 // 属性取得
 // (GET /users/{byUserId}/attribute)
 func (s *ServerImpl) GetUsersByUserIdAttribute(ctx echo.Context, byUserId swagger.UserId) error {
-	entUser, err := s.dbClient.User.Query().Where(user.ID(byUserId)).Only(ctx.Request().Context())
+	entUser, err := s.dbClient.User.Get(ctx.Request().Context(), byUserId)
 	if err != nil {
 		switch {
 		case errors.As(err, &notFound):
@@ -86,7 +85,7 @@ func (s *ServerImpl) PutUsersByUserIdAttribute(ctx echo.Context, byUserId swagge
 // アクティビティ群取得
 // (GET /users/{byUserId}/activities)
 func (s *ServerImpl) GetUsersByUserIdActivities(ctx echo.Context, byUserId swagger.UserId) error {
-	entUser, err := s.dbClient.User.Query().Where(user.ID(byUserId)).Only(ctx.Request().Context())
+	entUser, err := s.dbClient.User.Get(ctx.Request().Context(), byUserId)
 	if err != nil {
 		switch {
 		case errors.As(err, &notFound):
@@ -115,6 +114,30 @@ func (s *ServerImpl) GetUsersByUserIdActivities(ctx echo.Context, byUserId swagg
 // アクティビティ群最新化
 // (PUT /users/{byUserId}/activities)
 func (s *ServerImpl) PutUsersByUserIdActivities(ctx echo.Context, byUserId swagger.UserId) error {
+	entUser, err := s.dbClient.User.Get(ctx.Request().Context(), byUserId)
+	if err != nil {
+		switch {
+		case errors.As(err, &notFound):
+			return sendClientError(ctx, http.StatusNotFound, "user is none")
+		}
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	if entUser == nil {
+		return sendClientError(ctx, http.StatusNotFound, "user is none")
+	}
+
+	var userActivities []swagger.UserActivity
+	if err := ctx.Bind(&userActivities); err != nil {
+		return sendClientError(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	for _, activity := range entUser.Edges.Activities {
+		s.dbClient.UserActivity.DeleteOne(activity).Exec(ctx.Request().Context())
+	}
+
+	// FIXME: insert
+
 	return ctx.String(http.StatusOK, "")
 }
 
