@@ -29,6 +29,6 @@ func (UserActivity) Mixin() []ent.Mixin {
 // Edges of the UserActivity.
 func (UserActivity) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("user", User.Type).Ref("activities").Unique(),
+		edge.From("user", User.Type).Ref("activities").Unique().Required(),
 	}
 }

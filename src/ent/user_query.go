@@ -403,13 +403,13 @@ func (uq *UserQuery) loadActivities(ctx context.Context, query *UserActivityQuer
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.user_activities
+		fk := n.user_id
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "user_activities" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "user_id" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_activities" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

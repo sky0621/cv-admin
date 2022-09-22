@@ -73,7 +73,7 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "url", Type: field.TypeString, Nullable: true},
 		{Name: "icon", Type: field.TypeString, Nullable: true},
-		{Name: "user_activities", Type: field.TypeInt, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt},
 	}
 	// UserActivitiesTable holds the schema information for the "user_activities" table.
 	UserActivitiesTable = &schema.Table{
@@ -85,7 +85,7 @@ var (
 				Symbol:     "user_activities_users_activities",
 				Columns:    []*schema.Column{UserActivitiesColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}

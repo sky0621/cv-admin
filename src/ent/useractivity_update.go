@@ -87,14 +87,6 @@ func (uau *UserActivityUpdate) SetUserID(id int) *UserActivityUpdate {
 	return uau
 }
 
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (uau *UserActivityUpdate) SetNillableUserID(id *int) *UserActivityUpdate {
-	if id != nil {
-		uau = uau.SetUserID(*id)
-	}
-	return uau
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (uau *UserActivityUpdate) SetUser(u *User) *UserActivityUpdate {
 	return uau.SetUserID(u.ID)
@@ -196,6 +188,9 @@ func (uau *UserActivityUpdate) check() error {
 		if err := useractivity.IconValidator(v); err != nil {
 			return &ValidationError{Name: "icon", err: fmt.Errorf(`ent: validator failed for field "UserActivity.icon": %w`, err)}
 		}
+	}
+	if _, ok := uau.mutation.UserID(); uau.mutation.UserCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "UserActivity.user"`)
 	}
 	return nil
 }
@@ -370,14 +365,6 @@ func (uauo *UserActivityUpdateOne) SetUserID(id int) *UserActivityUpdateOne {
 	return uauo
 }
 
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (uauo *UserActivityUpdateOne) SetNillableUserID(id *int) *UserActivityUpdateOne {
-	if id != nil {
-		uauo = uauo.SetUserID(*id)
-	}
-	return uauo
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (uauo *UserActivityUpdateOne) SetUser(u *User) *UserActivityUpdateOne {
 	return uauo.SetUserID(u.ID)
@@ -492,6 +479,9 @@ func (uauo *UserActivityUpdateOne) check() error {
 		if err := useractivity.IconValidator(v); err != nil {
 			return &ValidationError{Name: "icon", err: fmt.Errorf(`ent: validator failed for field "UserActivity.icon": %w`, err)}
 		}
+	}
+	if _, ok := uauo.mutation.UserID(); uauo.mutation.UserCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "UserActivity.user"`)
 	}
 	return nil
 }

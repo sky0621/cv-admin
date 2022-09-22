@@ -35,6 +35,6 @@ func (User) Mixin() []ent.Mixin {
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("activities", UserActivity.Type),
+		edge.To("activities", UserActivity.Type).StorageKey(edge.Column("user_id")),
 	}
 }

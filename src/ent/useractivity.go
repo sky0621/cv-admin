@@ -29,8 +29,8 @@ type UserActivity struct {
 	Icon *string `json:"icon,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserActivityQuery when eager-loading is set.
-	Edges           UserActivityEdges `json:"edges"`
-	user_activities *int
+	Edges   UserActivityEdges `json:"edges"`
+	user_id *int
 }
 
 // UserActivityEdges holds the relations/edges for other nodes in the graph.
@@ -66,7 +66,7 @@ func (*UserActivity) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case useractivity.FieldCreateTime, useractivity.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
-		case useractivity.ForeignKeys[0]: // user_activities
+		case useractivity.ForeignKeys[0]: // user_id
 			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type UserActivity", columns[i])
@@ -123,10 +123,10 @@ func (ua *UserActivity) assignValues(columns []string, values []interface{}) err
 			}
 		case useractivity.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_activities", value)
+				return fmt.Errorf("unexpected type %T for edge-field user_id", value)
 			} else if value.Valid {
-				ua.user_activities = new(int)
-				*ua.user_activities = int(value.Int64)
+				ua.user_id = new(int)
+				*ua.user_id = int(value.Int64)
 			}
 		}
 	}

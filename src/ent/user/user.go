@@ -43,7 +43,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "useractivity" package.
 	ActivitiesInverseTable = "user_activities"
 	// ActivitiesColumn is the table column denoting the activities relation/edge.
-	ActivitiesColumn = "user_activities"
+	ActivitiesColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

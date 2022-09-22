@@ -36,13 +36,9 @@ func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 // 指定ユーザー削除
 // (DELETE /users/{byUserId})
 func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId swagger.UserId) error {
-	cnt, err := s.dbClient.User.Delete().Where(user.ID(byUserId)).Exec(ctx.Request().Context())
+	err := s.dbClient.User.DeleteOneID(byUserId).Exec(ctx.Request().Context())
 	if err != nil {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
-	}
-
-	if cnt != 1 {
-		return sendClientError(ctx, http.StatusNotFound, "user is none")
 	}
 
 	return ctx.NoContent(http.StatusNoContent)

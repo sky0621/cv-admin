@@ -91,14 +91,6 @@ func (uac *UserActivityCreate) SetUserID(id int) *UserActivityCreate {
 	return uac
 }
 
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (uac *UserActivityCreate) SetNillableUserID(id *int) *UserActivityCreate {
-	if id != nil {
-		uac = uac.SetUserID(*id)
-	}
-	return uac
-}
-
 // SetUser sets the "user" edge to the User entity.
 func (uac *UserActivityCreate) SetUser(u *User) *UserActivityCreate {
 	return uac.SetUserID(u.ID)
@@ -217,6 +209,9 @@ func (uac *UserActivityCreate) check() error {
 			return &ValidationError{Name: "icon", err: fmt.Errorf(`ent: validator failed for field "UserActivity.icon": %w`, err)}
 		}
 	}
+	if _, ok := uac.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "UserActivity.user"`)}
+	}
 	return nil
 }
 
@@ -302,7 +297,7 @@ func (uac *UserActivityCreate) createSpec() (*UserActivity, *sqlgraph.CreateSpec
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.user_activities = &nodes[0]
+		_node.user_id = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
