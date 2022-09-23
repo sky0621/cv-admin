@@ -7,7 +7,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/sky0621/cv-admin/src/rest/helper"
+	"github.com/sky0621/cv-admin/src/ent"
+	"github.com/sky0621/cv-admin/src/ent/helper"
+	"github.com/sky0621/cv-admin/src/rest/converter"
 	"github.com/sky0621/cv-admin/src/swagger"
 )
 
@@ -23,13 +25,13 @@ func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	entUser, err := helper.ConvertSwaggerUserAttributeToEntUserCreate(userAttribute, s.dbClient.User.Create()).
+	entUser, err := converter.ToEntUserCreate(userAttribute, s.dbClient.User.Create()).
 		Save(ctx.Request().Context())
 	if err != nil {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, helper.ConvertEntUserToSwaggerUserAttribute(entUser))
+	return ctx.JSON(http.StatusCreated, converter.ToSwaggerUserAttribute(entUser))
 }
 
 // 指定ユーザー削除
@@ -59,7 +61,7 @@ func (s *ServerImpl) GetUsersByUserIdAttribute(ctx echo.Context, byUserId swagge
 		return sendClientError(ctx, http.StatusNotFound, "user is none")
 	}
 
-	return ctx.JSON(http.StatusOK, helper.ConvertEntUserToSwaggerUserAttribute(entUser))
+	return ctx.JSON(http.StatusOK, converter.ToSwaggerUserAttribute(entUser))
 }
 
 // 属性更新
@@ -74,12 +76,12 @@ func (s *ServerImpl) PutUsersByUserIdAttribute(ctx echo.Context, byUserId swagge
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	entUser, err := helper.ConvertSwaggerUserAttributeToEntUserUpdate(userAttribute, s.dbClient.User.UpdateOneID(byUserId)).Save(ctx.Request().Context())
+	entUser, err := converter.ToEntUserUpdate(userAttribute, s.dbClient.User.UpdateOneID(byUserId)).Save(ctx.Request().Context())
 	if err != nil {
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, helper.ConvertEntUserToSwaggerUserAttribute(entUser))
+	return ctx.JSON(http.StatusOK, converter.ToSwaggerUserAttribute(entUser))
 }
 
 // アクティビティ群取得
@@ -114,7 +116,9 @@ func (s *ServerImpl) GetUsersByUserIdActivities(ctx echo.Context, byUserId swagg
 // アクティビティ群最新化
 // (PUT /users/{byUserId}/activities)
 func (s *ServerImpl) PutUsersByUserIdActivities(ctx echo.Context, byUserId swagger.UserId) error {
-	entUser, err := s.dbClient.User.Get(ctx.Request().Context(), byUserId)
+	rCtx := ctx.Request().Context()
+
+	entUser, err := s.dbClient.User.Get(rCtx, byUserId)
 	if err != nil {
 		switch {
 		case errors.As(err, &notFound):
@@ -132,13 +136,24 @@ func (s *ServerImpl) PutUsersByUserIdActivities(ctx echo.Context, byUserId swagg
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	for _, activity := range entUser.Edges.Activities {
-		s.dbClient.UserActivity.DeleteOne(activity).Exec(ctx.Request().Context())
+	var results []*ent.UserActivity
+	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
+		for _, activity := range entUser.Edges.Activities {
+			tx.UserActivity.DeleteOne(activity).Exec(rCtx)
+		}
+		for _, activity := range userActivities {
+			result, err := converter.ToEntUserActivityCreate(activity, tx.UserActivity.Create()).Save(rCtx)
+			if err != nil {
+				return err
+			}
+			append(results, result)
+		}
+		return nil
+	}); err != nil {
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	// FIXME: insert
-
-	return ctx.String(http.StatusOK, "")
+	return ctx.JSON(http.StatusOK, converter.ToSwaggerUserActivities(results))
 }
 
 // 資格情報群取得
