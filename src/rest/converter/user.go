@@ -48,11 +48,12 @@ func ToSwaggerUserAttribute(u *ent.User) swagger.UserAttribute {
 	return ua
 }
 
-func ToEntUserActivityCreate(ua swagger.UserActivity, c *ent.UserActivityCreate) *ent.UserActivityCreate {
+func ToEntUserActivityCreate(ua swagger.UserActivity, userID int, c *ent.UserActivityCreate) *ent.UserActivityCreate {
 	return c.
 		SetName(*ua.Name).
-		SetURL(*ua.Url).
-		SetIcon(*ua.Icon)
+		SetNillableURL(ua.Url).
+		SetNillableIcon(ua.Icon).
+		SetUserID(userID)
 }
 
 func ToSwaggerUserActivities(entActivities []*ent.UserActivity) swagger.UserActivities {
@@ -62,7 +63,7 @@ func ToSwaggerUserActivities(entActivities []*ent.UserActivity) swagger.UserActi
 		activity.Name = &entActivity.Name
 		activity.Url = entActivity.URL
 		activity.Icon = entActivity.Icon
-		append(activities, activity)
+		activities = append(activities, activity)
 	}
 	return activities
 }
