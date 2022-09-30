@@ -557,6 +557,22 @@ func (c *UserClient) QueryActivities(u *User) *UserActivityQuery {
 	return query
 }
 
+// QueryQualifications queries the qualifications edge of a User.
+func (c *UserClient) QueryQualifications(u *User) *UserQualificationQuery {
+	query := &UserQualificationQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(userqualification.Table, userqualification.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.QualificationsTable, user.QualificationsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -1111,6 +1127,22 @@ func (c *UserQualificationClient) GetX(ctx context.Context, id int) *UserQualifi
 		panic(err)
 	}
 	return obj
+}
+
+// QueryUser queries the user edge of a UserQualification.
+func (c *UserQualificationClient) QueryUser(uq *UserQualification) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := uq.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(userqualification.Table, userqualification.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, userqualification.UserTable, userqualification.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(uq.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // Hooks returns the client hooks.

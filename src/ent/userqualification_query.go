@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
+	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
 )
 
@@ -23,6 +24,8 @@ type UserQualificationQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.UserQualification
+	withUser   *UserQuery
+	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -57,6 +60,28 @@ func (uqq *UserQualificationQuery) Unique(unique bool) *UserQualificationQuery {
 func (uqq *UserQualificationQuery) Order(o ...OrderFunc) *UserQualificationQuery {
 	uqq.order = append(uqq.order, o...)
 	return uqq
+}
+
+// QueryUser chains the current query on the "user" edge.
+func (uqq *UserQualificationQuery) QueryUser() *UserQuery {
+	query := &UserQuery{config: uqq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uqq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uqq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(userqualification.Table, userqualification.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, userqualification.UserTable, userqualification.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uqq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first UserQualification entity from the query.
@@ -240,11 +265,23 @@ func (uqq *UserQualificationQuery) Clone() *UserQualificationQuery {
 		offset:     uqq.offset,
 		order:      append([]OrderFunc{}, uqq.order...),
 		predicates: append([]predicate.UserQualification{}, uqq.predicates...),
+		withUser:   uqq.withUser.Clone(),
 		// clone intermediate query.
 		sql:    uqq.sql.Clone(),
 		path:   uqq.path,
 		unique: uqq.unique,
 	}
+}
+
+// WithUser tells the query-builder to eager-load the nodes that are connected to
+// the "user" edge. The optional arguments are used to configure the query builder of the edge.
+func (uqq *UserQualificationQuery) WithUser(opts ...func(*UserQuery)) *UserQualificationQuery {
+	query := &UserQuery{config: uqq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	uqq.withUser = query
+	return uqq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -313,15 +350,26 @@ func (uqq *UserQualificationQuery) prepareQuery(ctx context.Context) error {
 
 func (uqq *UserQualificationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*UserQualification, error) {
 	var (
-		nodes = []*UserQualification{}
-		_spec = uqq.querySpec()
+		nodes       = []*UserQualification{}
+		withFKs     = uqq.withFKs
+		_spec       = uqq.querySpec()
+		loadedTypes = [1]bool{
+			uqq.withUser != nil,
+		}
 	)
+	if uqq.withUser != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, userqualification.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		return (*UserQualification).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []interface{}) error {
 		node := &UserQualification{config: uqq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -333,7 +381,43 @@ func (uqq *UserQualificationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := uqq.withUser; query != nil {
+		if err := uqq.loadUser(ctx, query, nodes, nil,
+			func(n *UserQualification, e *User) { n.Edges.User = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (uqq *UserQualificationQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*UserQualification, init func(*UserQualification), assign func(*UserQualification, *User)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*UserQualification)
+	for i := range nodes {
+		if nodes[i].user_id == nil {
+			continue
+		}
+		fk := *nodes[i].user_id
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (uqq *UserQualificationQuery) sqlCount(ctx context.Context) (int, error) {

@@ -1170,6 +1170,34 @@ func HasActivitiesWith(preds ...predicate.UserActivity) predicate.User {
 	})
 }
 
+// HasQualifications applies the HasEdge predicate on the "qualifications" edge.
+func HasQualifications() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(QualificationsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, QualificationsTable, QualificationsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasQualificationsWith applies the HasEdge predicate on the "qualifications" edge with a given conditions (other predicates).
+func HasQualificationsWith(preds ...predicate.UserQualification) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(QualificationsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, QualificationsTable, QualificationsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {

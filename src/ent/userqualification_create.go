@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
 )
 
@@ -48,6 +49,79 @@ func (uqc *UserQualificationCreate) SetNillableUpdateTime(t *time.Time) *UserQua
 		uqc.SetUpdateTime(*t)
 	}
 	return uqc
+}
+
+// SetName sets the "name" field.
+func (uqc *UserQualificationCreate) SetName(s string) *UserQualificationCreate {
+	uqc.mutation.SetName(s)
+	return uqc
+}
+
+// SetOrganization sets the "organization" field.
+func (uqc *UserQualificationCreate) SetOrganization(s string) *UserQualificationCreate {
+	uqc.mutation.SetOrganization(s)
+	return uqc
+}
+
+// SetNillableOrganization sets the "organization" field if the given value is not nil.
+func (uqc *UserQualificationCreate) SetNillableOrganization(s *string) *UserQualificationCreate {
+	if s != nil {
+		uqc.SetOrganization(*s)
+	}
+	return uqc
+}
+
+// SetURL sets the "url" field.
+func (uqc *UserQualificationCreate) SetURL(s string) *UserQualificationCreate {
+	uqc.mutation.SetURL(s)
+	return uqc
+}
+
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (uqc *UserQualificationCreate) SetNillableURL(s *string) *UserQualificationCreate {
+	if s != nil {
+		uqc.SetURL(*s)
+	}
+	return uqc
+}
+
+// SetGotDate sets the "got_date" field.
+func (uqc *UserQualificationCreate) SetGotDate(s string) *UserQualificationCreate {
+	uqc.mutation.SetGotDate(s)
+	return uqc
+}
+
+// SetNillableGotDate sets the "got_date" field if the given value is not nil.
+func (uqc *UserQualificationCreate) SetNillableGotDate(s *string) *UserQualificationCreate {
+	if s != nil {
+		uqc.SetGotDate(*s)
+	}
+	return uqc
+}
+
+// SetMemo sets the "memo" field.
+func (uqc *UserQualificationCreate) SetMemo(s string) *UserQualificationCreate {
+	uqc.mutation.SetMemo(s)
+	return uqc
+}
+
+// SetNillableMemo sets the "memo" field if the given value is not nil.
+func (uqc *UserQualificationCreate) SetNillableMemo(s *string) *UserQualificationCreate {
+	if s != nil {
+		uqc.SetMemo(*s)
+	}
+	return uqc
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (uqc *UserQualificationCreate) SetUserID(id int) *UserQualificationCreate {
+	uqc.mutation.SetUserID(id)
+	return uqc
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (uqc *UserQualificationCreate) SetUser(u *User) *UserQualificationCreate {
+	return uqc.SetUserID(u.ID)
 }
 
 // Mutation returns the UserQualificationMutation object of the builder.
@@ -145,6 +219,37 @@ func (uqc *UserQualificationCreate) check() error {
 	if _, ok := uqc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "UserQualification.update_time"`)}
 	}
+	if _, ok := uqc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "UserQualification.name"`)}
+	}
+	if v, ok := uqc.mutation.Name(); ok {
+		if err := userqualification.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "UserQualification.name": %w`, err)}
+		}
+	}
+	if v, ok := uqc.mutation.Organization(); ok {
+		if err := userqualification.OrganizationValidator(v); err != nil {
+			return &ValidationError{Name: "organization", err: fmt.Errorf(`ent: validator failed for field "UserQualification.organization": %w`, err)}
+		}
+	}
+	if v, ok := uqc.mutation.URL(); ok {
+		if err := userqualification.URLValidator(v); err != nil {
+			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "UserQualification.url": %w`, err)}
+		}
+	}
+	if v, ok := uqc.mutation.GotDate(); ok {
+		if err := userqualification.GotDateValidator(v); err != nil {
+			return &ValidationError{Name: "got_date", err: fmt.Errorf(`ent: validator failed for field "UserQualification.got_date": %w`, err)}
+		}
+	}
+	if v, ok := uqc.mutation.Memo(); ok {
+		if err := userqualification.MemoValidator(v); err != nil {
+			return &ValidationError{Name: "memo", err: fmt.Errorf(`ent: validator failed for field "UserQualification.memo": %w`, err)}
+		}
+	}
+	if _, ok := uqc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "UserQualification.user"`)}
+	}
 	return nil
 }
 
@@ -188,6 +293,66 @@ func (uqc *UserQualificationCreate) createSpec() (*UserQualification, *sqlgraph.
 			Column: userqualification.FieldUpdateTime,
 		})
 		_node.UpdateTime = value
+	}
+	if value, ok := uqc.mutation.Name(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldName,
+		})
+		_node.Name = value
+	}
+	if value, ok := uqc.mutation.Organization(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldOrganization,
+		})
+		_node.Organization = &value
+	}
+	if value, ok := uqc.mutation.URL(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldURL,
+		})
+		_node.URL = &value
+	}
+	if value, ok := uqc.mutation.GotDate(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldGotDate,
+		})
+		_node.GotDate = &value
+	}
+	if value, ok := uqc.mutation.Memo(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldMemo,
+		})
+		_node.Memo = &value
+	}
+	if nodes := uqc.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   userqualification.UserTable,
+			Columns: []string{userqualification.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -265,6 +430,90 @@ func (u *UserQualificationUpsert) UpdateUpdateTime() *UserQualificationUpsert {
 	return u
 }
 
+// SetName sets the "name" field.
+func (u *UserQualificationUpsert) SetName(v string) *UserQualificationUpsert {
+	u.Set(userqualification.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *UserQualificationUpsert) UpdateName() *UserQualificationUpsert {
+	u.SetExcluded(userqualification.FieldName)
+	return u
+}
+
+// SetOrganization sets the "organization" field.
+func (u *UserQualificationUpsert) SetOrganization(v string) *UserQualificationUpsert {
+	u.Set(userqualification.FieldOrganization, v)
+	return u
+}
+
+// UpdateOrganization sets the "organization" field to the value that was provided on create.
+func (u *UserQualificationUpsert) UpdateOrganization() *UserQualificationUpsert {
+	u.SetExcluded(userqualification.FieldOrganization)
+	return u
+}
+
+// ClearOrganization clears the value of the "organization" field.
+func (u *UserQualificationUpsert) ClearOrganization() *UserQualificationUpsert {
+	u.SetNull(userqualification.FieldOrganization)
+	return u
+}
+
+// SetURL sets the "url" field.
+func (u *UserQualificationUpsert) SetURL(v string) *UserQualificationUpsert {
+	u.Set(userqualification.FieldURL, v)
+	return u
+}
+
+// UpdateURL sets the "url" field to the value that was provided on create.
+func (u *UserQualificationUpsert) UpdateURL() *UserQualificationUpsert {
+	u.SetExcluded(userqualification.FieldURL)
+	return u
+}
+
+// ClearURL clears the value of the "url" field.
+func (u *UserQualificationUpsert) ClearURL() *UserQualificationUpsert {
+	u.SetNull(userqualification.FieldURL)
+	return u
+}
+
+// SetGotDate sets the "got_date" field.
+func (u *UserQualificationUpsert) SetGotDate(v string) *UserQualificationUpsert {
+	u.Set(userqualification.FieldGotDate, v)
+	return u
+}
+
+// UpdateGotDate sets the "got_date" field to the value that was provided on create.
+func (u *UserQualificationUpsert) UpdateGotDate() *UserQualificationUpsert {
+	u.SetExcluded(userqualification.FieldGotDate)
+	return u
+}
+
+// ClearGotDate clears the value of the "got_date" field.
+func (u *UserQualificationUpsert) ClearGotDate() *UserQualificationUpsert {
+	u.SetNull(userqualification.FieldGotDate)
+	return u
+}
+
+// SetMemo sets the "memo" field.
+func (u *UserQualificationUpsert) SetMemo(v string) *UserQualificationUpsert {
+	u.Set(userqualification.FieldMemo, v)
+	return u
+}
+
+// UpdateMemo sets the "memo" field to the value that was provided on create.
+func (u *UserQualificationUpsert) UpdateMemo() *UserQualificationUpsert {
+	u.SetExcluded(userqualification.FieldMemo)
+	return u
+}
+
+// ClearMemo clears the value of the "memo" field.
+func (u *UserQualificationUpsert) ClearMemo() *UserQualificationUpsert {
+	u.SetNull(userqualification.FieldMemo)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -335,6 +584,104 @@ func (u *UserQualificationUpsertOne) SetUpdateTime(v time.Time) *UserQualificati
 func (u *UserQualificationUpsertOne) UpdateUpdateTime() *UserQualificationUpsertOne {
 	return u.Update(func(s *UserQualificationUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *UserQualificationUpsertOne) SetName(v string) *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *UserQualificationUpsertOne) UpdateName() *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetOrganization sets the "organization" field.
+func (u *UserQualificationUpsertOne) SetOrganization(v string) *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.SetOrganization(v)
+	})
+}
+
+// UpdateOrganization sets the "organization" field to the value that was provided on create.
+func (u *UserQualificationUpsertOne) UpdateOrganization() *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.UpdateOrganization()
+	})
+}
+
+// ClearOrganization clears the value of the "organization" field.
+func (u *UserQualificationUpsertOne) ClearOrganization() *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.ClearOrganization()
+	})
+}
+
+// SetURL sets the "url" field.
+func (u *UserQualificationUpsertOne) SetURL(v string) *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.SetURL(v)
+	})
+}
+
+// UpdateURL sets the "url" field to the value that was provided on create.
+func (u *UserQualificationUpsertOne) UpdateURL() *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.UpdateURL()
+	})
+}
+
+// ClearURL clears the value of the "url" field.
+func (u *UserQualificationUpsertOne) ClearURL() *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.ClearURL()
+	})
+}
+
+// SetGotDate sets the "got_date" field.
+func (u *UserQualificationUpsertOne) SetGotDate(v string) *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.SetGotDate(v)
+	})
+}
+
+// UpdateGotDate sets the "got_date" field to the value that was provided on create.
+func (u *UserQualificationUpsertOne) UpdateGotDate() *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.UpdateGotDate()
+	})
+}
+
+// ClearGotDate clears the value of the "got_date" field.
+func (u *UserQualificationUpsertOne) ClearGotDate() *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.ClearGotDate()
+	})
+}
+
+// SetMemo sets the "memo" field.
+func (u *UserQualificationUpsertOne) SetMemo(v string) *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.SetMemo(v)
+	})
+}
+
+// UpdateMemo sets the "memo" field to the value that was provided on create.
+func (u *UserQualificationUpsertOne) UpdateMemo() *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.UpdateMemo()
+	})
+}
+
+// ClearMemo clears the value of the "memo" field.
+func (u *UserQualificationUpsertOne) ClearMemo() *UserQualificationUpsertOne {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.ClearMemo()
 	})
 }
 
@@ -570,6 +917,104 @@ func (u *UserQualificationUpsertBulk) SetUpdateTime(v time.Time) *UserQualificat
 func (u *UserQualificationUpsertBulk) UpdateUpdateTime() *UserQualificationUpsertBulk {
 	return u.Update(func(s *UserQualificationUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *UserQualificationUpsertBulk) SetName(v string) *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *UserQualificationUpsertBulk) UpdateName() *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetOrganization sets the "organization" field.
+func (u *UserQualificationUpsertBulk) SetOrganization(v string) *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.SetOrganization(v)
+	})
+}
+
+// UpdateOrganization sets the "organization" field to the value that was provided on create.
+func (u *UserQualificationUpsertBulk) UpdateOrganization() *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.UpdateOrganization()
+	})
+}
+
+// ClearOrganization clears the value of the "organization" field.
+func (u *UserQualificationUpsertBulk) ClearOrganization() *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.ClearOrganization()
+	})
+}
+
+// SetURL sets the "url" field.
+func (u *UserQualificationUpsertBulk) SetURL(v string) *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.SetURL(v)
+	})
+}
+
+// UpdateURL sets the "url" field to the value that was provided on create.
+func (u *UserQualificationUpsertBulk) UpdateURL() *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.UpdateURL()
+	})
+}
+
+// ClearURL clears the value of the "url" field.
+func (u *UserQualificationUpsertBulk) ClearURL() *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.ClearURL()
+	})
+}
+
+// SetGotDate sets the "got_date" field.
+func (u *UserQualificationUpsertBulk) SetGotDate(v string) *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.SetGotDate(v)
+	})
+}
+
+// UpdateGotDate sets the "got_date" field to the value that was provided on create.
+func (u *UserQualificationUpsertBulk) UpdateGotDate() *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.UpdateGotDate()
+	})
+}
+
+// ClearGotDate clears the value of the "got_date" field.
+func (u *UserQualificationUpsertBulk) ClearGotDate() *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.ClearGotDate()
+	})
+}
+
+// SetMemo sets the "memo" field.
+func (u *UserQualificationUpsertBulk) SetMemo(v string) *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.SetMemo(v)
+	})
+}
+
+// UpdateMemo sets the "memo" field to the value that was provided on create.
+func (u *UserQualificationUpsertBulk) UpdateMemo() *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.UpdateMemo()
+	})
+}
+
+// ClearMemo clears the value of the "memo" field.
+func (u *UserQualificationUpsertBulk) ClearMemo() *UserQualificationUpsertBulk {
+	return u.Update(func(s *UserQualificationUpsert) {
+		s.ClearMemo()
 	})
 }
 

@@ -47,9 +47,11 @@ type User struct {
 type UserEdges struct {
 	// Activities holds the value of the activities edge.
 	Activities []*UserActivity `json:"activities,omitempty"`
+	// Qualifications holds the value of the qualifications edge.
+	Qualifications []*UserQualification `json:"qualifications,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // ActivitiesOrErr returns the Activities value or an error if the edge
@@ -59,6 +61,15 @@ func (e UserEdges) ActivitiesOrErr() ([]*UserActivity, error) {
 		return e.Activities, nil
 	}
 	return nil, &NotLoadedError{edge: "activities"}
+}
+
+// QualificationsOrErr returns the Qualifications value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) QualificationsOrErr() ([]*UserQualification, error) {
+	if e.loadedTypes[1] {
+		return e.Qualifications, nil
+	}
+	return nil, &NotLoadedError{edge: "qualifications"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -172,6 +183,11 @@ func (u *User) assignValues(columns []string, values []interface{}) error {
 // QueryActivities queries the "activities" edge of the User entity.
 func (u *User) QueryActivities() *UserActivityQuery {
 	return (&UserClient{config: u.config}).QueryActivities(u)
+}
+
+// QueryQualifications queries the "qualifications" edge of the User entity.
+func (u *User) QueryQualifications() *UserQualificationQuery {
+	return (&UserClient{config: u.config}).QueryQualifications(u)
 }
 
 // Update returns a builder for updating this User.

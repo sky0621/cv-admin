@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
+	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
 )
 
@@ -34,9 +35,112 @@ func (uqu *UserQualificationUpdate) SetUpdateTime(t time.Time) *UserQualificatio
 	return uqu
 }
 
+// SetName sets the "name" field.
+func (uqu *UserQualificationUpdate) SetName(s string) *UserQualificationUpdate {
+	uqu.mutation.SetName(s)
+	return uqu
+}
+
+// SetOrganization sets the "organization" field.
+func (uqu *UserQualificationUpdate) SetOrganization(s string) *UserQualificationUpdate {
+	uqu.mutation.SetOrganization(s)
+	return uqu
+}
+
+// SetNillableOrganization sets the "organization" field if the given value is not nil.
+func (uqu *UserQualificationUpdate) SetNillableOrganization(s *string) *UserQualificationUpdate {
+	if s != nil {
+		uqu.SetOrganization(*s)
+	}
+	return uqu
+}
+
+// ClearOrganization clears the value of the "organization" field.
+func (uqu *UserQualificationUpdate) ClearOrganization() *UserQualificationUpdate {
+	uqu.mutation.ClearOrganization()
+	return uqu
+}
+
+// SetURL sets the "url" field.
+func (uqu *UserQualificationUpdate) SetURL(s string) *UserQualificationUpdate {
+	uqu.mutation.SetURL(s)
+	return uqu
+}
+
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (uqu *UserQualificationUpdate) SetNillableURL(s *string) *UserQualificationUpdate {
+	if s != nil {
+		uqu.SetURL(*s)
+	}
+	return uqu
+}
+
+// ClearURL clears the value of the "url" field.
+func (uqu *UserQualificationUpdate) ClearURL() *UserQualificationUpdate {
+	uqu.mutation.ClearURL()
+	return uqu
+}
+
+// SetGotDate sets the "got_date" field.
+func (uqu *UserQualificationUpdate) SetGotDate(s string) *UserQualificationUpdate {
+	uqu.mutation.SetGotDate(s)
+	return uqu
+}
+
+// SetNillableGotDate sets the "got_date" field if the given value is not nil.
+func (uqu *UserQualificationUpdate) SetNillableGotDate(s *string) *UserQualificationUpdate {
+	if s != nil {
+		uqu.SetGotDate(*s)
+	}
+	return uqu
+}
+
+// ClearGotDate clears the value of the "got_date" field.
+func (uqu *UserQualificationUpdate) ClearGotDate() *UserQualificationUpdate {
+	uqu.mutation.ClearGotDate()
+	return uqu
+}
+
+// SetMemo sets the "memo" field.
+func (uqu *UserQualificationUpdate) SetMemo(s string) *UserQualificationUpdate {
+	uqu.mutation.SetMemo(s)
+	return uqu
+}
+
+// SetNillableMemo sets the "memo" field if the given value is not nil.
+func (uqu *UserQualificationUpdate) SetNillableMemo(s *string) *UserQualificationUpdate {
+	if s != nil {
+		uqu.SetMemo(*s)
+	}
+	return uqu
+}
+
+// ClearMemo clears the value of the "memo" field.
+func (uqu *UserQualificationUpdate) ClearMemo() *UserQualificationUpdate {
+	uqu.mutation.ClearMemo()
+	return uqu
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (uqu *UserQualificationUpdate) SetUserID(id int) *UserQualificationUpdate {
+	uqu.mutation.SetUserID(id)
+	return uqu
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (uqu *UserQualificationUpdate) SetUser(u *User) *UserQualificationUpdate {
+	return uqu.SetUserID(u.ID)
+}
+
 // Mutation returns the UserQualificationMutation object of the builder.
 func (uqu *UserQualificationUpdate) Mutation() *UserQualificationMutation {
 	return uqu.mutation
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (uqu *UserQualificationUpdate) ClearUser() *UserQualificationUpdate {
+	uqu.mutation.ClearUser()
+	return uqu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -47,12 +151,18 @@ func (uqu *UserQualificationUpdate) Save(ctx context.Context) (int, error) {
 	)
 	uqu.defaults()
 	if len(uqu.hooks) == 0 {
+		if err = uqu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = uqu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*UserQualificationMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = uqu.check(); err != nil {
+				return 0, err
 			}
 			uqu.mutation = mutation
 			affected, err = uqu.sqlSave(ctx)
@@ -102,6 +212,39 @@ func (uqu *UserQualificationUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (uqu *UserQualificationUpdate) check() error {
+	if v, ok := uqu.mutation.Name(); ok {
+		if err := userqualification.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "UserQualification.name": %w`, err)}
+		}
+	}
+	if v, ok := uqu.mutation.Organization(); ok {
+		if err := userqualification.OrganizationValidator(v); err != nil {
+			return &ValidationError{Name: "organization", err: fmt.Errorf(`ent: validator failed for field "UserQualification.organization": %w`, err)}
+		}
+	}
+	if v, ok := uqu.mutation.URL(); ok {
+		if err := userqualification.URLValidator(v); err != nil {
+			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "UserQualification.url": %w`, err)}
+		}
+	}
+	if v, ok := uqu.mutation.GotDate(); ok {
+		if err := userqualification.GotDateValidator(v); err != nil {
+			return &ValidationError{Name: "got_date", err: fmt.Errorf(`ent: validator failed for field "UserQualification.got_date": %w`, err)}
+		}
+	}
+	if v, ok := uqu.mutation.Memo(); ok {
+		if err := userqualification.MemoValidator(v); err != nil {
+			return &ValidationError{Name: "memo", err: fmt.Errorf(`ent: validator failed for field "UserQualification.memo": %w`, err)}
+		}
+	}
+	if _, ok := uqu.mutation.UserID(); uqu.mutation.UserCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "UserQualification.user"`)
+	}
+	return nil
+}
+
 func (uqu *UserQualificationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -126,6 +269,100 @@ func (uqu *UserQualificationUpdate) sqlSave(ctx context.Context) (n int, err err
 			Value:  value,
 			Column: userqualification.FieldUpdateTime,
 		})
+	}
+	if value, ok := uqu.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldName,
+		})
+	}
+	if value, ok := uqu.mutation.Organization(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldOrganization,
+		})
+	}
+	if uqu.mutation.OrganizationCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: userqualification.FieldOrganization,
+		})
+	}
+	if value, ok := uqu.mutation.URL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldURL,
+		})
+	}
+	if uqu.mutation.URLCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: userqualification.FieldURL,
+		})
+	}
+	if value, ok := uqu.mutation.GotDate(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldGotDate,
+		})
+	}
+	if uqu.mutation.GotDateCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: userqualification.FieldGotDate,
+		})
+	}
+	if value, ok := uqu.mutation.Memo(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldMemo,
+		})
+	}
+	if uqu.mutation.MemoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: userqualification.FieldMemo,
+		})
+	}
+	if uqu.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   userqualification.UserTable,
+			Columns: []string{userqualification.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uqu.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   userqualification.UserTable,
+			Columns: []string{userqualification.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uqu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -152,9 +389,112 @@ func (uquo *UserQualificationUpdateOne) SetUpdateTime(t time.Time) *UserQualific
 	return uquo
 }
 
+// SetName sets the "name" field.
+func (uquo *UserQualificationUpdateOne) SetName(s string) *UserQualificationUpdateOne {
+	uquo.mutation.SetName(s)
+	return uquo
+}
+
+// SetOrganization sets the "organization" field.
+func (uquo *UserQualificationUpdateOne) SetOrganization(s string) *UserQualificationUpdateOne {
+	uquo.mutation.SetOrganization(s)
+	return uquo
+}
+
+// SetNillableOrganization sets the "organization" field if the given value is not nil.
+func (uquo *UserQualificationUpdateOne) SetNillableOrganization(s *string) *UserQualificationUpdateOne {
+	if s != nil {
+		uquo.SetOrganization(*s)
+	}
+	return uquo
+}
+
+// ClearOrganization clears the value of the "organization" field.
+func (uquo *UserQualificationUpdateOne) ClearOrganization() *UserQualificationUpdateOne {
+	uquo.mutation.ClearOrganization()
+	return uquo
+}
+
+// SetURL sets the "url" field.
+func (uquo *UserQualificationUpdateOne) SetURL(s string) *UserQualificationUpdateOne {
+	uquo.mutation.SetURL(s)
+	return uquo
+}
+
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (uquo *UserQualificationUpdateOne) SetNillableURL(s *string) *UserQualificationUpdateOne {
+	if s != nil {
+		uquo.SetURL(*s)
+	}
+	return uquo
+}
+
+// ClearURL clears the value of the "url" field.
+func (uquo *UserQualificationUpdateOne) ClearURL() *UserQualificationUpdateOne {
+	uquo.mutation.ClearURL()
+	return uquo
+}
+
+// SetGotDate sets the "got_date" field.
+func (uquo *UserQualificationUpdateOne) SetGotDate(s string) *UserQualificationUpdateOne {
+	uquo.mutation.SetGotDate(s)
+	return uquo
+}
+
+// SetNillableGotDate sets the "got_date" field if the given value is not nil.
+func (uquo *UserQualificationUpdateOne) SetNillableGotDate(s *string) *UserQualificationUpdateOne {
+	if s != nil {
+		uquo.SetGotDate(*s)
+	}
+	return uquo
+}
+
+// ClearGotDate clears the value of the "got_date" field.
+func (uquo *UserQualificationUpdateOne) ClearGotDate() *UserQualificationUpdateOne {
+	uquo.mutation.ClearGotDate()
+	return uquo
+}
+
+// SetMemo sets the "memo" field.
+func (uquo *UserQualificationUpdateOne) SetMemo(s string) *UserQualificationUpdateOne {
+	uquo.mutation.SetMemo(s)
+	return uquo
+}
+
+// SetNillableMemo sets the "memo" field if the given value is not nil.
+func (uquo *UserQualificationUpdateOne) SetNillableMemo(s *string) *UserQualificationUpdateOne {
+	if s != nil {
+		uquo.SetMemo(*s)
+	}
+	return uquo
+}
+
+// ClearMemo clears the value of the "memo" field.
+func (uquo *UserQualificationUpdateOne) ClearMemo() *UserQualificationUpdateOne {
+	uquo.mutation.ClearMemo()
+	return uquo
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (uquo *UserQualificationUpdateOne) SetUserID(id int) *UserQualificationUpdateOne {
+	uquo.mutation.SetUserID(id)
+	return uquo
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (uquo *UserQualificationUpdateOne) SetUser(u *User) *UserQualificationUpdateOne {
+	return uquo.SetUserID(u.ID)
+}
+
 // Mutation returns the UserQualificationMutation object of the builder.
 func (uquo *UserQualificationUpdateOne) Mutation() *UserQualificationMutation {
 	return uquo.mutation
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (uquo *UserQualificationUpdateOne) ClearUser() *UserQualificationUpdateOne {
+	uquo.mutation.ClearUser()
+	return uquo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -172,12 +512,18 @@ func (uquo *UserQualificationUpdateOne) Save(ctx context.Context) (*UserQualific
 	)
 	uquo.defaults()
 	if len(uquo.hooks) == 0 {
+		if err = uquo.check(); err != nil {
+			return nil, err
+		}
 		node, err = uquo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*UserQualificationMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = uquo.check(); err != nil {
+				return nil, err
 			}
 			uquo.mutation = mutation
 			node, err = uquo.sqlSave(ctx)
@@ -233,6 +579,39 @@ func (uquo *UserQualificationUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (uquo *UserQualificationUpdateOne) check() error {
+	if v, ok := uquo.mutation.Name(); ok {
+		if err := userqualification.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "UserQualification.name": %w`, err)}
+		}
+	}
+	if v, ok := uquo.mutation.Organization(); ok {
+		if err := userqualification.OrganizationValidator(v); err != nil {
+			return &ValidationError{Name: "organization", err: fmt.Errorf(`ent: validator failed for field "UserQualification.organization": %w`, err)}
+		}
+	}
+	if v, ok := uquo.mutation.URL(); ok {
+		if err := userqualification.URLValidator(v); err != nil {
+			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "UserQualification.url": %w`, err)}
+		}
+	}
+	if v, ok := uquo.mutation.GotDate(); ok {
+		if err := userqualification.GotDateValidator(v); err != nil {
+			return &ValidationError{Name: "got_date", err: fmt.Errorf(`ent: validator failed for field "UserQualification.got_date": %w`, err)}
+		}
+	}
+	if v, ok := uquo.mutation.Memo(); ok {
+		if err := userqualification.MemoValidator(v); err != nil {
+			return &ValidationError{Name: "memo", err: fmt.Errorf(`ent: validator failed for field "UserQualification.memo": %w`, err)}
+		}
+	}
+	if _, ok := uquo.mutation.UserID(); uquo.mutation.UserCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "UserQualification.user"`)
+	}
+	return nil
+}
+
 func (uquo *UserQualificationUpdateOne) sqlSave(ctx context.Context) (_node *UserQualification, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -274,6 +653,100 @@ func (uquo *UserQualificationUpdateOne) sqlSave(ctx context.Context) (_node *Use
 			Value:  value,
 			Column: userqualification.FieldUpdateTime,
 		})
+	}
+	if value, ok := uquo.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldName,
+		})
+	}
+	if value, ok := uquo.mutation.Organization(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldOrganization,
+		})
+	}
+	if uquo.mutation.OrganizationCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: userqualification.FieldOrganization,
+		})
+	}
+	if value, ok := uquo.mutation.URL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldURL,
+		})
+	}
+	if uquo.mutation.URLCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: userqualification.FieldURL,
+		})
+	}
+	if value, ok := uquo.mutation.GotDate(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldGotDate,
+		})
+	}
+	if uquo.mutation.GotDateCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: userqualification.FieldGotDate,
+		})
+	}
+	if value, ok := uquo.mutation.Memo(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: userqualification.FieldMemo,
+		})
+	}
+	if uquo.mutation.MemoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: userqualification.FieldMemo,
+		})
+	}
+	if uquo.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   userqualification.UserTable,
+			Columns: []string{userqualification.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uquo.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   userqualification.UserTable,
+			Columns: []string{userqualification.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &UserQualification{config: uquo.config}
 	_spec.Assign = _node.assignValues

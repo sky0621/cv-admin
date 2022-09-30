@@ -163,8 +163,45 @@ func (s *ServerImpl) GetUsersByUserIdQualifications(ctx echo.Context, byUserId s
 	return ctx.String(http.StatusOK, "")
 }
 
-// 資格情報群最新化
+// PutUsersByUserIdQualifications 資格情報群最新化
 // (PUT /users/{byUserId}/qualifications)
 func (s *ServerImpl) PutUsersByUserIdQualifications(ctx echo.Context, byUserId swagger.UserId) error {
-	return ctx.String(http.StatusOK, "")
+	rCtx := ctx.Request().Context()
+
+	entUser, err := s.dbClient.User.Query().Where(user.ID(byUserId)).WithQualifications().Only(rCtx)
+	if err != nil {
+		switch {
+		case errors.As(err, &notFound):
+			return sendClientError(ctx, http.StatusNotFound, "user is none")
+		}
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	if entUser == nil {
+		return sendClientError(ctx, http.StatusNotFound, "user is none")
+	}
+
+	var userQualifications []swagger.UserQualification
+	if err := ctx.Bind(&userQualifications); err != nil {
+		return sendClientError(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	var results []*ent.UserQualification
+	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
+		for _, qualification := range entUser.Edges.Qualifications {
+			tx.UserQualification.DeleteOne(qualification).Exec(rCtx)
+		}
+		for _, qualification := range userQualifications {
+			result, err := converter.ToEntUserQualificationCreate(qualification, entUser.ID, tx.UserQualification.Create()).Save(rCtx)
+			if err != nil {
+				return err
+			}
+			results = append(results, result)
+		}
+		return nil
+	}); err != nil {
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, converter.ToSwaggerUserActivities(results))
 }

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
 )
 
@@ -20,6 +21,42 @@ type UserQualification struct {
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
+	// Organization holds the value of the "organization" field.
+	Organization *string `json:"organization,omitempty"`
+	// URL holds the value of the "url" field.
+	URL *string `json:"url,omitempty"`
+	// GotDate holds the value of the "got_date" field.
+	GotDate *string `json:"got_date,omitempty"`
+	// Memo holds the value of the "memo" field.
+	Memo *string `json:"memo,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the UserQualificationQuery when eager-loading is set.
+	Edges   UserQualificationEdges `json:"edges"`
+	user_id *int
+}
+
+// UserQualificationEdges holds the relations/edges for other nodes in the graph.
+type UserQualificationEdges struct {
+	// User holds the value of the user edge.
+	User *User `json:"user,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// UserOrErr returns the User value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e UserQualificationEdges) UserOrErr() (*User, error) {
+	if e.loadedTypes[0] {
+		if e.User == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.User, nil
+	}
+	return nil, &NotLoadedError{edge: "user"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -29,8 +66,12 @@ func (*UserQualification) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case userqualification.FieldID:
 			values[i] = new(sql.NullInt64)
+		case userqualification.FieldName, userqualification.FieldOrganization, userqualification.FieldURL, userqualification.FieldGotDate, userqualification.FieldMemo:
+			values[i] = new(sql.NullString)
 		case userqualification.FieldCreateTime, userqualification.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
+		case userqualification.ForeignKeys[0]: // user_id
+			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type UserQualification", columns[i])
 		}
@@ -64,9 +105,55 @@ func (uq *UserQualification) assignValues(columns []string, values []interface{}
 			} else if value.Valid {
 				uq.UpdateTime = value.Time
 			}
+		case userqualification.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				uq.Name = value.String
+			}
+		case userqualification.FieldOrganization:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field organization", values[i])
+			} else if value.Valid {
+				uq.Organization = new(string)
+				*uq.Organization = value.String
+			}
+		case userqualification.FieldURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field url", values[i])
+			} else if value.Valid {
+				uq.URL = new(string)
+				*uq.URL = value.String
+			}
+		case userqualification.FieldGotDate:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field got_date", values[i])
+			} else if value.Valid {
+				uq.GotDate = new(string)
+				*uq.GotDate = value.String
+			}
+		case userqualification.FieldMemo:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field memo", values[i])
+			} else if value.Valid {
+				uq.Memo = new(string)
+				*uq.Memo = value.String
+			}
+		case userqualification.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field user_id", value)
+			} else if value.Valid {
+				uq.user_id = new(int)
+				*uq.user_id = int(value.Int64)
+			}
 		}
 	}
 	return nil
+}
+
+// QueryUser queries the "user" edge of the UserQualification entity.
+func (uq *UserQualification) QueryUser() *UserQuery {
+	return (&UserQualificationClient{config: uq.config}).QueryUser(uq)
 }
 
 // Update returns a builder for updating this UserQualification.
@@ -97,6 +184,29 @@ func (uq *UserQualification) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("update_time=")
 	builder.WriteString(uq.UpdateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(uq.Name)
+	builder.WriteString(", ")
+	if v := uq.Organization; v != nil {
+		builder.WriteString("organization=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := uq.URL; v != nil {
+		builder.WriteString("url=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := uq.GotDate; v != nil {
+		builder.WriteString("got_date=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := uq.Memo; v != nil {
+		builder.WriteString("memo=")
+		builder.WriteString(*v)
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

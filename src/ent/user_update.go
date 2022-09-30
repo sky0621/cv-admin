@@ -14,6 +14,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
+	"github.com/sky0621/cv-admin/src/ent/userqualification"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -195,6 +196,21 @@ func (uu *UserUpdate) AddActivities(u ...*UserActivity) *UserUpdate {
 	return uu.AddActivityIDs(ids...)
 }
 
+// AddQualificationIDs adds the "qualifications" edge to the UserQualification entity by IDs.
+func (uu *UserUpdate) AddQualificationIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddQualificationIDs(ids...)
+	return uu
+}
+
+// AddQualifications adds the "qualifications" edges to the UserQualification entity.
+func (uu *UserUpdate) AddQualifications(u ...*UserQualification) *UserUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.AddQualificationIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -219,6 +235,27 @@ func (uu *UserUpdate) RemoveActivities(u ...*UserActivity) *UserUpdate {
 		ids[i] = u[i].ID
 	}
 	return uu.RemoveActivityIDs(ids...)
+}
+
+// ClearQualifications clears all "qualifications" edges to the UserQualification entity.
+func (uu *UserUpdate) ClearQualifications() *UserUpdate {
+	uu.mutation.ClearQualifications()
+	return uu
+}
+
+// RemoveQualificationIDs removes the "qualifications" edge to UserQualification entities by IDs.
+func (uu *UserUpdate) RemoveQualificationIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveQualificationIDs(ids...)
+	return uu
+}
+
+// RemoveQualifications removes "qualifications" edges to UserQualification entities.
+func (uu *UserUpdate) RemoveQualifications(u ...*UserQualification) *UserUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.RemoveQualificationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -533,6 +570,60 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.QualificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.QualificationsTable,
+			Columns: []string{user.QualificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: userqualification.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedQualificationsIDs(); len(nodes) > 0 && !uu.mutation.QualificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.QualificationsTable,
+			Columns: []string{user.QualificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: userqualification.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.QualificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.QualificationsTable,
+			Columns: []string{user.QualificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: userqualification.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -718,6 +809,21 @@ func (uuo *UserUpdateOne) AddActivities(u ...*UserActivity) *UserUpdateOne {
 	return uuo.AddActivityIDs(ids...)
 }
 
+// AddQualificationIDs adds the "qualifications" edge to the UserQualification entity by IDs.
+func (uuo *UserUpdateOne) AddQualificationIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddQualificationIDs(ids...)
+	return uuo
+}
+
+// AddQualifications adds the "qualifications" edges to the UserQualification entity.
+func (uuo *UserUpdateOne) AddQualifications(u ...*UserQualification) *UserUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.AddQualificationIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -742,6 +848,27 @@ func (uuo *UserUpdateOne) RemoveActivities(u ...*UserActivity) *UserUpdateOne {
 		ids[i] = u[i].ID
 	}
 	return uuo.RemoveActivityIDs(ids...)
+}
+
+// ClearQualifications clears all "qualifications" edges to the UserQualification entity.
+func (uuo *UserUpdateOne) ClearQualifications() *UserUpdateOne {
+	uuo.mutation.ClearQualifications()
+	return uuo
+}
+
+// RemoveQualificationIDs removes the "qualifications" edge to UserQualification entities by IDs.
+func (uuo *UserUpdateOne) RemoveQualificationIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveQualificationIDs(ids...)
+	return uuo
+}
+
+// RemoveQualifications removes "qualifications" edges to UserQualification entities.
+func (uuo *UserUpdateOne) RemoveQualifications(u ...*UserQualification) *UserUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.RemoveQualificationIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1078,6 +1205,60 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: useractivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.QualificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.QualificationsTable,
+			Columns: []string{user.QualificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: userqualification.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedQualificationsIDs(); len(nodes) > 0 && !uuo.mutation.QualificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.QualificationsTable,
+			Columns: []string{user.QualificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: userqualification.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.QualificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.QualificationsTable,
+			Columns: []string{user.QualificationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: userqualification.FieldID,
 				},
 			},
 		}

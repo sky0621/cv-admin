@@ -1,6 +1,10 @@
 package schema
 
-import "entgo.io/ent"
+import (
+	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
+	"entgo.io/ent/schema/field"
+)
 
 // UserQualification holds the schema definition for the UserQualification entity.
 type UserQualification struct {
@@ -9,7 +13,13 @@ type UserQualification struct {
 
 // Fields of the UserQualification.
 func (UserQualification) Fields() []ent.Field {
-	return nil
+	return []ent.Field{
+		field.String("name").NotEmpty().Validate(maxRuneCount(80)),
+		field.String("organization").Validate(maxRuneCount(80)).Optional().Nillable(),
+		field.String("url").Validate(rangeRuneCount(1, 4096)).Optional().Nillable(),
+		field.String("got_date").Validate(maxRuneCount(10)).Optional().Nillable(), // FIXME: custom validation
+		field.String("memo").Validate(maxRuneCount(400)).Optional().Nillable(),
+	}
 }
 
 func (UserQualification) Mixin() []ent.Mixin {
@@ -20,5 +30,7 @@ func (UserQualification) Mixin() []ent.Mixin {
 
 // Edges of the UserQualification.
 func (UserQualification) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.From("user", User.Type).Ref("qualifications").Unique().Required(),
+	}
 }

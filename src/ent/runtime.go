@@ -248,4 +248,38 @@ func init() {
 	userqualification.DefaultUpdateTime = userqualificationDescUpdateTime.Default.(func() time.Time)
 	// userqualification.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	userqualification.UpdateDefaultUpdateTime = userqualificationDescUpdateTime.UpdateDefault.(func() time.Time)
+	// userqualificationDescName is the schema descriptor for name field.
+	userqualificationDescName := userqualificationFields[0].Descriptor()
+	// userqualification.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	userqualification.NameValidator = func() func(string) error {
+		validators := userqualificationDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// userqualificationDescOrganization is the schema descriptor for organization field.
+	userqualificationDescOrganization := userqualificationFields[1].Descriptor()
+	// userqualification.OrganizationValidator is a validator for the "organization" field. It is called by the builders before save.
+	userqualification.OrganizationValidator = userqualificationDescOrganization.Validators[0].(func(string) error)
+	// userqualificationDescURL is the schema descriptor for url field.
+	userqualificationDescURL := userqualificationFields[2].Descriptor()
+	// userqualification.URLValidator is a validator for the "url" field. It is called by the builders before save.
+	userqualification.URLValidator = userqualificationDescURL.Validators[0].(func(string) error)
+	// userqualificationDescGotDate is the schema descriptor for got_date field.
+	userqualificationDescGotDate := userqualificationFields[3].Descriptor()
+	// userqualification.GotDateValidator is a validator for the "got_date" field. It is called by the builders before save.
+	userqualification.GotDateValidator = userqualificationDescGotDate.Validators[0].(func(string) error)
+	// userqualificationDescMemo is the schema descriptor for memo field.
+	userqualificationDescMemo := userqualificationFields[4].Descriptor()
+	// userqualification.MemoValidator is a validator for the "memo" field. It is called by the builders before save.
+	userqualification.MemoValidator = userqualificationDescMemo.Validators[0].(func(string) error)
 }

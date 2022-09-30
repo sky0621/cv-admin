@@ -142,12 +142,26 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString},
+		{Name: "organization", Type: field.TypeString, Nullable: true},
+		{Name: "url", Type: field.TypeString, Nullable: true},
+		{Name: "got_date", Type: field.TypeString, Nullable: true},
+		{Name: "memo", Type: field.TypeString, Nullable: true},
+		{Name: "user_id", Type: field.TypeInt},
 	}
 	// UserQualificationsTable holds the schema information for the "user_qualifications" table.
 	UserQualificationsTable = &schema.Table{
 		Name:       "user_qualifications",
 		Columns:    UserQualificationsColumns,
 		PrimaryKey: []*schema.Column{UserQualificationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_qualifications_users_qualifications",
+				Columns:    []*schema.Column{UserQualificationsColumns[8]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
@@ -166,4 +180,5 @@ var (
 
 func init() {
 	UserActivitiesTable.ForeignKeys[0].RefTable = UsersTable
+	UserQualificationsTable.ForeignKeys[0].RefTable = UsersTable
 }

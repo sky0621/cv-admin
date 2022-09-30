@@ -67,3 +67,27 @@ func ToSwaggerUserActivities(entActivities []*ent.UserActivity) swagger.UserActi
 	}
 	return activities
 }
+
+func ToEntUserQualificationCreate(ua swagger.UserQualification, userID int, c *ent.UserQualificationCreate) *ent.UserQualificationCreate {
+	return c.
+		SetName(*ua.Name).
+		SetNillableOrganization(ua.Organization).
+		SetNillableURL(ua.Url).
+		SetGotDate(ua.GotDate.String()).
+		SetNillableMemo(ua.Memo).
+		SetUserID(userID)
+}
+
+func ToSwaggerUserQualifications(entQualifications []*ent.UserQualification) swagger.UserQualifications {
+	var qualifications swagger.UserQualifications
+	for _, entQualification := range entQualifications {
+		var qualification swagger.UserQualification
+		qualification.Name = &entQualification.Name
+		qualification.Organization = entQualification.Organization
+		qualification.Url = entQualification.Organization
+		qualification.GotDate = entQualification.GotDate
+		qualification.Memo = entQualification.Memo
+		qualifications = append(qualifications, qualification)
+	}
+	return qualifications
+}

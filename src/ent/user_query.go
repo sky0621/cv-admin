@@ -14,18 +14,20 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
+	"github.com/sky0621/cv-admin/src/ent/userqualification"
 )
 
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	limit          *int
-	offset         *int
-	unique         *bool
-	order          []OrderFunc
-	fields         []string
-	predicates     []predicate.User
-	withActivities *UserActivityQuery
+	limit              *int
+	offset             *int
+	unique             *bool
+	order              []OrderFunc
+	fields             []string
+	predicates         []predicate.User
+	withActivities     *UserActivityQuery
+	withQualifications *UserQualificationQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -77,6 +79,28 @@ func (uq *UserQuery) QueryActivities() *UserActivityQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(useractivity.Table, useractivity.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.ActivitiesTable, user.ActivitiesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryQualifications chains the current query on the "qualifications" edge.
+func (uq *UserQuery) QueryQualifications() *UserQualificationQuery {
+	query := &UserQualificationQuery{config: uq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(userqualification.Table, userqualification.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.QualificationsTable, user.QualificationsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -260,12 +284,13 @@ func (uq *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:         uq.config,
-		limit:          uq.limit,
-		offset:         uq.offset,
-		order:          append([]OrderFunc{}, uq.order...),
-		predicates:     append([]predicate.User{}, uq.predicates...),
-		withActivities: uq.withActivities.Clone(),
+		config:             uq.config,
+		limit:              uq.limit,
+		offset:             uq.offset,
+		order:              append([]OrderFunc{}, uq.order...),
+		predicates:         append([]predicate.User{}, uq.predicates...),
+		withActivities:     uq.withActivities.Clone(),
+		withQualifications: uq.withQualifications.Clone(),
 		// clone intermediate query.
 		sql:    uq.sql.Clone(),
 		path:   uq.path,
@@ -281,6 +306,17 @@ func (uq *UserQuery) WithActivities(opts ...func(*UserActivityQuery)) *UserQuery
 		opt(query)
 	}
 	uq.withActivities = query
+	return uq
+}
+
+// WithQualifications tells the query-builder to eager-load the nodes that are connected to
+// the "qualifications" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithQualifications(opts ...func(*UserQualificationQuery)) *UserQuery {
+	query := &UserQualificationQuery{config: uq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withQualifications = query
 	return uq
 }
 
@@ -352,8 +388,9 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			uq.withActivities != nil,
+			uq.withQualifications != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -381,6 +418,13 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			return nil, err
 		}
 	}
+	if query := uq.withQualifications; query != nil {
+		if err := uq.loadQualifications(ctx, query, nodes,
+			func(n *User) { n.Edges.Qualifications = []*UserQualification{} },
+			func(n *User, e *UserQualification) { n.Edges.Qualifications = append(n.Edges.Qualifications, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
@@ -397,6 +441,37 @@ func (uq *UserQuery) loadActivities(ctx context.Context, query *UserActivityQuer
 	query.withFKs = true
 	query.Where(predicate.UserActivity(func(s *sql.Selector) {
 		s.Where(sql.InValues(user.ActivitiesColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_id
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadQualifications(ctx context.Context, query *UserQualificationQuery, nodes []*User, init func(*User), assign func(*User, *UserQualification)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.UserQualification(func(s *sql.Selector) {
+		s.Where(sql.InValues(user.QualificationsColumn, fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
