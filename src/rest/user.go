@@ -203,5 +203,5 @@ func (s *ServerImpl) PutUsersByUserIdQualifications(ctx echo.Context, byUserId s
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, converter.ToSwaggerUserActivities(results))
+	return ctx.JSON(http.StatusOK, converter.ToSwaggerUserQualifications(results))
 }

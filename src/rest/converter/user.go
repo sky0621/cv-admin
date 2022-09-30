@@ -1,6 +1,10 @@
 package converter
 
 import (
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/sky0621/cv-admin/src/ent"
 	"github.com/sky0621/cv-admin/src/swagger"
 )
@@ -56,14 +60,18 @@ func ToEntUserActivityCreate(ua swagger.UserActivity, userID int, c *ent.UserAct
 		SetUserID(userID)
 }
 
+func ToSwaggerUserActivity(entActivity *ent.UserActivity) swagger.UserActivity {
+	var activity swagger.UserActivity
+	activity.Name = &entActivity.Name
+	activity.Url = entActivity.URL
+	activity.Icon = entActivity.Icon
+	return activity
+}
+
 func ToSwaggerUserActivities(entActivities []*ent.UserActivity) swagger.UserActivities {
 	var activities swagger.UserActivities
 	for _, entActivity := range entActivities {
-		var activity swagger.UserActivity
-		activity.Name = &entActivity.Name
-		activity.Url = entActivity.URL
-		activity.Icon = entActivity.Icon
-		activities = append(activities, activity)
+		activities = append(activities, ToSwaggerUserActivity(entActivity))
 	}
 	return activities
 }
@@ -78,16 +86,37 @@ func ToEntUserQualificationCreate(ua swagger.UserQualification, userID int, c *e
 		SetUserID(userID)
 }
 
+func ToSwaggerUserQualificationGotDate(entGotDate *string) *swagger.QualificationGotDate {
+	entGotDateStr := *entGotDate
+	dates := strings.Split(entGotDateStr, "-")
+	if len(dates) != 3 {
+		return nil
+	}
+	toInt := func(s string) int {
+		n, _ := strconv.Atoi(s)
+		return n
+	}
+	tz, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		return nil
+	}
+	return &swagger.QualificationGotDate{Time: time.Date(toInt(dates[0]), time.Month(toInt(dates[1])), toInt(dates[2]), 0, 0, 0, 0, tz)}
+}
+
+func ToSwaggerUserQualification(entQualification *ent.UserQualification) swagger.UserQualification {
+	var qualification swagger.UserQualification
+	qualification.Name = &entQualification.Name
+	qualification.Organization = entQualification.Organization
+	qualification.Url = entQualification.Organization
+	qualification.GotDate = ToSwaggerUserQualificationGotDate(entQualification.GotDate)
+	qualification.Memo = entQualification.Memo
+	return qualification
+}
+
 func ToSwaggerUserQualifications(entQualifications []*ent.UserQualification) swagger.UserQualifications {
 	var qualifications swagger.UserQualifications
 	for _, entQualification := range entQualifications {
-		var qualification swagger.UserQualification
-		qualification.Name = &entQualification.Name
-		qualification.Organization = entQualification.Organization
-		qualification.Url = entQualification.Organization
-		qualification.GotDate = entQualification.GotDate
-		qualification.Memo = entQualification.Memo
-		qualifications = append(qualifications, qualification)
+		qualifications = append(qualifications, ToSwaggerUserQualification(entQualification))
 	}
 	return qualifications
 }
