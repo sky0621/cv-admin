@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 )
 
@@ -91,6 +92,13 @@ func CreateTime(v time.Time) predicate.CareerTask {
 func UpdateTime(v time.Time) predicate.CareerTask {
 	return predicate.CareerTask(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUpdateTime), v))
+	})
+}
+
+// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+func Name(v string) predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldName), v))
 	})
 }
 
@@ -219,6 +227,161 @@ func UpdateTimeLT(v time.Time) predicate.CareerTask {
 func UpdateTimeLTE(v time.Time) predicate.CareerTask {
 	return predicate.CareerTask(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdateTime), v))
+	})
+}
+
+// NameEQ applies the EQ predicate on the "name" field.
+func NameEQ(v string) predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldName), v))
+	})
+}
+
+// NameNEQ applies the NEQ predicate on the "name" field.
+func NameNEQ(v string) predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldName), v))
+	})
+}
+
+// NameIn applies the In predicate on the "name" field.
+func NameIn(vs ...string) predicate.CareerTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.CareerTask(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldName), v...))
+	})
+}
+
+// NameNotIn applies the NotIn predicate on the "name" field.
+func NameNotIn(vs ...string) predicate.CareerTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.CareerTask(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldName), v...))
+	})
+}
+
+// NameGT applies the GT predicate on the "name" field.
+func NameGT(v string) predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldName), v))
+	})
+}
+
+// NameGTE applies the GTE predicate on the "name" field.
+func NameGTE(v string) predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldName), v))
+	})
+}
+
+// NameLT applies the LT predicate on the "name" field.
+func NameLT(v string) predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldName), v))
+	})
+}
+
+// NameLTE applies the LTE predicate on the "name" field.
+func NameLTE(v string) predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldName), v))
+	})
+}
+
+// NameContains applies the Contains predicate on the "name" field.
+func NameContains(v string) predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldName), v))
+	})
+}
+
+// NameHasPrefix applies the HasPrefix predicate on the "name" field.
+func NameHasPrefix(v string) predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldName), v))
+	})
+}
+
+// NameHasSuffix applies the HasSuffix predicate on the "name" field.
+func NameHasSuffix(v string) predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldName), v))
+	})
+}
+
+// NameEqualFold applies the EqualFold predicate on the "name" field.
+func NameEqualFold(v string) predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldName), v))
+	})
+}
+
+// NameContainsFold applies the ContainsFold predicate on the "name" field.
+func NameContainsFold(v string) predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldName), v))
+	})
+}
+
+// HasCareer applies the HasEdge predicate on the "career" edge.
+func HasCareer() predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CareerTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CareerTable, CareerColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCareerWith applies the HasEdge predicate on the "career" edge with a given conditions (other predicates).
+func HasCareerWith(preds ...predicate.UserCareer) predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CareerInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CareerTable, CareerColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCareertaskdescriptions applies the HasEdge predicate on the "careertaskdescriptions" edge.
+func HasCareertaskdescriptions() predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CareertaskdescriptionsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareertaskdescriptionsTable, CareertaskdescriptionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCareertaskdescriptionsWith applies the HasEdge predicate on the "careertaskdescriptions" edge with a given conditions (other predicates).
+func HasCareertaskdescriptionsWith(preds ...predicate.CareerTaskDescription) predicate.CareerTask {
+	return predicate.CareerTask(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CareertaskdescriptionsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareertaskdescriptionsTable, CareertaskdescriptionsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

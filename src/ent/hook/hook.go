@@ -48,6 +48,19 @@ func (f CareerTaskFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return f(ctx, mv)
 }
 
+// The CareerTaskDescriptionFunc type is an adapter to allow the use of ordinary
+// function as CareerTaskDescription mutator.
+type CareerTaskDescriptionFunc func(context.Context, *ent.CareerTaskDescriptionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CareerTaskDescriptionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.CareerTaskDescriptionMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CareerTaskDescriptionMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)

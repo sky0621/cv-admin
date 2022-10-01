@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/careertask"
+	"github.com/sky0621/cv-admin/src/ent/usercareer"
 )
 
 // CareerTask is the model entity for the CareerTask schema.
@@ -20,6 +21,45 @@ type CareerTask struct {
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the CareerTaskQuery when eager-loading is set.
+	Edges     CareerTaskEdges `json:"edges"`
+	career_id *int
+}
+
+// CareerTaskEdges holds the relations/edges for other nodes in the graph.
+type CareerTaskEdges struct {
+	// Career holds the value of the career edge.
+	Career *UserCareer `json:"career,omitempty"`
+	// Careertaskdescriptions holds the value of the careertaskdescriptions edge.
+	Careertaskdescriptions []*CareerTaskDescription `json:"careertaskdescriptions,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [2]bool
+}
+
+// CareerOrErr returns the Career value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CareerTaskEdges) CareerOrErr() (*UserCareer, error) {
+	if e.loadedTypes[0] {
+		if e.Career == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: usercareer.Label}
+		}
+		return e.Career, nil
+	}
+	return nil, &NotLoadedError{edge: "career"}
+}
+
+// CareertaskdescriptionsOrErr returns the Careertaskdescriptions value or an error if the edge
+// was not loaded in eager-loading.
+func (e CareerTaskEdges) CareertaskdescriptionsOrErr() ([]*CareerTaskDescription, error) {
+	if e.loadedTypes[1] {
+		return e.Careertaskdescriptions, nil
+	}
+	return nil, &NotLoadedError{edge: "careertaskdescriptions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -29,8 +69,12 @@ func (*CareerTask) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case careertask.FieldID:
 			values[i] = new(sql.NullInt64)
+		case careertask.FieldName:
+			values[i] = new(sql.NullString)
 		case careertask.FieldCreateTime, careertask.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
+		case careertask.ForeignKeys[0]: // career_id
+			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type CareerTask", columns[i])
 		}
@@ -64,9 +108,32 @@ func (ct *CareerTask) assignValues(columns []string, values []interface{}) error
 			} else if value.Valid {
 				ct.UpdateTime = value.Time
 			}
+		case careertask.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				ct.Name = value.String
+			}
+		case careertask.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field career_id", value)
+			} else if value.Valid {
+				ct.career_id = new(int)
+				*ct.career_id = int(value.Int64)
+			}
 		}
 	}
 	return nil
+}
+
+// QueryCareer queries the "career" edge of the CareerTask entity.
+func (ct *CareerTask) QueryCareer() *UserCareerQuery {
+	return (&CareerTaskClient{config: ct.config}).QueryCareer(ct)
+}
+
+// QueryCareertaskdescriptions queries the "careertaskdescriptions" edge of the CareerTask entity.
+func (ct *CareerTask) QueryCareertaskdescriptions() *CareerTaskDescriptionQuery {
+	return (&CareerTaskClient{config: ct.config}).QueryCareertaskdescriptions(ct)
 }
 
 // Update returns a builder for updating this CareerTask.
@@ -97,6 +164,9 @@ func (ct *CareerTask) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("update_time=")
 	builder.WriteString(ct.UpdateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(ct.Name)
 	builder.WriteByte(')')
 	return builder.String()
 }

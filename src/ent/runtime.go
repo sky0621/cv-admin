@@ -8,6 +8,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/careerskill"
 	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
 	"github.com/sky0621/cv-admin/src/ent/careertask"
+	"github.com/sky0621/cv-admin/src/ent/careertaskdescription"
 	"github.com/sky0621/cv-admin/src/ent/schema"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
@@ -68,6 +69,44 @@ func init() {
 	careertask.DefaultUpdateTime = careertaskDescUpdateTime.Default.(func() time.Time)
 	// careertask.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	careertask.UpdateDefaultUpdateTime = careertaskDescUpdateTime.UpdateDefault.(func() time.Time)
+	// careertaskDescName is the schema descriptor for name field.
+	careertaskDescName := careertaskFields[0].Descriptor()
+	// careertask.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	careertask.NameValidator = func() func(string) error {
+		validators := careertaskDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	careertaskdescriptionFields := schema.CareerTaskDescription{}.Fields()
+	_ = careertaskdescriptionFields
+	// careertaskdescriptionDescDescription is the schema descriptor for description field.
+	careertaskdescriptionDescDescription := careertaskdescriptionFields[0].Descriptor()
+	// careertaskdescription.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	careertaskdescription.DescriptionValidator = func() func(string) error {
+		validators := careertaskdescriptionDescDescription.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(description string) error {
+			for _, fn := range fns {
+				if err := fn(description); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0

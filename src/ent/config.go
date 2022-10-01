@@ -27,6 +27,7 @@ type hooks struct {
 	CareerSkill           []ent.Hook
 	CareerSkillGroup      []ent.Hook
 	CareerTask            []ent.Hook
+	CareerTaskDescription []ent.Hook
 	User                  []ent.Hook
 	UserActivity          []ent.Hook
 	UserCareer            []ent.Hook

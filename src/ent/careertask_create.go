@@ -12,6 +12,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/careertask"
+	"github.com/sky0621/cv-admin/src/ent/careertaskdescription"
+	"github.com/sky0621/cv-admin/src/ent/usercareer"
 )
 
 // CareerTaskCreate is the builder for creating a CareerTask entity.
@@ -48,6 +50,38 @@ func (ctc *CareerTaskCreate) SetNillableUpdateTime(t *time.Time) *CareerTaskCrea
 		ctc.SetUpdateTime(*t)
 	}
 	return ctc
+}
+
+// SetName sets the "name" field.
+func (ctc *CareerTaskCreate) SetName(s string) *CareerTaskCreate {
+	ctc.mutation.SetName(s)
+	return ctc
+}
+
+// SetCareerID sets the "career" edge to the UserCareer entity by ID.
+func (ctc *CareerTaskCreate) SetCareerID(id int) *CareerTaskCreate {
+	ctc.mutation.SetCareerID(id)
+	return ctc
+}
+
+// SetCareer sets the "career" edge to the UserCareer entity.
+func (ctc *CareerTaskCreate) SetCareer(u *UserCareer) *CareerTaskCreate {
+	return ctc.SetCareerID(u.ID)
+}
+
+// AddCareertaskdescriptionIDs adds the "careertaskdescriptions" edge to the CareerTaskDescription entity by IDs.
+func (ctc *CareerTaskCreate) AddCareertaskdescriptionIDs(ids ...int) *CareerTaskCreate {
+	ctc.mutation.AddCareertaskdescriptionIDs(ids...)
+	return ctc
+}
+
+// AddCareertaskdescriptions adds the "careertaskdescriptions" edges to the CareerTaskDescription entity.
+func (ctc *CareerTaskCreate) AddCareertaskdescriptions(c ...*CareerTaskDescription) *CareerTaskCreate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ctc.AddCareertaskdescriptionIDs(ids...)
 }
 
 // Mutation returns the CareerTaskMutation object of the builder.
@@ -145,6 +179,17 @@ func (ctc *CareerTaskCreate) check() error {
 	if _, ok := ctc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "CareerTask.update_time"`)}
 	}
+	if _, ok := ctc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "CareerTask.name"`)}
+	}
+	if v, ok := ctc.mutation.Name(); ok {
+		if err := careertask.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "CareerTask.name": %w`, err)}
+		}
+	}
+	if _, ok := ctc.mutation.CareerID(); !ok {
+		return &ValidationError{Name: "career", err: errors.New(`ent: missing required edge "CareerTask.career"`)}
+	}
 	return nil
 }
 
@@ -188,6 +233,53 @@ func (ctc *CareerTaskCreate) createSpec() (*CareerTask, *sqlgraph.CreateSpec) {
 			Column: careertask.FieldUpdateTime,
 		})
 		_node.UpdateTime = value
+	}
+	if value, ok := ctc.mutation.Name(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: careertask.FieldName,
+		})
+		_node.Name = value
+	}
+	if nodes := ctc.mutation.CareerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   careertask.CareerTable,
+			Columns: []string{careertask.CareerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareer.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.career_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ctc.mutation.CareertaskdescriptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   careertask.CareertaskdescriptionsTable,
+			Columns: []string{careertask.CareertaskdescriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careertaskdescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -265,6 +357,18 @@ func (u *CareerTaskUpsert) UpdateUpdateTime() *CareerTaskUpsert {
 	return u
 }
 
+// SetName sets the "name" field.
+func (u *CareerTaskUpsert) SetName(v string) *CareerTaskUpsert {
+	u.Set(careertask.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *CareerTaskUpsert) UpdateName() *CareerTaskUpsert {
+	u.SetExcluded(careertask.FieldName)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -335,6 +439,20 @@ func (u *CareerTaskUpsertOne) SetUpdateTime(v time.Time) *CareerTaskUpsertOne {
 func (u *CareerTaskUpsertOne) UpdateUpdateTime() *CareerTaskUpsertOne {
 	return u.Update(func(s *CareerTaskUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *CareerTaskUpsertOne) SetName(v string) *CareerTaskUpsertOne {
+	return u.Update(func(s *CareerTaskUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *CareerTaskUpsertOne) UpdateName() *CareerTaskUpsertOne {
+	return u.Update(func(s *CareerTaskUpsert) {
+		s.UpdateName()
 	})
 }
 
@@ -570,6 +688,20 @@ func (u *CareerTaskUpsertBulk) SetUpdateTime(v time.Time) *CareerTaskUpsertBulk 
 func (u *CareerTaskUpsertBulk) UpdateUpdateTime() *CareerTaskUpsertBulk {
 	return u.Update(func(s *CareerTaskUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *CareerTaskUpsertBulk) SetName(v string) *CareerTaskUpsertBulk {
+	return u.Update(func(s *CareerTaskUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *CareerTaskUpsertBulk) UpdateName() *CareerTaskUpsertBulk {
+	return u.Update(func(s *CareerTaskUpsert) {
+		s.UpdateName()
 	})
 }
 

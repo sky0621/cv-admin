@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sky0621/cv-admin/src/ent/careertask"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
 	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
@@ -94,6 +95,21 @@ func (ucc *UserCareerCreate) AddCareerdescriptions(u ...*UserCareerDescription) 
 		ids[i] = u[i].ID
 	}
 	return ucc.AddCareerdescriptionIDs(ids...)
+}
+
+// AddCareertaskIDs adds the "careertasks" edge to the CareerTask entity by IDs.
+func (ucc *UserCareerCreate) AddCareertaskIDs(ids ...int) *UserCareerCreate {
+	ucc.mutation.AddCareertaskIDs(ids...)
+	return ucc
+}
+
+// AddCareertasks adds the "careertasks" edges to the CareerTask entity.
+func (ucc *UserCareerCreate) AddCareertasks(c ...*CareerTask) *UserCareerCreate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ucc.AddCareertaskIDs(ids...)
 }
 
 // Mutation returns the UserCareerMutation object of the builder.
@@ -317,6 +333,25 @@ func (ucc *UserCareerCreate) createSpec() (*UserCareer, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: usercareerdescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ucc.mutation.CareertasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usercareer.CareertasksTable,
+			Columns: []string{usercareer.CareertasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careertask.FieldID,
 				},
 			},
 		}
