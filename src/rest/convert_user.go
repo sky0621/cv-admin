@@ -1,4 +1,4 @@
-package converter
+package rest
 
 import (
 	"strconv"
@@ -6,10 +6,9 @@ import (
 	"time"
 
 	"github.com/sky0621/cv-admin/src/ent"
-	"github.com/sky0621/cv-admin/src/swagger"
 )
 
-func ToEntUserCreate(u swagger.UserAttribute, c *ent.UserCreate) *ent.UserCreate {
+func ToEntUserCreate(u UserAttribute, c *ent.UserCreate) *ent.UserCreate {
 	return c.
 		SetName(*u.Name).
 		SetNillableNickname(u.Nickname).
@@ -22,7 +21,7 @@ func ToEntUserCreate(u swagger.UserAttribute, c *ent.UserCreate) *ent.UserCreate
 		SetNillablePr(u.Pr)
 }
 
-func ToEntUserUpdate(ua swagger.UserAttribute, c *ent.UserUpdateOne) *ent.UserUpdateOne {
+func ToEntUserUpdate(ua UserAttribute, c *ent.UserUpdateOne) *ent.UserUpdateOne {
 	return c.
 		SetName(*ua.Name).
 		SetNillableNickname(ua.Nickname).
@@ -35,13 +34,13 @@ func ToEntUserUpdate(ua swagger.UserAttribute, c *ent.UserUpdateOne) *ent.UserUp
 		SetNillablePr(ua.Pr)
 }
 
-func ToSwaggerUserAttribute(u *ent.User) swagger.UserAttribute {
-	var ua swagger.UserAttribute
+func ToSwaggerUserAttribute(u *ent.User) UserAttribute {
+	var ua UserAttribute
 	ua.Id = &u.ID
 	ua.Name = &u.Name
 	ua.Nickname = u.Nickname
 	ua.AvatarUrl = u.AvatarURL
-	ua.Birthday = &swagger.BirthDay{
+	ua.Birthday = &BirthDay{
 		Year:  &u.BirthdayYear,
 		Month: &u.BirthdayMonth,
 		Day:   &u.BirthdayDay,
@@ -52,7 +51,7 @@ func ToSwaggerUserAttribute(u *ent.User) swagger.UserAttribute {
 	return ua
 }
 
-func ToEntUserActivityCreate(ua swagger.UserActivity, userID int, c *ent.UserActivityCreate) *ent.UserActivityCreate {
+func ToEntUserActivityCreate(ua UserActivity, userID int, c *ent.UserActivityCreate) *ent.UserActivityCreate {
 	return c.
 		SetName(*ua.Name).
 		SetNillableURL(ua.Url).
@@ -60,23 +59,23 @@ func ToEntUserActivityCreate(ua swagger.UserActivity, userID int, c *ent.UserAct
 		SetUserID(userID)
 }
 
-func ToSwaggerUserActivity(entActivity *ent.UserActivity) swagger.UserActivity {
-	var activity swagger.UserActivity
+func ToSwaggerUserActivity(entActivity *ent.UserActivity) UserActivity {
+	var activity UserActivity
 	activity.Name = &entActivity.Name
 	activity.Url = entActivity.URL
 	activity.Icon = entActivity.Icon
 	return activity
 }
 
-func ToSwaggerUserActivities(entActivities []*ent.UserActivity) swagger.UserActivities {
-	var activities swagger.UserActivities
+func ToSwaggerUserActivities(entActivities []*ent.UserActivity) UserActivities {
+	var activities UserActivities
 	for _, entActivity := range entActivities {
 		activities = append(activities, ToSwaggerUserActivity(entActivity))
 	}
 	return activities
 }
 
-func ToEntUserQualificationCreate(ua swagger.UserQualification, userID int, c *ent.UserQualificationCreate) *ent.UserQualificationCreate {
+func ToEntUserQualificationCreate(ua UserQualification, userID int, c *ent.UserQualificationCreate) *ent.UserQualificationCreate {
 	return c.
 		SetName(*ua.Name).
 		SetNillableOrganization(ua.Organization).
@@ -86,7 +85,7 @@ func ToEntUserQualificationCreate(ua swagger.UserQualification, userID int, c *e
 		SetUserID(userID)
 }
 
-func ToSwaggerUserQualificationGotDate(entGotDate *string) *swagger.QualificationGotDate {
+func ToSwaggerUserQualificationGotDate(entGotDate *string) *QualificationGotDate {
 	entGotDateStr := *entGotDate
 	dates := strings.Split(entGotDateStr, "-")
 	if len(dates) != 3 {
@@ -100,11 +99,11 @@ func ToSwaggerUserQualificationGotDate(entGotDate *string) *swagger.Qualificatio
 	if err != nil {
 		return nil
 	}
-	return &swagger.QualificationGotDate{Time: time.Date(toInt(dates[0]), time.Month(toInt(dates[1])), toInt(dates[2]), 0, 0, 0, 0, tz)}
+	return &QualificationGotDate{Time: time.Date(toInt(dates[0]), time.Month(toInt(dates[1])), toInt(dates[2]), 0, 0, 0, 0, tz)}
 }
 
-func ToSwaggerUserQualification(entQualification *ent.UserQualification) swagger.UserQualification {
-	var qualification swagger.UserQualification
+func ToSwaggerUserQualification(entQualification *ent.UserQualification) UserQualification {
+	var qualification UserQualification
 	qualification.Name = &entQualification.Name
 	qualification.Organization = entQualification.Organization
 	qualification.Url = entQualification.Organization
@@ -113,8 +112,8 @@ func ToSwaggerUserQualification(entQualification *ent.UserQualification) swagger
 	return qualification
 }
 
-func ToSwaggerUserQualifications(entQualifications []*ent.UserQualification) swagger.UserQualifications {
-	var qualifications swagger.UserQualifications
+func ToSwaggerUserQualifications(entQualifications []*ent.UserQualification) UserQualifications {
+	var qualifications UserQualifications
 	for _, entQualification := range entQualifications {
 		qualifications = append(qualifications, ToSwaggerUserQualification(entQualification))
 	}

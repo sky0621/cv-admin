@@ -1,4 +1,4 @@
-package: swagger
+package: rest
 generate:
   echo-server: true
   client: false

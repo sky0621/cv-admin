@@ -19,7 +19,7 @@ func (UserQualification) Fields() []ent.Field {
 		field.String("name").NotEmpty().Validate(maxRuneCount(80)),
 		field.String("organization").Validate(maxRuneCount(80)).Optional().Nillable(),
 		field.String("url").Validate(rangeRuneCount(1, 4096)).Optional().Nillable(),
-		field.String("got_date").Validate(maxRuneCount(10)).Optional().Nillable(), // FIXME: custom validation
+		field.String("got_date").Validate(maxRuneCount(10)).Optional().Nillable(), // FIXME: custom validator
 		field.String("memo").Validate(maxRuneCount(400)).Optional().Nillable(),
 	}
 }

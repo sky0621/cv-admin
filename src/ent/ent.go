@@ -180,7 +180,7 @@ func (e *ValidationError) Unwrap() error {
 	return e.err
 }
 
-// IsValidationError returns a boolean indicating whether the error is a validation error.
+// IsValidationError returns a boolean indicating whether the error is a validator error.
 func IsValidationError(err error) bool {
 	if err == nil {
 		return false
