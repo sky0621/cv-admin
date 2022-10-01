@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
+	"github.com/sky0621/cv-admin/src/ent/usercareer"
 )
 
 // CareerSkillGroupUpdate is the builder for updating CareerSkillGroup entities.
@@ -34,9 +35,32 @@ func (csgu *CareerSkillGroupUpdate) SetUpdateTime(t time.Time) *CareerSkillGroup
 	return csgu
 }
 
+// SetLabel sets the "label" field.
+func (csgu *CareerSkillGroupUpdate) SetLabel(s string) *CareerSkillGroupUpdate {
+	csgu.mutation.SetLabel(s)
+	return csgu
+}
+
+// SetCareerID sets the "career" edge to the UserCareer entity by ID.
+func (csgu *CareerSkillGroupUpdate) SetCareerID(id int) *CareerSkillGroupUpdate {
+	csgu.mutation.SetCareerID(id)
+	return csgu
+}
+
+// SetCareer sets the "career" edge to the UserCareer entity.
+func (csgu *CareerSkillGroupUpdate) SetCareer(u *UserCareer) *CareerSkillGroupUpdate {
+	return csgu.SetCareerID(u.ID)
+}
+
 // Mutation returns the CareerSkillGroupMutation object of the builder.
 func (csgu *CareerSkillGroupUpdate) Mutation() *CareerSkillGroupMutation {
 	return csgu.mutation
+}
+
+// ClearCareer clears the "career" edge to the UserCareer entity.
+func (csgu *CareerSkillGroupUpdate) ClearCareer() *CareerSkillGroupUpdate {
+	csgu.mutation.ClearCareer()
+	return csgu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -47,12 +71,18 @@ func (csgu *CareerSkillGroupUpdate) Save(ctx context.Context) (int, error) {
 	)
 	csgu.defaults()
 	if len(csgu.hooks) == 0 {
+		if err = csgu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = csgu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*CareerSkillGroupMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = csgu.check(); err != nil {
+				return 0, err
 			}
 			csgu.mutation = mutation
 			affected, err = csgu.sqlSave(ctx)
@@ -102,6 +132,19 @@ func (csgu *CareerSkillGroupUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (csgu *CareerSkillGroupUpdate) check() error {
+	if v, ok := csgu.mutation.Label(); ok {
+		if err := careerskillgroup.LabelValidator(v); err != nil {
+			return &ValidationError{Name: "label", err: fmt.Errorf(`ent: validator failed for field "CareerSkillGroup.label": %w`, err)}
+		}
+	}
+	if _, ok := csgu.mutation.CareerID(); csgu.mutation.CareerCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "CareerSkillGroup.career"`)
+	}
+	return nil
+}
+
 func (csgu *CareerSkillGroupUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -126,6 +169,48 @@ func (csgu *CareerSkillGroupUpdate) sqlSave(ctx context.Context) (n int, err err
 			Value:  value,
 			Column: careerskillgroup.FieldUpdateTime,
 		})
+	}
+	if value, ok := csgu.mutation.Label(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: careerskillgroup.FieldLabel,
+		})
+	}
+	if csgu.mutation.CareerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   careerskillgroup.CareerTable,
+			Columns: []string{careerskillgroup.CareerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareer.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := csgu.mutation.CareerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   careerskillgroup.CareerTable,
+			Columns: []string{careerskillgroup.CareerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareer.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, csgu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -152,9 +237,32 @@ func (csguo *CareerSkillGroupUpdateOne) SetUpdateTime(t time.Time) *CareerSkillG
 	return csguo
 }
 
+// SetLabel sets the "label" field.
+func (csguo *CareerSkillGroupUpdateOne) SetLabel(s string) *CareerSkillGroupUpdateOne {
+	csguo.mutation.SetLabel(s)
+	return csguo
+}
+
+// SetCareerID sets the "career" edge to the UserCareer entity by ID.
+func (csguo *CareerSkillGroupUpdateOne) SetCareerID(id int) *CareerSkillGroupUpdateOne {
+	csguo.mutation.SetCareerID(id)
+	return csguo
+}
+
+// SetCareer sets the "career" edge to the UserCareer entity.
+func (csguo *CareerSkillGroupUpdateOne) SetCareer(u *UserCareer) *CareerSkillGroupUpdateOne {
+	return csguo.SetCareerID(u.ID)
+}
+
 // Mutation returns the CareerSkillGroupMutation object of the builder.
 func (csguo *CareerSkillGroupUpdateOne) Mutation() *CareerSkillGroupMutation {
 	return csguo.mutation
+}
+
+// ClearCareer clears the "career" edge to the UserCareer entity.
+func (csguo *CareerSkillGroupUpdateOne) ClearCareer() *CareerSkillGroupUpdateOne {
+	csguo.mutation.ClearCareer()
+	return csguo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -172,12 +280,18 @@ func (csguo *CareerSkillGroupUpdateOne) Save(ctx context.Context) (*CareerSkillG
 	)
 	csguo.defaults()
 	if len(csguo.hooks) == 0 {
+		if err = csguo.check(); err != nil {
+			return nil, err
+		}
 		node, err = csguo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*CareerSkillGroupMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = csguo.check(); err != nil {
+				return nil, err
 			}
 			csguo.mutation = mutation
 			node, err = csguo.sqlSave(ctx)
@@ -233,6 +347,19 @@ func (csguo *CareerSkillGroupUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (csguo *CareerSkillGroupUpdateOne) check() error {
+	if v, ok := csguo.mutation.Label(); ok {
+		if err := careerskillgroup.LabelValidator(v); err != nil {
+			return &ValidationError{Name: "label", err: fmt.Errorf(`ent: validator failed for field "CareerSkillGroup.label": %w`, err)}
+		}
+	}
+	if _, ok := csguo.mutation.CareerID(); csguo.mutation.CareerCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "CareerSkillGroup.career"`)
+	}
+	return nil
+}
+
 func (csguo *CareerSkillGroupUpdateOne) sqlSave(ctx context.Context) (_node *CareerSkillGroup, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -274,6 +401,48 @@ func (csguo *CareerSkillGroupUpdateOne) sqlSave(ctx context.Context) (_node *Car
 			Value:  value,
 			Column: careerskillgroup.FieldUpdateTime,
 		})
+	}
+	if value, ok := csguo.mutation.Label(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: careerskillgroup.FieldLabel,
+		})
+	}
+	if csguo.mutation.CareerCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   careerskillgroup.CareerTable,
+			Columns: []string{careerskillgroup.CareerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareer.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := csguo.mutation.CareerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   careerskillgroup.CareerTable,
+			Columns: []string{careerskillgroup.CareerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareer.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &CareerSkillGroup{config: csguo.config}
 	_spec.Assign = _node.assignValues

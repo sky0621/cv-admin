@@ -6,6 +6,8 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
+const userEdgeName = "user"
+
 // User holds the schema definition for the User entity.
 type User struct {
 	ent.Schema
@@ -35,8 +37,9 @@ func (User) Mixin() []ent.Mixin {
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("activities", UserActivity.Type).StorageKey(edge.Column("user_id")),
-		edge.To("qualifications", UserQualification.Type).StorageKey(edge.Column("user_id")),
-		edge.To("careergroups", UserCareerGroup.Type).StorageKey(edge.Column("user_id")),
+		edge.To(userActivitiesRef, UserActivity.Type).StorageKey(edge.Column("user_id")),
+		edge.To(userQualificationsRef, UserQualification.Type).StorageKey(edge.Column("user_id")),
+		edge.To(userCareerGroupsRef, UserCareerGroup.Type).StorageKey(edge.Column("user_id")),
+		// FIXME: To(usernote)
 	}
 }

@@ -6,6 +6,11 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
+const (
+	userCareerEdgeName = "career"
+	userCareerRef      = "careers"
+)
+
 // UserCareer holds the schema definition for the UserCareer entity.
 type UserCareer struct {
 	ent.Schema
@@ -29,8 +34,10 @@ func (UserCareer) Mixin() []ent.Mixin {
 // Edges of the UserCareer.
 func (UserCareer) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("careergroup", UserCareerGroup.Type).Ref("careers").Unique().Required(),
-		edge.To("careerdescriptions", UserCareerDescription.Type).StorageKey(edge.Column("career_id")),
-		edge.To("careertasks", CareerTask.Type).StorageKey(edge.Column("career_id")),
+		edge.From(userCareerGroupEdgeName, UserCareerGroup.Type).Ref(userCareerRef).Unique().Required(),
+
+		edge.To(userCareerDescriptionsRef, UserCareerDescription.Type).StorageKey(edge.Column("career_id")),
+		edge.To(careerTaskRef, CareerTask.Type).StorageKey(edge.Column("career_id")),
+		edge.To(careerSkillGroupRef, CareerSkillGroup.Type).StorageKey(edge.Column("career_id")),
 	}
 }

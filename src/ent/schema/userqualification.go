@@ -6,6 +6,8 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
+const userQualificationsRef = "qualifications"
+
 // UserQualification holds the schema definition for the UserQualification entity.
 type UserQualification struct {
 	ent.Schema
@@ -31,6 +33,6 @@ func (UserQualification) Mixin() []ent.Mixin {
 // Edges of the UserQualification.
 func (UserQualification) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("user", User.Type).Ref("qualifications").Unique().Required(),
+		edge.From(userEdgeName, User.Type).Ref(userQualificationsRef).Unique().Required(),
 	}
 }

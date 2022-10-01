@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
 	"github.com/sky0621/cv-admin/src/ent/careertask"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
@@ -96,6 +97,21 @@ func (ucu *UserCareerUpdate) AddCareertasks(c ...*CareerTask) *UserCareerUpdate 
 	return ucu.AddCareertaskIDs(ids...)
 }
 
+// AddCareerskillgroupIDs adds the "careerskillgroups" edge to the CareerSkillGroup entity by IDs.
+func (ucu *UserCareerUpdate) AddCareerskillgroupIDs(ids ...int) *UserCareerUpdate {
+	ucu.mutation.AddCareerskillgroupIDs(ids...)
+	return ucu
+}
+
+// AddCareerskillgroups adds the "careerskillgroups" edges to the CareerSkillGroup entity.
+func (ucu *UserCareerUpdate) AddCareerskillgroups(c ...*CareerSkillGroup) *UserCareerUpdate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ucu.AddCareerskillgroupIDs(ids...)
+}
+
 // Mutation returns the UserCareerMutation object of the builder.
 func (ucu *UserCareerUpdate) Mutation() *UserCareerMutation {
 	return ucu.mutation
@@ -147,6 +163,27 @@ func (ucu *UserCareerUpdate) RemoveCareertasks(c ...*CareerTask) *UserCareerUpda
 		ids[i] = c[i].ID
 	}
 	return ucu.RemoveCareertaskIDs(ids...)
+}
+
+// ClearCareerskillgroups clears all "careerskillgroups" edges to the CareerSkillGroup entity.
+func (ucu *UserCareerUpdate) ClearCareerskillgroups() *UserCareerUpdate {
+	ucu.mutation.ClearCareerskillgroups()
+	return ucu
+}
+
+// RemoveCareerskillgroupIDs removes the "careerskillgroups" edge to CareerSkillGroup entities by IDs.
+func (ucu *UserCareerUpdate) RemoveCareerskillgroupIDs(ids ...int) *UserCareerUpdate {
+	ucu.mutation.RemoveCareerskillgroupIDs(ids...)
+	return ucu
+}
+
+// RemoveCareerskillgroups removes "careerskillgroups" edges to CareerSkillGroup entities.
+func (ucu *UserCareerUpdate) RemoveCareerskillgroups(c ...*CareerSkillGroup) *UserCareerUpdate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ucu.RemoveCareerskillgroupIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -430,6 +467,60 @@ func (ucu *UserCareerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ucu.mutation.CareerskillgroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usercareer.CareerskillgroupsTable,
+			Columns: []string{usercareer.CareerskillgroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskillgroup.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ucu.mutation.RemovedCareerskillgroupsIDs(); len(nodes) > 0 && !ucu.mutation.CareerskillgroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usercareer.CareerskillgroupsTable,
+			Columns: []string{usercareer.CareerskillgroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskillgroup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ucu.mutation.CareerskillgroupsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usercareer.CareerskillgroupsTable,
+			Columns: []string{usercareer.CareerskillgroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskillgroup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ucu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{usercareer.Label}
@@ -514,6 +605,21 @@ func (ucuo *UserCareerUpdateOne) AddCareertasks(c ...*CareerTask) *UserCareerUpd
 	return ucuo.AddCareertaskIDs(ids...)
 }
 
+// AddCareerskillgroupIDs adds the "careerskillgroups" edge to the CareerSkillGroup entity by IDs.
+func (ucuo *UserCareerUpdateOne) AddCareerskillgroupIDs(ids ...int) *UserCareerUpdateOne {
+	ucuo.mutation.AddCareerskillgroupIDs(ids...)
+	return ucuo
+}
+
+// AddCareerskillgroups adds the "careerskillgroups" edges to the CareerSkillGroup entity.
+func (ucuo *UserCareerUpdateOne) AddCareerskillgroups(c ...*CareerSkillGroup) *UserCareerUpdateOne {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ucuo.AddCareerskillgroupIDs(ids...)
+}
+
 // Mutation returns the UserCareerMutation object of the builder.
 func (ucuo *UserCareerUpdateOne) Mutation() *UserCareerMutation {
 	return ucuo.mutation
@@ -565,6 +671,27 @@ func (ucuo *UserCareerUpdateOne) RemoveCareertasks(c ...*CareerTask) *UserCareer
 		ids[i] = c[i].ID
 	}
 	return ucuo.RemoveCareertaskIDs(ids...)
+}
+
+// ClearCareerskillgroups clears all "careerskillgroups" edges to the CareerSkillGroup entity.
+func (ucuo *UserCareerUpdateOne) ClearCareerskillgroups() *UserCareerUpdateOne {
+	ucuo.mutation.ClearCareerskillgroups()
+	return ucuo
+}
+
+// RemoveCareerskillgroupIDs removes the "careerskillgroups" edge to CareerSkillGroup entities by IDs.
+func (ucuo *UserCareerUpdateOne) RemoveCareerskillgroupIDs(ids ...int) *UserCareerUpdateOne {
+	ucuo.mutation.RemoveCareerskillgroupIDs(ids...)
+	return ucuo
+}
+
+// RemoveCareerskillgroups removes "careerskillgroups" edges to CareerSkillGroup entities.
+func (ucuo *UserCareerUpdateOne) RemoveCareerskillgroups(c ...*CareerSkillGroup) *UserCareerUpdateOne {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ucuo.RemoveCareerskillgroupIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -870,6 +997,60 @@ func (ucuo *UserCareerUpdateOne) sqlSave(ctx context.Context) (_node *UserCareer
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: careertask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ucuo.mutation.CareerskillgroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usercareer.CareerskillgroupsTable,
+			Columns: []string{usercareer.CareerskillgroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskillgroup.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ucuo.mutation.RemovedCareerskillgroupsIDs(); len(nodes) > 0 && !ucuo.mutation.CareerskillgroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usercareer.CareerskillgroupsTable,
+			Columns: []string{usercareer.CareerskillgroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskillgroup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ucuo.mutation.CareerskillgroupsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usercareer.CareerskillgroupsTable,
+			Columns: []string{usercareer.CareerskillgroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskillgroup.FieldID,
 				},
 			},
 		}

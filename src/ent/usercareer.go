@@ -41,9 +41,11 @@ type UserCareerEdges struct {
 	Careerdescriptions []*UserCareerDescription `json:"careerdescriptions,omitempty"`
 	// Careertasks holds the value of the careertasks edge.
 	Careertasks []*CareerTask `json:"careertasks,omitempty"`
+	// Careerskillgroups holds the value of the careerskillgroups edge.
+	Careerskillgroups []*CareerSkillGroup `json:"careerskillgroups,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // CareergroupOrErr returns the Careergroup value or an error if the edge
@@ -75,6 +77,15 @@ func (e UserCareerEdges) CareertasksOrErr() ([]*CareerTask, error) {
 		return e.Careertasks, nil
 	}
 	return nil, &NotLoadedError{edge: "careertasks"}
+}
+
+// CareerskillgroupsOrErr returns the Careerskillgroups value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserCareerEdges) CareerskillgroupsOrErr() ([]*CareerSkillGroup, error) {
+	if e.loadedTypes[3] {
+		return e.Careerskillgroups, nil
+	}
+	return nil, &NotLoadedError{edge: "careerskillgroups"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -166,6 +177,11 @@ func (uc *UserCareer) QueryCareerdescriptions() *UserCareerDescriptionQuery {
 // QueryCareertasks queries the "careertasks" edge of the UserCareer entity.
 func (uc *UserCareer) QueryCareertasks() *CareerTaskQuery {
 	return (&UserCareerClient{config: uc.config}).QueryCareertasks(uc)
+}
+
+// QueryCareerskillgroups queries the "careerskillgroups" edge of the UserCareer entity.
+func (uc *UserCareer) QueryCareerskillgroups() *CareerSkillGroupQuery {
+	return (&UserCareerClient{config: uc.config}).QueryCareerskillgroups(uc)
 }
 
 // Update returns a builder for updating this UserCareer.

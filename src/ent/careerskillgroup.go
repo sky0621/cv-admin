@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
+	"github.com/sky0621/cv-admin/src/ent/usercareer"
 )
 
 // CareerSkillGroup is the model entity for the CareerSkillGroup schema.
@@ -20,6 +21,34 @@ type CareerSkillGroup struct {
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
+	// Label holds the value of the "label" field.
+	Label string `json:"label,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the CareerSkillGroupQuery when eager-loading is set.
+	Edges     CareerSkillGroupEdges `json:"edges"`
+	career_id *int
+}
+
+// CareerSkillGroupEdges holds the relations/edges for other nodes in the graph.
+type CareerSkillGroupEdges struct {
+	// Career holds the value of the career edge.
+	Career *UserCareer `json:"career,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// CareerOrErr returns the Career value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CareerSkillGroupEdges) CareerOrErr() (*UserCareer, error) {
+	if e.loadedTypes[0] {
+		if e.Career == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: usercareer.Label}
+		}
+		return e.Career, nil
+	}
+	return nil, &NotLoadedError{edge: "career"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -29,8 +58,12 @@ func (*CareerSkillGroup) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case careerskillgroup.FieldID:
 			values[i] = new(sql.NullInt64)
+		case careerskillgroup.FieldLabel:
+			values[i] = new(sql.NullString)
 		case careerskillgroup.FieldCreateTime, careerskillgroup.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
+		case careerskillgroup.ForeignKeys[0]: // career_id
+			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type CareerSkillGroup", columns[i])
 		}
@@ -64,9 +97,27 @@ func (csg *CareerSkillGroup) assignValues(columns []string, values []interface{}
 			} else if value.Valid {
 				csg.UpdateTime = value.Time
 			}
+		case careerskillgroup.FieldLabel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field label", values[i])
+			} else if value.Valid {
+				csg.Label = value.String
+			}
+		case careerskillgroup.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field career_id", value)
+			} else if value.Valid {
+				csg.career_id = new(int)
+				*csg.career_id = int(value.Int64)
+			}
 		}
 	}
 	return nil
+}
+
+// QueryCareer queries the "career" edge of the CareerSkillGroup entity.
+func (csg *CareerSkillGroup) QueryCareer() *UserCareerQuery {
+	return (&CareerSkillGroupClient{config: csg.config}).QueryCareer(csg)
 }
 
 // Update returns a builder for updating this CareerSkillGroup.
@@ -97,6 +148,9 @@ func (csg *CareerSkillGroup) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("update_time=")
 	builder.WriteString(csg.UpdateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("label=")
+	builder.WriteString(csg.Label)
 	builder.WriteByte(')')
 	return builder.String()
 }

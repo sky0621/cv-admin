@@ -54,6 +54,24 @@ func init() {
 	careerskillgroup.DefaultUpdateTime = careerskillgroupDescUpdateTime.Default.(func() time.Time)
 	// careerskillgroup.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	careerskillgroup.UpdateDefaultUpdateTime = careerskillgroupDescUpdateTime.UpdateDefault.(func() time.Time)
+	// careerskillgroupDescLabel is the schema descriptor for label field.
+	careerskillgroupDescLabel := careerskillgroupFields[0].Descriptor()
+	// careerskillgroup.LabelValidator is a validator for the "label" field. It is called by the builders before save.
+	careerskillgroup.LabelValidator = func() func(string) error {
+		validators := careerskillgroupDescLabel.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(label string) error {
+			for _, fn := range fns {
+				if err := fn(label); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	careertaskMixin := schema.CareerTask{}.Mixin()
 	careertaskMixinFields0 := careertaskMixin[0].Fields()
 	_ = careertaskMixinFields0

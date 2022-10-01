@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 )
 
@@ -219,6 +220,133 @@ func UpdateTimeLT(v time.Time) predicate.CareerSkillGroup {
 func UpdateTimeLTE(v time.Time) predicate.CareerSkillGroup {
 	return predicate.CareerSkillGroup(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdateTime), v))
+	})
+}
+
+// LabelEQ applies the EQ predicate on the "label" field.
+func LabelEQ(v string) predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldLabel), v))
+	})
+}
+
+// LabelNEQ applies the NEQ predicate on the "label" field.
+func LabelNEQ(v string) predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldLabel), v))
+	})
+}
+
+// LabelIn applies the In predicate on the "label" field.
+func LabelIn(vs ...string) predicate.CareerSkillGroup {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldLabel), v...))
+	})
+}
+
+// LabelNotIn applies the NotIn predicate on the "label" field.
+func LabelNotIn(vs ...string) predicate.CareerSkillGroup {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldLabel), v...))
+	})
+}
+
+// LabelGT applies the GT predicate on the "label" field.
+func LabelGT(v string) predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldLabel), v))
+	})
+}
+
+// LabelGTE applies the GTE predicate on the "label" field.
+func LabelGTE(v string) predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldLabel), v))
+	})
+}
+
+// LabelLT applies the LT predicate on the "label" field.
+func LabelLT(v string) predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldLabel), v))
+	})
+}
+
+// LabelLTE applies the LTE predicate on the "label" field.
+func LabelLTE(v string) predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldLabel), v))
+	})
+}
+
+// LabelContains applies the Contains predicate on the "label" field.
+func LabelContains(v string) predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldLabel), v))
+	})
+}
+
+// LabelHasPrefix applies the HasPrefix predicate on the "label" field.
+func LabelHasPrefix(v string) predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldLabel), v))
+	})
+}
+
+// LabelHasSuffix applies the HasSuffix predicate on the "label" field.
+func LabelHasSuffix(v string) predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldLabel), v))
+	})
+}
+
+// LabelEqualFold applies the EqualFold predicate on the "label" field.
+func LabelEqualFold(v string) predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldLabel), v))
+	})
+}
+
+// LabelContainsFold applies the ContainsFold predicate on the "label" field.
+func LabelContainsFold(v string) predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldLabel), v))
+	})
+}
+
+// HasCareer applies the HasEdge predicate on the "career" edge.
+func HasCareer() predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CareerTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CareerTable, CareerColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCareerWith applies the HasEdge predicate on the "career" edge with a given conditions (other predicates).
+func HasCareerWith(preds ...predicate.UserCareer) predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CareerInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CareerTable, CareerColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

@@ -6,6 +6,8 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
+const userActivitiesRef = "activities"
+
 // UserActivity holds the schema definition for the UserActivity entity.
 type UserActivity struct {
 	ent.Schema
@@ -29,6 +31,6 @@ func (UserActivity) Mixin() []ent.Mixin {
 // Edges of the UserActivity.
 func (UserActivity) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("user", User.Type).Ref("activities").Unique().Required(),
+		edge.From(userEdgeName, User.Type).Ref(userActivitiesRef).Unique().Required(),
 	}
 }

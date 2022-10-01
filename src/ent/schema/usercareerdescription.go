@@ -6,6 +6,8 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
+const userCareerDescriptionsRef = "careerdescriptions"
+
 // UserCareerDescription holds the schema definition for the UserCareerDescription entity.
 type UserCareerDescription struct {
 	ent.Schema
@@ -21,6 +23,6 @@ func (UserCareerDescription) Fields() []ent.Field {
 // Edges of the UserCareerDescription.
 func (UserCareerDescription) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("career", UserCareer.Type).Ref("careerdescriptions").Unique().Required(),
+		edge.From(userCareerEdgeName, UserCareer.Type).Ref(userCareerDescriptionsRef).Unique().Required(),
 	}
 }

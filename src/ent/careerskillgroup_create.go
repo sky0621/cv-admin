@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
+	"github.com/sky0621/cv-admin/src/ent/usercareer"
 )
 
 // CareerSkillGroupCreate is the builder for creating a CareerSkillGroup entity.
@@ -48,6 +49,23 @@ func (csgc *CareerSkillGroupCreate) SetNillableUpdateTime(t *time.Time) *CareerS
 		csgc.SetUpdateTime(*t)
 	}
 	return csgc
+}
+
+// SetLabel sets the "label" field.
+func (csgc *CareerSkillGroupCreate) SetLabel(s string) *CareerSkillGroupCreate {
+	csgc.mutation.SetLabel(s)
+	return csgc
+}
+
+// SetCareerID sets the "career" edge to the UserCareer entity by ID.
+func (csgc *CareerSkillGroupCreate) SetCareerID(id int) *CareerSkillGroupCreate {
+	csgc.mutation.SetCareerID(id)
+	return csgc
+}
+
+// SetCareer sets the "career" edge to the UserCareer entity.
+func (csgc *CareerSkillGroupCreate) SetCareer(u *UserCareer) *CareerSkillGroupCreate {
+	return csgc.SetCareerID(u.ID)
 }
 
 // Mutation returns the CareerSkillGroupMutation object of the builder.
@@ -145,6 +163,17 @@ func (csgc *CareerSkillGroupCreate) check() error {
 	if _, ok := csgc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "CareerSkillGroup.update_time"`)}
 	}
+	if _, ok := csgc.mutation.Label(); !ok {
+		return &ValidationError{Name: "label", err: errors.New(`ent: missing required field "CareerSkillGroup.label"`)}
+	}
+	if v, ok := csgc.mutation.Label(); ok {
+		if err := careerskillgroup.LabelValidator(v); err != nil {
+			return &ValidationError{Name: "label", err: fmt.Errorf(`ent: validator failed for field "CareerSkillGroup.label": %w`, err)}
+		}
+	}
+	if _, ok := csgc.mutation.CareerID(); !ok {
+		return &ValidationError{Name: "career", err: errors.New(`ent: missing required edge "CareerSkillGroup.career"`)}
+	}
 	return nil
 }
 
@@ -188,6 +217,34 @@ func (csgc *CareerSkillGroupCreate) createSpec() (*CareerSkillGroup, *sqlgraph.C
 			Column: careerskillgroup.FieldUpdateTime,
 		})
 		_node.UpdateTime = value
+	}
+	if value, ok := csgc.mutation.Label(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: careerskillgroup.FieldLabel,
+		})
+		_node.Label = value
+	}
+	if nodes := csgc.mutation.CareerIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   careerskillgroup.CareerTable,
+			Columns: []string{careerskillgroup.CareerColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareer.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.career_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -265,6 +322,18 @@ func (u *CareerSkillGroupUpsert) UpdateUpdateTime() *CareerSkillGroupUpsert {
 	return u
 }
 
+// SetLabel sets the "label" field.
+func (u *CareerSkillGroupUpsert) SetLabel(v string) *CareerSkillGroupUpsert {
+	u.Set(careerskillgroup.FieldLabel, v)
+	return u
+}
+
+// UpdateLabel sets the "label" field to the value that was provided on create.
+func (u *CareerSkillGroupUpsert) UpdateLabel() *CareerSkillGroupUpsert {
+	u.SetExcluded(careerskillgroup.FieldLabel)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -335,6 +404,20 @@ func (u *CareerSkillGroupUpsertOne) SetUpdateTime(v time.Time) *CareerSkillGroup
 func (u *CareerSkillGroupUpsertOne) UpdateUpdateTime() *CareerSkillGroupUpsertOne {
 	return u.Update(func(s *CareerSkillGroupUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetLabel sets the "label" field.
+func (u *CareerSkillGroupUpsertOne) SetLabel(v string) *CareerSkillGroupUpsertOne {
+	return u.Update(func(s *CareerSkillGroupUpsert) {
+		s.SetLabel(v)
+	})
+}
+
+// UpdateLabel sets the "label" field to the value that was provided on create.
+func (u *CareerSkillGroupUpsertOne) UpdateLabel() *CareerSkillGroupUpsertOne {
+	return u.Update(func(s *CareerSkillGroupUpsert) {
+		s.UpdateLabel()
 	})
 }
 
@@ -570,6 +653,20 @@ func (u *CareerSkillGroupUpsertBulk) SetUpdateTime(v time.Time) *CareerSkillGrou
 func (u *CareerSkillGroupUpsertBulk) UpdateUpdateTime() *CareerSkillGroupUpsertBulk {
 	return u.Update(func(s *CareerSkillGroupUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetLabel sets the "label" field.
+func (u *CareerSkillGroupUpsertBulk) SetLabel(v string) *CareerSkillGroupUpsertBulk {
+	return u.Update(func(s *CareerSkillGroupUpsert) {
+		s.SetLabel(v)
+	})
+}
+
+// UpdateLabel sets the "label" field to the value that was provided on create.
+func (u *CareerSkillGroupUpsertBulk) UpdateLabel() *CareerSkillGroupUpsertBulk {
+	return u.Update(func(s *CareerSkillGroupUpsert) {
+		s.UpdateLabel()
 	})
 }
 
