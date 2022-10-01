@@ -45,6 +45,8 @@ func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId swagger.User
 	return ctx.NoContent(http.StatusNoContent)
 }
 
+// TODO: s.dbClient.User.Get ~ if entUser == nil までを共通化！
+
 // GetUsersByUserIdAttribute 属性取得
 // (GET /users/{byUserId}/attribute)
 func (s *ServerImpl) GetUsersByUserIdAttribute(ctx echo.Context, byUserId swagger.UserId) error {
@@ -157,10 +159,34 @@ func (s *ServerImpl) PutUsersByUserIdActivities(ctx echo.Context, byUserId swagg
 	return ctx.JSON(http.StatusOK, converter.ToSwaggerUserActivities(results))
 }
 
-// 資格情報群取得
+// GetUsersByUserIdQualifications 資格情報群取得
 // (GET /users/{byUserId}/qualifications)
 func (s *ServerImpl) GetUsersByUserIdQualifications(ctx echo.Context, byUserId swagger.UserId) error {
-	return ctx.String(http.StatusOK, "")
+	rCtx := ctx.Request().Context()
+
+	entUser, err := s.dbClient.User.Get(rCtx, byUserId)
+	if err != nil {
+		switch {
+		case errors.As(err, &notFound):
+			return sendClientError(ctx, http.StatusNotFound, "user is none")
+		}
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	if entUser == nil {
+		return sendClientError(ctx, http.StatusNotFound, "user is none")
+	}
+
+	qualifications, err := entUser.QueryQualifications().All(rCtx)
+	if err != nil {
+		switch {
+		case errors.As(err, &notFound):
+			return sendClientError(ctx, http.StatusNotFound, "user qualifications are none")
+		}
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, converter.ToSwaggerUserQualifications(qualifications))
 }
 
 // PutUsersByUserIdQualifications 資格情報群最新化
