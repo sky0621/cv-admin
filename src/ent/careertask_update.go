@@ -53,19 +53,19 @@ func (ctu *CareerTaskUpdate) SetCareer(u *UserCareer) *CareerTaskUpdate {
 	return ctu.SetCareerID(u.ID)
 }
 
-// AddCareertaskdescriptionIDs adds the "careertaskdescriptions" edge to the CareerTaskDescription entity by IDs.
-func (ctu *CareerTaskUpdate) AddCareertaskdescriptionIDs(ids ...int) *CareerTaskUpdate {
-	ctu.mutation.AddCareertaskdescriptionIDs(ids...)
+// AddCareerTaskDescriptionIDs adds the "careerTaskDescriptions" edge to the CareerTaskDescription entity by IDs.
+func (ctu *CareerTaskUpdate) AddCareerTaskDescriptionIDs(ids ...int) *CareerTaskUpdate {
+	ctu.mutation.AddCareerTaskDescriptionIDs(ids...)
 	return ctu
 }
 
-// AddCareertaskdescriptions adds the "careertaskdescriptions" edges to the CareerTaskDescription entity.
-func (ctu *CareerTaskUpdate) AddCareertaskdescriptions(c ...*CareerTaskDescription) *CareerTaskUpdate {
+// AddCareerTaskDescriptions adds the "careerTaskDescriptions" edges to the CareerTaskDescription entity.
+func (ctu *CareerTaskUpdate) AddCareerTaskDescriptions(c ...*CareerTaskDescription) *CareerTaskUpdate {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
-	return ctu.AddCareertaskdescriptionIDs(ids...)
+	return ctu.AddCareerTaskDescriptionIDs(ids...)
 }
 
 // Mutation returns the CareerTaskMutation object of the builder.
@@ -79,25 +79,25 @@ func (ctu *CareerTaskUpdate) ClearCareer() *CareerTaskUpdate {
 	return ctu
 }
 
-// ClearCareertaskdescriptions clears all "careertaskdescriptions" edges to the CareerTaskDescription entity.
-func (ctu *CareerTaskUpdate) ClearCareertaskdescriptions() *CareerTaskUpdate {
-	ctu.mutation.ClearCareertaskdescriptions()
+// ClearCareerTaskDescriptions clears all "careerTaskDescriptions" edges to the CareerTaskDescription entity.
+func (ctu *CareerTaskUpdate) ClearCareerTaskDescriptions() *CareerTaskUpdate {
+	ctu.mutation.ClearCareerTaskDescriptions()
 	return ctu
 }
 
-// RemoveCareertaskdescriptionIDs removes the "careertaskdescriptions" edge to CareerTaskDescription entities by IDs.
-func (ctu *CareerTaskUpdate) RemoveCareertaskdescriptionIDs(ids ...int) *CareerTaskUpdate {
-	ctu.mutation.RemoveCareertaskdescriptionIDs(ids...)
+// RemoveCareerTaskDescriptionIDs removes the "careerTaskDescriptions" edge to CareerTaskDescription entities by IDs.
+func (ctu *CareerTaskUpdate) RemoveCareerTaskDescriptionIDs(ids ...int) *CareerTaskUpdate {
+	ctu.mutation.RemoveCareerTaskDescriptionIDs(ids...)
 	return ctu
 }
 
-// RemoveCareertaskdescriptions removes "careertaskdescriptions" edges to CareerTaskDescription entities.
-func (ctu *CareerTaskUpdate) RemoveCareertaskdescriptions(c ...*CareerTaskDescription) *CareerTaskUpdate {
+// RemoveCareerTaskDescriptions removes "careerTaskDescriptions" edges to CareerTaskDescription entities.
+func (ctu *CareerTaskUpdate) RemoveCareerTaskDescriptions(c ...*CareerTaskDescription) *CareerTaskUpdate {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
-	return ctu.RemoveCareertaskdescriptionIDs(ids...)
+	return ctu.RemoveCareerTaskDescriptionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -249,12 +249,12 @@ func (ctu *CareerTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ctu.mutation.CareertaskdescriptionsCleared() {
+	if ctu.mutation.CareerTaskDescriptionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   careertask.CareertaskdescriptionsTable,
-			Columns: []string{careertask.CareertaskdescriptionsColumn},
+			Table:   careertask.CareerTaskDescriptionsTable,
+			Columns: []string{careertask.CareerTaskDescriptionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -265,12 +265,12 @@ func (ctu *CareerTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ctu.mutation.RemovedCareertaskdescriptionsIDs(); len(nodes) > 0 && !ctu.mutation.CareertaskdescriptionsCleared() {
+	if nodes := ctu.mutation.RemovedCareerTaskDescriptionsIDs(); len(nodes) > 0 && !ctu.mutation.CareerTaskDescriptionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   careertask.CareertaskdescriptionsTable,
-			Columns: []string{careertask.CareertaskdescriptionsColumn},
+			Table:   careertask.CareerTaskDescriptionsTable,
+			Columns: []string{careertask.CareerTaskDescriptionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -284,12 +284,12 @@ func (ctu *CareerTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ctu.mutation.CareertaskdescriptionsIDs(); len(nodes) > 0 {
+	if nodes := ctu.mutation.CareerTaskDescriptionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   careertask.CareertaskdescriptionsTable,
-			Columns: []string{careertask.CareertaskdescriptionsColumn},
+			Table:   careertask.CareerTaskDescriptionsTable,
+			Columns: []string{careertask.CareerTaskDescriptionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -345,19 +345,19 @@ func (ctuo *CareerTaskUpdateOne) SetCareer(u *UserCareer) *CareerTaskUpdateOne {
 	return ctuo.SetCareerID(u.ID)
 }
 
-// AddCareertaskdescriptionIDs adds the "careertaskdescriptions" edge to the CareerTaskDescription entity by IDs.
-func (ctuo *CareerTaskUpdateOne) AddCareertaskdescriptionIDs(ids ...int) *CareerTaskUpdateOne {
-	ctuo.mutation.AddCareertaskdescriptionIDs(ids...)
+// AddCareerTaskDescriptionIDs adds the "careerTaskDescriptions" edge to the CareerTaskDescription entity by IDs.
+func (ctuo *CareerTaskUpdateOne) AddCareerTaskDescriptionIDs(ids ...int) *CareerTaskUpdateOne {
+	ctuo.mutation.AddCareerTaskDescriptionIDs(ids...)
 	return ctuo
 }
 
-// AddCareertaskdescriptions adds the "careertaskdescriptions" edges to the CareerTaskDescription entity.
-func (ctuo *CareerTaskUpdateOne) AddCareertaskdescriptions(c ...*CareerTaskDescription) *CareerTaskUpdateOne {
+// AddCareerTaskDescriptions adds the "careerTaskDescriptions" edges to the CareerTaskDescription entity.
+func (ctuo *CareerTaskUpdateOne) AddCareerTaskDescriptions(c ...*CareerTaskDescription) *CareerTaskUpdateOne {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
-	return ctuo.AddCareertaskdescriptionIDs(ids...)
+	return ctuo.AddCareerTaskDescriptionIDs(ids...)
 }
 
 // Mutation returns the CareerTaskMutation object of the builder.
@@ -371,25 +371,25 @@ func (ctuo *CareerTaskUpdateOne) ClearCareer() *CareerTaskUpdateOne {
 	return ctuo
 }
 
-// ClearCareertaskdescriptions clears all "careertaskdescriptions" edges to the CareerTaskDescription entity.
-func (ctuo *CareerTaskUpdateOne) ClearCareertaskdescriptions() *CareerTaskUpdateOne {
-	ctuo.mutation.ClearCareertaskdescriptions()
+// ClearCareerTaskDescriptions clears all "careerTaskDescriptions" edges to the CareerTaskDescription entity.
+func (ctuo *CareerTaskUpdateOne) ClearCareerTaskDescriptions() *CareerTaskUpdateOne {
+	ctuo.mutation.ClearCareerTaskDescriptions()
 	return ctuo
 }
 
-// RemoveCareertaskdescriptionIDs removes the "careertaskdescriptions" edge to CareerTaskDescription entities by IDs.
-func (ctuo *CareerTaskUpdateOne) RemoveCareertaskdescriptionIDs(ids ...int) *CareerTaskUpdateOne {
-	ctuo.mutation.RemoveCareertaskdescriptionIDs(ids...)
+// RemoveCareerTaskDescriptionIDs removes the "careerTaskDescriptions" edge to CareerTaskDescription entities by IDs.
+func (ctuo *CareerTaskUpdateOne) RemoveCareerTaskDescriptionIDs(ids ...int) *CareerTaskUpdateOne {
+	ctuo.mutation.RemoveCareerTaskDescriptionIDs(ids...)
 	return ctuo
 }
 
-// RemoveCareertaskdescriptions removes "careertaskdescriptions" edges to CareerTaskDescription entities.
-func (ctuo *CareerTaskUpdateOne) RemoveCareertaskdescriptions(c ...*CareerTaskDescription) *CareerTaskUpdateOne {
+// RemoveCareerTaskDescriptions removes "careerTaskDescriptions" edges to CareerTaskDescription entities.
+func (ctuo *CareerTaskUpdateOne) RemoveCareerTaskDescriptions(c ...*CareerTaskDescription) *CareerTaskUpdateOne {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
-	return ctuo.RemoveCareertaskdescriptionIDs(ids...)
+	return ctuo.RemoveCareerTaskDescriptionIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -571,12 +571,12 @@ func (ctuo *CareerTaskUpdateOne) sqlSave(ctx context.Context) (_node *CareerTask
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ctuo.mutation.CareertaskdescriptionsCleared() {
+	if ctuo.mutation.CareerTaskDescriptionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   careertask.CareertaskdescriptionsTable,
-			Columns: []string{careertask.CareertaskdescriptionsColumn},
+			Table:   careertask.CareerTaskDescriptionsTable,
+			Columns: []string{careertask.CareerTaskDescriptionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -587,12 +587,12 @@ func (ctuo *CareerTaskUpdateOne) sqlSave(ctx context.Context) (_node *CareerTask
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ctuo.mutation.RemovedCareertaskdescriptionsIDs(); len(nodes) > 0 && !ctuo.mutation.CareertaskdescriptionsCleared() {
+	if nodes := ctuo.mutation.RemovedCareerTaskDescriptionsIDs(); len(nodes) > 0 && !ctuo.mutation.CareerTaskDescriptionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   careertask.CareertaskdescriptionsTable,
-			Columns: []string{careertask.CareertaskdescriptionsColumn},
+			Table:   careertask.CareerTaskDescriptionsTable,
+			Columns: []string{careertask.CareerTaskDescriptionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -606,12 +606,12 @@ func (ctuo *CareerTaskUpdateOne) sqlSave(ctx context.Context) (_node *CareerTask
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ctuo.mutation.CareertaskdescriptionsIDs(); len(nodes) > 0 {
+	if nodes := ctuo.mutation.CareerTaskDescriptionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   careertask.CareertaskdescriptionsTable,
-			Columns: []string{careertask.CareertaskdescriptionsColumn},
+			Table:   careertask.CareerTaskDescriptionsTable,
+			Columns: []string{careertask.CareerTaskDescriptionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

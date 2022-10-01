@@ -1,6 +1,12 @@
 package schema
 
-import "entgo.io/ent"
+import (
+	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
+	"entgo.io/ent/schema/field"
+)
+
+const userNoteItemsRef = "noteItems"
 
 // UserNoteItem holds the schema definition for the UserNoteItem entity.
 type UserNoteItem struct {
@@ -9,7 +15,9 @@ type UserNoteItem struct {
 
 // Fields of the UserNoteItem.
 func (UserNoteItem) Fields() []ent.Field {
-	return nil
+	return []ent.Field{
+		field.String("text").NotEmpty().Validate(maxRuneCount(400)),
+	}
 }
 
 func (UserNoteItem) Mixin() []ent.Mixin {
@@ -20,5 +28,7 @@ func (UserNoteItem) Mixin() []ent.Mixin {
 
 // Edges of the UserNoteItem.
 func (UserNoteItem) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.From(userNoteEdgeName, UserNote.Type).Ref(userNoteItemsRef).Unique().Required(),
+	}
 }

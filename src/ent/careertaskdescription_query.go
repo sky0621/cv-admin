@@ -24,7 +24,7 @@ type CareerTaskDescriptionQuery struct {
 	order          []OrderFunc
 	fields         []string
 	predicates     []predicate.CareerTaskDescription
-	withCareertask *CareerTaskQuery
+	withCareerTask *CareerTaskQuery
 	withFKs        bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -62,8 +62,8 @@ func (ctdq *CareerTaskDescriptionQuery) Order(o ...OrderFunc) *CareerTaskDescrip
 	return ctdq
 }
 
-// QueryCareertask chains the current query on the "careertask" edge.
-func (ctdq *CareerTaskDescriptionQuery) QueryCareertask() *CareerTaskQuery {
+// QueryCareerTask chains the current query on the "careerTask" edge.
+func (ctdq *CareerTaskDescriptionQuery) QueryCareerTask() *CareerTaskQuery {
 	query := &CareerTaskQuery{config: ctdq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ctdq.prepareQuery(ctx); err != nil {
@@ -76,7 +76,7 @@ func (ctdq *CareerTaskDescriptionQuery) QueryCareertask() *CareerTaskQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(careertaskdescription.Table, careertaskdescription.FieldID, selector),
 			sqlgraph.To(careertask.Table, careertask.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, careertaskdescription.CareertaskTable, careertaskdescription.CareertaskColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, careertaskdescription.CareerTaskTable, careertaskdescription.CareerTaskColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ctdq.driver.Dialect(), step)
 		return fromU, nil
@@ -265,7 +265,7 @@ func (ctdq *CareerTaskDescriptionQuery) Clone() *CareerTaskDescriptionQuery {
 		offset:         ctdq.offset,
 		order:          append([]OrderFunc{}, ctdq.order...),
 		predicates:     append([]predicate.CareerTaskDescription{}, ctdq.predicates...),
-		withCareertask: ctdq.withCareertask.Clone(),
+		withCareerTask: ctdq.withCareerTask.Clone(),
 		// clone intermediate query.
 		sql:    ctdq.sql.Clone(),
 		path:   ctdq.path,
@@ -273,14 +273,14 @@ func (ctdq *CareerTaskDescriptionQuery) Clone() *CareerTaskDescriptionQuery {
 	}
 }
 
-// WithCareertask tells the query-builder to eager-load the nodes that are connected to
-// the "careertask" edge. The optional arguments are used to configure the query builder of the edge.
-func (ctdq *CareerTaskDescriptionQuery) WithCareertask(opts ...func(*CareerTaskQuery)) *CareerTaskDescriptionQuery {
+// WithCareerTask tells the query-builder to eager-load the nodes that are connected to
+// the "careerTask" edge. The optional arguments are used to configure the query builder of the edge.
+func (ctdq *CareerTaskDescriptionQuery) WithCareerTask(opts ...func(*CareerTaskQuery)) *CareerTaskDescriptionQuery {
 	query := &CareerTaskQuery{config: ctdq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	ctdq.withCareertask = query
+	ctdq.withCareerTask = query
 	return ctdq
 }
 
@@ -354,10 +354,10 @@ func (ctdq *CareerTaskDescriptionQuery) sqlAll(ctx context.Context, hooks ...que
 		withFKs     = ctdq.withFKs
 		_spec       = ctdq.querySpec()
 		loadedTypes = [1]bool{
-			ctdq.withCareertask != nil,
+			ctdq.withCareerTask != nil,
 		}
 	)
-	if ctdq.withCareertask != nil {
+	if ctdq.withCareerTask != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -381,23 +381,23 @@ func (ctdq *CareerTaskDescriptionQuery) sqlAll(ctx context.Context, hooks ...que
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := ctdq.withCareertask; query != nil {
-		if err := ctdq.loadCareertask(ctx, query, nodes, nil,
-			func(n *CareerTaskDescription, e *CareerTask) { n.Edges.Careertask = e }); err != nil {
+	if query := ctdq.withCareerTask; query != nil {
+		if err := ctdq.loadCareerTask(ctx, query, nodes, nil,
+			func(n *CareerTaskDescription, e *CareerTask) { n.Edges.CareerTask = e }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (ctdq *CareerTaskDescriptionQuery) loadCareertask(ctx context.Context, query *CareerTaskQuery, nodes []*CareerTaskDescription, init func(*CareerTaskDescription), assign func(*CareerTaskDescription, *CareerTask)) error {
+func (ctdq *CareerTaskDescriptionQuery) loadCareerTask(ctx context.Context, query *CareerTaskQuery, nodes []*CareerTaskDescription, init func(*CareerTaskDescription), assign func(*CareerTaskDescription, *CareerTask)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*CareerTaskDescription)
 	for i := range nodes {
-		if nodes[i].careertask_id == nil {
+		if nodes[i].career_task_id == nil {
 			continue
 		}
-		fk := *nodes[i].careertask_id
+		fk := *nodes[i].career_task_id
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -411,7 +411,7 @@ func (ctdq *CareerTaskDescriptionQuery) loadCareertask(ctx context.Context, quer
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "careertask_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "career_task_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

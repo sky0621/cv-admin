@@ -541,25 +541,25 @@ func ToContainsFold(v string) predicate.UserCareer {
 	})
 }
 
-// HasCareergroup applies the HasEdge predicate on the "careergroup" edge.
-func HasCareergroup() predicate.UserCareer {
+// HasCareerGroup applies the HasEdge predicate on the "careerGroup" edge.
+func HasCareerGroup() predicate.UserCareer {
 	return predicate.UserCareer(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareergroupTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CareergroupTable, CareergroupColumn),
+			sqlgraph.To(CareerGroupTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CareerGroupTable, CareerGroupColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasCareergroupWith applies the HasEdge predicate on the "careergroup" edge with a given conditions (other predicates).
-func HasCareergroupWith(preds ...predicate.UserCareerGroup) predicate.UserCareer {
+// HasCareerGroupWith applies the HasEdge predicate on the "careerGroup" edge with a given conditions (other predicates).
+func HasCareerGroupWith(preds ...predicate.UserCareerGroup) predicate.UserCareer {
 	return predicate.UserCareer(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareergroupInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CareergroupTable, CareergroupColumn),
+			sqlgraph.To(CareerGroupInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CareerGroupTable, CareerGroupColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -569,25 +569,25 @@ func HasCareergroupWith(preds ...predicate.UserCareerGroup) predicate.UserCareer
 	})
 }
 
-// HasCareerdescriptions applies the HasEdge predicate on the "careerdescriptions" edge.
-func HasCareerdescriptions() predicate.UserCareer {
+// HasCareerDescriptions applies the HasEdge predicate on the "careerDescriptions" edge.
+func HasCareerDescriptions() predicate.UserCareer {
 	return predicate.UserCareer(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareerdescriptionsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CareerdescriptionsTable, CareerdescriptionsColumn),
+			sqlgraph.To(CareerDescriptionsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareerDescriptionsTable, CareerDescriptionsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasCareerdescriptionsWith applies the HasEdge predicate on the "careerdescriptions" edge with a given conditions (other predicates).
-func HasCareerdescriptionsWith(preds ...predicate.UserCareerDescription) predicate.UserCareer {
+// HasCareerDescriptionsWith applies the HasEdge predicate on the "careerDescriptions" edge with a given conditions (other predicates).
+func HasCareerDescriptionsWith(preds ...predicate.UserCareerDescription) predicate.UserCareer {
 	return predicate.UserCareer(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareerdescriptionsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CareerdescriptionsTable, CareerdescriptionsColumn),
+			sqlgraph.To(CareerDescriptionsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareerDescriptionsTable, CareerDescriptionsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -597,25 +597,25 @@ func HasCareerdescriptionsWith(preds ...predicate.UserCareerDescription) predica
 	})
 }
 
-// HasCareertasks applies the HasEdge predicate on the "careertasks" edge.
-func HasCareertasks() predicate.UserCareer {
+// HasCareerTasks applies the HasEdge predicate on the "careerTasks" edge.
+func HasCareerTasks() predicate.UserCareer {
 	return predicate.UserCareer(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareertasksTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CareertasksTable, CareertasksColumn),
+			sqlgraph.To(CareerTasksTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareerTasksTable, CareerTasksColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasCareertasksWith applies the HasEdge predicate on the "careertasks" edge with a given conditions (other predicates).
-func HasCareertasksWith(preds ...predicate.CareerTask) predicate.UserCareer {
+// HasCareerTasksWith applies the HasEdge predicate on the "careerTasks" edge with a given conditions (other predicates).
+func HasCareerTasksWith(preds ...predicate.CareerTask) predicate.UserCareer {
 	return predicate.UserCareer(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareertasksInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CareertasksTable, CareertasksColumn),
+			sqlgraph.To(CareerTasksInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareerTasksTable, CareerTasksColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -625,25 +625,25 @@ func HasCareertasksWith(preds ...predicate.CareerTask) predicate.UserCareer {
 	})
 }
 
-// HasCareerskillgroups applies the HasEdge predicate on the "careerskillgroups" edge.
-func HasCareerskillgroups() predicate.UserCareer {
+// HasCareerSkillGroups applies the HasEdge predicate on the "careerSkillGroups" edge.
+func HasCareerSkillGroups() predicate.UserCareer {
 	return predicate.UserCareer(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareerskillgroupsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CareerskillgroupsTable, CareerskillgroupsColumn),
+			sqlgraph.To(CareerSkillGroupsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareerSkillGroupsTable, CareerSkillGroupsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasCareerskillgroupsWith applies the HasEdge predicate on the "careerskillgroups" edge with a given conditions (other predicates).
-func HasCareerskillgroupsWith(preds ...predicate.CareerSkillGroup) predicate.UserCareer {
+// HasCareerSkillGroupsWith applies the HasEdge predicate on the "careerSkillGroups" edge with a given conditions (other predicates).
+func HasCareerSkillGroupsWith(preds ...predicate.CareerSkillGroup) predicate.UserCareer {
 	return predicate.UserCareer(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareerskillgroupsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CareerskillgroupsTable, CareerskillgroupsColumn),
+			sqlgraph.To(CareerSkillGroupsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareerSkillGroupsTable, CareerSkillGroupsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

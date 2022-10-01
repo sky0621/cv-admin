@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 )
 
@@ -91,6 +92,13 @@ func CreateTime(v time.Time) predicate.UserNoteItem {
 func UpdateTime(v time.Time) predicate.UserNoteItem {
 	return predicate.UserNoteItem(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUpdateTime), v))
+	})
+}
+
+// Text applies equality check predicate on the "text" field. It's identical to TextEQ.
+func Text(v string) predicate.UserNoteItem {
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldText), v))
 	})
 }
 
@@ -219,6 +227,133 @@ func UpdateTimeLT(v time.Time) predicate.UserNoteItem {
 func UpdateTimeLTE(v time.Time) predicate.UserNoteItem {
 	return predicate.UserNoteItem(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdateTime), v))
+	})
+}
+
+// TextEQ applies the EQ predicate on the "text" field.
+func TextEQ(v string) predicate.UserNoteItem {
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldText), v))
+	})
+}
+
+// TextNEQ applies the NEQ predicate on the "text" field.
+func TextNEQ(v string) predicate.UserNoteItem {
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldText), v))
+	})
+}
+
+// TextIn applies the In predicate on the "text" field.
+func TextIn(vs ...string) predicate.UserNoteItem {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldText), v...))
+	})
+}
+
+// TextNotIn applies the NotIn predicate on the "text" field.
+func TextNotIn(vs ...string) predicate.UserNoteItem {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldText), v...))
+	})
+}
+
+// TextGT applies the GT predicate on the "text" field.
+func TextGT(v string) predicate.UserNoteItem {
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldText), v))
+	})
+}
+
+// TextGTE applies the GTE predicate on the "text" field.
+func TextGTE(v string) predicate.UserNoteItem {
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldText), v))
+	})
+}
+
+// TextLT applies the LT predicate on the "text" field.
+func TextLT(v string) predicate.UserNoteItem {
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldText), v))
+	})
+}
+
+// TextLTE applies the LTE predicate on the "text" field.
+func TextLTE(v string) predicate.UserNoteItem {
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldText), v))
+	})
+}
+
+// TextContains applies the Contains predicate on the "text" field.
+func TextContains(v string) predicate.UserNoteItem {
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldText), v))
+	})
+}
+
+// TextHasPrefix applies the HasPrefix predicate on the "text" field.
+func TextHasPrefix(v string) predicate.UserNoteItem {
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldText), v))
+	})
+}
+
+// TextHasSuffix applies the HasSuffix predicate on the "text" field.
+func TextHasSuffix(v string) predicate.UserNoteItem {
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldText), v))
+	})
+}
+
+// TextEqualFold applies the EqualFold predicate on the "text" field.
+func TextEqualFold(v string) predicate.UserNoteItem {
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldText), v))
+	})
+}
+
+// TextContainsFold applies the ContainsFold predicate on the "text" field.
+func TextContainsFold(v string) predicate.UserNoteItem {
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldText), v))
+	})
+}
+
+// HasNote applies the HasEdge predicate on the "note" edge.
+func HasNote() predicate.UserNoteItem {
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(NoteTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, NoteTable, NoteColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasNoteWith applies the HasEdge predicate on the "note" edge with a given conditions (other predicates).
+func HasNoteWith(preds ...predicate.UserNote) predicate.UserNoteItem {
+	return predicate.UserNoteItem(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(NoteInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, NoteTable, NoteColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

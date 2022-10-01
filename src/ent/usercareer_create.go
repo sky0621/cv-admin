@@ -72,60 +72,60 @@ func (ucc *UserCareerCreate) SetTo(s string) *UserCareerCreate {
 	return ucc
 }
 
-// SetCareergroupID sets the "careergroup" edge to the UserCareerGroup entity by ID.
-func (ucc *UserCareerCreate) SetCareergroupID(id int) *UserCareerCreate {
-	ucc.mutation.SetCareergroupID(id)
+// SetCareerGroupID sets the "careerGroup" edge to the UserCareerGroup entity by ID.
+func (ucc *UserCareerCreate) SetCareerGroupID(id int) *UserCareerCreate {
+	ucc.mutation.SetCareerGroupID(id)
 	return ucc
 }
 
-// SetCareergroup sets the "careergroup" edge to the UserCareerGroup entity.
-func (ucc *UserCareerCreate) SetCareergroup(u *UserCareerGroup) *UserCareerCreate {
-	return ucc.SetCareergroupID(u.ID)
+// SetCareerGroup sets the "careerGroup" edge to the UserCareerGroup entity.
+func (ucc *UserCareerCreate) SetCareerGroup(u *UserCareerGroup) *UserCareerCreate {
+	return ucc.SetCareerGroupID(u.ID)
 }
 
-// AddCareerdescriptionIDs adds the "careerdescriptions" edge to the UserCareerDescription entity by IDs.
-func (ucc *UserCareerCreate) AddCareerdescriptionIDs(ids ...int) *UserCareerCreate {
-	ucc.mutation.AddCareerdescriptionIDs(ids...)
+// AddCareerDescriptionIDs adds the "careerDescriptions" edge to the UserCareerDescription entity by IDs.
+func (ucc *UserCareerCreate) AddCareerDescriptionIDs(ids ...int) *UserCareerCreate {
+	ucc.mutation.AddCareerDescriptionIDs(ids...)
 	return ucc
 }
 
-// AddCareerdescriptions adds the "careerdescriptions" edges to the UserCareerDescription entity.
-func (ucc *UserCareerCreate) AddCareerdescriptions(u ...*UserCareerDescription) *UserCareerCreate {
+// AddCareerDescriptions adds the "careerDescriptions" edges to the UserCareerDescription entity.
+func (ucc *UserCareerCreate) AddCareerDescriptions(u ...*UserCareerDescription) *UserCareerCreate {
 	ids := make([]int, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
-	return ucc.AddCareerdescriptionIDs(ids...)
+	return ucc.AddCareerDescriptionIDs(ids...)
 }
 
-// AddCareertaskIDs adds the "careertasks" edge to the CareerTask entity by IDs.
-func (ucc *UserCareerCreate) AddCareertaskIDs(ids ...int) *UserCareerCreate {
-	ucc.mutation.AddCareertaskIDs(ids...)
+// AddCareerTaskIDs adds the "careerTasks" edge to the CareerTask entity by IDs.
+func (ucc *UserCareerCreate) AddCareerTaskIDs(ids ...int) *UserCareerCreate {
+	ucc.mutation.AddCareerTaskIDs(ids...)
 	return ucc
 }
 
-// AddCareertasks adds the "careertasks" edges to the CareerTask entity.
-func (ucc *UserCareerCreate) AddCareertasks(c ...*CareerTask) *UserCareerCreate {
+// AddCareerTasks adds the "careerTasks" edges to the CareerTask entity.
+func (ucc *UserCareerCreate) AddCareerTasks(c ...*CareerTask) *UserCareerCreate {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
-	return ucc.AddCareertaskIDs(ids...)
+	return ucc.AddCareerTaskIDs(ids...)
 }
 
-// AddCareerskillgroupIDs adds the "careerskillgroups" edge to the CareerSkillGroup entity by IDs.
-func (ucc *UserCareerCreate) AddCareerskillgroupIDs(ids ...int) *UserCareerCreate {
-	ucc.mutation.AddCareerskillgroupIDs(ids...)
+// AddCareerSkillGroupIDs adds the "careerSkillGroups" edge to the CareerSkillGroup entity by IDs.
+func (ucc *UserCareerCreate) AddCareerSkillGroupIDs(ids ...int) *UserCareerCreate {
+	ucc.mutation.AddCareerSkillGroupIDs(ids...)
 	return ucc
 }
 
-// AddCareerskillgroups adds the "careerskillgroups" edges to the CareerSkillGroup entity.
-func (ucc *UserCareerCreate) AddCareerskillgroups(c ...*CareerSkillGroup) *UserCareerCreate {
+// AddCareerSkillGroups adds the "careerSkillGroups" edges to the CareerSkillGroup entity.
+func (ucc *UserCareerCreate) AddCareerSkillGroups(c ...*CareerSkillGroup) *UserCareerCreate {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
-	return ucc.AddCareerskillgroupIDs(ids...)
+	return ucc.AddCareerSkillGroupIDs(ids...)
 }
 
 // Mutation returns the UserCareerMutation object of the builder.
@@ -247,8 +247,8 @@ func (ucc *UserCareerCreate) check() error {
 			return &ValidationError{Name: "to", err: fmt.Errorf(`ent: validator failed for field "UserCareer.to": %w`, err)}
 		}
 	}
-	if _, ok := ucc.mutation.CareergroupID(); !ok {
-		return &ValidationError{Name: "careergroup", err: errors.New(`ent: missing required edge "UserCareer.careergroup"`)}
+	if _, ok := ucc.mutation.CareerGroupID(); !ok {
+		return &ValidationError{Name: "careerGroup", err: errors.New(`ent: missing required edge "UserCareer.careerGroup"`)}
 	}
 	return nil
 }
@@ -318,12 +318,12 @@ func (ucc *UserCareerCreate) createSpec() (*UserCareer, *sqlgraph.CreateSpec) {
 		})
 		_node.To = value
 	}
-	if nodes := ucc.mutation.CareergroupIDs(); len(nodes) > 0 {
+	if nodes := ucc.mutation.CareerGroupIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   usercareer.CareergroupTable,
-			Columns: []string{usercareer.CareergroupColumn},
+			Table:   usercareer.CareerGroupTable,
+			Columns: []string{usercareer.CareerGroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -335,15 +335,15 @@ func (ucc *UserCareerCreate) createSpec() (*UserCareer, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.careergroup_id = &nodes[0]
+		_node.career_group_id = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ucc.mutation.CareerdescriptionsIDs(); len(nodes) > 0 {
+	if nodes := ucc.mutation.CareerDescriptionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   usercareer.CareerdescriptionsTable,
-			Columns: []string{usercareer.CareerdescriptionsColumn},
+			Table:   usercareer.CareerDescriptionsTable,
+			Columns: []string{usercareer.CareerDescriptionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -357,12 +357,12 @@ func (ucc *UserCareerCreate) createSpec() (*UserCareer, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ucc.mutation.CareertasksIDs(); len(nodes) > 0 {
+	if nodes := ucc.mutation.CareerTasksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   usercareer.CareertasksTable,
-			Columns: []string{usercareer.CareertasksColumn},
+			Table:   usercareer.CareerTasksTable,
+			Columns: []string{usercareer.CareerTasksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -376,12 +376,12 @@ func (ucc *UserCareerCreate) createSpec() (*UserCareer, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ucc.mutation.CareerskillgroupsIDs(); len(nodes) > 0 {
+	if nodes := ucc.mutation.CareerSkillGroupsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   usercareer.CareerskillgroupsTable,
-			Columns: []string{usercareer.CareerskillgroupsColumn},
+			Table:   usercareer.CareerSkillGroupsTable,
+			Columns: []string{usercareer.CareerSkillGroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

@@ -12,7 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
+	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/usernote"
+	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
 )
 
 // UserNoteUpdate is the builder for updating UserNote entities.
@@ -34,9 +36,88 @@ func (unu *UserNoteUpdate) SetUpdateTime(t time.Time) *UserNoteUpdate {
 	return unu
 }
 
+// SetLabel sets the "label" field.
+func (unu *UserNoteUpdate) SetLabel(s string) *UserNoteUpdate {
+	unu.mutation.SetLabel(s)
+	return unu
+}
+
+// SetMemo sets the "memo" field.
+func (unu *UserNoteUpdate) SetMemo(s string) *UserNoteUpdate {
+	unu.mutation.SetMemo(s)
+	return unu
+}
+
+// SetNillableMemo sets the "memo" field if the given value is not nil.
+func (unu *UserNoteUpdate) SetNillableMemo(s *string) *UserNoteUpdate {
+	if s != nil {
+		unu.SetMemo(*s)
+	}
+	return unu
+}
+
+// ClearMemo clears the value of the "memo" field.
+func (unu *UserNoteUpdate) ClearMemo() *UserNoteUpdate {
+	unu.mutation.ClearMemo()
+	return unu
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (unu *UserNoteUpdate) SetUserID(id int) *UserNoteUpdate {
+	unu.mutation.SetUserID(id)
+	return unu
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (unu *UserNoteUpdate) SetUser(u *User) *UserNoteUpdate {
+	return unu.SetUserID(u.ID)
+}
+
+// AddNoteItemIDs adds the "noteItems" edge to the UserNoteItem entity by IDs.
+func (unu *UserNoteUpdate) AddNoteItemIDs(ids ...int) *UserNoteUpdate {
+	unu.mutation.AddNoteItemIDs(ids...)
+	return unu
+}
+
+// AddNoteItems adds the "noteItems" edges to the UserNoteItem entity.
+func (unu *UserNoteUpdate) AddNoteItems(u ...*UserNoteItem) *UserNoteUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return unu.AddNoteItemIDs(ids...)
+}
+
 // Mutation returns the UserNoteMutation object of the builder.
 func (unu *UserNoteUpdate) Mutation() *UserNoteMutation {
 	return unu.mutation
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (unu *UserNoteUpdate) ClearUser() *UserNoteUpdate {
+	unu.mutation.ClearUser()
+	return unu
+}
+
+// ClearNoteItems clears all "noteItems" edges to the UserNoteItem entity.
+func (unu *UserNoteUpdate) ClearNoteItems() *UserNoteUpdate {
+	unu.mutation.ClearNoteItems()
+	return unu
+}
+
+// RemoveNoteItemIDs removes the "noteItems" edge to UserNoteItem entities by IDs.
+func (unu *UserNoteUpdate) RemoveNoteItemIDs(ids ...int) *UserNoteUpdate {
+	unu.mutation.RemoveNoteItemIDs(ids...)
+	return unu
+}
+
+// RemoveNoteItems removes "noteItems" edges to UserNoteItem entities.
+func (unu *UserNoteUpdate) RemoveNoteItems(u ...*UserNoteItem) *UserNoteUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return unu.RemoveNoteItemIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -47,12 +128,18 @@ func (unu *UserNoteUpdate) Save(ctx context.Context) (int, error) {
 	)
 	unu.defaults()
 	if len(unu.hooks) == 0 {
+		if err = unu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = unu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*UserNoteMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = unu.check(); err != nil {
+				return 0, err
 			}
 			unu.mutation = mutation
 			affected, err = unu.sqlSave(ctx)
@@ -102,6 +189,24 @@ func (unu *UserNoteUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (unu *UserNoteUpdate) check() error {
+	if v, ok := unu.mutation.Label(); ok {
+		if err := usernote.LabelValidator(v); err != nil {
+			return &ValidationError{Name: "label", err: fmt.Errorf(`ent: validator failed for field "UserNote.label": %w`, err)}
+		}
+	}
+	if v, ok := unu.mutation.Memo(); ok {
+		if err := usernote.MemoValidator(v); err != nil {
+			return &ValidationError{Name: "memo", err: fmt.Errorf(`ent: validator failed for field "UserNote.memo": %w`, err)}
+		}
+	}
+	if _, ok := unu.mutation.UserID(); unu.mutation.UserCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "UserNote.user"`)
+	}
+	return nil
+}
+
 func (unu *UserNoteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -126,6 +231,115 @@ func (unu *UserNoteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Value:  value,
 			Column: usernote.FieldUpdateTime,
 		})
+	}
+	if value, ok := unu.mutation.Label(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usernote.FieldLabel,
+		})
+	}
+	if value, ok := unu.mutation.Memo(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usernote.FieldMemo,
+		})
+	}
+	if unu.mutation.MemoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: usernote.FieldMemo,
+		})
+	}
+	if unu.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usernote.UserTable,
+			Columns: []string{usernote.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := unu.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usernote.UserTable,
+			Columns: []string{usernote.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if unu.mutation.NoteItemsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usernote.NoteItemsTable,
+			Columns: []string{usernote.NoteItemsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usernoteitem.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := unu.mutation.RemovedNoteItemsIDs(); len(nodes) > 0 && !unu.mutation.NoteItemsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usernote.NoteItemsTable,
+			Columns: []string{usernote.NoteItemsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usernoteitem.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := unu.mutation.NoteItemsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usernote.NoteItemsTable,
+			Columns: []string{usernote.NoteItemsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usernoteitem.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, unu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -152,9 +366,88 @@ func (unuo *UserNoteUpdateOne) SetUpdateTime(t time.Time) *UserNoteUpdateOne {
 	return unuo
 }
 
+// SetLabel sets the "label" field.
+func (unuo *UserNoteUpdateOne) SetLabel(s string) *UserNoteUpdateOne {
+	unuo.mutation.SetLabel(s)
+	return unuo
+}
+
+// SetMemo sets the "memo" field.
+func (unuo *UserNoteUpdateOne) SetMemo(s string) *UserNoteUpdateOne {
+	unuo.mutation.SetMemo(s)
+	return unuo
+}
+
+// SetNillableMemo sets the "memo" field if the given value is not nil.
+func (unuo *UserNoteUpdateOne) SetNillableMemo(s *string) *UserNoteUpdateOne {
+	if s != nil {
+		unuo.SetMemo(*s)
+	}
+	return unuo
+}
+
+// ClearMemo clears the value of the "memo" field.
+func (unuo *UserNoteUpdateOne) ClearMemo() *UserNoteUpdateOne {
+	unuo.mutation.ClearMemo()
+	return unuo
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (unuo *UserNoteUpdateOne) SetUserID(id int) *UserNoteUpdateOne {
+	unuo.mutation.SetUserID(id)
+	return unuo
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (unuo *UserNoteUpdateOne) SetUser(u *User) *UserNoteUpdateOne {
+	return unuo.SetUserID(u.ID)
+}
+
+// AddNoteItemIDs adds the "noteItems" edge to the UserNoteItem entity by IDs.
+func (unuo *UserNoteUpdateOne) AddNoteItemIDs(ids ...int) *UserNoteUpdateOne {
+	unuo.mutation.AddNoteItemIDs(ids...)
+	return unuo
+}
+
+// AddNoteItems adds the "noteItems" edges to the UserNoteItem entity.
+func (unuo *UserNoteUpdateOne) AddNoteItems(u ...*UserNoteItem) *UserNoteUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return unuo.AddNoteItemIDs(ids...)
+}
+
 // Mutation returns the UserNoteMutation object of the builder.
 func (unuo *UserNoteUpdateOne) Mutation() *UserNoteMutation {
 	return unuo.mutation
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (unuo *UserNoteUpdateOne) ClearUser() *UserNoteUpdateOne {
+	unuo.mutation.ClearUser()
+	return unuo
+}
+
+// ClearNoteItems clears all "noteItems" edges to the UserNoteItem entity.
+func (unuo *UserNoteUpdateOne) ClearNoteItems() *UserNoteUpdateOne {
+	unuo.mutation.ClearNoteItems()
+	return unuo
+}
+
+// RemoveNoteItemIDs removes the "noteItems" edge to UserNoteItem entities by IDs.
+func (unuo *UserNoteUpdateOne) RemoveNoteItemIDs(ids ...int) *UserNoteUpdateOne {
+	unuo.mutation.RemoveNoteItemIDs(ids...)
+	return unuo
+}
+
+// RemoveNoteItems removes "noteItems" edges to UserNoteItem entities.
+func (unuo *UserNoteUpdateOne) RemoveNoteItems(u ...*UserNoteItem) *UserNoteUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return unuo.RemoveNoteItemIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -172,12 +465,18 @@ func (unuo *UserNoteUpdateOne) Save(ctx context.Context) (*UserNote, error) {
 	)
 	unuo.defaults()
 	if len(unuo.hooks) == 0 {
+		if err = unuo.check(); err != nil {
+			return nil, err
+		}
 		node, err = unuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*UserNoteMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = unuo.check(); err != nil {
+				return nil, err
 			}
 			unuo.mutation = mutation
 			node, err = unuo.sqlSave(ctx)
@@ -233,6 +532,24 @@ func (unuo *UserNoteUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (unuo *UserNoteUpdateOne) check() error {
+	if v, ok := unuo.mutation.Label(); ok {
+		if err := usernote.LabelValidator(v); err != nil {
+			return &ValidationError{Name: "label", err: fmt.Errorf(`ent: validator failed for field "UserNote.label": %w`, err)}
+		}
+	}
+	if v, ok := unuo.mutation.Memo(); ok {
+		if err := usernote.MemoValidator(v); err != nil {
+			return &ValidationError{Name: "memo", err: fmt.Errorf(`ent: validator failed for field "UserNote.memo": %w`, err)}
+		}
+	}
+	if _, ok := unuo.mutation.UserID(); unuo.mutation.UserCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "UserNote.user"`)
+	}
+	return nil
+}
+
 func (unuo *UserNoteUpdateOne) sqlSave(ctx context.Context) (_node *UserNote, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -274,6 +591,115 @@ func (unuo *UserNoteUpdateOne) sqlSave(ctx context.Context) (_node *UserNote, er
 			Value:  value,
 			Column: usernote.FieldUpdateTime,
 		})
+	}
+	if value, ok := unuo.mutation.Label(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usernote.FieldLabel,
+		})
+	}
+	if value, ok := unuo.mutation.Memo(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usernote.FieldMemo,
+		})
+	}
+	if unuo.mutation.MemoCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: usernote.FieldMemo,
+		})
+	}
+	if unuo.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usernote.UserTable,
+			Columns: []string{usernote.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := unuo.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usernote.UserTable,
+			Columns: []string{usernote.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if unuo.mutation.NoteItemsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usernote.NoteItemsTable,
+			Columns: []string{usernote.NoteItemsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usernoteitem.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := unuo.mutation.RemovedNoteItemsIDs(); len(nodes) > 0 && !unuo.mutation.NoteItemsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usernote.NoteItemsTable,
+			Columns: []string{usernote.NoteItemsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usernoteitem.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := unuo.mutation.NoteItemsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usernote.NoteItemsTable,
+			Columns: []string{usernote.NoteItemsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usernoteitem.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &UserNote{config: unuo.config}
 	_spec.Assign = _node.assignValues

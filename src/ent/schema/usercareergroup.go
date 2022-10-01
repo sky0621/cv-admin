@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	userCareerGroupEdgeName = "careergroup"
-	userCareerGroupsRef     = "careergroups"
+	userCareerGroupEdgeName = "careerGroup"
+	userCareerGroupsRef     = "careerGroups"
 )
 
 // UserCareerGroup holds the schema definition for the UserCareerGroup entity.
@@ -34,6 +34,6 @@ func (UserCareerGroup) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From(userEdgeName, User.Type).Ref(userCareerGroupsRef).Unique().Required(),
 
-		edge.To(userCareersRef, UserCareer.Type).StorageKey(edge.Column("careergroup_id")),
+		edge.To(userCareersRef, UserCareer.Type).StorageKey(edge.Column("career_group_id")),
 	}
 }

@@ -6,7 +6,7 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-const careerSkillsRef = "careerskills"
+const careerSkillsRef = "careerSkills"
 
 // CareerSkill holds the schema definition for the CareerSkill entity.
 type CareerSkill struct {

@@ -33,8 +33,8 @@ type CareerSkillGroup struct {
 type CareerSkillGroupEdges struct {
 	// Career holds the value of the career edge.
 	Career *UserCareer `json:"career,omitempty"`
-	// Careerskills holds the value of the careerskills edge.
-	Careerskills []*CareerSkill `json:"careerskills,omitempty"`
+	// CareerSkills holds the value of the careerSkills edge.
+	CareerSkills []*CareerSkill `json:"careerSkills,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -53,13 +53,13 @@ func (e CareerSkillGroupEdges) CareerOrErr() (*UserCareer, error) {
 	return nil, &NotLoadedError{edge: "career"}
 }
 
-// CareerskillsOrErr returns the Careerskills value or an error if the edge
+// CareerSkillsOrErr returns the CareerSkills value or an error if the edge
 // was not loaded in eager-loading.
-func (e CareerSkillGroupEdges) CareerskillsOrErr() ([]*CareerSkill, error) {
+func (e CareerSkillGroupEdges) CareerSkillsOrErr() ([]*CareerSkill, error) {
 	if e.loadedTypes[1] {
-		return e.Careerskills, nil
+		return e.CareerSkills, nil
 	}
-	return nil, &NotLoadedError{edge: "careerskills"}
+	return nil, &NotLoadedError{edge: "careerSkills"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -131,9 +131,9 @@ func (csg *CareerSkillGroup) QueryCareer() *UserCareerQuery {
 	return (&CareerSkillGroupClient{config: csg.config}).QueryCareer(csg)
 }
 
-// QueryCareerskills queries the "careerskills" edge of the CareerSkillGroup entity.
-func (csg *CareerSkillGroup) QueryCareerskills() *CareerSkillQuery {
-	return (&CareerSkillGroupClient{config: csg.config}).QueryCareerskills(csg)
+// QueryCareerSkills queries the "careerSkills" edge of the CareerSkillGroup entity.
+func (csg *CareerSkillGroup) QueryCareerSkills() *CareerSkillQuery {
+	return (&CareerSkillGroupClient{config: csg.config}).QueryCareerSkills(csg)
 }
 
 // Update returns a builder for updating this CareerSkillGroup.

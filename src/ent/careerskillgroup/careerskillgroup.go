@@ -19,8 +19,8 @@ const (
 	FieldLabel = "label"
 	// EdgeCareer holds the string denoting the career edge name in mutations.
 	EdgeCareer = "career"
-	// EdgeCareerskills holds the string denoting the careerskills edge name in mutations.
-	EdgeCareerskills = "careerskills"
+	// EdgeCareerSkills holds the string denoting the careerskills edge name in mutations.
+	EdgeCareerSkills = "careerSkills"
 	// Table holds the table name of the careerskillgroup in the database.
 	Table = "career_skill_groups"
 	// CareerTable is the table that holds the career relation/edge.
@@ -30,13 +30,13 @@ const (
 	CareerInverseTable = "user_careers"
 	// CareerColumn is the table column denoting the career relation/edge.
 	CareerColumn = "career_id"
-	// CareerskillsTable is the table that holds the careerskills relation/edge.
-	CareerskillsTable = "career_skills"
-	// CareerskillsInverseTable is the table name for the CareerSkill entity.
+	// CareerSkillsTable is the table that holds the careerSkills relation/edge.
+	CareerSkillsTable = "career_skills"
+	// CareerSkillsInverseTable is the table name for the CareerSkill entity.
 	// It exists in this package in order to avoid circular dependency with the "careerskill" package.
-	CareerskillsInverseTable = "career_skills"
-	// CareerskillsColumn is the table column denoting the careerskills relation/edge.
-	CareerskillsColumn = "career_skill_group_id"
+	CareerSkillsInverseTable = "career_skills"
+	// CareerSkillsColumn is the table column denoting the careerSkills relation/edge.
+	CareerSkillsColumn = "career_skill_group_id"
 )
 
 // Columns holds all SQL columns for careerskillgroup fields.

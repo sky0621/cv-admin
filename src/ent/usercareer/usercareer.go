@@ -21,44 +21,44 @@ const (
 	FieldFrom = "from"
 	// FieldTo holds the string denoting the to field in the database.
 	FieldTo = "to"
-	// EdgeCareergroup holds the string denoting the careergroup edge name in mutations.
-	EdgeCareergroup = "careergroup"
-	// EdgeCareerdescriptions holds the string denoting the careerdescriptions edge name in mutations.
-	EdgeCareerdescriptions = "careerdescriptions"
-	// EdgeCareertasks holds the string denoting the careertasks edge name in mutations.
-	EdgeCareertasks = "careertasks"
-	// EdgeCareerskillgroups holds the string denoting the careerskillgroups edge name in mutations.
-	EdgeCareerskillgroups = "careerskillgroups"
+	// EdgeCareerGroup holds the string denoting the careergroup edge name in mutations.
+	EdgeCareerGroup = "careerGroup"
+	// EdgeCareerDescriptions holds the string denoting the careerdescriptions edge name in mutations.
+	EdgeCareerDescriptions = "careerDescriptions"
+	// EdgeCareerTasks holds the string denoting the careertasks edge name in mutations.
+	EdgeCareerTasks = "careerTasks"
+	// EdgeCareerSkillGroups holds the string denoting the careerskillgroups edge name in mutations.
+	EdgeCareerSkillGroups = "careerSkillGroups"
 	// Table holds the table name of the usercareer in the database.
 	Table = "user_careers"
-	// CareergroupTable is the table that holds the careergroup relation/edge.
-	CareergroupTable = "user_careers"
-	// CareergroupInverseTable is the table name for the UserCareerGroup entity.
+	// CareerGroupTable is the table that holds the careerGroup relation/edge.
+	CareerGroupTable = "user_careers"
+	// CareerGroupInverseTable is the table name for the UserCareerGroup entity.
 	// It exists in this package in order to avoid circular dependency with the "usercareergroup" package.
-	CareergroupInverseTable = "user_career_groups"
-	// CareergroupColumn is the table column denoting the careergroup relation/edge.
-	CareergroupColumn = "careergroup_id"
-	// CareerdescriptionsTable is the table that holds the careerdescriptions relation/edge.
-	CareerdescriptionsTable = "user_career_descriptions"
-	// CareerdescriptionsInverseTable is the table name for the UserCareerDescription entity.
+	CareerGroupInverseTable = "user_career_groups"
+	// CareerGroupColumn is the table column denoting the careerGroup relation/edge.
+	CareerGroupColumn = "career_group_id"
+	// CareerDescriptionsTable is the table that holds the careerDescriptions relation/edge.
+	CareerDescriptionsTable = "user_career_descriptions"
+	// CareerDescriptionsInverseTable is the table name for the UserCareerDescription entity.
 	// It exists in this package in order to avoid circular dependency with the "usercareerdescription" package.
-	CareerdescriptionsInverseTable = "user_career_descriptions"
-	// CareerdescriptionsColumn is the table column denoting the careerdescriptions relation/edge.
-	CareerdescriptionsColumn = "career_id"
-	// CareertasksTable is the table that holds the careertasks relation/edge.
-	CareertasksTable = "career_tasks"
-	// CareertasksInverseTable is the table name for the CareerTask entity.
+	CareerDescriptionsInverseTable = "user_career_descriptions"
+	// CareerDescriptionsColumn is the table column denoting the careerDescriptions relation/edge.
+	CareerDescriptionsColumn = "career_id"
+	// CareerTasksTable is the table that holds the careerTasks relation/edge.
+	CareerTasksTable = "career_tasks"
+	// CareerTasksInverseTable is the table name for the CareerTask entity.
 	// It exists in this package in order to avoid circular dependency with the "careertask" package.
-	CareertasksInverseTable = "career_tasks"
-	// CareertasksColumn is the table column denoting the careertasks relation/edge.
-	CareertasksColumn = "career_id"
-	// CareerskillgroupsTable is the table that holds the careerskillgroups relation/edge.
-	CareerskillgroupsTable = "career_skill_groups"
-	// CareerskillgroupsInverseTable is the table name for the CareerSkillGroup entity.
+	CareerTasksInverseTable = "career_tasks"
+	// CareerTasksColumn is the table column denoting the careerTasks relation/edge.
+	CareerTasksColumn = "career_id"
+	// CareerSkillGroupsTable is the table that holds the careerSkillGroups relation/edge.
+	CareerSkillGroupsTable = "career_skill_groups"
+	// CareerSkillGroupsInverseTable is the table name for the CareerSkillGroup entity.
 	// It exists in this package in order to avoid circular dependency with the "careerskillgroup" package.
-	CareerskillgroupsInverseTable = "career_skill_groups"
-	// CareerskillgroupsColumn is the table column denoting the careerskillgroups relation/edge.
-	CareerskillgroupsColumn = "career_id"
+	CareerSkillGroupsInverseTable = "career_skill_groups"
+	// CareerSkillGroupsColumn is the table column denoting the careerSkillGroups relation/edge.
+	CareerSkillGroupsColumn = "career_id"
 )
 
 // Columns holds all SQL columns for usercareer fields.
@@ -74,7 +74,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "user_careers"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"careergroup_id",
+	"career_group_id",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

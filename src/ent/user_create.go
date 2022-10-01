@@ -14,6 +14,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
+	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
 )
 
@@ -177,19 +178,34 @@ func (uc *UserCreate) AddQualifications(u ...*UserQualification) *UserCreate {
 	return uc.AddQualificationIDs(ids...)
 }
 
-// AddCareergroupIDs adds the "careergroups" edge to the UserCareerGroup entity by IDs.
-func (uc *UserCreate) AddCareergroupIDs(ids ...int) *UserCreate {
-	uc.mutation.AddCareergroupIDs(ids...)
+// AddCareerGroupIDs adds the "careerGroups" edge to the UserCareerGroup entity by IDs.
+func (uc *UserCreate) AddCareerGroupIDs(ids ...int) *UserCreate {
+	uc.mutation.AddCareerGroupIDs(ids...)
 	return uc
 }
 
-// AddCareergroups adds the "careergroups" edges to the UserCareerGroup entity.
-func (uc *UserCreate) AddCareergroups(u ...*UserCareerGroup) *UserCreate {
+// AddCareerGroups adds the "careerGroups" edges to the UserCareerGroup entity.
+func (uc *UserCreate) AddCareerGroups(u ...*UserCareerGroup) *UserCreate {
 	ids := make([]int, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
-	return uc.AddCareergroupIDs(ids...)
+	return uc.AddCareerGroupIDs(ids...)
+}
+
+// AddNoteIDs adds the "notes" edge to the UserNote entity by IDs.
+func (uc *UserCreate) AddNoteIDs(ids ...int) *UserCreate {
+	uc.mutation.AddNoteIDs(ids...)
+	return uc
+}
+
+// AddNotes adds the "notes" edges to the UserNote entity.
+func (uc *UserCreate) AddNotes(u ...*UserNote) *UserCreate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uc.AddNoteIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -498,17 +514,36 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := uc.mutation.CareergroupsIDs(); len(nodes) > 0 {
+	if nodes := uc.mutation.CareerGroupsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   user.CareergroupsTable,
-			Columns: []string{user.CareergroupsColumn},
+			Table:   user.CareerGroupsTable,
+			Columns: []string{user.CareerGroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: usercareergroup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.NotesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.NotesTable,
+			Columns: []string{user.NotesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usernote.FieldID,
 				},
 			},
 		}

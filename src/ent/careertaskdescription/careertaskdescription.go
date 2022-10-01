@@ -9,17 +9,17 @@ const (
 	FieldID = "id"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// EdgeCareertask holds the string denoting the careertask edge name in mutations.
-	EdgeCareertask = "careertask"
+	// EdgeCareerTask holds the string denoting the careertask edge name in mutations.
+	EdgeCareerTask = "careerTask"
 	// Table holds the table name of the careertaskdescription in the database.
 	Table = "career_task_descriptions"
-	// CareertaskTable is the table that holds the careertask relation/edge.
-	CareertaskTable = "career_task_descriptions"
-	// CareertaskInverseTable is the table name for the CareerTask entity.
+	// CareerTaskTable is the table that holds the careerTask relation/edge.
+	CareerTaskTable = "career_task_descriptions"
+	// CareerTaskInverseTable is the table name for the CareerTask entity.
 	// It exists in this package in order to avoid circular dependency with the "careertask" package.
-	CareertaskInverseTable = "career_tasks"
-	// CareertaskColumn is the table column denoting the careertask relation/edge.
-	CareertaskColumn = "careertask_id"
+	CareerTaskInverseTable = "career_tasks"
+	// CareerTaskColumn is the table column denoting the careerTask relation/edge.
+	CareerTaskColumn = "career_task_id"
 )
 
 // Columns holds all SQL columns for careertaskdescription fields.
@@ -31,7 +31,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "career_task_descriptions"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
-	"careertask_id",
+	"career_task_id",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

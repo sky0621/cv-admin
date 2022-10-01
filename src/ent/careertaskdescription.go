@@ -20,30 +20,30 @@ type CareerTaskDescription struct {
 	Description string `json:"description,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CareerTaskDescriptionQuery when eager-loading is set.
-	Edges         CareerTaskDescriptionEdges `json:"edges"`
-	careertask_id *int
+	Edges          CareerTaskDescriptionEdges `json:"edges"`
+	career_task_id *int
 }
 
 // CareerTaskDescriptionEdges holds the relations/edges for other nodes in the graph.
 type CareerTaskDescriptionEdges struct {
-	// Careertask holds the value of the careertask edge.
-	Careertask *CareerTask `json:"careertask,omitempty"`
+	// CareerTask holds the value of the careerTask edge.
+	CareerTask *CareerTask `json:"careerTask,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// CareertaskOrErr returns the Careertask value or an error if the edge
+// CareerTaskOrErr returns the CareerTask value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e CareerTaskDescriptionEdges) CareertaskOrErr() (*CareerTask, error) {
+func (e CareerTaskDescriptionEdges) CareerTaskOrErr() (*CareerTask, error) {
 	if e.loadedTypes[0] {
-		if e.Careertask == nil {
+		if e.CareerTask == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: careertask.Label}
 		}
-		return e.Careertask, nil
+		return e.CareerTask, nil
 	}
-	return nil, &NotLoadedError{edge: "careertask"}
+	return nil, &NotLoadedError{edge: "careerTask"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -55,7 +55,7 @@ func (*CareerTaskDescription) scanValues(columns []string) ([]interface{}, error
 			values[i] = new(sql.NullInt64)
 		case careertaskdescription.FieldDescription:
 			values[i] = new(sql.NullString)
-		case careertaskdescription.ForeignKeys[0]: // careertask_id
+		case careertaskdescription.ForeignKeys[0]: // career_task_id
 			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type CareerTaskDescription", columns[i])
@@ -86,19 +86,19 @@ func (ctd *CareerTaskDescription) assignValues(columns []string, values []interf
 			}
 		case careertaskdescription.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field careertask_id", value)
+				return fmt.Errorf("unexpected type %T for edge-field career_task_id", value)
 			} else if value.Valid {
-				ctd.careertask_id = new(int)
-				*ctd.careertask_id = int(value.Int64)
+				ctd.career_task_id = new(int)
+				*ctd.career_task_id = int(value.Int64)
 			}
 		}
 	}
 	return nil
 }
 
-// QueryCareertask queries the "careertask" edge of the CareerTaskDescription entity.
-func (ctd *CareerTaskDescription) QueryCareertask() *CareerTaskQuery {
-	return (&CareerTaskDescriptionClient{config: ctd.config}).QueryCareertask(ctd)
+// QueryCareerTask queries the "careerTask" edge of the CareerTaskDescription entity.
+func (ctd *CareerTaskDescription) QueryCareerTask() *CareerTaskQuery {
+	return (&CareerTaskDescriptionClient{config: ctd.config}).QueryCareerTask(ctd)
 }
 
 // Update returns a builder for updating this CareerTaskDescription.

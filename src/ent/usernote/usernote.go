@@ -15,8 +15,30 @@ const (
 	FieldCreateTime = "create_time"
 	// FieldUpdateTime holds the string denoting the update_time field in the database.
 	FieldUpdateTime = "update_time"
+	// FieldLabel holds the string denoting the label field in the database.
+	FieldLabel = "label"
+	// FieldMemo holds the string denoting the memo field in the database.
+	FieldMemo = "memo"
+	// EdgeUser holds the string denoting the user edge name in mutations.
+	EdgeUser = "user"
+	// EdgeNoteItems holds the string denoting the noteitems edge name in mutations.
+	EdgeNoteItems = "noteItems"
 	// Table holds the table name of the usernote in the database.
 	Table = "user_notes"
+	// UserTable is the table that holds the user relation/edge.
+	UserTable = "user_notes"
+	// UserInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UserInverseTable = "users"
+	// UserColumn is the table column denoting the user relation/edge.
+	UserColumn = "user_id"
+	// NoteItemsTable is the table that holds the noteItems relation/edge.
+	NoteItemsTable = "user_note_items"
+	// NoteItemsInverseTable is the table name for the UserNoteItem entity.
+	// It exists in this package in order to avoid circular dependency with the "usernoteitem" package.
+	NoteItemsInverseTable = "user_note_items"
+	// NoteItemsColumn is the table column denoting the noteItems relation/edge.
+	NoteItemsColumn = "user_note_id"
 )
 
 // Columns holds all SQL columns for usernote fields.
@@ -24,12 +46,25 @@ var Columns = []string{
 	FieldID,
 	FieldCreateTime,
 	FieldUpdateTime,
+	FieldLabel,
+	FieldMemo,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "user_notes"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"user_id",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -43,4 +78,8 @@ var (
 	DefaultUpdateTime func() time.Time
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
+	// LabelValidator is a validator for the "label" field. It is called by the builders before save.
+	LabelValidator func(string) error
+	// MemoValidator is a validator for the "memo" field. It is called by the builders before save.
+	MemoValidator func(string) error
 )

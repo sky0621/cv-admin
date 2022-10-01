@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	careerTaskEdgeName = "careertask"
-	careerTasksRef     = "careertasks"
+	careerTaskEdgeName = "careerTask"
+	careerTasksRef     = "careerTasks"
 )
 
 // CareerTask holds the schema definition for the CareerTask entity.
@@ -34,6 +34,6 @@ func (CareerTask) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From(userCareerEdgeName, UserCareer.Type).Ref(careerTasksRef).Unique().Required(),
 
-		edge.To(careerTaskDescriptionsRef, CareerTaskDescription.Type).StorageKey(edge.Column("careertask_id")),
+		edge.To(careerTaskDescriptionsRef, CareerTaskDescription.Type).StorageKey(edge.Column("career_task_id")),
 	}
 }

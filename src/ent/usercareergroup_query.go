@@ -483,13 +483,13 @@ func (ucgq *UserCareerGroupQuery) loadCareers(ctx context.Context, query *UserCa
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.careergroup_id
+		fk := n.career_group_id
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "careergroup_id" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "career_group_id" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "careergroup_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "career_group_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

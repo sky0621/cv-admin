@@ -53,19 +53,19 @@ func (csgu *CareerSkillGroupUpdate) SetCareer(u *UserCareer) *CareerSkillGroupUp
 	return csgu.SetCareerID(u.ID)
 }
 
-// AddCareerskillIDs adds the "careerskills" edge to the CareerSkill entity by IDs.
-func (csgu *CareerSkillGroupUpdate) AddCareerskillIDs(ids ...int) *CareerSkillGroupUpdate {
-	csgu.mutation.AddCareerskillIDs(ids...)
+// AddCareerSkillIDs adds the "careerSkills" edge to the CareerSkill entity by IDs.
+func (csgu *CareerSkillGroupUpdate) AddCareerSkillIDs(ids ...int) *CareerSkillGroupUpdate {
+	csgu.mutation.AddCareerSkillIDs(ids...)
 	return csgu
 }
 
-// AddCareerskills adds the "careerskills" edges to the CareerSkill entity.
-func (csgu *CareerSkillGroupUpdate) AddCareerskills(c ...*CareerSkill) *CareerSkillGroupUpdate {
+// AddCareerSkills adds the "careerSkills" edges to the CareerSkill entity.
+func (csgu *CareerSkillGroupUpdate) AddCareerSkills(c ...*CareerSkill) *CareerSkillGroupUpdate {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
-	return csgu.AddCareerskillIDs(ids...)
+	return csgu.AddCareerSkillIDs(ids...)
 }
 
 // Mutation returns the CareerSkillGroupMutation object of the builder.
@@ -79,25 +79,25 @@ func (csgu *CareerSkillGroupUpdate) ClearCareer() *CareerSkillGroupUpdate {
 	return csgu
 }
 
-// ClearCareerskills clears all "careerskills" edges to the CareerSkill entity.
-func (csgu *CareerSkillGroupUpdate) ClearCareerskills() *CareerSkillGroupUpdate {
-	csgu.mutation.ClearCareerskills()
+// ClearCareerSkills clears all "careerSkills" edges to the CareerSkill entity.
+func (csgu *CareerSkillGroupUpdate) ClearCareerSkills() *CareerSkillGroupUpdate {
+	csgu.mutation.ClearCareerSkills()
 	return csgu
 }
 
-// RemoveCareerskillIDs removes the "careerskills" edge to CareerSkill entities by IDs.
-func (csgu *CareerSkillGroupUpdate) RemoveCareerskillIDs(ids ...int) *CareerSkillGroupUpdate {
-	csgu.mutation.RemoveCareerskillIDs(ids...)
+// RemoveCareerSkillIDs removes the "careerSkills" edge to CareerSkill entities by IDs.
+func (csgu *CareerSkillGroupUpdate) RemoveCareerSkillIDs(ids ...int) *CareerSkillGroupUpdate {
+	csgu.mutation.RemoveCareerSkillIDs(ids...)
 	return csgu
 }
 
-// RemoveCareerskills removes "careerskills" edges to CareerSkill entities.
-func (csgu *CareerSkillGroupUpdate) RemoveCareerskills(c ...*CareerSkill) *CareerSkillGroupUpdate {
+// RemoveCareerSkills removes "careerSkills" edges to CareerSkill entities.
+func (csgu *CareerSkillGroupUpdate) RemoveCareerSkills(c ...*CareerSkill) *CareerSkillGroupUpdate {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
-	return csgu.RemoveCareerskillIDs(ids...)
+	return csgu.RemoveCareerSkillIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -249,12 +249,12 @@ func (csgu *CareerSkillGroupUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if csgu.mutation.CareerskillsCleared() {
+	if csgu.mutation.CareerSkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   careerskillgroup.CareerskillsTable,
-			Columns: []string{careerskillgroup.CareerskillsColumn},
+			Table:   careerskillgroup.CareerSkillsTable,
+			Columns: []string{careerskillgroup.CareerSkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -265,12 +265,12 @@ func (csgu *CareerSkillGroupUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := csgu.mutation.RemovedCareerskillsIDs(); len(nodes) > 0 && !csgu.mutation.CareerskillsCleared() {
+	if nodes := csgu.mutation.RemovedCareerSkillsIDs(); len(nodes) > 0 && !csgu.mutation.CareerSkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   careerskillgroup.CareerskillsTable,
-			Columns: []string{careerskillgroup.CareerskillsColumn},
+			Table:   careerskillgroup.CareerSkillsTable,
+			Columns: []string{careerskillgroup.CareerSkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -284,12 +284,12 @@ func (csgu *CareerSkillGroupUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := csgu.mutation.CareerskillsIDs(); len(nodes) > 0 {
+	if nodes := csgu.mutation.CareerSkillsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   careerskillgroup.CareerskillsTable,
-			Columns: []string{careerskillgroup.CareerskillsColumn},
+			Table:   careerskillgroup.CareerSkillsTable,
+			Columns: []string{careerskillgroup.CareerSkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -345,19 +345,19 @@ func (csguo *CareerSkillGroupUpdateOne) SetCareer(u *UserCareer) *CareerSkillGro
 	return csguo.SetCareerID(u.ID)
 }
 
-// AddCareerskillIDs adds the "careerskills" edge to the CareerSkill entity by IDs.
-func (csguo *CareerSkillGroupUpdateOne) AddCareerskillIDs(ids ...int) *CareerSkillGroupUpdateOne {
-	csguo.mutation.AddCareerskillIDs(ids...)
+// AddCareerSkillIDs adds the "careerSkills" edge to the CareerSkill entity by IDs.
+func (csguo *CareerSkillGroupUpdateOne) AddCareerSkillIDs(ids ...int) *CareerSkillGroupUpdateOne {
+	csguo.mutation.AddCareerSkillIDs(ids...)
 	return csguo
 }
 
-// AddCareerskills adds the "careerskills" edges to the CareerSkill entity.
-func (csguo *CareerSkillGroupUpdateOne) AddCareerskills(c ...*CareerSkill) *CareerSkillGroupUpdateOne {
+// AddCareerSkills adds the "careerSkills" edges to the CareerSkill entity.
+func (csguo *CareerSkillGroupUpdateOne) AddCareerSkills(c ...*CareerSkill) *CareerSkillGroupUpdateOne {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
-	return csguo.AddCareerskillIDs(ids...)
+	return csguo.AddCareerSkillIDs(ids...)
 }
 
 // Mutation returns the CareerSkillGroupMutation object of the builder.
@@ -371,25 +371,25 @@ func (csguo *CareerSkillGroupUpdateOne) ClearCareer() *CareerSkillGroupUpdateOne
 	return csguo
 }
 
-// ClearCareerskills clears all "careerskills" edges to the CareerSkill entity.
-func (csguo *CareerSkillGroupUpdateOne) ClearCareerskills() *CareerSkillGroupUpdateOne {
-	csguo.mutation.ClearCareerskills()
+// ClearCareerSkills clears all "careerSkills" edges to the CareerSkill entity.
+func (csguo *CareerSkillGroupUpdateOne) ClearCareerSkills() *CareerSkillGroupUpdateOne {
+	csguo.mutation.ClearCareerSkills()
 	return csguo
 }
 
-// RemoveCareerskillIDs removes the "careerskills" edge to CareerSkill entities by IDs.
-func (csguo *CareerSkillGroupUpdateOne) RemoveCareerskillIDs(ids ...int) *CareerSkillGroupUpdateOne {
-	csguo.mutation.RemoveCareerskillIDs(ids...)
+// RemoveCareerSkillIDs removes the "careerSkills" edge to CareerSkill entities by IDs.
+func (csguo *CareerSkillGroupUpdateOne) RemoveCareerSkillIDs(ids ...int) *CareerSkillGroupUpdateOne {
+	csguo.mutation.RemoveCareerSkillIDs(ids...)
 	return csguo
 }
 
-// RemoveCareerskills removes "careerskills" edges to CareerSkill entities.
-func (csguo *CareerSkillGroupUpdateOne) RemoveCareerskills(c ...*CareerSkill) *CareerSkillGroupUpdateOne {
+// RemoveCareerSkills removes "careerSkills" edges to CareerSkill entities.
+func (csguo *CareerSkillGroupUpdateOne) RemoveCareerSkills(c ...*CareerSkill) *CareerSkillGroupUpdateOne {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
-	return csguo.RemoveCareerskillIDs(ids...)
+	return csguo.RemoveCareerSkillIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -571,12 +571,12 @@ func (csguo *CareerSkillGroupUpdateOne) sqlSave(ctx context.Context) (_node *Car
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if csguo.mutation.CareerskillsCleared() {
+	if csguo.mutation.CareerSkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   careerskillgroup.CareerskillsTable,
-			Columns: []string{careerskillgroup.CareerskillsColumn},
+			Table:   careerskillgroup.CareerSkillsTable,
+			Columns: []string{careerskillgroup.CareerSkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -587,12 +587,12 @@ func (csguo *CareerSkillGroupUpdateOne) sqlSave(ctx context.Context) (_node *Car
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := csguo.mutation.RemovedCareerskillsIDs(); len(nodes) > 0 && !csguo.mutation.CareerskillsCleared() {
+	if nodes := csguo.mutation.RemovedCareerSkillsIDs(); len(nodes) > 0 && !csguo.mutation.CareerSkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   careerskillgroup.CareerskillsTable,
-			Columns: []string{careerskillgroup.CareerskillsColumn},
+			Table:   careerskillgroup.CareerSkillsTable,
+			Columns: []string{careerskillgroup.CareerSkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -606,12 +606,12 @@ func (csguo *CareerSkillGroupUpdateOne) sqlSave(ctx context.Context) (_node *Car
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := csguo.mutation.CareerskillsIDs(); len(nodes) > 0 {
+	if nodes := csguo.mutation.CareerSkillsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   careerskillgroup.CareerskillsTable,
-			Columns: []string{careerskillgroup.CareerskillsColumn},
+			Table:   careerskillgroup.CareerSkillsTable,
+			Columns: []string{careerskillgroup.CareerSkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

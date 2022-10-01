@@ -27,7 +27,7 @@ type CareerSkillGroupQuery struct {
 	fields           []string
 	predicates       []predicate.CareerSkillGroup
 	withCareer       *UserCareerQuery
-	withCareerskills *CareerSkillQuery
+	withCareerSkills *CareerSkillQuery
 	withFKs          bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -87,8 +87,8 @@ func (csgq *CareerSkillGroupQuery) QueryCareer() *UserCareerQuery {
 	return query
 }
 
-// QueryCareerskills chains the current query on the "careerskills" edge.
-func (csgq *CareerSkillGroupQuery) QueryCareerskills() *CareerSkillQuery {
+// QueryCareerSkills chains the current query on the "careerSkills" edge.
+func (csgq *CareerSkillGroupQuery) QueryCareerSkills() *CareerSkillQuery {
 	query := &CareerSkillQuery{config: csgq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := csgq.prepareQuery(ctx); err != nil {
@@ -101,7 +101,7 @@ func (csgq *CareerSkillGroupQuery) QueryCareerskills() *CareerSkillQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(careerskillgroup.Table, careerskillgroup.FieldID, selector),
 			sqlgraph.To(careerskill.Table, careerskill.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, careerskillgroup.CareerskillsTable, careerskillgroup.CareerskillsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, careerskillgroup.CareerSkillsTable, careerskillgroup.CareerSkillsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(csgq.driver.Dialect(), step)
 		return fromU, nil
@@ -291,7 +291,7 @@ func (csgq *CareerSkillGroupQuery) Clone() *CareerSkillGroupQuery {
 		order:            append([]OrderFunc{}, csgq.order...),
 		predicates:       append([]predicate.CareerSkillGroup{}, csgq.predicates...),
 		withCareer:       csgq.withCareer.Clone(),
-		withCareerskills: csgq.withCareerskills.Clone(),
+		withCareerSkills: csgq.withCareerSkills.Clone(),
 		// clone intermediate query.
 		sql:    csgq.sql.Clone(),
 		path:   csgq.path,
@@ -310,14 +310,14 @@ func (csgq *CareerSkillGroupQuery) WithCareer(opts ...func(*UserCareerQuery)) *C
 	return csgq
 }
 
-// WithCareerskills tells the query-builder to eager-load the nodes that are connected to
-// the "careerskills" edge. The optional arguments are used to configure the query builder of the edge.
-func (csgq *CareerSkillGroupQuery) WithCareerskills(opts ...func(*CareerSkillQuery)) *CareerSkillGroupQuery {
+// WithCareerSkills tells the query-builder to eager-load the nodes that are connected to
+// the "careerSkills" edge. The optional arguments are used to configure the query builder of the edge.
+func (csgq *CareerSkillGroupQuery) WithCareerSkills(opts ...func(*CareerSkillQuery)) *CareerSkillGroupQuery {
 	query := &CareerSkillQuery{config: csgq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	csgq.withCareerskills = query
+	csgq.withCareerSkills = query
 	return csgq
 }
 
@@ -392,7 +392,7 @@ func (csgq *CareerSkillGroupQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 		_spec       = csgq.querySpec()
 		loadedTypes = [2]bool{
 			csgq.withCareer != nil,
-			csgq.withCareerskills != nil,
+			csgq.withCareerSkills != nil,
 		}
 	)
 	if csgq.withCareer != nil {
@@ -425,10 +425,10 @@ func (csgq *CareerSkillGroupQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 			return nil, err
 		}
 	}
-	if query := csgq.withCareerskills; query != nil {
-		if err := csgq.loadCareerskills(ctx, query, nodes,
-			func(n *CareerSkillGroup) { n.Edges.Careerskills = []*CareerSkill{} },
-			func(n *CareerSkillGroup, e *CareerSkill) { n.Edges.Careerskills = append(n.Edges.Careerskills, e) }); err != nil {
+	if query := csgq.withCareerSkills; query != nil {
+		if err := csgq.loadCareerSkills(ctx, query, nodes,
+			func(n *CareerSkillGroup) { n.Edges.CareerSkills = []*CareerSkill{} },
+			func(n *CareerSkillGroup, e *CareerSkill) { n.Edges.CareerSkills = append(n.Edges.CareerSkills, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -464,7 +464,7 @@ func (csgq *CareerSkillGroupQuery) loadCareer(ctx context.Context, query *UserCa
 	}
 	return nil
 }
-func (csgq *CareerSkillGroupQuery) loadCareerskills(ctx context.Context, query *CareerSkillQuery, nodes []*CareerSkillGroup, init func(*CareerSkillGroup), assign func(*CareerSkillGroup, *CareerSkill)) error {
+func (csgq *CareerSkillGroupQuery) loadCareerSkills(ctx context.Context, query *CareerSkillQuery, nodes []*CareerSkillGroup, init func(*CareerSkillGroup), assign func(*CareerSkillGroup, *CareerSkill)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*CareerSkillGroup)
 	for i := range nodes {
@@ -476,7 +476,7 @@ func (csgq *CareerSkillGroupQuery) loadCareerskills(ctx context.Context, query *
 	}
 	query.withFKs = true
 	query.Where(predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.InValues(careerskillgroup.CareerskillsColumn, fks...))
+		s.Where(sql.InValues(careerskillgroup.CareerSkillsColumn, fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

@@ -185,25 +185,25 @@ func DescriptionContainsFold(v string) predicate.CareerTaskDescription {
 	})
 }
 
-// HasCareertask applies the HasEdge predicate on the "careertask" edge.
-func HasCareertask() predicate.CareerTaskDescription {
+// HasCareerTask applies the HasEdge predicate on the "careerTask" edge.
+func HasCareerTask() predicate.CareerTaskDescription {
 	return predicate.CareerTaskDescription(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareertaskTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CareertaskTable, CareertaskColumn),
+			sqlgraph.To(CareerTaskTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CareerTaskTable, CareerTaskColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasCareertaskWith applies the HasEdge predicate on the "careertask" edge with a given conditions (other predicates).
-func HasCareertaskWith(preds ...predicate.CareerTask) predicate.CareerTaskDescription {
+// HasCareerTaskWith applies the HasEdge predicate on the "careerTask" edge with a given conditions (other predicates).
+func HasCareerTaskWith(preds ...predicate.CareerTask) predicate.CareerTaskDescription {
 	return predicate.CareerTaskDescription(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareertaskInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CareertaskTable, CareertaskColumn),
+			sqlgraph.To(CareerTaskInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CareerTaskTable, CareerTaskColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

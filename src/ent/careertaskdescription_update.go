@@ -34,15 +34,15 @@ func (ctdu *CareerTaskDescriptionUpdate) SetDescription(s string) *CareerTaskDes
 	return ctdu
 }
 
-// SetCareertaskID sets the "careertask" edge to the CareerTask entity by ID.
-func (ctdu *CareerTaskDescriptionUpdate) SetCareertaskID(id int) *CareerTaskDescriptionUpdate {
-	ctdu.mutation.SetCareertaskID(id)
+// SetCareerTaskID sets the "careerTask" edge to the CareerTask entity by ID.
+func (ctdu *CareerTaskDescriptionUpdate) SetCareerTaskID(id int) *CareerTaskDescriptionUpdate {
+	ctdu.mutation.SetCareerTaskID(id)
 	return ctdu
 }
 
-// SetCareertask sets the "careertask" edge to the CareerTask entity.
-func (ctdu *CareerTaskDescriptionUpdate) SetCareertask(c *CareerTask) *CareerTaskDescriptionUpdate {
-	return ctdu.SetCareertaskID(c.ID)
+// SetCareerTask sets the "careerTask" edge to the CareerTask entity.
+func (ctdu *CareerTaskDescriptionUpdate) SetCareerTask(c *CareerTask) *CareerTaskDescriptionUpdate {
+	return ctdu.SetCareerTaskID(c.ID)
 }
 
 // Mutation returns the CareerTaskDescriptionMutation object of the builder.
@@ -50,9 +50,9 @@ func (ctdu *CareerTaskDescriptionUpdate) Mutation() *CareerTaskDescriptionMutati
 	return ctdu.mutation
 }
 
-// ClearCareertask clears the "careertask" edge to the CareerTask entity.
-func (ctdu *CareerTaskDescriptionUpdate) ClearCareertask() *CareerTaskDescriptionUpdate {
-	ctdu.mutation.ClearCareertask()
+// ClearCareerTask clears the "careerTask" edge to the CareerTask entity.
+func (ctdu *CareerTaskDescriptionUpdate) ClearCareerTask() *CareerTaskDescriptionUpdate {
+	ctdu.mutation.ClearCareerTask()
 	return ctdu
 }
 
@@ -123,8 +123,8 @@ func (ctdu *CareerTaskDescriptionUpdate) check() error {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "CareerTaskDescription.description": %w`, err)}
 		}
 	}
-	if _, ok := ctdu.mutation.CareertaskID(); ctdu.mutation.CareertaskCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "CareerTaskDescription.careertask"`)
+	if _, ok := ctdu.mutation.CareerTaskID(); ctdu.mutation.CareerTaskCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "CareerTaskDescription.careerTask"`)
 	}
 	return nil
 }
@@ -154,12 +154,12 @@ func (ctdu *CareerTaskDescriptionUpdate) sqlSave(ctx context.Context) (n int, er
 			Column: careertaskdescription.FieldDescription,
 		})
 	}
-	if ctdu.mutation.CareertaskCleared() {
+	if ctdu.mutation.CareerTaskCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   careertaskdescription.CareertaskTable,
-			Columns: []string{careertaskdescription.CareertaskColumn},
+			Table:   careertaskdescription.CareerTaskTable,
+			Columns: []string{careertaskdescription.CareerTaskColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -170,12 +170,12 @@ func (ctdu *CareerTaskDescriptionUpdate) sqlSave(ctx context.Context) (n int, er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ctdu.mutation.CareertaskIDs(); len(nodes) > 0 {
+	if nodes := ctdu.mutation.CareerTaskIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   careertaskdescription.CareertaskTable,
-			Columns: []string{careertaskdescription.CareertaskColumn},
+			Table:   careertaskdescription.CareerTaskTable,
+			Columns: []string{careertaskdescription.CareerTaskColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -214,15 +214,15 @@ func (ctduo *CareerTaskDescriptionUpdateOne) SetDescription(s string) *CareerTas
 	return ctduo
 }
 
-// SetCareertaskID sets the "careertask" edge to the CareerTask entity by ID.
-func (ctduo *CareerTaskDescriptionUpdateOne) SetCareertaskID(id int) *CareerTaskDescriptionUpdateOne {
-	ctduo.mutation.SetCareertaskID(id)
+// SetCareerTaskID sets the "careerTask" edge to the CareerTask entity by ID.
+func (ctduo *CareerTaskDescriptionUpdateOne) SetCareerTaskID(id int) *CareerTaskDescriptionUpdateOne {
+	ctduo.mutation.SetCareerTaskID(id)
 	return ctduo
 }
 
-// SetCareertask sets the "careertask" edge to the CareerTask entity.
-func (ctduo *CareerTaskDescriptionUpdateOne) SetCareertask(c *CareerTask) *CareerTaskDescriptionUpdateOne {
-	return ctduo.SetCareertaskID(c.ID)
+// SetCareerTask sets the "careerTask" edge to the CareerTask entity.
+func (ctduo *CareerTaskDescriptionUpdateOne) SetCareerTask(c *CareerTask) *CareerTaskDescriptionUpdateOne {
+	return ctduo.SetCareerTaskID(c.ID)
 }
 
 // Mutation returns the CareerTaskDescriptionMutation object of the builder.
@@ -230,9 +230,9 @@ func (ctduo *CareerTaskDescriptionUpdateOne) Mutation() *CareerTaskDescriptionMu
 	return ctduo.mutation
 }
 
-// ClearCareertask clears the "careertask" edge to the CareerTask entity.
-func (ctduo *CareerTaskDescriptionUpdateOne) ClearCareertask() *CareerTaskDescriptionUpdateOne {
-	ctduo.mutation.ClearCareertask()
+// ClearCareerTask clears the "careerTask" edge to the CareerTask entity.
+func (ctduo *CareerTaskDescriptionUpdateOne) ClearCareerTask() *CareerTaskDescriptionUpdateOne {
+	ctduo.mutation.ClearCareerTask()
 	return ctduo
 }
 
@@ -316,8 +316,8 @@ func (ctduo *CareerTaskDescriptionUpdateOne) check() error {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "CareerTaskDescription.description": %w`, err)}
 		}
 	}
-	if _, ok := ctduo.mutation.CareertaskID(); ctduo.mutation.CareertaskCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "CareerTaskDescription.careertask"`)
+	if _, ok := ctduo.mutation.CareerTaskID(); ctduo.mutation.CareerTaskCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "CareerTaskDescription.careerTask"`)
 	}
 	return nil
 }
@@ -364,12 +364,12 @@ func (ctduo *CareerTaskDescriptionUpdateOne) sqlSave(ctx context.Context) (_node
 			Column: careertaskdescription.FieldDescription,
 		})
 	}
-	if ctduo.mutation.CareertaskCleared() {
+	if ctduo.mutation.CareerTaskCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   careertaskdescription.CareertaskTable,
-			Columns: []string{careertaskdescription.CareertaskColumn},
+			Table:   careertaskdescription.CareerTaskTable,
+			Columns: []string{careertaskdescription.CareerTaskColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -380,12 +380,12 @@ func (ctduo *CareerTaskDescriptionUpdateOne) sqlSave(ctx context.Context) (_node
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := ctduo.mutation.CareertaskIDs(); len(nodes) > 0 {
+	if nodes := ctduo.mutation.CareerTaskIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   careertaskdescription.CareertaskTable,
-			Columns: []string{careertaskdescription.CareertaskColumn},
+			Table:   careertaskdescription.CareerTaskTable,
+			Columns: []string{careertaskdescription.CareerTaskColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

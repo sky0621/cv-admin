@@ -33,8 +33,8 @@ type CareerTask struct {
 type CareerTaskEdges struct {
 	// Career holds the value of the career edge.
 	Career *UserCareer `json:"career,omitempty"`
-	// Careertaskdescriptions holds the value of the careertaskdescriptions edge.
-	Careertaskdescriptions []*CareerTaskDescription `json:"careertaskdescriptions,omitempty"`
+	// CareerTaskDescriptions holds the value of the careerTaskDescriptions edge.
+	CareerTaskDescriptions []*CareerTaskDescription `json:"careerTaskDescriptions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -53,13 +53,13 @@ func (e CareerTaskEdges) CareerOrErr() (*UserCareer, error) {
 	return nil, &NotLoadedError{edge: "career"}
 }
 
-// CareertaskdescriptionsOrErr returns the Careertaskdescriptions value or an error if the edge
+// CareerTaskDescriptionsOrErr returns the CareerTaskDescriptions value or an error if the edge
 // was not loaded in eager-loading.
-func (e CareerTaskEdges) CareertaskdescriptionsOrErr() ([]*CareerTaskDescription, error) {
+func (e CareerTaskEdges) CareerTaskDescriptionsOrErr() ([]*CareerTaskDescription, error) {
 	if e.loadedTypes[1] {
-		return e.Careertaskdescriptions, nil
+		return e.CareerTaskDescriptions, nil
 	}
-	return nil, &NotLoadedError{edge: "careertaskdescriptions"}
+	return nil, &NotLoadedError{edge: "careerTaskDescriptions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -131,9 +131,9 @@ func (ct *CareerTask) QueryCareer() *UserCareerQuery {
 	return (&CareerTaskClient{config: ct.config}).QueryCareer(ct)
 }
 
-// QueryCareertaskdescriptions queries the "careertaskdescriptions" edge of the CareerTask entity.
-func (ct *CareerTask) QueryCareertaskdescriptions() *CareerTaskDescriptionQuery {
-	return (&CareerTaskClient{config: ct.config}).QueryCareertaskdescriptions(ct)
+// QueryCareerTaskDescriptions queries the "careerTaskDescriptions" edge of the CareerTask entity.
+func (ct *CareerTask) QueryCareerTaskDescriptions() *CareerTaskDescriptionQuery {
+	return (&CareerTaskClient{config: ct.config}).QueryCareerTaskDescriptions(ct)
 }
 
 // Update returns a builder for updating this CareerTask.

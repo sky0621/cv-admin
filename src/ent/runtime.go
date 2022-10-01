@@ -394,6 +394,28 @@ func init() {
 	usernote.DefaultUpdateTime = usernoteDescUpdateTime.Default.(func() time.Time)
 	// usernote.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	usernote.UpdateDefaultUpdateTime = usernoteDescUpdateTime.UpdateDefault.(func() time.Time)
+	// usernoteDescLabel is the schema descriptor for label field.
+	usernoteDescLabel := usernoteFields[0].Descriptor()
+	// usernote.LabelValidator is a validator for the "label" field. It is called by the builders before save.
+	usernote.LabelValidator = func() func(string) error {
+		validators := usernoteDescLabel.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(label string) error {
+			for _, fn := range fns {
+				if err := fn(label); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// usernoteDescMemo is the schema descriptor for memo field.
+	usernoteDescMemo := usernoteFields[1].Descriptor()
+	// usernote.MemoValidator is a validator for the "memo" field. It is called by the builders before save.
+	usernote.MemoValidator = usernoteDescMemo.Validators[0].(func(string) error)
 	usernoteitemMixin := schema.UserNoteItem{}.Mixin()
 	usernoteitemMixinFields0 := usernoteitemMixin[0].Fields()
 	_ = usernoteitemMixinFields0
@@ -409,6 +431,24 @@ func init() {
 	usernoteitem.DefaultUpdateTime = usernoteitemDescUpdateTime.Default.(func() time.Time)
 	// usernoteitem.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	usernoteitem.UpdateDefaultUpdateTime = usernoteitemDescUpdateTime.UpdateDefault.(func() time.Time)
+	// usernoteitemDescText is the schema descriptor for text field.
+	usernoteitemDescText := usernoteitemFields[0].Descriptor()
+	// usernoteitem.TextValidator is a validator for the "text" field. It is called by the builders before save.
+	usernoteitem.TextValidator = func() func(string) error {
+		validators := usernoteitemDescText.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(text string) error {
+			for _, fn := range fns {
+				if err := fn(text); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	userqualificationMixin := schema.UserQualification{}.Mixin()
 	userqualificationMixinFields0 := userqualificationMixin[0].Fields()
 	_ = userqualificationMixinFields0

@@ -37,8 +37,10 @@ const (
 	EdgeActivities = "activities"
 	// EdgeQualifications holds the string denoting the qualifications edge name in mutations.
 	EdgeQualifications = "qualifications"
-	// EdgeCareergroups holds the string denoting the careergroups edge name in mutations.
-	EdgeCareergroups = "careergroups"
+	// EdgeCareerGroups holds the string denoting the careergroups edge name in mutations.
+	EdgeCareerGroups = "careerGroups"
+	// EdgeNotes holds the string denoting the notes edge name in mutations.
+	EdgeNotes = "notes"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// ActivitiesTable is the table that holds the activities relation/edge.
@@ -55,13 +57,20 @@ const (
 	QualificationsInverseTable = "user_qualifications"
 	// QualificationsColumn is the table column denoting the qualifications relation/edge.
 	QualificationsColumn = "user_id"
-	// CareergroupsTable is the table that holds the careergroups relation/edge.
-	CareergroupsTable = "user_career_groups"
-	// CareergroupsInverseTable is the table name for the UserCareerGroup entity.
+	// CareerGroupsTable is the table that holds the careerGroups relation/edge.
+	CareerGroupsTable = "user_career_groups"
+	// CareerGroupsInverseTable is the table name for the UserCareerGroup entity.
 	// It exists in this package in order to avoid circular dependency with the "usercareergroup" package.
-	CareergroupsInverseTable = "user_career_groups"
-	// CareergroupsColumn is the table column denoting the careergroups relation/edge.
-	CareergroupsColumn = "user_id"
+	CareerGroupsInverseTable = "user_career_groups"
+	// CareerGroupsColumn is the table column denoting the careerGroups relation/edge.
+	CareerGroupsColumn = "user_id"
+	// NotesTable is the table that holds the notes relation/edge.
+	NotesTable = "user_notes"
+	// NotesInverseTable is the table name for the UserNote entity.
+	// It exists in this package in order to avoid circular dependency with the "usernote" package.
+	NotesInverseTable = "user_notes"
+	// NotesColumn is the table column denoting the notes relation/edge.
+	NotesColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

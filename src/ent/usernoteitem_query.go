@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
+	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
 )
 
@@ -23,6 +24,8 @@ type UserNoteItemQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.UserNoteItem
+	withNote   *UserNoteQuery
+	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -57,6 +60,28 @@ func (uniq *UserNoteItemQuery) Unique(unique bool) *UserNoteItemQuery {
 func (uniq *UserNoteItemQuery) Order(o ...OrderFunc) *UserNoteItemQuery {
 	uniq.order = append(uniq.order, o...)
 	return uniq
+}
+
+// QueryNote chains the current query on the "note" edge.
+func (uniq *UserNoteItemQuery) QueryNote() *UserNoteQuery {
+	query := &UserNoteQuery{config: uniq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uniq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uniq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usernoteitem.Table, usernoteitem.FieldID, selector),
+			sqlgraph.To(usernote.Table, usernote.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, usernoteitem.NoteTable, usernoteitem.NoteColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uniq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first UserNoteItem entity from the query.
@@ -240,11 +265,23 @@ func (uniq *UserNoteItemQuery) Clone() *UserNoteItemQuery {
 		offset:     uniq.offset,
 		order:      append([]OrderFunc{}, uniq.order...),
 		predicates: append([]predicate.UserNoteItem{}, uniq.predicates...),
+		withNote:   uniq.withNote.Clone(),
 		// clone intermediate query.
 		sql:    uniq.sql.Clone(),
 		path:   uniq.path,
 		unique: uniq.unique,
 	}
+}
+
+// WithNote tells the query-builder to eager-load the nodes that are connected to
+// the "note" edge. The optional arguments are used to configure the query builder of the edge.
+func (uniq *UserNoteItemQuery) WithNote(opts ...func(*UserNoteQuery)) *UserNoteItemQuery {
+	query := &UserNoteQuery{config: uniq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	uniq.withNote = query
+	return uniq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -313,15 +350,26 @@ func (uniq *UserNoteItemQuery) prepareQuery(ctx context.Context) error {
 
 func (uniq *UserNoteItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*UserNoteItem, error) {
 	var (
-		nodes = []*UserNoteItem{}
-		_spec = uniq.querySpec()
+		nodes       = []*UserNoteItem{}
+		withFKs     = uniq.withFKs
+		_spec       = uniq.querySpec()
+		loadedTypes = [1]bool{
+			uniq.withNote != nil,
+		}
 	)
+	if uniq.withNote != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, usernoteitem.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		return (*UserNoteItem).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []interface{}) error {
 		node := &UserNoteItem{config: uniq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -333,7 +381,43 @@ func (uniq *UserNoteItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := uniq.withNote; query != nil {
+		if err := uniq.loadNote(ctx, query, nodes, nil,
+			func(n *UserNoteItem, e *UserNote) { n.Edges.Note = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (uniq *UserNoteItemQuery) loadNote(ctx context.Context, query *UserNoteQuery, nodes []*UserNoteItem, init func(*UserNoteItem), assign func(*UserNoteItem, *UserNote)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*UserNoteItem)
+	for i := range nodes {
+		if nodes[i].user_note_id == nil {
+			continue
+		}
+		fk := *nodes[i].user_note_id
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(usernote.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_note_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (uniq *UserNoteItemQuery) sqlCount(ctx context.Context) (int, error) {

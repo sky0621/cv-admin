@@ -19,8 +19,8 @@ const (
 	FieldName = "name"
 	// EdgeCareer holds the string denoting the career edge name in mutations.
 	EdgeCareer = "career"
-	// EdgeCareertaskdescriptions holds the string denoting the careertaskdescriptions edge name in mutations.
-	EdgeCareertaskdescriptions = "careertaskdescriptions"
+	// EdgeCareerTaskDescriptions holds the string denoting the careertaskdescriptions edge name in mutations.
+	EdgeCareerTaskDescriptions = "careerTaskDescriptions"
 	// Table holds the table name of the careertask in the database.
 	Table = "career_tasks"
 	// CareerTable is the table that holds the career relation/edge.
@@ -30,13 +30,13 @@ const (
 	CareerInverseTable = "user_careers"
 	// CareerColumn is the table column denoting the career relation/edge.
 	CareerColumn = "career_id"
-	// CareertaskdescriptionsTable is the table that holds the careertaskdescriptions relation/edge.
-	CareertaskdescriptionsTable = "career_task_descriptions"
-	// CareertaskdescriptionsInverseTable is the table name for the CareerTaskDescription entity.
+	// CareerTaskDescriptionsTable is the table that holds the careerTaskDescriptions relation/edge.
+	CareerTaskDescriptionsTable = "career_task_descriptions"
+	// CareerTaskDescriptionsInverseTable is the table name for the CareerTaskDescription entity.
 	// It exists in this package in order to avoid circular dependency with the "careertaskdescription" package.
-	CareertaskdescriptionsInverseTable = "career_task_descriptions"
-	// CareertaskdescriptionsColumn is the table column denoting the careertaskdescriptions relation/edge.
-	CareertaskdescriptionsColumn = "careertask_id"
+	CareerTaskDescriptionsInverseTable = "career_task_descriptions"
+	// CareerTaskDescriptionsColumn is the table column denoting the careerTaskDescriptions relation/edge.
+	CareerTaskDescriptionsColumn = "career_task_id"
 )
 
 // Columns holds all SQL columns for careertask fields.

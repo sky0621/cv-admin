@@ -61,8 +61,8 @@ type CareerSkillMutation struct {
 	url                     *string
 	version                 *string
 	clearedFields           map[string]struct{}
-	careerskillgroup        *int
-	clearedcareerskillgroup bool
+	careerSkillGroup        *int
+	clearedcareerSkillGroup bool
 	done                    bool
 	oldValue                func(context.Context) (*CareerSkill, error)
 	predicates              []predicate.CareerSkill
@@ -372,43 +372,43 @@ func (m *CareerSkillMutation) ResetVersion() {
 	delete(m.clearedFields, careerskill.FieldVersion)
 }
 
-// SetCareerskillgroupID sets the "careerskillgroup" edge to the CareerSkillGroup entity by id.
-func (m *CareerSkillMutation) SetCareerskillgroupID(id int) {
-	m.careerskillgroup = &id
+// SetCareerSkillGroupID sets the "careerSkillGroup" edge to the CareerSkillGroup entity by id.
+func (m *CareerSkillMutation) SetCareerSkillGroupID(id int) {
+	m.careerSkillGroup = &id
 }
 
-// ClearCareerskillgroup clears the "careerskillgroup" edge to the CareerSkillGroup entity.
-func (m *CareerSkillMutation) ClearCareerskillgroup() {
-	m.clearedcareerskillgroup = true
+// ClearCareerSkillGroup clears the "careerSkillGroup" edge to the CareerSkillGroup entity.
+func (m *CareerSkillMutation) ClearCareerSkillGroup() {
+	m.clearedcareerSkillGroup = true
 }
 
-// CareerskillgroupCleared reports if the "careerskillgroup" edge to the CareerSkillGroup entity was cleared.
-func (m *CareerSkillMutation) CareerskillgroupCleared() bool {
-	return m.clearedcareerskillgroup
+// CareerSkillGroupCleared reports if the "careerSkillGroup" edge to the CareerSkillGroup entity was cleared.
+func (m *CareerSkillMutation) CareerSkillGroupCleared() bool {
+	return m.clearedcareerSkillGroup
 }
 
-// CareerskillgroupID returns the "careerskillgroup" edge ID in the mutation.
-func (m *CareerSkillMutation) CareerskillgroupID() (id int, exists bool) {
-	if m.careerskillgroup != nil {
-		return *m.careerskillgroup, true
+// CareerSkillGroupID returns the "careerSkillGroup" edge ID in the mutation.
+func (m *CareerSkillMutation) CareerSkillGroupID() (id int, exists bool) {
+	if m.careerSkillGroup != nil {
+		return *m.careerSkillGroup, true
 	}
 	return
 }
 
-// CareerskillgroupIDs returns the "careerskillgroup" edge IDs in the mutation.
+// CareerSkillGroupIDs returns the "careerSkillGroup" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// CareerskillgroupID instead. It exists only for internal usage by the builders.
-func (m *CareerSkillMutation) CareerskillgroupIDs() (ids []int) {
-	if id := m.careerskillgroup; id != nil {
+// CareerSkillGroupID instead. It exists only for internal usage by the builders.
+func (m *CareerSkillMutation) CareerSkillGroupIDs() (ids []int) {
+	if id := m.careerSkillGroup; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetCareerskillgroup resets all changes to the "careerskillgroup" edge.
-func (m *CareerSkillMutation) ResetCareerskillgroup() {
-	m.careerskillgroup = nil
-	m.clearedcareerskillgroup = false
+// ResetCareerSkillGroup resets all changes to the "careerSkillGroup" edge.
+func (m *CareerSkillMutation) ResetCareerSkillGroup() {
+	m.careerSkillGroup = nil
+	m.clearedcareerSkillGroup = false
 }
 
 // Where appends a list predicates to the CareerSkillMutation builder.
@@ -613,8 +613,8 @@ func (m *CareerSkillMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CareerSkillMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.careerskillgroup != nil {
-		edges = append(edges, careerskill.EdgeCareerskillgroup)
+	if m.careerSkillGroup != nil {
+		edges = append(edges, careerskill.EdgeCareerSkillGroup)
 	}
 	return edges
 }
@@ -623,8 +623,8 @@ func (m *CareerSkillMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *CareerSkillMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case careerskill.EdgeCareerskillgroup:
-		if id := m.careerskillgroup; id != nil {
+	case careerskill.EdgeCareerSkillGroup:
+		if id := m.careerSkillGroup; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -648,8 +648,8 @@ func (m *CareerSkillMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CareerSkillMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedcareerskillgroup {
-		edges = append(edges, careerskill.EdgeCareerskillgroup)
+	if m.clearedcareerSkillGroup {
+		edges = append(edges, careerskill.EdgeCareerSkillGroup)
 	}
 	return edges
 }
@@ -658,8 +658,8 @@ func (m *CareerSkillMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *CareerSkillMutation) EdgeCleared(name string) bool {
 	switch name {
-	case careerskill.EdgeCareerskillgroup:
-		return m.clearedcareerskillgroup
+	case careerskill.EdgeCareerSkillGroup:
+		return m.clearedcareerSkillGroup
 	}
 	return false
 }
@@ -668,8 +668,8 @@ func (m *CareerSkillMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *CareerSkillMutation) ClearEdge(name string) error {
 	switch name {
-	case careerskill.EdgeCareerskillgroup:
-		m.ClearCareerskillgroup()
+	case careerskill.EdgeCareerSkillGroup:
+		m.ClearCareerSkillGroup()
 		return nil
 	}
 	return fmt.Errorf("unknown CareerSkill unique edge %s", name)
@@ -679,8 +679,8 @@ func (m *CareerSkillMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *CareerSkillMutation) ResetEdge(name string) error {
 	switch name {
-	case careerskill.EdgeCareerskillgroup:
-		m.ResetCareerskillgroup()
+	case careerskill.EdgeCareerSkillGroup:
+		m.ResetCareerSkillGroup()
 		return nil
 	}
 	return fmt.Errorf("unknown CareerSkill edge %s", name)
@@ -698,9 +698,9 @@ type CareerSkillGroupMutation struct {
 	clearedFields       map[string]struct{}
 	career              *int
 	clearedcareer       bool
-	careerskills        map[int]struct{}
-	removedcareerskills map[int]struct{}
-	clearedcareerskills bool
+	careerSkills        map[int]struct{}
+	removedcareerSkills map[int]struct{}
+	clearedcareerSkills bool
 	done                bool
 	oldValue            func(context.Context) (*CareerSkillGroup, error)
 	predicates          []predicate.CareerSkillGroup
@@ -951,58 +951,58 @@ func (m *CareerSkillGroupMutation) ResetCareer() {
 	m.clearedcareer = false
 }
 
-// AddCareerskillIDs adds the "careerskills" edge to the CareerSkill entity by ids.
-func (m *CareerSkillGroupMutation) AddCareerskillIDs(ids ...int) {
-	if m.careerskills == nil {
-		m.careerskills = make(map[int]struct{})
+// AddCareerSkillIDs adds the "careerSkills" edge to the CareerSkill entity by ids.
+func (m *CareerSkillGroupMutation) AddCareerSkillIDs(ids ...int) {
+	if m.careerSkills == nil {
+		m.careerSkills = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.careerskills[ids[i]] = struct{}{}
+		m.careerSkills[ids[i]] = struct{}{}
 	}
 }
 
-// ClearCareerskills clears the "careerskills" edge to the CareerSkill entity.
-func (m *CareerSkillGroupMutation) ClearCareerskills() {
-	m.clearedcareerskills = true
+// ClearCareerSkills clears the "careerSkills" edge to the CareerSkill entity.
+func (m *CareerSkillGroupMutation) ClearCareerSkills() {
+	m.clearedcareerSkills = true
 }
 
-// CareerskillsCleared reports if the "careerskills" edge to the CareerSkill entity was cleared.
-func (m *CareerSkillGroupMutation) CareerskillsCleared() bool {
-	return m.clearedcareerskills
+// CareerSkillsCleared reports if the "careerSkills" edge to the CareerSkill entity was cleared.
+func (m *CareerSkillGroupMutation) CareerSkillsCleared() bool {
+	return m.clearedcareerSkills
 }
 
-// RemoveCareerskillIDs removes the "careerskills" edge to the CareerSkill entity by IDs.
-func (m *CareerSkillGroupMutation) RemoveCareerskillIDs(ids ...int) {
-	if m.removedcareerskills == nil {
-		m.removedcareerskills = make(map[int]struct{})
+// RemoveCareerSkillIDs removes the "careerSkills" edge to the CareerSkill entity by IDs.
+func (m *CareerSkillGroupMutation) RemoveCareerSkillIDs(ids ...int) {
+	if m.removedcareerSkills == nil {
+		m.removedcareerSkills = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.careerskills, ids[i])
-		m.removedcareerskills[ids[i]] = struct{}{}
+		delete(m.careerSkills, ids[i])
+		m.removedcareerSkills[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedCareerskills returns the removed IDs of the "careerskills" edge to the CareerSkill entity.
-func (m *CareerSkillGroupMutation) RemovedCareerskillsIDs() (ids []int) {
-	for id := range m.removedcareerskills {
+// RemovedCareerSkills returns the removed IDs of the "careerSkills" edge to the CareerSkill entity.
+func (m *CareerSkillGroupMutation) RemovedCareerSkillsIDs() (ids []int) {
+	for id := range m.removedcareerSkills {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// CareerskillsIDs returns the "careerskills" edge IDs in the mutation.
-func (m *CareerSkillGroupMutation) CareerskillsIDs() (ids []int) {
-	for id := range m.careerskills {
+// CareerSkillsIDs returns the "careerSkills" edge IDs in the mutation.
+func (m *CareerSkillGroupMutation) CareerSkillsIDs() (ids []int) {
+	for id := range m.careerSkills {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetCareerskills resets all changes to the "careerskills" edge.
-func (m *CareerSkillGroupMutation) ResetCareerskills() {
-	m.careerskills = nil
-	m.clearedcareerskills = false
-	m.removedcareerskills = nil
+// ResetCareerSkills resets all changes to the "careerSkills" edge.
+func (m *CareerSkillGroupMutation) ResetCareerSkills() {
+	m.careerSkills = nil
+	m.clearedcareerSkills = false
+	m.removedcareerSkills = nil
 }
 
 // Where appends a list predicates to the CareerSkillGroupMutation builder.
@@ -1161,8 +1161,8 @@ func (m *CareerSkillGroupMutation) AddedEdges() []string {
 	if m.career != nil {
 		edges = append(edges, careerskillgroup.EdgeCareer)
 	}
-	if m.careerskills != nil {
-		edges = append(edges, careerskillgroup.EdgeCareerskills)
+	if m.careerSkills != nil {
+		edges = append(edges, careerskillgroup.EdgeCareerSkills)
 	}
 	return edges
 }
@@ -1175,9 +1175,9 @@ func (m *CareerSkillGroupMutation) AddedIDs(name string) []ent.Value {
 		if id := m.career; id != nil {
 			return []ent.Value{*id}
 		}
-	case careerskillgroup.EdgeCareerskills:
-		ids := make([]ent.Value, 0, len(m.careerskills))
-		for id := range m.careerskills {
+	case careerskillgroup.EdgeCareerSkills:
+		ids := make([]ent.Value, 0, len(m.careerSkills))
+		for id := range m.careerSkills {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1188,8 +1188,8 @@ func (m *CareerSkillGroupMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CareerSkillGroupMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedcareerskills != nil {
-		edges = append(edges, careerskillgroup.EdgeCareerskills)
+	if m.removedcareerSkills != nil {
+		edges = append(edges, careerskillgroup.EdgeCareerSkills)
 	}
 	return edges
 }
@@ -1198,9 +1198,9 @@ func (m *CareerSkillGroupMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *CareerSkillGroupMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case careerskillgroup.EdgeCareerskills:
-		ids := make([]ent.Value, 0, len(m.removedcareerskills))
-		for id := range m.removedcareerskills {
+	case careerskillgroup.EdgeCareerSkills:
+		ids := make([]ent.Value, 0, len(m.removedcareerSkills))
+		for id := range m.removedcareerSkills {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1214,8 +1214,8 @@ func (m *CareerSkillGroupMutation) ClearedEdges() []string {
 	if m.clearedcareer {
 		edges = append(edges, careerskillgroup.EdgeCareer)
 	}
-	if m.clearedcareerskills {
-		edges = append(edges, careerskillgroup.EdgeCareerskills)
+	if m.clearedcareerSkills {
+		edges = append(edges, careerskillgroup.EdgeCareerSkills)
 	}
 	return edges
 }
@@ -1226,8 +1226,8 @@ func (m *CareerSkillGroupMutation) EdgeCleared(name string) bool {
 	switch name {
 	case careerskillgroup.EdgeCareer:
 		return m.clearedcareer
-	case careerskillgroup.EdgeCareerskills:
-		return m.clearedcareerskills
+	case careerskillgroup.EdgeCareerSkills:
+		return m.clearedcareerSkills
 	}
 	return false
 }
@@ -1250,8 +1250,8 @@ func (m *CareerSkillGroupMutation) ResetEdge(name string) error {
 	case careerskillgroup.EdgeCareer:
 		m.ResetCareer()
 		return nil
-	case careerskillgroup.EdgeCareerskills:
-		m.ResetCareerskills()
+	case careerskillgroup.EdgeCareerSkills:
+		m.ResetCareerSkills()
 		return nil
 	}
 	return fmt.Errorf("unknown CareerSkillGroup edge %s", name)
@@ -1269,9 +1269,9 @@ type CareerTaskMutation struct {
 	clearedFields                 map[string]struct{}
 	career                        *int
 	clearedcareer                 bool
-	careertaskdescriptions        map[int]struct{}
-	removedcareertaskdescriptions map[int]struct{}
-	clearedcareertaskdescriptions bool
+	careerTaskDescriptions        map[int]struct{}
+	removedcareerTaskDescriptions map[int]struct{}
+	clearedcareerTaskDescriptions bool
 	done                          bool
 	oldValue                      func(context.Context) (*CareerTask, error)
 	predicates                    []predicate.CareerTask
@@ -1522,58 +1522,58 @@ func (m *CareerTaskMutation) ResetCareer() {
 	m.clearedcareer = false
 }
 
-// AddCareertaskdescriptionIDs adds the "careertaskdescriptions" edge to the CareerTaskDescription entity by ids.
-func (m *CareerTaskMutation) AddCareertaskdescriptionIDs(ids ...int) {
-	if m.careertaskdescriptions == nil {
-		m.careertaskdescriptions = make(map[int]struct{})
+// AddCareerTaskDescriptionIDs adds the "careerTaskDescriptions" edge to the CareerTaskDescription entity by ids.
+func (m *CareerTaskMutation) AddCareerTaskDescriptionIDs(ids ...int) {
+	if m.careerTaskDescriptions == nil {
+		m.careerTaskDescriptions = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.careertaskdescriptions[ids[i]] = struct{}{}
+		m.careerTaskDescriptions[ids[i]] = struct{}{}
 	}
 }
 
-// ClearCareertaskdescriptions clears the "careertaskdescriptions" edge to the CareerTaskDescription entity.
-func (m *CareerTaskMutation) ClearCareertaskdescriptions() {
-	m.clearedcareertaskdescriptions = true
+// ClearCareerTaskDescriptions clears the "careerTaskDescriptions" edge to the CareerTaskDescription entity.
+func (m *CareerTaskMutation) ClearCareerTaskDescriptions() {
+	m.clearedcareerTaskDescriptions = true
 }
 
-// CareertaskdescriptionsCleared reports if the "careertaskdescriptions" edge to the CareerTaskDescription entity was cleared.
-func (m *CareerTaskMutation) CareertaskdescriptionsCleared() bool {
-	return m.clearedcareertaskdescriptions
+// CareerTaskDescriptionsCleared reports if the "careerTaskDescriptions" edge to the CareerTaskDescription entity was cleared.
+func (m *CareerTaskMutation) CareerTaskDescriptionsCleared() bool {
+	return m.clearedcareerTaskDescriptions
 }
 
-// RemoveCareertaskdescriptionIDs removes the "careertaskdescriptions" edge to the CareerTaskDescription entity by IDs.
-func (m *CareerTaskMutation) RemoveCareertaskdescriptionIDs(ids ...int) {
-	if m.removedcareertaskdescriptions == nil {
-		m.removedcareertaskdescriptions = make(map[int]struct{})
+// RemoveCareerTaskDescriptionIDs removes the "careerTaskDescriptions" edge to the CareerTaskDescription entity by IDs.
+func (m *CareerTaskMutation) RemoveCareerTaskDescriptionIDs(ids ...int) {
+	if m.removedcareerTaskDescriptions == nil {
+		m.removedcareerTaskDescriptions = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.careertaskdescriptions, ids[i])
-		m.removedcareertaskdescriptions[ids[i]] = struct{}{}
+		delete(m.careerTaskDescriptions, ids[i])
+		m.removedcareerTaskDescriptions[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedCareertaskdescriptions returns the removed IDs of the "careertaskdescriptions" edge to the CareerTaskDescription entity.
-func (m *CareerTaskMutation) RemovedCareertaskdescriptionsIDs() (ids []int) {
-	for id := range m.removedcareertaskdescriptions {
+// RemovedCareerTaskDescriptions returns the removed IDs of the "careerTaskDescriptions" edge to the CareerTaskDescription entity.
+func (m *CareerTaskMutation) RemovedCareerTaskDescriptionsIDs() (ids []int) {
+	for id := range m.removedcareerTaskDescriptions {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// CareertaskdescriptionsIDs returns the "careertaskdescriptions" edge IDs in the mutation.
-func (m *CareerTaskMutation) CareertaskdescriptionsIDs() (ids []int) {
-	for id := range m.careertaskdescriptions {
+// CareerTaskDescriptionsIDs returns the "careerTaskDescriptions" edge IDs in the mutation.
+func (m *CareerTaskMutation) CareerTaskDescriptionsIDs() (ids []int) {
+	for id := range m.careerTaskDescriptions {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetCareertaskdescriptions resets all changes to the "careertaskdescriptions" edge.
-func (m *CareerTaskMutation) ResetCareertaskdescriptions() {
-	m.careertaskdescriptions = nil
-	m.clearedcareertaskdescriptions = false
-	m.removedcareertaskdescriptions = nil
+// ResetCareerTaskDescriptions resets all changes to the "careerTaskDescriptions" edge.
+func (m *CareerTaskMutation) ResetCareerTaskDescriptions() {
+	m.careerTaskDescriptions = nil
+	m.clearedcareerTaskDescriptions = false
+	m.removedcareerTaskDescriptions = nil
 }
 
 // Where appends a list predicates to the CareerTaskMutation builder.
@@ -1732,8 +1732,8 @@ func (m *CareerTaskMutation) AddedEdges() []string {
 	if m.career != nil {
 		edges = append(edges, careertask.EdgeCareer)
 	}
-	if m.careertaskdescriptions != nil {
-		edges = append(edges, careertask.EdgeCareertaskdescriptions)
+	if m.careerTaskDescriptions != nil {
+		edges = append(edges, careertask.EdgeCareerTaskDescriptions)
 	}
 	return edges
 }
@@ -1746,9 +1746,9 @@ func (m *CareerTaskMutation) AddedIDs(name string) []ent.Value {
 		if id := m.career; id != nil {
 			return []ent.Value{*id}
 		}
-	case careertask.EdgeCareertaskdescriptions:
-		ids := make([]ent.Value, 0, len(m.careertaskdescriptions))
-		for id := range m.careertaskdescriptions {
+	case careertask.EdgeCareerTaskDescriptions:
+		ids := make([]ent.Value, 0, len(m.careerTaskDescriptions))
+		for id := range m.careerTaskDescriptions {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1759,8 +1759,8 @@ func (m *CareerTaskMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CareerTaskMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedcareertaskdescriptions != nil {
-		edges = append(edges, careertask.EdgeCareertaskdescriptions)
+	if m.removedcareerTaskDescriptions != nil {
+		edges = append(edges, careertask.EdgeCareerTaskDescriptions)
 	}
 	return edges
 }
@@ -1769,9 +1769,9 @@ func (m *CareerTaskMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *CareerTaskMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case careertask.EdgeCareertaskdescriptions:
-		ids := make([]ent.Value, 0, len(m.removedcareertaskdescriptions))
-		for id := range m.removedcareertaskdescriptions {
+	case careertask.EdgeCareerTaskDescriptions:
+		ids := make([]ent.Value, 0, len(m.removedcareerTaskDescriptions))
+		for id := range m.removedcareerTaskDescriptions {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1785,8 +1785,8 @@ func (m *CareerTaskMutation) ClearedEdges() []string {
 	if m.clearedcareer {
 		edges = append(edges, careertask.EdgeCareer)
 	}
-	if m.clearedcareertaskdescriptions {
-		edges = append(edges, careertask.EdgeCareertaskdescriptions)
+	if m.clearedcareerTaskDescriptions {
+		edges = append(edges, careertask.EdgeCareerTaskDescriptions)
 	}
 	return edges
 }
@@ -1797,8 +1797,8 @@ func (m *CareerTaskMutation) EdgeCleared(name string) bool {
 	switch name {
 	case careertask.EdgeCareer:
 		return m.clearedcareer
-	case careertask.EdgeCareertaskdescriptions:
-		return m.clearedcareertaskdescriptions
+	case careertask.EdgeCareerTaskDescriptions:
+		return m.clearedcareerTaskDescriptions
 	}
 	return false
 }
@@ -1821,8 +1821,8 @@ func (m *CareerTaskMutation) ResetEdge(name string) error {
 	case careertask.EdgeCareer:
 		m.ResetCareer()
 		return nil
-	case careertask.EdgeCareertaskdescriptions:
-		m.ResetCareertaskdescriptions()
+	case careertask.EdgeCareerTaskDescriptions:
+		m.ResetCareerTaskDescriptions()
 		return nil
 	}
 	return fmt.Errorf("unknown CareerTask edge %s", name)
@@ -1836,8 +1836,8 @@ type CareerTaskDescriptionMutation struct {
 	id                *int
 	description       *string
 	clearedFields     map[string]struct{}
-	careertask        *int
-	clearedcareertask bool
+	careerTask        *int
+	clearedcareerTask bool
 	done              bool
 	oldValue          func(context.Context) (*CareerTaskDescription, error)
 	predicates        []predicate.CareerTaskDescription
@@ -1977,43 +1977,43 @@ func (m *CareerTaskDescriptionMutation) ResetDescription() {
 	m.description = nil
 }
 
-// SetCareertaskID sets the "careertask" edge to the CareerTask entity by id.
-func (m *CareerTaskDescriptionMutation) SetCareertaskID(id int) {
-	m.careertask = &id
+// SetCareerTaskID sets the "careerTask" edge to the CareerTask entity by id.
+func (m *CareerTaskDescriptionMutation) SetCareerTaskID(id int) {
+	m.careerTask = &id
 }
 
-// ClearCareertask clears the "careertask" edge to the CareerTask entity.
-func (m *CareerTaskDescriptionMutation) ClearCareertask() {
-	m.clearedcareertask = true
+// ClearCareerTask clears the "careerTask" edge to the CareerTask entity.
+func (m *CareerTaskDescriptionMutation) ClearCareerTask() {
+	m.clearedcareerTask = true
 }
 
-// CareertaskCleared reports if the "careertask" edge to the CareerTask entity was cleared.
-func (m *CareerTaskDescriptionMutation) CareertaskCleared() bool {
-	return m.clearedcareertask
+// CareerTaskCleared reports if the "careerTask" edge to the CareerTask entity was cleared.
+func (m *CareerTaskDescriptionMutation) CareerTaskCleared() bool {
+	return m.clearedcareerTask
 }
 
-// CareertaskID returns the "careertask" edge ID in the mutation.
-func (m *CareerTaskDescriptionMutation) CareertaskID() (id int, exists bool) {
-	if m.careertask != nil {
-		return *m.careertask, true
+// CareerTaskID returns the "careerTask" edge ID in the mutation.
+func (m *CareerTaskDescriptionMutation) CareerTaskID() (id int, exists bool) {
+	if m.careerTask != nil {
+		return *m.careerTask, true
 	}
 	return
 }
 
-// CareertaskIDs returns the "careertask" edge IDs in the mutation.
+// CareerTaskIDs returns the "careerTask" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// CareertaskID instead. It exists only for internal usage by the builders.
-func (m *CareerTaskDescriptionMutation) CareertaskIDs() (ids []int) {
-	if id := m.careertask; id != nil {
+// CareerTaskID instead. It exists only for internal usage by the builders.
+func (m *CareerTaskDescriptionMutation) CareerTaskIDs() (ids []int) {
+	if id := m.careerTask; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetCareertask resets all changes to the "careertask" edge.
-func (m *CareerTaskDescriptionMutation) ResetCareertask() {
-	m.careertask = nil
-	m.clearedcareertask = false
+// ResetCareerTask resets all changes to the "careerTask" edge.
+func (m *CareerTaskDescriptionMutation) ResetCareerTask() {
+	m.careerTask = nil
+	m.clearedcareerTask = false
 }
 
 // Where appends a list predicates to the CareerTaskDescriptionMutation builder.
@@ -2135,8 +2135,8 @@ func (m *CareerTaskDescriptionMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CareerTaskDescriptionMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.careertask != nil {
-		edges = append(edges, careertaskdescription.EdgeCareertask)
+	if m.careerTask != nil {
+		edges = append(edges, careertaskdescription.EdgeCareerTask)
 	}
 	return edges
 }
@@ -2145,8 +2145,8 @@ func (m *CareerTaskDescriptionMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *CareerTaskDescriptionMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case careertaskdescription.EdgeCareertask:
-		if id := m.careertask; id != nil {
+	case careertaskdescription.EdgeCareerTask:
+		if id := m.careerTask; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -2170,8 +2170,8 @@ func (m *CareerTaskDescriptionMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CareerTaskDescriptionMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedcareertask {
-		edges = append(edges, careertaskdescription.EdgeCareertask)
+	if m.clearedcareerTask {
+		edges = append(edges, careertaskdescription.EdgeCareerTask)
 	}
 	return edges
 }
@@ -2180,8 +2180,8 @@ func (m *CareerTaskDescriptionMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *CareerTaskDescriptionMutation) EdgeCleared(name string) bool {
 	switch name {
-	case careertaskdescription.EdgeCareertask:
-		return m.clearedcareertask
+	case careertaskdescription.EdgeCareerTask:
+		return m.clearedcareerTask
 	}
 	return false
 }
@@ -2190,8 +2190,8 @@ func (m *CareerTaskDescriptionMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *CareerTaskDescriptionMutation) ClearEdge(name string) error {
 	switch name {
-	case careertaskdescription.EdgeCareertask:
-		m.ClearCareertask()
+	case careertaskdescription.EdgeCareerTask:
+		m.ClearCareerTask()
 		return nil
 	}
 	return fmt.Errorf("unknown CareerTaskDescription unique edge %s", name)
@@ -2201,8 +2201,8 @@ func (m *CareerTaskDescriptionMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *CareerTaskDescriptionMutation) ResetEdge(name string) error {
 	switch name {
-	case careertaskdescription.EdgeCareertask:
-		m.ResetCareertask()
+	case careertaskdescription.EdgeCareerTask:
+		m.ResetCareerTask()
 		return nil
 	}
 	return fmt.Errorf("unknown CareerTaskDescription edge %s", name)
@@ -2235,9 +2235,12 @@ type UserMutation struct {
 	qualifications        map[int]struct{}
 	removedqualifications map[int]struct{}
 	clearedqualifications bool
-	careergroups          map[int]struct{}
-	removedcareergroups   map[int]struct{}
-	clearedcareergroups   bool
+	careerGroups          map[int]struct{}
+	removedcareerGroups   map[int]struct{}
+	clearedcareerGroups   bool
+	notes                 map[int]struct{}
+	removednotes          map[int]struct{}
+	clearednotes          bool
 	done                  bool
 	oldValue              func(context.Context) (*User, error)
 	predicates            []predicate.User
@@ -2970,58 +2973,112 @@ func (m *UserMutation) ResetQualifications() {
 	m.removedqualifications = nil
 }
 
-// AddCareergroupIDs adds the "careergroups" edge to the UserCareerGroup entity by ids.
-func (m *UserMutation) AddCareergroupIDs(ids ...int) {
-	if m.careergroups == nil {
-		m.careergroups = make(map[int]struct{})
+// AddCareerGroupIDs adds the "careerGroups" edge to the UserCareerGroup entity by ids.
+func (m *UserMutation) AddCareerGroupIDs(ids ...int) {
+	if m.careerGroups == nil {
+		m.careerGroups = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.careergroups[ids[i]] = struct{}{}
+		m.careerGroups[ids[i]] = struct{}{}
 	}
 }
 
-// ClearCareergroups clears the "careergroups" edge to the UserCareerGroup entity.
-func (m *UserMutation) ClearCareergroups() {
-	m.clearedcareergroups = true
+// ClearCareerGroups clears the "careerGroups" edge to the UserCareerGroup entity.
+func (m *UserMutation) ClearCareerGroups() {
+	m.clearedcareerGroups = true
 }
 
-// CareergroupsCleared reports if the "careergroups" edge to the UserCareerGroup entity was cleared.
-func (m *UserMutation) CareergroupsCleared() bool {
-	return m.clearedcareergroups
+// CareerGroupsCleared reports if the "careerGroups" edge to the UserCareerGroup entity was cleared.
+func (m *UserMutation) CareerGroupsCleared() bool {
+	return m.clearedcareerGroups
 }
 
-// RemoveCareergroupIDs removes the "careergroups" edge to the UserCareerGroup entity by IDs.
-func (m *UserMutation) RemoveCareergroupIDs(ids ...int) {
-	if m.removedcareergroups == nil {
-		m.removedcareergroups = make(map[int]struct{})
+// RemoveCareerGroupIDs removes the "careerGroups" edge to the UserCareerGroup entity by IDs.
+func (m *UserMutation) RemoveCareerGroupIDs(ids ...int) {
+	if m.removedcareerGroups == nil {
+		m.removedcareerGroups = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.careergroups, ids[i])
-		m.removedcareergroups[ids[i]] = struct{}{}
+		delete(m.careerGroups, ids[i])
+		m.removedcareerGroups[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedCareergroups returns the removed IDs of the "careergroups" edge to the UserCareerGroup entity.
-func (m *UserMutation) RemovedCareergroupsIDs() (ids []int) {
-	for id := range m.removedcareergroups {
+// RemovedCareerGroups returns the removed IDs of the "careerGroups" edge to the UserCareerGroup entity.
+func (m *UserMutation) RemovedCareerGroupsIDs() (ids []int) {
+	for id := range m.removedcareerGroups {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// CareergroupsIDs returns the "careergroups" edge IDs in the mutation.
-func (m *UserMutation) CareergroupsIDs() (ids []int) {
-	for id := range m.careergroups {
+// CareerGroupsIDs returns the "careerGroups" edge IDs in the mutation.
+func (m *UserMutation) CareerGroupsIDs() (ids []int) {
+	for id := range m.careerGroups {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetCareergroups resets all changes to the "careergroups" edge.
-func (m *UserMutation) ResetCareergroups() {
-	m.careergroups = nil
-	m.clearedcareergroups = false
-	m.removedcareergroups = nil
+// ResetCareerGroups resets all changes to the "careerGroups" edge.
+func (m *UserMutation) ResetCareerGroups() {
+	m.careerGroups = nil
+	m.clearedcareerGroups = false
+	m.removedcareerGroups = nil
+}
+
+// AddNoteIDs adds the "notes" edge to the UserNote entity by ids.
+func (m *UserMutation) AddNoteIDs(ids ...int) {
+	if m.notes == nil {
+		m.notes = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.notes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearNotes clears the "notes" edge to the UserNote entity.
+func (m *UserMutation) ClearNotes() {
+	m.clearednotes = true
+}
+
+// NotesCleared reports if the "notes" edge to the UserNote entity was cleared.
+func (m *UserMutation) NotesCleared() bool {
+	return m.clearednotes
+}
+
+// RemoveNoteIDs removes the "notes" edge to the UserNote entity by IDs.
+func (m *UserMutation) RemoveNoteIDs(ids ...int) {
+	if m.removednotes == nil {
+		m.removednotes = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.notes, ids[i])
+		m.removednotes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedNotes returns the removed IDs of the "notes" edge to the UserNote entity.
+func (m *UserMutation) RemovedNotesIDs() (ids []int) {
+	for id := range m.removednotes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// NotesIDs returns the "notes" edge IDs in the mutation.
+func (m *UserMutation) NotesIDs() (ids []int) {
+	for id := range m.notes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetNotes resets all changes to the "notes" edge.
+func (m *UserMutation) ResetNotes() {
+	m.notes = nil
+	m.clearednotes = false
+	m.removednotes = nil
 }
 
 // Where appends a list predicates to the UserMutation builder.
@@ -3384,15 +3441,18 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.activities != nil {
 		edges = append(edges, user.EdgeActivities)
 	}
 	if m.qualifications != nil {
 		edges = append(edges, user.EdgeQualifications)
 	}
-	if m.careergroups != nil {
-		edges = append(edges, user.EdgeCareergroups)
+	if m.careerGroups != nil {
+		edges = append(edges, user.EdgeCareerGroups)
+	}
+	if m.notes != nil {
+		edges = append(edges, user.EdgeNotes)
 	}
 	return edges
 }
@@ -3413,9 +3473,15 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case user.EdgeCareergroups:
-		ids := make([]ent.Value, 0, len(m.careergroups))
-		for id := range m.careergroups {
+	case user.EdgeCareerGroups:
+		ids := make([]ent.Value, 0, len(m.careerGroups))
+		for id := range m.careerGroups {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeNotes:
+		ids := make([]ent.Value, 0, len(m.notes))
+		for id := range m.notes {
 			ids = append(ids, id)
 		}
 		return ids
@@ -3425,15 +3491,18 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedactivities != nil {
 		edges = append(edges, user.EdgeActivities)
 	}
 	if m.removedqualifications != nil {
 		edges = append(edges, user.EdgeQualifications)
 	}
-	if m.removedcareergroups != nil {
-		edges = append(edges, user.EdgeCareergroups)
+	if m.removedcareerGroups != nil {
+		edges = append(edges, user.EdgeCareerGroups)
+	}
+	if m.removednotes != nil {
+		edges = append(edges, user.EdgeNotes)
 	}
 	return edges
 }
@@ -3454,9 +3523,15 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case user.EdgeCareergroups:
-		ids := make([]ent.Value, 0, len(m.removedcareergroups))
-		for id := range m.removedcareergroups {
+	case user.EdgeCareerGroups:
+		ids := make([]ent.Value, 0, len(m.removedcareerGroups))
+		for id := range m.removedcareerGroups {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeNotes:
+		ids := make([]ent.Value, 0, len(m.removednotes))
+		for id := range m.removednotes {
 			ids = append(ids, id)
 		}
 		return ids
@@ -3466,15 +3541,18 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedactivities {
 		edges = append(edges, user.EdgeActivities)
 	}
 	if m.clearedqualifications {
 		edges = append(edges, user.EdgeQualifications)
 	}
-	if m.clearedcareergroups {
-		edges = append(edges, user.EdgeCareergroups)
+	if m.clearedcareerGroups {
+		edges = append(edges, user.EdgeCareerGroups)
+	}
+	if m.clearednotes {
+		edges = append(edges, user.EdgeNotes)
 	}
 	return edges
 }
@@ -3487,8 +3565,10 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedactivities
 	case user.EdgeQualifications:
 		return m.clearedqualifications
-	case user.EdgeCareergroups:
-		return m.clearedcareergroups
+	case user.EdgeCareerGroups:
+		return m.clearedcareerGroups
+	case user.EdgeNotes:
+		return m.clearednotes
 	}
 	return false
 }
@@ -3511,8 +3591,11 @@ func (m *UserMutation) ResetEdge(name string) error {
 	case user.EdgeQualifications:
 		m.ResetQualifications()
 		return nil
-	case user.EdgeCareergroups:
-		m.ResetCareergroups()
+	case user.EdgeCareerGroups:
+		m.ResetCareerGroups()
+		return nil
+	case user.EdgeNotes:
+		m.ResetNotes()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)
@@ -4167,17 +4250,17 @@ type UserCareerMutation struct {
 	from                      *string
 	to                        *string
 	clearedFields             map[string]struct{}
-	careergroup               *int
-	clearedcareergroup        bool
-	careerdescriptions        map[int]struct{}
-	removedcareerdescriptions map[int]struct{}
-	clearedcareerdescriptions bool
-	careertasks               map[int]struct{}
-	removedcareertasks        map[int]struct{}
-	clearedcareertasks        bool
-	careerskillgroups         map[int]struct{}
-	removedcareerskillgroups  map[int]struct{}
-	clearedcareerskillgroups  bool
+	careerGroup               *int
+	clearedcareerGroup        bool
+	careerDescriptions        map[int]struct{}
+	removedcareerDescriptions map[int]struct{}
+	clearedcareerDescriptions bool
+	careerTasks               map[int]struct{}
+	removedcareerTasks        map[int]struct{}
+	clearedcareerTasks        bool
+	careerSkillGroups         map[int]struct{}
+	removedcareerSkillGroups  map[int]struct{}
+	clearedcareerSkillGroups  bool
 	done                      bool
 	oldValue                  func(context.Context) (*UserCareer, error)
 	predicates                []predicate.UserCareer
@@ -4461,205 +4544,205 @@ func (m *UserCareerMutation) ResetTo() {
 	m.to = nil
 }
 
-// SetCareergroupID sets the "careergroup" edge to the UserCareerGroup entity by id.
-func (m *UserCareerMutation) SetCareergroupID(id int) {
-	m.careergroup = &id
+// SetCareerGroupID sets the "careerGroup" edge to the UserCareerGroup entity by id.
+func (m *UserCareerMutation) SetCareerGroupID(id int) {
+	m.careerGroup = &id
 }
 
-// ClearCareergroup clears the "careergroup" edge to the UserCareerGroup entity.
-func (m *UserCareerMutation) ClearCareergroup() {
-	m.clearedcareergroup = true
+// ClearCareerGroup clears the "careerGroup" edge to the UserCareerGroup entity.
+func (m *UserCareerMutation) ClearCareerGroup() {
+	m.clearedcareerGroup = true
 }
 
-// CareergroupCleared reports if the "careergroup" edge to the UserCareerGroup entity was cleared.
-func (m *UserCareerMutation) CareergroupCleared() bool {
-	return m.clearedcareergroup
+// CareerGroupCleared reports if the "careerGroup" edge to the UserCareerGroup entity was cleared.
+func (m *UserCareerMutation) CareerGroupCleared() bool {
+	return m.clearedcareerGroup
 }
 
-// CareergroupID returns the "careergroup" edge ID in the mutation.
-func (m *UserCareerMutation) CareergroupID() (id int, exists bool) {
-	if m.careergroup != nil {
-		return *m.careergroup, true
+// CareerGroupID returns the "careerGroup" edge ID in the mutation.
+func (m *UserCareerMutation) CareerGroupID() (id int, exists bool) {
+	if m.careerGroup != nil {
+		return *m.careerGroup, true
 	}
 	return
 }
 
-// CareergroupIDs returns the "careergroup" edge IDs in the mutation.
+// CareerGroupIDs returns the "careerGroup" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// CareergroupID instead. It exists only for internal usage by the builders.
-func (m *UserCareerMutation) CareergroupIDs() (ids []int) {
-	if id := m.careergroup; id != nil {
+// CareerGroupID instead. It exists only for internal usage by the builders.
+func (m *UserCareerMutation) CareerGroupIDs() (ids []int) {
+	if id := m.careerGroup; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetCareergroup resets all changes to the "careergroup" edge.
-func (m *UserCareerMutation) ResetCareergroup() {
-	m.careergroup = nil
-	m.clearedcareergroup = false
+// ResetCareerGroup resets all changes to the "careerGroup" edge.
+func (m *UserCareerMutation) ResetCareerGroup() {
+	m.careerGroup = nil
+	m.clearedcareerGroup = false
 }
 
-// AddCareerdescriptionIDs adds the "careerdescriptions" edge to the UserCareerDescription entity by ids.
-func (m *UserCareerMutation) AddCareerdescriptionIDs(ids ...int) {
-	if m.careerdescriptions == nil {
-		m.careerdescriptions = make(map[int]struct{})
+// AddCareerDescriptionIDs adds the "careerDescriptions" edge to the UserCareerDescription entity by ids.
+func (m *UserCareerMutation) AddCareerDescriptionIDs(ids ...int) {
+	if m.careerDescriptions == nil {
+		m.careerDescriptions = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.careerdescriptions[ids[i]] = struct{}{}
+		m.careerDescriptions[ids[i]] = struct{}{}
 	}
 }
 
-// ClearCareerdescriptions clears the "careerdescriptions" edge to the UserCareerDescription entity.
-func (m *UserCareerMutation) ClearCareerdescriptions() {
-	m.clearedcareerdescriptions = true
+// ClearCareerDescriptions clears the "careerDescriptions" edge to the UserCareerDescription entity.
+func (m *UserCareerMutation) ClearCareerDescriptions() {
+	m.clearedcareerDescriptions = true
 }
 
-// CareerdescriptionsCleared reports if the "careerdescriptions" edge to the UserCareerDescription entity was cleared.
-func (m *UserCareerMutation) CareerdescriptionsCleared() bool {
-	return m.clearedcareerdescriptions
+// CareerDescriptionsCleared reports if the "careerDescriptions" edge to the UserCareerDescription entity was cleared.
+func (m *UserCareerMutation) CareerDescriptionsCleared() bool {
+	return m.clearedcareerDescriptions
 }
 
-// RemoveCareerdescriptionIDs removes the "careerdescriptions" edge to the UserCareerDescription entity by IDs.
-func (m *UserCareerMutation) RemoveCareerdescriptionIDs(ids ...int) {
-	if m.removedcareerdescriptions == nil {
-		m.removedcareerdescriptions = make(map[int]struct{})
+// RemoveCareerDescriptionIDs removes the "careerDescriptions" edge to the UserCareerDescription entity by IDs.
+func (m *UserCareerMutation) RemoveCareerDescriptionIDs(ids ...int) {
+	if m.removedcareerDescriptions == nil {
+		m.removedcareerDescriptions = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.careerdescriptions, ids[i])
-		m.removedcareerdescriptions[ids[i]] = struct{}{}
+		delete(m.careerDescriptions, ids[i])
+		m.removedcareerDescriptions[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedCareerdescriptions returns the removed IDs of the "careerdescriptions" edge to the UserCareerDescription entity.
-func (m *UserCareerMutation) RemovedCareerdescriptionsIDs() (ids []int) {
-	for id := range m.removedcareerdescriptions {
+// RemovedCareerDescriptions returns the removed IDs of the "careerDescriptions" edge to the UserCareerDescription entity.
+func (m *UserCareerMutation) RemovedCareerDescriptionsIDs() (ids []int) {
+	for id := range m.removedcareerDescriptions {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// CareerdescriptionsIDs returns the "careerdescriptions" edge IDs in the mutation.
-func (m *UserCareerMutation) CareerdescriptionsIDs() (ids []int) {
-	for id := range m.careerdescriptions {
+// CareerDescriptionsIDs returns the "careerDescriptions" edge IDs in the mutation.
+func (m *UserCareerMutation) CareerDescriptionsIDs() (ids []int) {
+	for id := range m.careerDescriptions {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetCareerdescriptions resets all changes to the "careerdescriptions" edge.
-func (m *UserCareerMutation) ResetCareerdescriptions() {
-	m.careerdescriptions = nil
-	m.clearedcareerdescriptions = false
-	m.removedcareerdescriptions = nil
+// ResetCareerDescriptions resets all changes to the "careerDescriptions" edge.
+func (m *UserCareerMutation) ResetCareerDescriptions() {
+	m.careerDescriptions = nil
+	m.clearedcareerDescriptions = false
+	m.removedcareerDescriptions = nil
 }
 
-// AddCareertaskIDs adds the "careertasks" edge to the CareerTask entity by ids.
-func (m *UserCareerMutation) AddCareertaskIDs(ids ...int) {
-	if m.careertasks == nil {
-		m.careertasks = make(map[int]struct{})
+// AddCareerTaskIDs adds the "careerTasks" edge to the CareerTask entity by ids.
+func (m *UserCareerMutation) AddCareerTaskIDs(ids ...int) {
+	if m.careerTasks == nil {
+		m.careerTasks = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.careertasks[ids[i]] = struct{}{}
+		m.careerTasks[ids[i]] = struct{}{}
 	}
 }
 
-// ClearCareertasks clears the "careertasks" edge to the CareerTask entity.
-func (m *UserCareerMutation) ClearCareertasks() {
-	m.clearedcareertasks = true
+// ClearCareerTasks clears the "careerTasks" edge to the CareerTask entity.
+func (m *UserCareerMutation) ClearCareerTasks() {
+	m.clearedcareerTasks = true
 }
 
-// CareertasksCleared reports if the "careertasks" edge to the CareerTask entity was cleared.
-func (m *UserCareerMutation) CareertasksCleared() bool {
-	return m.clearedcareertasks
+// CareerTasksCleared reports if the "careerTasks" edge to the CareerTask entity was cleared.
+func (m *UserCareerMutation) CareerTasksCleared() bool {
+	return m.clearedcareerTasks
 }
 
-// RemoveCareertaskIDs removes the "careertasks" edge to the CareerTask entity by IDs.
-func (m *UserCareerMutation) RemoveCareertaskIDs(ids ...int) {
-	if m.removedcareertasks == nil {
-		m.removedcareertasks = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.careertasks, ids[i])
-		m.removedcareertasks[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedCareertasks returns the removed IDs of the "careertasks" edge to the CareerTask entity.
-func (m *UserCareerMutation) RemovedCareertasksIDs() (ids []int) {
-	for id := range m.removedcareertasks {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// CareertasksIDs returns the "careertasks" edge IDs in the mutation.
-func (m *UserCareerMutation) CareertasksIDs() (ids []int) {
-	for id := range m.careertasks {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetCareertasks resets all changes to the "careertasks" edge.
-func (m *UserCareerMutation) ResetCareertasks() {
-	m.careertasks = nil
-	m.clearedcareertasks = false
-	m.removedcareertasks = nil
-}
-
-// AddCareerskillgroupIDs adds the "careerskillgroups" edge to the CareerSkillGroup entity by ids.
-func (m *UserCareerMutation) AddCareerskillgroupIDs(ids ...int) {
-	if m.careerskillgroups == nil {
-		m.careerskillgroups = make(map[int]struct{})
+// RemoveCareerTaskIDs removes the "careerTasks" edge to the CareerTask entity by IDs.
+func (m *UserCareerMutation) RemoveCareerTaskIDs(ids ...int) {
+	if m.removedcareerTasks == nil {
+		m.removedcareerTasks = make(map[int]struct{})
 	}
 	for i := range ids {
-		m.careerskillgroups[ids[i]] = struct{}{}
+		delete(m.careerTasks, ids[i])
+		m.removedcareerTasks[ids[i]] = struct{}{}
 	}
 }
 
-// ClearCareerskillgroups clears the "careerskillgroups" edge to the CareerSkillGroup entity.
-func (m *UserCareerMutation) ClearCareerskillgroups() {
-	m.clearedcareerskillgroups = true
+// RemovedCareerTasks returns the removed IDs of the "careerTasks" edge to the CareerTask entity.
+func (m *UserCareerMutation) RemovedCareerTasksIDs() (ids []int) {
+	for id := range m.removedcareerTasks {
+		ids = append(ids, id)
+	}
+	return
 }
 
-// CareerskillgroupsCleared reports if the "careerskillgroups" edge to the CareerSkillGroup entity was cleared.
-func (m *UserCareerMutation) CareerskillgroupsCleared() bool {
-	return m.clearedcareerskillgroups
+// CareerTasksIDs returns the "careerTasks" edge IDs in the mutation.
+func (m *UserCareerMutation) CareerTasksIDs() (ids []int) {
+	for id := range m.careerTasks {
+		ids = append(ids, id)
+	}
+	return
 }
 
-// RemoveCareerskillgroupIDs removes the "careerskillgroups" edge to the CareerSkillGroup entity by IDs.
-func (m *UserCareerMutation) RemoveCareerskillgroupIDs(ids ...int) {
-	if m.removedcareerskillgroups == nil {
-		m.removedcareerskillgroups = make(map[int]struct{})
+// ResetCareerTasks resets all changes to the "careerTasks" edge.
+func (m *UserCareerMutation) ResetCareerTasks() {
+	m.careerTasks = nil
+	m.clearedcareerTasks = false
+	m.removedcareerTasks = nil
+}
+
+// AddCareerSkillGroupIDs adds the "careerSkillGroups" edge to the CareerSkillGroup entity by ids.
+func (m *UserCareerMutation) AddCareerSkillGroupIDs(ids ...int) {
+	if m.careerSkillGroups == nil {
+		m.careerSkillGroups = make(map[int]struct{})
 	}
 	for i := range ids {
-		delete(m.careerskillgroups, ids[i])
-		m.removedcareerskillgroups[ids[i]] = struct{}{}
+		m.careerSkillGroups[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedCareerskillgroups returns the removed IDs of the "careerskillgroups" edge to the CareerSkillGroup entity.
-func (m *UserCareerMutation) RemovedCareerskillgroupsIDs() (ids []int) {
-	for id := range m.removedcareerskillgroups {
+// ClearCareerSkillGroups clears the "careerSkillGroups" edge to the CareerSkillGroup entity.
+func (m *UserCareerMutation) ClearCareerSkillGroups() {
+	m.clearedcareerSkillGroups = true
+}
+
+// CareerSkillGroupsCleared reports if the "careerSkillGroups" edge to the CareerSkillGroup entity was cleared.
+func (m *UserCareerMutation) CareerSkillGroupsCleared() bool {
+	return m.clearedcareerSkillGroups
+}
+
+// RemoveCareerSkillGroupIDs removes the "careerSkillGroups" edge to the CareerSkillGroup entity by IDs.
+func (m *UserCareerMutation) RemoveCareerSkillGroupIDs(ids ...int) {
+	if m.removedcareerSkillGroups == nil {
+		m.removedcareerSkillGroups = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.careerSkillGroups, ids[i])
+		m.removedcareerSkillGroups[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCareerSkillGroups returns the removed IDs of the "careerSkillGroups" edge to the CareerSkillGroup entity.
+func (m *UserCareerMutation) RemovedCareerSkillGroupsIDs() (ids []int) {
+	for id := range m.removedcareerSkillGroups {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// CareerskillgroupsIDs returns the "careerskillgroups" edge IDs in the mutation.
-func (m *UserCareerMutation) CareerskillgroupsIDs() (ids []int) {
-	for id := range m.careerskillgroups {
+// CareerSkillGroupsIDs returns the "careerSkillGroups" edge IDs in the mutation.
+func (m *UserCareerMutation) CareerSkillGroupsIDs() (ids []int) {
+	for id := range m.careerSkillGroups {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetCareerskillgroups resets all changes to the "careerskillgroups" edge.
-func (m *UserCareerMutation) ResetCareerskillgroups() {
-	m.careerskillgroups = nil
-	m.clearedcareerskillgroups = false
-	m.removedcareerskillgroups = nil
+// ResetCareerSkillGroups resets all changes to the "careerSkillGroups" edge.
+func (m *UserCareerMutation) ResetCareerSkillGroups() {
+	m.careerSkillGroups = nil
+	m.clearedcareerSkillGroups = false
+	m.removedcareerSkillGroups = nil
 }
 
 // Where appends a list predicates to the UserCareerMutation builder.
@@ -4849,17 +4932,17 @@ func (m *UserCareerMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserCareerMutation) AddedEdges() []string {
 	edges := make([]string, 0, 4)
-	if m.careergroup != nil {
-		edges = append(edges, usercareer.EdgeCareergroup)
+	if m.careerGroup != nil {
+		edges = append(edges, usercareer.EdgeCareerGroup)
 	}
-	if m.careerdescriptions != nil {
-		edges = append(edges, usercareer.EdgeCareerdescriptions)
+	if m.careerDescriptions != nil {
+		edges = append(edges, usercareer.EdgeCareerDescriptions)
 	}
-	if m.careertasks != nil {
-		edges = append(edges, usercareer.EdgeCareertasks)
+	if m.careerTasks != nil {
+		edges = append(edges, usercareer.EdgeCareerTasks)
 	}
-	if m.careerskillgroups != nil {
-		edges = append(edges, usercareer.EdgeCareerskillgroups)
+	if m.careerSkillGroups != nil {
+		edges = append(edges, usercareer.EdgeCareerSkillGroups)
 	}
 	return edges
 }
@@ -4868,25 +4951,25 @@ func (m *UserCareerMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *UserCareerMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case usercareer.EdgeCareergroup:
-		if id := m.careergroup; id != nil {
+	case usercareer.EdgeCareerGroup:
+		if id := m.careerGroup; id != nil {
 			return []ent.Value{*id}
 		}
-	case usercareer.EdgeCareerdescriptions:
-		ids := make([]ent.Value, 0, len(m.careerdescriptions))
-		for id := range m.careerdescriptions {
+	case usercareer.EdgeCareerDescriptions:
+		ids := make([]ent.Value, 0, len(m.careerDescriptions))
+		for id := range m.careerDescriptions {
 			ids = append(ids, id)
 		}
 		return ids
-	case usercareer.EdgeCareertasks:
-		ids := make([]ent.Value, 0, len(m.careertasks))
-		for id := range m.careertasks {
+	case usercareer.EdgeCareerTasks:
+		ids := make([]ent.Value, 0, len(m.careerTasks))
+		for id := range m.careerTasks {
 			ids = append(ids, id)
 		}
 		return ids
-	case usercareer.EdgeCareerskillgroups:
-		ids := make([]ent.Value, 0, len(m.careerskillgroups))
-		for id := range m.careerskillgroups {
+	case usercareer.EdgeCareerSkillGroups:
+		ids := make([]ent.Value, 0, len(m.careerSkillGroups))
+		for id := range m.careerSkillGroups {
 			ids = append(ids, id)
 		}
 		return ids
@@ -4897,14 +4980,14 @@ func (m *UserCareerMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserCareerMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 4)
-	if m.removedcareerdescriptions != nil {
-		edges = append(edges, usercareer.EdgeCareerdescriptions)
+	if m.removedcareerDescriptions != nil {
+		edges = append(edges, usercareer.EdgeCareerDescriptions)
 	}
-	if m.removedcareertasks != nil {
-		edges = append(edges, usercareer.EdgeCareertasks)
+	if m.removedcareerTasks != nil {
+		edges = append(edges, usercareer.EdgeCareerTasks)
 	}
-	if m.removedcareerskillgroups != nil {
-		edges = append(edges, usercareer.EdgeCareerskillgroups)
+	if m.removedcareerSkillGroups != nil {
+		edges = append(edges, usercareer.EdgeCareerSkillGroups)
 	}
 	return edges
 }
@@ -4913,21 +4996,21 @@ func (m *UserCareerMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *UserCareerMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case usercareer.EdgeCareerdescriptions:
-		ids := make([]ent.Value, 0, len(m.removedcareerdescriptions))
-		for id := range m.removedcareerdescriptions {
+	case usercareer.EdgeCareerDescriptions:
+		ids := make([]ent.Value, 0, len(m.removedcareerDescriptions))
+		for id := range m.removedcareerDescriptions {
 			ids = append(ids, id)
 		}
 		return ids
-	case usercareer.EdgeCareertasks:
-		ids := make([]ent.Value, 0, len(m.removedcareertasks))
-		for id := range m.removedcareertasks {
+	case usercareer.EdgeCareerTasks:
+		ids := make([]ent.Value, 0, len(m.removedcareerTasks))
+		for id := range m.removedcareerTasks {
 			ids = append(ids, id)
 		}
 		return ids
-	case usercareer.EdgeCareerskillgroups:
-		ids := make([]ent.Value, 0, len(m.removedcareerskillgroups))
-		for id := range m.removedcareerskillgroups {
+	case usercareer.EdgeCareerSkillGroups:
+		ids := make([]ent.Value, 0, len(m.removedcareerSkillGroups))
+		for id := range m.removedcareerSkillGroups {
 			ids = append(ids, id)
 		}
 		return ids
@@ -4938,17 +5021,17 @@ func (m *UserCareerMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserCareerMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 4)
-	if m.clearedcareergroup {
-		edges = append(edges, usercareer.EdgeCareergroup)
+	if m.clearedcareerGroup {
+		edges = append(edges, usercareer.EdgeCareerGroup)
 	}
-	if m.clearedcareerdescriptions {
-		edges = append(edges, usercareer.EdgeCareerdescriptions)
+	if m.clearedcareerDescriptions {
+		edges = append(edges, usercareer.EdgeCareerDescriptions)
 	}
-	if m.clearedcareertasks {
-		edges = append(edges, usercareer.EdgeCareertasks)
+	if m.clearedcareerTasks {
+		edges = append(edges, usercareer.EdgeCareerTasks)
 	}
-	if m.clearedcareerskillgroups {
-		edges = append(edges, usercareer.EdgeCareerskillgroups)
+	if m.clearedcareerSkillGroups {
+		edges = append(edges, usercareer.EdgeCareerSkillGroups)
 	}
 	return edges
 }
@@ -4957,14 +5040,14 @@ func (m *UserCareerMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *UserCareerMutation) EdgeCleared(name string) bool {
 	switch name {
-	case usercareer.EdgeCareergroup:
-		return m.clearedcareergroup
-	case usercareer.EdgeCareerdescriptions:
-		return m.clearedcareerdescriptions
-	case usercareer.EdgeCareertasks:
-		return m.clearedcareertasks
-	case usercareer.EdgeCareerskillgroups:
-		return m.clearedcareerskillgroups
+	case usercareer.EdgeCareerGroup:
+		return m.clearedcareerGroup
+	case usercareer.EdgeCareerDescriptions:
+		return m.clearedcareerDescriptions
+	case usercareer.EdgeCareerTasks:
+		return m.clearedcareerTasks
+	case usercareer.EdgeCareerSkillGroups:
+		return m.clearedcareerSkillGroups
 	}
 	return false
 }
@@ -4973,8 +5056,8 @@ func (m *UserCareerMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *UserCareerMutation) ClearEdge(name string) error {
 	switch name {
-	case usercareer.EdgeCareergroup:
-		m.ClearCareergroup()
+	case usercareer.EdgeCareerGroup:
+		m.ClearCareerGroup()
 		return nil
 	}
 	return fmt.Errorf("unknown UserCareer unique edge %s", name)
@@ -4984,17 +5067,17 @@ func (m *UserCareerMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *UserCareerMutation) ResetEdge(name string) error {
 	switch name {
-	case usercareer.EdgeCareergroup:
-		m.ResetCareergroup()
+	case usercareer.EdgeCareerGroup:
+		m.ResetCareerGroup()
 		return nil
-	case usercareer.EdgeCareerdescriptions:
-		m.ResetCareerdescriptions()
+	case usercareer.EdgeCareerDescriptions:
+		m.ResetCareerDescriptions()
 		return nil
-	case usercareer.EdgeCareertasks:
-		m.ResetCareertasks()
+	case usercareer.EdgeCareerTasks:
+		m.ResetCareerTasks()
 		return nil
-	case usercareer.EdgeCareerskillgroups:
-		m.ResetCareerskillgroups()
+	case usercareer.EdgeCareerSkillGroups:
+		m.ResetCareerSkillGroups()
 		return nil
 	}
 	return fmt.Errorf("unknown UserCareer edge %s", name)
@@ -5954,15 +6037,22 @@ func (m *UserCareerGroupMutation) ResetEdge(name string) error {
 // UserNoteMutation represents an operation that mutates the UserNote nodes in the graph.
 type UserNoteMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	create_time   *time.Time
-	update_time   *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*UserNote, error)
-	predicates    []predicate.UserNote
+	op               Op
+	typ              string
+	id               *int
+	create_time      *time.Time
+	update_time      *time.Time
+	label            *string
+	memo             *string
+	clearedFields    map[string]struct{}
+	user             *int
+	cleareduser      bool
+	noteItems        map[int]struct{}
+	removednoteItems map[int]struct{}
+	clearednoteItems bool
+	done             bool
+	oldValue         func(context.Context) (*UserNote, error)
+	predicates       []predicate.UserNote
 }
 
 var _ ent.Mutation = (*UserNoteMutation)(nil)
@@ -6135,6 +6225,184 @@ func (m *UserNoteMutation) ResetUpdateTime() {
 	m.update_time = nil
 }
 
+// SetLabel sets the "label" field.
+func (m *UserNoteMutation) SetLabel(s string) {
+	m.label = &s
+}
+
+// Label returns the value of the "label" field in the mutation.
+func (m *UserNoteMutation) Label() (r string, exists bool) {
+	v := m.label
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLabel returns the old "label" field's value of the UserNote entity.
+// If the UserNote object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserNoteMutation) OldLabel(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLabel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLabel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLabel: %w", err)
+	}
+	return oldValue.Label, nil
+}
+
+// ResetLabel resets all changes to the "label" field.
+func (m *UserNoteMutation) ResetLabel() {
+	m.label = nil
+}
+
+// SetMemo sets the "memo" field.
+func (m *UserNoteMutation) SetMemo(s string) {
+	m.memo = &s
+}
+
+// Memo returns the value of the "memo" field in the mutation.
+func (m *UserNoteMutation) Memo() (r string, exists bool) {
+	v := m.memo
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMemo returns the old "memo" field's value of the UserNote entity.
+// If the UserNote object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserNoteMutation) OldMemo(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMemo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMemo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMemo: %w", err)
+	}
+	return oldValue.Memo, nil
+}
+
+// ClearMemo clears the value of the "memo" field.
+func (m *UserNoteMutation) ClearMemo() {
+	m.memo = nil
+	m.clearedFields[usernote.FieldMemo] = struct{}{}
+}
+
+// MemoCleared returns if the "memo" field was cleared in this mutation.
+func (m *UserNoteMutation) MemoCleared() bool {
+	_, ok := m.clearedFields[usernote.FieldMemo]
+	return ok
+}
+
+// ResetMemo resets all changes to the "memo" field.
+func (m *UserNoteMutation) ResetMemo() {
+	m.memo = nil
+	delete(m.clearedFields, usernote.FieldMemo)
+}
+
+// SetUserID sets the "user" edge to the User entity by id.
+func (m *UserNoteMutation) SetUserID(id int) {
+	m.user = &id
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *UserNoteMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *UserNoteMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserID returns the "user" edge ID in the mutation.
+func (m *UserNoteMutation) UserID() (id int, exists bool) {
+	if m.user != nil {
+		return *m.user, true
+	}
+	return
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *UserNoteMutation) UserIDs() (ids []int) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *UserNoteMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// AddNoteItemIDs adds the "noteItems" edge to the UserNoteItem entity by ids.
+func (m *UserNoteMutation) AddNoteItemIDs(ids ...int) {
+	if m.noteItems == nil {
+		m.noteItems = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.noteItems[ids[i]] = struct{}{}
+	}
+}
+
+// ClearNoteItems clears the "noteItems" edge to the UserNoteItem entity.
+func (m *UserNoteMutation) ClearNoteItems() {
+	m.clearednoteItems = true
+}
+
+// NoteItemsCleared reports if the "noteItems" edge to the UserNoteItem entity was cleared.
+func (m *UserNoteMutation) NoteItemsCleared() bool {
+	return m.clearednoteItems
+}
+
+// RemoveNoteItemIDs removes the "noteItems" edge to the UserNoteItem entity by IDs.
+func (m *UserNoteMutation) RemoveNoteItemIDs(ids ...int) {
+	if m.removednoteItems == nil {
+		m.removednoteItems = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.noteItems, ids[i])
+		m.removednoteItems[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedNoteItems returns the removed IDs of the "noteItems" edge to the UserNoteItem entity.
+func (m *UserNoteMutation) RemovedNoteItemsIDs() (ids []int) {
+	for id := range m.removednoteItems {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// NoteItemsIDs returns the "noteItems" edge IDs in the mutation.
+func (m *UserNoteMutation) NoteItemsIDs() (ids []int) {
+	for id := range m.noteItems {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetNoteItems resets all changes to the "noteItems" edge.
+func (m *UserNoteMutation) ResetNoteItems() {
+	m.noteItems = nil
+	m.clearednoteItems = false
+	m.removednoteItems = nil
+}
+
 // Where appends a list predicates to the UserNoteMutation builder.
 func (m *UserNoteMutation) Where(ps ...predicate.UserNote) {
 	m.predicates = append(m.predicates, ps...)
@@ -6154,12 +6422,18 @@ func (m *UserNoteMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserNoteMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 4)
 	if m.create_time != nil {
 		fields = append(fields, usernote.FieldCreateTime)
 	}
 	if m.update_time != nil {
 		fields = append(fields, usernote.FieldUpdateTime)
+	}
+	if m.label != nil {
+		fields = append(fields, usernote.FieldLabel)
+	}
+	if m.memo != nil {
+		fields = append(fields, usernote.FieldMemo)
 	}
 	return fields
 }
@@ -6173,6 +6447,10 @@ func (m *UserNoteMutation) Field(name string) (ent.Value, bool) {
 		return m.CreateTime()
 	case usernote.FieldUpdateTime:
 		return m.UpdateTime()
+	case usernote.FieldLabel:
+		return m.Label()
+	case usernote.FieldMemo:
+		return m.Memo()
 	}
 	return nil, false
 }
@@ -6186,6 +6464,10 @@ func (m *UserNoteMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldCreateTime(ctx)
 	case usernote.FieldUpdateTime:
 		return m.OldUpdateTime(ctx)
+	case usernote.FieldLabel:
+		return m.OldLabel(ctx)
+	case usernote.FieldMemo:
+		return m.OldMemo(ctx)
 	}
 	return nil, fmt.Errorf("unknown UserNote field %s", name)
 }
@@ -6208,6 +6490,20 @@ func (m *UserNoteMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdateTime(v)
+		return nil
+	case usernote.FieldLabel:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLabel(v)
+		return nil
+	case usernote.FieldMemo:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMemo(v)
 		return nil
 	}
 	return fmt.Errorf("unknown UserNote field %s", name)
@@ -6238,7 +6534,11 @@ func (m *UserNoteMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserNoteMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(usernote.FieldMemo) {
+		fields = append(fields, usernote.FieldMemo)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -6251,6 +6551,11 @@ func (m *UserNoteMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserNoteMutation) ClearField(name string) error {
+	switch name {
+	case usernote.FieldMemo:
+		m.ClearMemo()
+		return nil
+	}
 	return fmt.Errorf("unknown UserNote nullable field %s", name)
 }
 
@@ -6264,55 +6569,115 @@ func (m *UserNoteMutation) ResetField(name string) error {
 	case usernote.FieldUpdateTime:
 		m.ResetUpdateTime()
 		return nil
+	case usernote.FieldLabel:
+		m.ResetLabel()
+		return nil
+	case usernote.FieldMemo:
+		m.ResetMemo()
+		return nil
 	}
 	return fmt.Errorf("unknown UserNote field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserNoteMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
+	if m.user != nil {
+		edges = append(edges, usernote.EdgeUser)
+	}
+	if m.noteItems != nil {
+		edges = append(edges, usernote.EdgeNoteItems)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *UserNoteMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case usernote.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	case usernote.EdgeNoteItems:
+		ids := make([]ent.Value, 0, len(m.noteItems))
+		for id := range m.noteItems {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserNoteMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
+	if m.removednoteItems != nil {
+		edges = append(edges, usernote.EdgeNoteItems)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *UserNoteMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case usernote.EdgeNoteItems:
+		ids := make([]ent.Value, 0, len(m.removednoteItems))
+		for id := range m.removednoteItems {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserNoteMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
+	if m.cleareduser {
+		edges = append(edges, usernote.EdgeUser)
+	}
+	if m.clearednoteItems {
+		edges = append(edges, usernote.EdgeNoteItems)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *UserNoteMutation) EdgeCleared(name string) bool {
+	switch name {
+	case usernote.EdgeUser:
+		return m.cleareduser
+	case usernote.EdgeNoteItems:
+		return m.clearednoteItems
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *UserNoteMutation) ClearEdge(name string) error {
+	switch name {
+	case usernote.EdgeUser:
+		m.ClearUser()
+		return nil
+	}
 	return fmt.Errorf("unknown UserNote unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *UserNoteMutation) ResetEdge(name string) error {
+	switch name {
+	case usernote.EdgeUser:
+		m.ResetUser()
+		return nil
+	case usernote.EdgeNoteItems:
+		m.ResetNoteItems()
+		return nil
+	}
 	return fmt.Errorf("unknown UserNote edge %s", name)
 }
 
@@ -6324,7 +6689,10 @@ type UserNoteItemMutation struct {
 	id            *int
 	create_time   *time.Time
 	update_time   *time.Time
+	text          *string
 	clearedFields map[string]struct{}
+	note          *int
+	clearednote   bool
 	done          bool
 	oldValue      func(context.Context) (*UserNoteItem, error)
 	predicates    []predicate.UserNoteItem
@@ -6500,6 +6868,81 @@ func (m *UserNoteItemMutation) ResetUpdateTime() {
 	m.update_time = nil
 }
 
+// SetText sets the "text" field.
+func (m *UserNoteItemMutation) SetText(s string) {
+	m.text = &s
+}
+
+// Text returns the value of the "text" field in the mutation.
+func (m *UserNoteItemMutation) Text() (r string, exists bool) {
+	v := m.text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldText returns the old "text" field's value of the UserNoteItem entity.
+// If the UserNoteItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserNoteItemMutation) OldText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldText: %w", err)
+	}
+	return oldValue.Text, nil
+}
+
+// ResetText resets all changes to the "text" field.
+func (m *UserNoteItemMutation) ResetText() {
+	m.text = nil
+}
+
+// SetNoteID sets the "note" edge to the UserNote entity by id.
+func (m *UserNoteItemMutation) SetNoteID(id int) {
+	m.note = &id
+}
+
+// ClearNote clears the "note" edge to the UserNote entity.
+func (m *UserNoteItemMutation) ClearNote() {
+	m.clearednote = true
+}
+
+// NoteCleared reports if the "note" edge to the UserNote entity was cleared.
+func (m *UserNoteItemMutation) NoteCleared() bool {
+	return m.clearednote
+}
+
+// NoteID returns the "note" edge ID in the mutation.
+func (m *UserNoteItemMutation) NoteID() (id int, exists bool) {
+	if m.note != nil {
+		return *m.note, true
+	}
+	return
+}
+
+// NoteIDs returns the "note" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// NoteID instead. It exists only for internal usage by the builders.
+func (m *UserNoteItemMutation) NoteIDs() (ids []int) {
+	if id := m.note; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetNote resets all changes to the "note" edge.
+func (m *UserNoteItemMutation) ResetNote() {
+	m.note = nil
+	m.clearednote = false
+}
+
 // Where appends a list predicates to the UserNoteItemMutation builder.
 func (m *UserNoteItemMutation) Where(ps ...predicate.UserNoteItem) {
 	m.predicates = append(m.predicates, ps...)
@@ -6519,12 +6962,15 @@ func (m *UserNoteItemMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserNoteItemMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 3)
 	if m.create_time != nil {
 		fields = append(fields, usernoteitem.FieldCreateTime)
 	}
 	if m.update_time != nil {
 		fields = append(fields, usernoteitem.FieldUpdateTime)
+	}
+	if m.text != nil {
+		fields = append(fields, usernoteitem.FieldText)
 	}
 	return fields
 }
@@ -6538,6 +6984,8 @@ func (m *UserNoteItemMutation) Field(name string) (ent.Value, bool) {
 		return m.CreateTime()
 	case usernoteitem.FieldUpdateTime:
 		return m.UpdateTime()
+	case usernoteitem.FieldText:
+		return m.Text()
 	}
 	return nil, false
 }
@@ -6551,6 +6999,8 @@ func (m *UserNoteItemMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldCreateTime(ctx)
 	case usernoteitem.FieldUpdateTime:
 		return m.OldUpdateTime(ctx)
+	case usernoteitem.FieldText:
+		return m.OldText(ctx)
 	}
 	return nil, fmt.Errorf("unknown UserNoteItem field %s", name)
 }
@@ -6573,6 +7023,13 @@ func (m *UserNoteItemMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdateTime(v)
+		return nil
+	case usernoteitem.FieldText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetText(v)
 		return nil
 	}
 	return fmt.Errorf("unknown UserNoteItem field %s", name)
@@ -6629,55 +7086,86 @@ func (m *UserNoteItemMutation) ResetField(name string) error {
 	case usernoteitem.FieldUpdateTime:
 		m.ResetUpdateTime()
 		return nil
+	case usernoteitem.FieldText:
+		m.ResetText()
+		return nil
 	}
 	return fmt.Errorf("unknown UserNoteItem field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserNoteItemMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.note != nil {
+		edges = append(edges, usernoteitem.EdgeNote)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *UserNoteItemMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case usernoteitem.EdgeNote:
+		if id := m.note; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserNoteItemMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *UserNoteItemMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserNoteItemMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearednote {
+		edges = append(edges, usernoteitem.EdgeNote)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *UserNoteItemMutation) EdgeCleared(name string) bool {
+	switch name {
+	case usernoteitem.EdgeNote:
+		return m.clearednote
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *UserNoteItemMutation) ClearEdge(name string) error {
+	switch name {
+	case usernoteitem.EdgeNote:
+		m.ClearNote()
+		return nil
+	}
 	return fmt.Errorf("unknown UserNoteItem unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *UserNoteItemMutation) ResetEdge(name string) error {
+	switch name {
+	case usernoteitem.EdgeNote:
+		m.ResetNote()
+		return nil
+	}
 	return fmt.Errorf("unknown UserNoteItem edge %s", name)
 }
 

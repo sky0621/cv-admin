@@ -35,24 +35,24 @@ type CareerSkill struct {
 
 // CareerSkillEdges holds the relations/edges for other nodes in the graph.
 type CareerSkillEdges struct {
-	// Careerskillgroup holds the value of the careerskillgroup edge.
-	Careerskillgroup *CareerSkillGroup `json:"careerskillgroup,omitempty"`
+	// CareerSkillGroup holds the value of the careerSkillGroup edge.
+	CareerSkillGroup *CareerSkillGroup `json:"careerSkillGroup,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// CareerskillgroupOrErr returns the Careerskillgroup value or an error if the edge
+// CareerSkillGroupOrErr returns the CareerSkillGroup value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e CareerSkillEdges) CareerskillgroupOrErr() (*CareerSkillGroup, error) {
+func (e CareerSkillEdges) CareerSkillGroupOrErr() (*CareerSkillGroup, error) {
 	if e.loadedTypes[0] {
-		if e.Careerskillgroup == nil {
+		if e.CareerSkillGroup == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: careerskillgroup.Label}
 		}
-		return e.Careerskillgroup, nil
+		return e.CareerSkillGroup, nil
 	}
-	return nil, &NotLoadedError{edge: "careerskillgroup"}
+	return nil, &NotLoadedError{edge: "careerSkillGroup"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -133,9 +133,9 @@ func (cs *CareerSkill) assignValues(columns []string, values []interface{}) erro
 	return nil
 }
 
-// QueryCareerskillgroup queries the "careerskillgroup" edge of the CareerSkill entity.
-func (cs *CareerSkill) QueryCareerskillgroup() *CareerSkillGroupQuery {
-	return (&CareerSkillClient{config: cs.config}).QueryCareerskillgroup(cs)
+// QueryCareerSkillGroup queries the "careerSkillGroup" edge of the CareerSkill entity.
+func (cs *CareerSkill) QueryCareerSkillGroup() *CareerSkillGroupQuery {
+	return (&CareerSkillClient{config: cs.config}).QueryCareerSkillGroup(cs)
 }
 
 // Update returns a builder for updating this CareerSkill.

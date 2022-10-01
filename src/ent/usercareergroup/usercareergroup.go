@@ -36,7 +36,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "usercareer" package.
 	CareersInverseTable = "user_careers"
 	// CareersColumn is the table column denoting the careers relation/edge.
-	CareersColumn = "careergroup_id"
+	CareersColumn = "career_group_id"
 )
 
 // Columns holds all SQL columns for usercareergroup fields.

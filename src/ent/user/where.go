@@ -1198,25 +1198,53 @@ func HasQualificationsWith(preds ...predicate.UserQualification) predicate.User 
 	})
 }
 
-// HasCareergroups applies the HasEdge predicate on the "careergroups" edge.
-func HasCareergroups() predicate.User {
+// HasCareerGroups applies the HasEdge predicate on the "careerGroups" edge.
+func HasCareerGroups() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareergroupsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CareergroupsTable, CareergroupsColumn),
+			sqlgraph.To(CareerGroupsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareerGroupsTable, CareerGroupsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasCareergroupsWith applies the HasEdge predicate on the "careergroups" edge with a given conditions (other predicates).
-func HasCareergroupsWith(preds ...predicate.UserCareerGroup) predicate.User {
+// HasCareerGroupsWith applies the HasEdge predicate on the "careerGroups" edge with a given conditions (other predicates).
+func HasCareerGroupsWith(preds ...predicate.UserCareerGroup) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareergroupsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CareergroupsTable, CareergroupsColumn),
+			sqlgraph.To(CareerGroupsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareerGroupsTable, CareerGroupsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasNotes applies the HasEdge predicate on the "notes" edge.
+func HasNotes() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(NotesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, NotesTable, NotesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasNotesWith applies the HasEdge predicate on the "notes" edge with a given conditions (other predicates).
+func HasNotesWith(preds ...predicate.UserNote) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(NotesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, NotesTable, NotesColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

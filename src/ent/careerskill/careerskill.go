@@ -21,17 +21,17 @@ const (
 	FieldURL = "url"
 	// FieldVersion holds the string denoting the version field in the database.
 	FieldVersion = "version"
-	// EdgeCareerskillgroup holds the string denoting the careerskillgroup edge name in mutations.
-	EdgeCareerskillgroup = "careerskillgroup"
+	// EdgeCareerSkillGroup holds the string denoting the careerskillgroup edge name in mutations.
+	EdgeCareerSkillGroup = "careerSkillGroup"
 	// Table holds the table name of the careerskill in the database.
 	Table = "career_skills"
-	// CareerskillgroupTable is the table that holds the careerskillgroup relation/edge.
-	CareerskillgroupTable = "career_skills"
-	// CareerskillgroupInverseTable is the table name for the CareerSkillGroup entity.
+	// CareerSkillGroupTable is the table that holds the careerSkillGroup relation/edge.
+	CareerSkillGroupTable = "career_skills"
+	// CareerSkillGroupInverseTable is the table name for the CareerSkillGroup entity.
 	// It exists in this package in order to avoid circular dependency with the "careerskillgroup" package.
-	CareerskillgroupInverseTable = "career_skill_groups"
-	// CareerskillgroupColumn is the table column denoting the careerskillgroup relation/edge.
-	CareerskillgroupColumn = "career_skill_group_id"
+	CareerSkillGroupInverseTable = "career_skill_groups"
+	// CareerSkillGroupColumn is the table column denoting the careerSkillGroup relation/edge.
+	CareerSkillGroupColumn = "career_skill_group_id"
 )
 
 // Columns holds all SQL columns for careerskill fields.

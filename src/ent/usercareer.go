@@ -29,63 +29,63 @@ type UserCareer struct {
 	To string `json:"to,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserCareerQuery when eager-loading is set.
-	Edges          UserCareerEdges `json:"edges"`
-	careergroup_id *int
+	Edges           UserCareerEdges `json:"edges"`
+	career_group_id *int
 }
 
 // UserCareerEdges holds the relations/edges for other nodes in the graph.
 type UserCareerEdges struct {
-	// Careergroup holds the value of the careergroup edge.
-	Careergroup *UserCareerGroup `json:"careergroup,omitempty"`
-	// Careerdescriptions holds the value of the careerdescriptions edge.
-	Careerdescriptions []*UserCareerDescription `json:"careerdescriptions,omitempty"`
-	// Careertasks holds the value of the careertasks edge.
-	Careertasks []*CareerTask `json:"careertasks,omitempty"`
-	// Careerskillgroups holds the value of the careerskillgroups edge.
-	Careerskillgroups []*CareerSkillGroup `json:"careerskillgroups,omitempty"`
+	// CareerGroup holds the value of the careerGroup edge.
+	CareerGroup *UserCareerGroup `json:"careerGroup,omitempty"`
+	// CareerDescriptions holds the value of the careerDescriptions edge.
+	CareerDescriptions []*UserCareerDescription `json:"careerDescriptions,omitempty"`
+	// CareerTasks holds the value of the careerTasks edge.
+	CareerTasks []*CareerTask `json:"careerTasks,omitempty"`
+	// CareerSkillGroups holds the value of the careerSkillGroups edge.
+	CareerSkillGroups []*CareerSkillGroup `json:"careerSkillGroups,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool
 }
 
-// CareergroupOrErr returns the Careergroup value or an error if the edge
+// CareerGroupOrErr returns the CareerGroup value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e UserCareerEdges) CareergroupOrErr() (*UserCareerGroup, error) {
+func (e UserCareerEdges) CareerGroupOrErr() (*UserCareerGroup, error) {
 	if e.loadedTypes[0] {
-		if e.Careergroup == nil {
+		if e.CareerGroup == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: usercareergroup.Label}
 		}
-		return e.Careergroup, nil
+		return e.CareerGroup, nil
 	}
-	return nil, &NotLoadedError{edge: "careergroup"}
+	return nil, &NotLoadedError{edge: "careerGroup"}
 }
 
-// CareerdescriptionsOrErr returns the Careerdescriptions value or an error if the edge
+// CareerDescriptionsOrErr returns the CareerDescriptions value or an error if the edge
 // was not loaded in eager-loading.
-func (e UserCareerEdges) CareerdescriptionsOrErr() ([]*UserCareerDescription, error) {
+func (e UserCareerEdges) CareerDescriptionsOrErr() ([]*UserCareerDescription, error) {
 	if e.loadedTypes[1] {
-		return e.Careerdescriptions, nil
+		return e.CareerDescriptions, nil
 	}
-	return nil, &NotLoadedError{edge: "careerdescriptions"}
+	return nil, &NotLoadedError{edge: "careerDescriptions"}
 }
 
-// CareertasksOrErr returns the Careertasks value or an error if the edge
+// CareerTasksOrErr returns the CareerTasks value or an error if the edge
 // was not loaded in eager-loading.
-func (e UserCareerEdges) CareertasksOrErr() ([]*CareerTask, error) {
+func (e UserCareerEdges) CareerTasksOrErr() ([]*CareerTask, error) {
 	if e.loadedTypes[2] {
-		return e.Careertasks, nil
+		return e.CareerTasks, nil
 	}
-	return nil, &NotLoadedError{edge: "careertasks"}
+	return nil, &NotLoadedError{edge: "careerTasks"}
 }
 
-// CareerskillgroupsOrErr returns the Careerskillgroups value or an error if the edge
+// CareerSkillGroupsOrErr returns the CareerSkillGroups value or an error if the edge
 // was not loaded in eager-loading.
-func (e UserCareerEdges) CareerskillgroupsOrErr() ([]*CareerSkillGroup, error) {
+func (e UserCareerEdges) CareerSkillGroupsOrErr() ([]*CareerSkillGroup, error) {
 	if e.loadedTypes[3] {
-		return e.Careerskillgroups, nil
+		return e.CareerSkillGroups, nil
 	}
-	return nil, &NotLoadedError{edge: "careerskillgroups"}
+	return nil, &NotLoadedError{edge: "careerSkillGroups"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -99,7 +99,7 @@ func (*UserCareer) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case usercareer.FieldCreateTime, usercareer.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
-		case usercareer.ForeignKeys[0]: // careergroup_id
+		case usercareer.ForeignKeys[0]: // career_group_id
 			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type UserCareer", columns[i])
@@ -154,34 +154,34 @@ func (uc *UserCareer) assignValues(columns []string, values []interface{}) error
 			}
 		case usercareer.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field careergroup_id", value)
+				return fmt.Errorf("unexpected type %T for edge-field career_group_id", value)
 			} else if value.Valid {
-				uc.careergroup_id = new(int)
-				*uc.careergroup_id = int(value.Int64)
+				uc.career_group_id = new(int)
+				*uc.career_group_id = int(value.Int64)
 			}
 		}
 	}
 	return nil
 }
 
-// QueryCareergroup queries the "careergroup" edge of the UserCareer entity.
-func (uc *UserCareer) QueryCareergroup() *UserCareerGroupQuery {
-	return (&UserCareerClient{config: uc.config}).QueryCareergroup(uc)
+// QueryCareerGroup queries the "careerGroup" edge of the UserCareer entity.
+func (uc *UserCareer) QueryCareerGroup() *UserCareerGroupQuery {
+	return (&UserCareerClient{config: uc.config}).QueryCareerGroup(uc)
 }
 
-// QueryCareerdescriptions queries the "careerdescriptions" edge of the UserCareer entity.
-func (uc *UserCareer) QueryCareerdescriptions() *UserCareerDescriptionQuery {
-	return (&UserCareerClient{config: uc.config}).QueryCareerdescriptions(uc)
+// QueryCareerDescriptions queries the "careerDescriptions" edge of the UserCareer entity.
+func (uc *UserCareer) QueryCareerDescriptions() *UserCareerDescriptionQuery {
+	return (&UserCareerClient{config: uc.config}).QueryCareerDescriptions(uc)
 }
 
-// QueryCareertasks queries the "careertasks" edge of the UserCareer entity.
-func (uc *UserCareer) QueryCareertasks() *CareerTaskQuery {
-	return (&UserCareerClient{config: uc.config}).QueryCareertasks(uc)
+// QueryCareerTasks queries the "careerTasks" edge of the UserCareer entity.
+func (uc *UserCareer) QueryCareerTasks() *CareerTaskQuery {
+	return (&UserCareerClient{config: uc.config}).QueryCareerTasks(uc)
 }
 
-// QueryCareerskillgroups queries the "careerskillgroups" edge of the UserCareer entity.
-func (uc *UserCareer) QueryCareerskillgroups() *CareerSkillGroupQuery {
-	return (&UserCareerClient{config: uc.config}).QueryCareerskillgroups(uc)
+// QueryCareerSkillGroups queries the "careerSkillGroups" edge of the UserCareer entity.
+func (uc *UserCareer) QueryCareerSkillGroups() *CareerSkillGroupQuery {
+	return (&UserCareerClient{config: uc.config}).QueryCareerSkillGroups(uc)
 }
 
 // Update returns a builder for updating this UserCareer.

@@ -11,7 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/usernote"
+	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
 )
 
 // UserNoteCreate is the builder for creating a UserNote entity.
@@ -48,6 +50,52 @@ func (unc *UserNoteCreate) SetNillableUpdateTime(t *time.Time) *UserNoteCreate {
 		unc.SetUpdateTime(*t)
 	}
 	return unc
+}
+
+// SetLabel sets the "label" field.
+func (unc *UserNoteCreate) SetLabel(s string) *UserNoteCreate {
+	unc.mutation.SetLabel(s)
+	return unc
+}
+
+// SetMemo sets the "memo" field.
+func (unc *UserNoteCreate) SetMemo(s string) *UserNoteCreate {
+	unc.mutation.SetMemo(s)
+	return unc
+}
+
+// SetNillableMemo sets the "memo" field if the given value is not nil.
+func (unc *UserNoteCreate) SetNillableMemo(s *string) *UserNoteCreate {
+	if s != nil {
+		unc.SetMemo(*s)
+	}
+	return unc
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (unc *UserNoteCreate) SetUserID(id int) *UserNoteCreate {
+	unc.mutation.SetUserID(id)
+	return unc
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (unc *UserNoteCreate) SetUser(u *User) *UserNoteCreate {
+	return unc.SetUserID(u.ID)
+}
+
+// AddNoteItemIDs adds the "noteItems" edge to the UserNoteItem entity by IDs.
+func (unc *UserNoteCreate) AddNoteItemIDs(ids ...int) *UserNoteCreate {
+	unc.mutation.AddNoteItemIDs(ids...)
+	return unc
+}
+
+// AddNoteItems adds the "noteItems" edges to the UserNoteItem entity.
+func (unc *UserNoteCreate) AddNoteItems(u ...*UserNoteItem) *UserNoteCreate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return unc.AddNoteItemIDs(ids...)
 }
 
 // Mutation returns the UserNoteMutation object of the builder.
@@ -145,6 +193,22 @@ func (unc *UserNoteCreate) check() error {
 	if _, ok := unc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "UserNote.update_time"`)}
 	}
+	if _, ok := unc.mutation.Label(); !ok {
+		return &ValidationError{Name: "label", err: errors.New(`ent: missing required field "UserNote.label"`)}
+	}
+	if v, ok := unc.mutation.Label(); ok {
+		if err := usernote.LabelValidator(v); err != nil {
+			return &ValidationError{Name: "label", err: fmt.Errorf(`ent: validator failed for field "UserNote.label": %w`, err)}
+		}
+	}
+	if v, ok := unc.mutation.Memo(); ok {
+		if err := usernote.MemoValidator(v); err != nil {
+			return &ValidationError{Name: "memo", err: fmt.Errorf(`ent: validator failed for field "UserNote.memo": %w`, err)}
+		}
+	}
+	if _, ok := unc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "UserNote.user"`)}
+	}
 	return nil
 }
 
@@ -188,6 +252,61 @@ func (unc *UserNoteCreate) createSpec() (*UserNote, *sqlgraph.CreateSpec) {
 			Column: usernote.FieldUpdateTime,
 		})
 		_node.UpdateTime = value
+	}
+	if value, ok := unc.mutation.Label(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usernote.FieldLabel,
+		})
+		_node.Label = value
+	}
+	if value, ok := unc.mutation.Memo(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usernote.FieldMemo,
+		})
+		_node.Memo = &value
+	}
+	if nodes := unc.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usernote.UserTable,
+			Columns: []string{usernote.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: user.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := unc.mutation.NoteItemsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usernote.NoteItemsTable,
+			Columns: []string{usernote.NoteItemsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usernoteitem.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -265,6 +384,36 @@ func (u *UserNoteUpsert) UpdateUpdateTime() *UserNoteUpsert {
 	return u
 }
 
+// SetLabel sets the "label" field.
+func (u *UserNoteUpsert) SetLabel(v string) *UserNoteUpsert {
+	u.Set(usernote.FieldLabel, v)
+	return u
+}
+
+// UpdateLabel sets the "label" field to the value that was provided on create.
+func (u *UserNoteUpsert) UpdateLabel() *UserNoteUpsert {
+	u.SetExcluded(usernote.FieldLabel)
+	return u
+}
+
+// SetMemo sets the "memo" field.
+func (u *UserNoteUpsert) SetMemo(v string) *UserNoteUpsert {
+	u.Set(usernote.FieldMemo, v)
+	return u
+}
+
+// UpdateMemo sets the "memo" field to the value that was provided on create.
+func (u *UserNoteUpsert) UpdateMemo() *UserNoteUpsert {
+	u.SetExcluded(usernote.FieldMemo)
+	return u
+}
+
+// ClearMemo clears the value of the "memo" field.
+func (u *UserNoteUpsert) ClearMemo() *UserNoteUpsert {
+	u.SetNull(usernote.FieldMemo)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -335,6 +484,41 @@ func (u *UserNoteUpsertOne) SetUpdateTime(v time.Time) *UserNoteUpsertOne {
 func (u *UserNoteUpsertOne) UpdateUpdateTime() *UserNoteUpsertOne {
 	return u.Update(func(s *UserNoteUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetLabel sets the "label" field.
+func (u *UserNoteUpsertOne) SetLabel(v string) *UserNoteUpsertOne {
+	return u.Update(func(s *UserNoteUpsert) {
+		s.SetLabel(v)
+	})
+}
+
+// UpdateLabel sets the "label" field to the value that was provided on create.
+func (u *UserNoteUpsertOne) UpdateLabel() *UserNoteUpsertOne {
+	return u.Update(func(s *UserNoteUpsert) {
+		s.UpdateLabel()
+	})
+}
+
+// SetMemo sets the "memo" field.
+func (u *UserNoteUpsertOne) SetMemo(v string) *UserNoteUpsertOne {
+	return u.Update(func(s *UserNoteUpsert) {
+		s.SetMemo(v)
+	})
+}
+
+// UpdateMemo sets the "memo" field to the value that was provided on create.
+func (u *UserNoteUpsertOne) UpdateMemo() *UserNoteUpsertOne {
+	return u.Update(func(s *UserNoteUpsert) {
+		s.UpdateMemo()
+	})
+}
+
+// ClearMemo clears the value of the "memo" field.
+func (u *UserNoteUpsertOne) ClearMemo() *UserNoteUpsertOne {
+	return u.Update(func(s *UserNoteUpsert) {
+		s.ClearMemo()
 	})
 }
 
@@ -570,6 +754,41 @@ func (u *UserNoteUpsertBulk) SetUpdateTime(v time.Time) *UserNoteUpsertBulk {
 func (u *UserNoteUpsertBulk) UpdateUpdateTime() *UserNoteUpsertBulk {
 	return u.Update(func(s *UserNoteUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetLabel sets the "label" field.
+func (u *UserNoteUpsertBulk) SetLabel(v string) *UserNoteUpsertBulk {
+	return u.Update(func(s *UserNoteUpsert) {
+		s.SetLabel(v)
+	})
+}
+
+// UpdateLabel sets the "label" field to the value that was provided on create.
+func (u *UserNoteUpsertBulk) UpdateLabel() *UserNoteUpsertBulk {
+	return u.Update(func(s *UserNoteUpsert) {
+		s.UpdateLabel()
+	})
+}
+
+// SetMemo sets the "memo" field.
+func (u *UserNoteUpsertBulk) SetMemo(v string) *UserNoteUpsertBulk {
+	return u.Update(func(s *UserNoteUpsert) {
+		s.SetMemo(v)
+	})
+}
+
+// UpdateMemo sets the "memo" field to the value that was provided on create.
+func (u *UserNoteUpsertBulk) UpdateMemo() *UserNoteUpsertBulk {
+	return u.Update(func(s *UserNoteUpsert) {
+		s.UpdateMemo()
+	})
+}
+
+// ClearMemo clears the value of the "memo" field.
+func (u *UserNoteUpsertBulk) ClearMemo() *UserNoteUpsertBulk {
+	return u.Update(func(s *UserNoteUpsert) {
+		s.ClearMemo()
 	})
 }
 

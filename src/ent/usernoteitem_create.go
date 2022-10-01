@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
 )
 
@@ -48,6 +49,23 @@ func (unic *UserNoteItemCreate) SetNillableUpdateTime(t *time.Time) *UserNoteIte
 		unic.SetUpdateTime(*t)
 	}
 	return unic
+}
+
+// SetText sets the "text" field.
+func (unic *UserNoteItemCreate) SetText(s string) *UserNoteItemCreate {
+	unic.mutation.SetText(s)
+	return unic
+}
+
+// SetNoteID sets the "note" edge to the UserNote entity by ID.
+func (unic *UserNoteItemCreate) SetNoteID(id int) *UserNoteItemCreate {
+	unic.mutation.SetNoteID(id)
+	return unic
+}
+
+// SetNote sets the "note" edge to the UserNote entity.
+func (unic *UserNoteItemCreate) SetNote(u *UserNote) *UserNoteItemCreate {
+	return unic.SetNoteID(u.ID)
 }
 
 // Mutation returns the UserNoteItemMutation object of the builder.
@@ -145,6 +163,17 @@ func (unic *UserNoteItemCreate) check() error {
 	if _, ok := unic.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "UserNoteItem.update_time"`)}
 	}
+	if _, ok := unic.mutation.Text(); !ok {
+		return &ValidationError{Name: "text", err: errors.New(`ent: missing required field "UserNoteItem.text"`)}
+	}
+	if v, ok := unic.mutation.Text(); ok {
+		if err := usernoteitem.TextValidator(v); err != nil {
+			return &ValidationError{Name: "text", err: fmt.Errorf(`ent: validator failed for field "UserNoteItem.text": %w`, err)}
+		}
+	}
+	if _, ok := unic.mutation.NoteID(); !ok {
+		return &ValidationError{Name: "note", err: errors.New(`ent: missing required edge "UserNoteItem.note"`)}
+	}
 	return nil
 }
 
@@ -188,6 +217,34 @@ func (unic *UserNoteItemCreate) createSpec() (*UserNoteItem, *sqlgraph.CreateSpe
 			Column: usernoteitem.FieldUpdateTime,
 		})
 		_node.UpdateTime = value
+	}
+	if value, ok := unic.mutation.Text(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usernoteitem.FieldText,
+		})
+		_node.Text = value
+	}
+	if nodes := unic.mutation.NoteIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usernoteitem.NoteTable,
+			Columns: []string{usernoteitem.NoteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usernote.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_note_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -265,6 +322,18 @@ func (u *UserNoteItemUpsert) UpdateUpdateTime() *UserNoteItemUpsert {
 	return u
 }
 
+// SetText sets the "text" field.
+func (u *UserNoteItemUpsert) SetText(v string) *UserNoteItemUpsert {
+	u.Set(usernoteitem.FieldText, v)
+	return u
+}
+
+// UpdateText sets the "text" field to the value that was provided on create.
+func (u *UserNoteItemUpsert) UpdateText() *UserNoteItemUpsert {
+	u.SetExcluded(usernoteitem.FieldText)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -335,6 +404,20 @@ func (u *UserNoteItemUpsertOne) SetUpdateTime(v time.Time) *UserNoteItemUpsertOn
 func (u *UserNoteItemUpsertOne) UpdateUpdateTime() *UserNoteItemUpsertOne {
 	return u.Update(func(s *UserNoteItemUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetText sets the "text" field.
+func (u *UserNoteItemUpsertOne) SetText(v string) *UserNoteItemUpsertOne {
+	return u.Update(func(s *UserNoteItemUpsert) {
+		s.SetText(v)
+	})
+}
+
+// UpdateText sets the "text" field to the value that was provided on create.
+func (u *UserNoteItemUpsertOne) UpdateText() *UserNoteItemUpsertOne {
+	return u.Update(func(s *UserNoteItemUpsert) {
+		s.UpdateText()
 	})
 }
 
@@ -570,6 +653,20 @@ func (u *UserNoteItemUpsertBulk) SetUpdateTime(v time.Time) *UserNoteItemUpsertB
 func (u *UserNoteItemUpsertBulk) UpdateUpdateTime() *UserNoteItemUpsertBulk {
 	return u.Update(func(s *UserNoteItemUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetText sets the "text" field.
+func (u *UserNoteItemUpsertBulk) SetText(v string) *UserNoteItemUpsertBulk {
+	return u.Update(func(s *UserNoteItemUpsert) {
+		s.SetText(v)
+	})
+}
+
+// UpdateText sets the "text" field to the value that was provided on create.
+func (u *UserNoteItemUpsertBulk) UpdateText() *UserNoteItemUpsertBulk {
+	return u.Update(func(s *UserNoteItemUpsert) {
+		s.UpdateText()
 	})
 }
 

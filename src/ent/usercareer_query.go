@@ -28,10 +28,10 @@ type UserCareerQuery struct {
 	order                  []OrderFunc
 	fields                 []string
 	predicates             []predicate.UserCareer
-	withCareergroup        *UserCareerGroupQuery
-	withCareerdescriptions *UserCareerDescriptionQuery
-	withCareertasks        *CareerTaskQuery
-	withCareerskillgroups  *CareerSkillGroupQuery
+	withCareerGroup        *UserCareerGroupQuery
+	withCareerDescriptions *UserCareerDescriptionQuery
+	withCareerTasks        *CareerTaskQuery
+	withCareerSkillGroups  *CareerSkillGroupQuery
 	withFKs                bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -69,8 +69,8 @@ func (ucq *UserCareerQuery) Order(o ...OrderFunc) *UserCareerQuery {
 	return ucq
 }
 
-// QueryCareergroup chains the current query on the "careergroup" edge.
-func (ucq *UserCareerQuery) QueryCareergroup() *UserCareerGroupQuery {
+// QueryCareerGroup chains the current query on the "careerGroup" edge.
+func (ucq *UserCareerQuery) QueryCareerGroup() *UserCareerGroupQuery {
 	query := &UserCareerGroupQuery{config: ucq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ucq.prepareQuery(ctx); err != nil {
@@ -83,7 +83,7 @@ func (ucq *UserCareerQuery) QueryCareergroup() *UserCareerGroupQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareer.Table, usercareer.FieldID, selector),
 			sqlgraph.To(usercareergroup.Table, usercareergroup.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, usercareer.CareergroupTable, usercareer.CareergroupColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, usercareer.CareerGroupTable, usercareer.CareerGroupColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ucq.driver.Dialect(), step)
 		return fromU, nil
@@ -91,8 +91,8 @@ func (ucq *UserCareerQuery) QueryCareergroup() *UserCareerGroupQuery {
 	return query
 }
 
-// QueryCareerdescriptions chains the current query on the "careerdescriptions" edge.
-func (ucq *UserCareerQuery) QueryCareerdescriptions() *UserCareerDescriptionQuery {
+// QueryCareerDescriptions chains the current query on the "careerDescriptions" edge.
+func (ucq *UserCareerQuery) QueryCareerDescriptions() *UserCareerDescriptionQuery {
 	query := &UserCareerDescriptionQuery{config: ucq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ucq.prepareQuery(ctx); err != nil {
@@ -105,7 +105,7 @@ func (ucq *UserCareerQuery) QueryCareerdescriptions() *UserCareerDescriptionQuer
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareer.Table, usercareer.FieldID, selector),
 			sqlgraph.To(usercareerdescription.Table, usercareerdescription.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, usercareer.CareerdescriptionsTable, usercareer.CareerdescriptionsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, usercareer.CareerDescriptionsTable, usercareer.CareerDescriptionsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ucq.driver.Dialect(), step)
 		return fromU, nil
@@ -113,8 +113,8 @@ func (ucq *UserCareerQuery) QueryCareerdescriptions() *UserCareerDescriptionQuer
 	return query
 }
 
-// QueryCareertasks chains the current query on the "careertasks" edge.
-func (ucq *UserCareerQuery) QueryCareertasks() *CareerTaskQuery {
+// QueryCareerTasks chains the current query on the "careerTasks" edge.
+func (ucq *UserCareerQuery) QueryCareerTasks() *CareerTaskQuery {
 	query := &CareerTaskQuery{config: ucq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ucq.prepareQuery(ctx); err != nil {
@@ -127,7 +127,7 @@ func (ucq *UserCareerQuery) QueryCareertasks() *CareerTaskQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareer.Table, usercareer.FieldID, selector),
 			sqlgraph.To(careertask.Table, careertask.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, usercareer.CareertasksTable, usercareer.CareertasksColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, usercareer.CareerTasksTable, usercareer.CareerTasksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ucq.driver.Dialect(), step)
 		return fromU, nil
@@ -135,8 +135,8 @@ func (ucq *UserCareerQuery) QueryCareertasks() *CareerTaskQuery {
 	return query
 }
 
-// QueryCareerskillgroups chains the current query on the "careerskillgroups" edge.
-func (ucq *UserCareerQuery) QueryCareerskillgroups() *CareerSkillGroupQuery {
+// QueryCareerSkillGroups chains the current query on the "careerSkillGroups" edge.
+func (ucq *UserCareerQuery) QueryCareerSkillGroups() *CareerSkillGroupQuery {
 	query := &CareerSkillGroupQuery{config: ucq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ucq.prepareQuery(ctx); err != nil {
@@ -149,7 +149,7 @@ func (ucq *UserCareerQuery) QueryCareerskillgroups() *CareerSkillGroupQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareer.Table, usercareer.FieldID, selector),
 			sqlgraph.To(careerskillgroup.Table, careerskillgroup.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, usercareer.CareerskillgroupsTable, usercareer.CareerskillgroupsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, usercareer.CareerSkillGroupsTable, usercareer.CareerSkillGroupsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ucq.driver.Dialect(), step)
 		return fromU, nil
@@ -338,10 +338,10 @@ func (ucq *UserCareerQuery) Clone() *UserCareerQuery {
 		offset:                 ucq.offset,
 		order:                  append([]OrderFunc{}, ucq.order...),
 		predicates:             append([]predicate.UserCareer{}, ucq.predicates...),
-		withCareergroup:        ucq.withCareergroup.Clone(),
-		withCareerdescriptions: ucq.withCareerdescriptions.Clone(),
-		withCareertasks:        ucq.withCareertasks.Clone(),
-		withCareerskillgroups:  ucq.withCareerskillgroups.Clone(),
+		withCareerGroup:        ucq.withCareerGroup.Clone(),
+		withCareerDescriptions: ucq.withCareerDescriptions.Clone(),
+		withCareerTasks:        ucq.withCareerTasks.Clone(),
+		withCareerSkillGroups:  ucq.withCareerSkillGroups.Clone(),
 		// clone intermediate query.
 		sql:    ucq.sql.Clone(),
 		path:   ucq.path,
@@ -349,47 +349,47 @@ func (ucq *UserCareerQuery) Clone() *UserCareerQuery {
 	}
 }
 
-// WithCareergroup tells the query-builder to eager-load the nodes that are connected to
-// the "careergroup" edge. The optional arguments are used to configure the query builder of the edge.
-func (ucq *UserCareerQuery) WithCareergroup(opts ...func(*UserCareerGroupQuery)) *UserCareerQuery {
+// WithCareerGroup tells the query-builder to eager-load the nodes that are connected to
+// the "careerGroup" edge. The optional arguments are used to configure the query builder of the edge.
+func (ucq *UserCareerQuery) WithCareerGroup(opts ...func(*UserCareerGroupQuery)) *UserCareerQuery {
 	query := &UserCareerGroupQuery{config: ucq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	ucq.withCareergroup = query
+	ucq.withCareerGroup = query
 	return ucq
 }
 
-// WithCareerdescriptions tells the query-builder to eager-load the nodes that are connected to
-// the "careerdescriptions" edge. The optional arguments are used to configure the query builder of the edge.
-func (ucq *UserCareerQuery) WithCareerdescriptions(opts ...func(*UserCareerDescriptionQuery)) *UserCareerQuery {
+// WithCareerDescriptions tells the query-builder to eager-load the nodes that are connected to
+// the "careerDescriptions" edge. The optional arguments are used to configure the query builder of the edge.
+func (ucq *UserCareerQuery) WithCareerDescriptions(opts ...func(*UserCareerDescriptionQuery)) *UserCareerQuery {
 	query := &UserCareerDescriptionQuery{config: ucq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	ucq.withCareerdescriptions = query
+	ucq.withCareerDescriptions = query
 	return ucq
 }
 
-// WithCareertasks tells the query-builder to eager-load the nodes that are connected to
-// the "careertasks" edge. The optional arguments are used to configure the query builder of the edge.
-func (ucq *UserCareerQuery) WithCareertasks(opts ...func(*CareerTaskQuery)) *UserCareerQuery {
+// WithCareerTasks tells the query-builder to eager-load the nodes that are connected to
+// the "careerTasks" edge. The optional arguments are used to configure the query builder of the edge.
+func (ucq *UserCareerQuery) WithCareerTasks(opts ...func(*CareerTaskQuery)) *UserCareerQuery {
 	query := &CareerTaskQuery{config: ucq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	ucq.withCareertasks = query
+	ucq.withCareerTasks = query
 	return ucq
 }
 
-// WithCareerskillgroups tells the query-builder to eager-load the nodes that are connected to
-// the "careerskillgroups" edge. The optional arguments are used to configure the query builder of the edge.
-func (ucq *UserCareerQuery) WithCareerskillgroups(opts ...func(*CareerSkillGroupQuery)) *UserCareerQuery {
+// WithCareerSkillGroups tells the query-builder to eager-load the nodes that are connected to
+// the "careerSkillGroups" edge. The optional arguments are used to configure the query builder of the edge.
+func (ucq *UserCareerQuery) WithCareerSkillGroups(opts ...func(*CareerSkillGroupQuery)) *UserCareerQuery {
 	query := &CareerSkillGroupQuery{config: ucq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	ucq.withCareerskillgroups = query
+	ucq.withCareerSkillGroups = query
 	return ucq
 }
 
@@ -463,13 +463,13 @@ func (ucq *UserCareerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 		withFKs     = ucq.withFKs
 		_spec       = ucq.querySpec()
 		loadedTypes = [4]bool{
-			ucq.withCareergroup != nil,
-			ucq.withCareerdescriptions != nil,
-			ucq.withCareertasks != nil,
-			ucq.withCareerskillgroups != nil,
+			ucq.withCareerGroup != nil,
+			ucq.withCareerDescriptions != nil,
+			ucq.withCareerTasks != nil,
+			ucq.withCareerSkillGroups != nil,
 		}
 	)
-	if ucq.withCareergroup != nil {
+	if ucq.withCareerGroup != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -493,33 +493,33 @@ func (ucq *UserCareerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := ucq.withCareergroup; query != nil {
-		if err := ucq.loadCareergroup(ctx, query, nodes, nil,
-			func(n *UserCareer, e *UserCareerGroup) { n.Edges.Careergroup = e }); err != nil {
+	if query := ucq.withCareerGroup; query != nil {
+		if err := ucq.loadCareerGroup(ctx, query, nodes, nil,
+			func(n *UserCareer, e *UserCareerGroup) { n.Edges.CareerGroup = e }); err != nil {
 			return nil, err
 		}
 	}
-	if query := ucq.withCareerdescriptions; query != nil {
-		if err := ucq.loadCareerdescriptions(ctx, query, nodes,
-			func(n *UserCareer) { n.Edges.Careerdescriptions = []*UserCareerDescription{} },
+	if query := ucq.withCareerDescriptions; query != nil {
+		if err := ucq.loadCareerDescriptions(ctx, query, nodes,
+			func(n *UserCareer) { n.Edges.CareerDescriptions = []*UserCareerDescription{} },
 			func(n *UserCareer, e *UserCareerDescription) {
-				n.Edges.Careerdescriptions = append(n.Edges.Careerdescriptions, e)
+				n.Edges.CareerDescriptions = append(n.Edges.CareerDescriptions, e)
 			}); err != nil {
 			return nil, err
 		}
 	}
-	if query := ucq.withCareertasks; query != nil {
-		if err := ucq.loadCareertasks(ctx, query, nodes,
-			func(n *UserCareer) { n.Edges.Careertasks = []*CareerTask{} },
-			func(n *UserCareer, e *CareerTask) { n.Edges.Careertasks = append(n.Edges.Careertasks, e) }); err != nil {
+	if query := ucq.withCareerTasks; query != nil {
+		if err := ucq.loadCareerTasks(ctx, query, nodes,
+			func(n *UserCareer) { n.Edges.CareerTasks = []*CareerTask{} },
+			func(n *UserCareer, e *CareerTask) { n.Edges.CareerTasks = append(n.Edges.CareerTasks, e) }); err != nil {
 			return nil, err
 		}
 	}
-	if query := ucq.withCareerskillgroups; query != nil {
-		if err := ucq.loadCareerskillgroups(ctx, query, nodes,
-			func(n *UserCareer) { n.Edges.Careerskillgroups = []*CareerSkillGroup{} },
+	if query := ucq.withCareerSkillGroups; query != nil {
+		if err := ucq.loadCareerSkillGroups(ctx, query, nodes,
+			func(n *UserCareer) { n.Edges.CareerSkillGroups = []*CareerSkillGroup{} },
 			func(n *UserCareer, e *CareerSkillGroup) {
-				n.Edges.Careerskillgroups = append(n.Edges.Careerskillgroups, e)
+				n.Edges.CareerSkillGroups = append(n.Edges.CareerSkillGroups, e)
 			}); err != nil {
 			return nil, err
 		}
@@ -527,14 +527,14 @@ func (ucq *UserCareerQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	return nodes, nil
 }
 
-func (ucq *UserCareerQuery) loadCareergroup(ctx context.Context, query *UserCareerGroupQuery, nodes []*UserCareer, init func(*UserCareer), assign func(*UserCareer, *UserCareerGroup)) error {
+func (ucq *UserCareerQuery) loadCareerGroup(ctx context.Context, query *UserCareerGroupQuery, nodes []*UserCareer, init func(*UserCareer), assign func(*UserCareer, *UserCareerGroup)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*UserCareer)
 	for i := range nodes {
-		if nodes[i].careergroup_id == nil {
+		if nodes[i].career_group_id == nil {
 			continue
 		}
-		fk := *nodes[i].careergroup_id
+		fk := *nodes[i].career_group_id
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -548,7 +548,7 @@ func (ucq *UserCareerQuery) loadCareergroup(ctx context.Context, query *UserCare
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "careergroup_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "career_group_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -556,7 +556,7 @@ func (ucq *UserCareerQuery) loadCareergroup(ctx context.Context, query *UserCare
 	}
 	return nil
 }
-func (ucq *UserCareerQuery) loadCareerdescriptions(ctx context.Context, query *UserCareerDescriptionQuery, nodes []*UserCareer, init func(*UserCareer), assign func(*UserCareer, *UserCareerDescription)) error {
+func (ucq *UserCareerQuery) loadCareerDescriptions(ctx context.Context, query *UserCareerDescriptionQuery, nodes []*UserCareer, init func(*UserCareer), assign func(*UserCareer, *UserCareerDescription)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*UserCareer)
 	for i := range nodes {
@@ -568,7 +568,7 @@ func (ucq *UserCareerQuery) loadCareerdescriptions(ctx context.Context, query *U
 	}
 	query.withFKs = true
 	query.Where(predicate.UserCareerDescription(func(s *sql.Selector) {
-		s.Where(sql.InValues(usercareer.CareerdescriptionsColumn, fks...))
+		s.Where(sql.InValues(usercareer.CareerDescriptionsColumn, fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -587,7 +587,7 @@ func (ucq *UserCareerQuery) loadCareerdescriptions(ctx context.Context, query *U
 	}
 	return nil
 }
-func (ucq *UserCareerQuery) loadCareertasks(ctx context.Context, query *CareerTaskQuery, nodes []*UserCareer, init func(*UserCareer), assign func(*UserCareer, *CareerTask)) error {
+func (ucq *UserCareerQuery) loadCareerTasks(ctx context.Context, query *CareerTaskQuery, nodes []*UserCareer, init func(*UserCareer), assign func(*UserCareer, *CareerTask)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*UserCareer)
 	for i := range nodes {
@@ -599,7 +599,7 @@ func (ucq *UserCareerQuery) loadCareertasks(ctx context.Context, query *CareerTa
 	}
 	query.withFKs = true
 	query.Where(predicate.CareerTask(func(s *sql.Selector) {
-		s.Where(sql.InValues(usercareer.CareertasksColumn, fks...))
+		s.Where(sql.InValues(usercareer.CareerTasksColumn, fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -618,7 +618,7 @@ func (ucq *UserCareerQuery) loadCareertasks(ctx context.Context, query *CareerTa
 	}
 	return nil
 }
-func (ucq *UserCareerQuery) loadCareerskillgroups(ctx context.Context, query *CareerSkillGroupQuery, nodes []*UserCareer, init func(*UserCareer), assign func(*UserCareer, *CareerSkillGroup)) error {
+func (ucq *UserCareerQuery) loadCareerSkillGroups(ctx context.Context, query *CareerSkillGroupQuery, nodes []*UserCareer, init func(*UserCareer), assign func(*UserCareer, *CareerSkillGroup)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*UserCareer)
 	for i := range nodes {
@@ -630,7 +630,7 @@ func (ucq *UserCareerQuery) loadCareerskillgroups(ctx context.Context, query *Ca
 	}
 	query.withFKs = true
 	query.Where(predicate.CareerSkillGroup(func(s *sql.Selector) {
-		s.Where(sql.InValues(usercareer.CareerskillgroupsColumn, fks...))
+		s.Where(sql.InValues(usercareer.CareerSkillGroupsColumn, fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

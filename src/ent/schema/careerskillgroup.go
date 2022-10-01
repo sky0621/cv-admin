@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	careerSkillGroupEdgeName = "careerskillgroup"
-	careerSkillGroupsRef     = "careerskillgroups"
+	careerSkillGroupEdgeName = "careerSkillGroup"
+	careerSkillGroupsRef     = "careerSkillGroups"
 )
 
 // CareerSkillGroup holds the schema definition for the CareerSkillGroup entity.

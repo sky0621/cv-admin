@@ -285,15 +285,15 @@ func (c *CareerSkillClient) GetX(ctx context.Context, id int) *CareerSkill {
 	return obj
 }
 
-// QueryCareerskillgroup queries the careerskillgroup edge of a CareerSkill.
-func (c *CareerSkillClient) QueryCareerskillgroup(cs *CareerSkill) *CareerSkillGroupQuery {
+// QueryCareerSkillGroup queries the careerSkillGroup edge of a CareerSkill.
+func (c *CareerSkillClient) QueryCareerSkillGroup(cs *CareerSkill) *CareerSkillGroupQuery {
 	query := &CareerSkillGroupQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := cs.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(careerskill.Table, careerskill.FieldID, id),
 			sqlgraph.To(careerskillgroup.Table, careerskillgroup.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, careerskill.CareerskillgroupTable, careerskill.CareerskillgroupColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, careerskill.CareerSkillGroupTable, careerskill.CareerSkillGroupColumn),
 		)
 		fromV = sqlgraph.Neighbors(cs.driver.Dialect(), step)
 		return fromV, nil
@@ -407,15 +407,15 @@ func (c *CareerSkillGroupClient) QueryCareer(csg *CareerSkillGroup) *UserCareerQ
 	return query
 }
 
-// QueryCareerskills queries the careerskills edge of a CareerSkillGroup.
-func (c *CareerSkillGroupClient) QueryCareerskills(csg *CareerSkillGroup) *CareerSkillQuery {
+// QueryCareerSkills queries the careerSkills edge of a CareerSkillGroup.
+func (c *CareerSkillGroupClient) QueryCareerSkills(csg *CareerSkillGroup) *CareerSkillQuery {
 	query := &CareerSkillQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := csg.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(careerskillgroup.Table, careerskillgroup.FieldID, id),
 			sqlgraph.To(careerskill.Table, careerskill.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, careerskillgroup.CareerskillsTable, careerskillgroup.CareerskillsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, careerskillgroup.CareerSkillsTable, careerskillgroup.CareerSkillsColumn),
 		)
 		fromV = sqlgraph.Neighbors(csg.driver.Dialect(), step)
 		return fromV, nil
@@ -529,15 +529,15 @@ func (c *CareerTaskClient) QueryCareer(ct *CareerTask) *UserCareerQuery {
 	return query
 }
 
-// QueryCareertaskdescriptions queries the careertaskdescriptions edge of a CareerTask.
-func (c *CareerTaskClient) QueryCareertaskdescriptions(ct *CareerTask) *CareerTaskDescriptionQuery {
+// QueryCareerTaskDescriptions queries the careerTaskDescriptions edge of a CareerTask.
+func (c *CareerTaskClient) QueryCareerTaskDescriptions(ct *CareerTask) *CareerTaskDescriptionQuery {
 	query := &CareerTaskDescriptionQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := ct.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(careertask.Table, careertask.FieldID, id),
 			sqlgraph.To(careertaskdescription.Table, careertaskdescription.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, careertask.CareertaskdescriptionsTable, careertask.CareertaskdescriptionsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, careertask.CareerTaskDescriptionsTable, careertask.CareerTaskDescriptionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(ct.driver.Dialect(), step)
 		return fromV, nil
@@ -635,15 +635,15 @@ func (c *CareerTaskDescriptionClient) GetX(ctx context.Context, id int) *CareerT
 	return obj
 }
 
-// QueryCareertask queries the careertask edge of a CareerTaskDescription.
-func (c *CareerTaskDescriptionClient) QueryCareertask(ctd *CareerTaskDescription) *CareerTaskQuery {
+// QueryCareerTask queries the careerTask edge of a CareerTaskDescription.
+func (c *CareerTaskDescriptionClient) QueryCareerTask(ctd *CareerTaskDescription) *CareerTaskQuery {
 	query := &CareerTaskQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := ctd.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(careertaskdescription.Table, careertaskdescription.FieldID, id),
 			sqlgraph.To(careertask.Table, careertask.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, careertaskdescription.CareertaskTable, careertaskdescription.CareertaskColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, careertaskdescription.CareerTaskTable, careertaskdescription.CareerTaskColumn),
 		)
 		fromV = sqlgraph.Neighbors(ctd.driver.Dialect(), step)
 		return fromV, nil
@@ -773,15 +773,31 @@ func (c *UserClient) QueryQualifications(u *User) *UserQualificationQuery {
 	return query
 }
 
-// QueryCareergroups queries the careergroups edge of a User.
-func (c *UserClient) QueryCareergroups(u *User) *UserCareerGroupQuery {
+// QueryCareerGroups queries the careerGroups edge of a User.
+func (c *UserClient) QueryCareerGroups(u *User) *UserCareerGroupQuery {
 	query := &UserCareerGroupQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(usercareergroup.Table, usercareergroup.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.CareergroupsTable, user.CareergroupsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CareerGroupsTable, user.CareerGroupsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryNotes queries the notes edge of a User.
+func (c *UserClient) QueryNotes(u *User) *UserNoteQuery {
+	query := &UserNoteQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(usernote.Table, usernote.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.NotesTable, user.NotesColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -985,15 +1001,15 @@ func (c *UserCareerClient) GetX(ctx context.Context, id int) *UserCareer {
 	return obj
 }
 
-// QueryCareergroup queries the careergroup edge of a UserCareer.
-func (c *UserCareerClient) QueryCareergroup(uc *UserCareer) *UserCareerGroupQuery {
+// QueryCareerGroup queries the careerGroup edge of a UserCareer.
+func (c *UserCareerClient) QueryCareerGroup(uc *UserCareer) *UserCareerGroupQuery {
 	query := &UserCareerGroupQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := uc.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareer.Table, usercareer.FieldID, id),
 			sqlgraph.To(usercareergroup.Table, usercareergroup.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, usercareer.CareergroupTable, usercareer.CareergroupColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, usercareer.CareerGroupTable, usercareer.CareerGroupColumn),
 		)
 		fromV = sqlgraph.Neighbors(uc.driver.Dialect(), step)
 		return fromV, nil
@@ -1001,15 +1017,15 @@ func (c *UserCareerClient) QueryCareergroup(uc *UserCareer) *UserCareerGroupQuer
 	return query
 }
 
-// QueryCareerdescriptions queries the careerdescriptions edge of a UserCareer.
-func (c *UserCareerClient) QueryCareerdescriptions(uc *UserCareer) *UserCareerDescriptionQuery {
+// QueryCareerDescriptions queries the careerDescriptions edge of a UserCareer.
+func (c *UserCareerClient) QueryCareerDescriptions(uc *UserCareer) *UserCareerDescriptionQuery {
 	query := &UserCareerDescriptionQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := uc.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareer.Table, usercareer.FieldID, id),
 			sqlgraph.To(usercareerdescription.Table, usercareerdescription.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, usercareer.CareerdescriptionsTable, usercareer.CareerdescriptionsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, usercareer.CareerDescriptionsTable, usercareer.CareerDescriptionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(uc.driver.Dialect(), step)
 		return fromV, nil
@@ -1017,15 +1033,15 @@ func (c *UserCareerClient) QueryCareerdescriptions(uc *UserCareer) *UserCareerDe
 	return query
 }
 
-// QueryCareertasks queries the careertasks edge of a UserCareer.
-func (c *UserCareerClient) QueryCareertasks(uc *UserCareer) *CareerTaskQuery {
+// QueryCareerTasks queries the careerTasks edge of a UserCareer.
+func (c *UserCareerClient) QueryCareerTasks(uc *UserCareer) *CareerTaskQuery {
 	query := &CareerTaskQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := uc.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareer.Table, usercareer.FieldID, id),
 			sqlgraph.To(careertask.Table, careertask.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, usercareer.CareertasksTable, usercareer.CareertasksColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, usercareer.CareerTasksTable, usercareer.CareerTasksColumn),
 		)
 		fromV = sqlgraph.Neighbors(uc.driver.Dialect(), step)
 		return fromV, nil
@@ -1033,15 +1049,15 @@ func (c *UserCareerClient) QueryCareertasks(uc *UserCareer) *CareerTaskQuery {
 	return query
 }
 
-// QueryCareerskillgroups queries the careerskillgroups edge of a UserCareer.
-func (c *UserCareerClient) QueryCareerskillgroups(uc *UserCareer) *CareerSkillGroupQuery {
+// QueryCareerSkillGroups queries the careerSkillGroups edge of a UserCareer.
+func (c *UserCareerClient) QueryCareerSkillGroups(uc *UserCareer) *CareerSkillGroupQuery {
 	query := &CareerSkillGroupQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := uc.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareer.Table, usercareer.FieldID, id),
 			sqlgraph.To(careerskillgroup.Table, careerskillgroup.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, usercareer.CareerskillgroupsTable, usercareer.CareerskillgroupsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, usercareer.CareerSkillGroupsTable, usercareer.CareerSkillGroupsColumn),
 		)
 		fromV = sqlgraph.Neighbors(uc.driver.Dialect(), step)
 		return fromV, nil
@@ -1367,6 +1383,38 @@ func (c *UserNoteClient) GetX(ctx context.Context, id int) *UserNote {
 	return obj
 }
 
+// QueryUser queries the user edge of a UserNote.
+func (c *UserNoteClient) QueryUser(un *UserNote) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := un.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usernote.Table, usernote.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, usernote.UserTable, usernote.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(un.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryNoteItems queries the noteItems edge of a UserNote.
+func (c *UserNoteClient) QueryNoteItems(un *UserNote) *UserNoteItemQuery {
+	query := &UserNoteItemQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := un.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usernote.Table, usernote.FieldID, id),
+			sqlgraph.To(usernoteitem.Table, usernoteitem.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, usernote.NoteItemsTable, usernote.NoteItemsColumn),
+		)
+		fromV = sqlgraph.Neighbors(un.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserNoteClient) Hooks() []Hook {
 	return c.hooks.UserNote
@@ -1455,6 +1503,22 @@ func (c *UserNoteItemClient) GetX(ctx context.Context, id int) *UserNoteItem {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryNote queries the note edge of a UserNoteItem.
+func (c *UserNoteItemClient) QueryNote(uni *UserNoteItem) *UserNoteQuery {
+	query := &UserNoteQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := uni.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usernoteitem.Table, usernoteitem.FieldID, id),
+			sqlgraph.To(usernote.Table, usernote.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, usernoteitem.NoteTable, usernoteitem.NoteColumn),
+		)
+		fromV = sqlgraph.Neighbors(uni.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // Hooks returns the client hooks.

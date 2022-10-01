@@ -69,19 +69,19 @@ func (csgc *CareerSkillGroupCreate) SetCareer(u *UserCareer) *CareerSkillGroupCr
 	return csgc.SetCareerID(u.ID)
 }
 
-// AddCareerskillIDs adds the "careerskills" edge to the CareerSkill entity by IDs.
-func (csgc *CareerSkillGroupCreate) AddCareerskillIDs(ids ...int) *CareerSkillGroupCreate {
-	csgc.mutation.AddCareerskillIDs(ids...)
+// AddCareerSkillIDs adds the "careerSkills" edge to the CareerSkill entity by IDs.
+func (csgc *CareerSkillGroupCreate) AddCareerSkillIDs(ids ...int) *CareerSkillGroupCreate {
+	csgc.mutation.AddCareerSkillIDs(ids...)
 	return csgc
 }
 
-// AddCareerskills adds the "careerskills" edges to the CareerSkill entity.
-func (csgc *CareerSkillGroupCreate) AddCareerskills(c ...*CareerSkill) *CareerSkillGroupCreate {
+// AddCareerSkills adds the "careerSkills" edges to the CareerSkill entity.
+func (csgc *CareerSkillGroupCreate) AddCareerSkills(c ...*CareerSkill) *CareerSkillGroupCreate {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
-	return csgc.AddCareerskillIDs(ids...)
+	return csgc.AddCareerSkillIDs(ids...)
 }
 
 // Mutation returns the CareerSkillGroupMutation object of the builder.
@@ -262,12 +262,12 @@ func (csgc *CareerSkillGroupCreate) createSpec() (*CareerSkillGroup, *sqlgraph.C
 		_node.career_id = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := csgc.mutation.CareerskillsIDs(); len(nodes) > 0 {
+	if nodes := csgc.mutation.CareerSkillsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   careerskillgroup.CareerskillsTable,
-			Columns: []string{careerskillgroup.CareerskillsColumn},
+			Table:   careerskillgroup.CareerSkillsTable,
+			Columns: []string{careerskillgroup.CareerSkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

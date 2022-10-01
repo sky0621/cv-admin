@@ -69,19 +69,19 @@ func (ctc *CareerTaskCreate) SetCareer(u *UserCareer) *CareerTaskCreate {
 	return ctc.SetCareerID(u.ID)
 }
 
-// AddCareertaskdescriptionIDs adds the "careertaskdescriptions" edge to the CareerTaskDescription entity by IDs.
-func (ctc *CareerTaskCreate) AddCareertaskdescriptionIDs(ids ...int) *CareerTaskCreate {
-	ctc.mutation.AddCareertaskdescriptionIDs(ids...)
+// AddCareerTaskDescriptionIDs adds the "careerTaskDescriptions" edge to the CareerTaskDescription entity by IDs.
+func (ctc *CareerTaskCreate) AddCareerTaskDescriptionIDs(ids ...int) *CareerTaskCreate {
+	ctc.mutation.AddCareerTaskDescriptionIDs(ids...)
 	return ctc
 }
 
-// AddCareertaskdescriptions adds the "careertaskdescriptions" edges to the CareerTaskDescription entity.
-func (ctc *CareerTaskCreate) AddCareertaskdescriptions(c ...*CareerTaskDescription) *CareerTaskCreate {
+// AddCareerTaskDescriptions adds the "careerTaskDescriptions" edges to the CareerTaskDescription entity.
+func (ctc *CareerTaskCreate) AddCareerTaskDescriptions(c ...*CareerTaskDescription) *CareerTaskCreate {
 	ids := make([]int, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
-	return ctc.AddCareertaskdescriptionIDs(ids...)
+	return ctc.AddCareerTaskDescriptionIDs(ids...)
 }
 
 // Mutation returns the CareerTaskMutation object of the builder.
@@ -262,12 +262,12 @@ func (ctc *CareerTaskCreate) createSpec() (*CareerTask, *sqlgraph.CreateSpec) {
 		_node.career_id = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ctc.mutation.CareertaskdescriptionsIDs(); len(nodes) > 0 {
+	if nodes := ctc.mutation.CareerTaskDescriptionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   careertask.CareertaskdescriptionsTable,
-			Columns: []string{careertask.CareertaskdescriptionsColumn},
+			Table:   careertask.CareerTaskDescriptionsTable,
+			Columns: []string{careertask.CareerTaskDescriptionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

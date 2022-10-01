@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
+	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
 )
 
@@ -34,9 +35,32 @@ func (uniu *UserNoteItemUpdate) SetUpdateTime(t time.Time) *UserNoteItemUpdate {
 	return uniu
 }
 
+// SetText sets the "text" field.
+func (uniu *UserNoteItemUpdate) SetText(s string) *UserNoteItemUpdate {
+	uniu.mutation.SetText(s)
+	return uniu
+}
+
+// SetNoteID sets the "note" edge to the UserNote entity by ID.
+func (uniu *UserNoteItemUpdate) SetNoteID(id int) *UserNoteItemUpdate {
+	uniu.mutation.SetNoteID(id)
+	return uniu
+}
+
+// SetNote sets the "note" edge to the UserNote entity.
+func (uniu *UserNoteItemUpdate) SetNote(u *UserNote) *UserNoteItemUpdate {
+	return uniu.SetNoteID(u.ID)
+}
+
 // Mutation returns the UserNoteItemMutation object of the builder.
 func (uniu *UserNoteItemUpdate) Mutation() *UserNoteItemMutation {
 	return uniu.mutation
+}
+
+// ClearNote clears the "note" edge to the UserNote entity.
+func (uniu *UserNoteItemUpdate) ClearNote() *UserNoteItemUpdate {
+	uniu.mutation.ClearNote()
+	return uniu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -47,12 +71,18 @@ func (uniu *UserNoteItemUpdate) Save(ctx context.Context) (int, error) {
 	)
 	uniu.defaults()
 	if len(uniu.hooks) == 0 {
+		if err = uniu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = uniu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*UserNoteItemMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = uniu.check(); err != nil {
+				return 0, err
 			}
 			uniu.mutation = mutation
 			affected, err = uniu.sqlSave(ctx)
@@ -102,6 +132,19 @@ func (uniu *UserNoteItemUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (uniu *UserNoteItemUpdate) check() error {
+	if v, ok := uniu.mutation.Text(); ok {
+		if err := usernoteitem.TextValidator(v); err != nil {
+			return &ValidationError{Name: "text", err: fmt.Errorf(`ent: validator failed for field "UserNoteItem.text": %w`, err)}
+		}
+	}
+	if _, ok := uniu.mutation.NoteID(); uniu.mutation.NoteCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "UserNoteItem.note"`)
+	}
+	return nil
+}
+
 func (uniu *UserNoteItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -126,6 +169,48 @@ func (uniu *UserNoteItemUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Value:  value,
 			Column: usernoteitem.FieldUpdateTime,
 		})
+	}
+	if value, ok := uniu.mutation.Text(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usernoteitem.FieldText,
+		})
+	}
+	if uniu.mutation.NoteCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usernoteitem.NoteTable,
+			Columns: []string{usernoteitem.NoteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usernote.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uniu.mutation.NoteIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usernoteitem.NoteTable,
+			Columns: []string{usernoteitem.NoteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usernote.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uniu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -152,9 +237,32 @@ func (uniuo *UserNoteItemUpdateOne) SetUpdateTime(t time.Time) *UserNoteItemUpda
 	return uniuo
 }
 
+// SetText sets the "text" field.
+func (uniuo *UserNoteItemUpdateOne) SetText(s string) *UserNoteItemUpdateOne {
+	uniuo.mutation.SetText(s)
+	return uniuo
+}
+
+// SetNoteID sets the "note" edge to the UserNote entity by ID.
+func (uniuo *UserNoteItemUpdateOne) SetNoteID(id int) *UserNoteItemUpdateOne {
+	uniuo.mutation.SetNoteID(id)
+	return uniuo
+}
+
+// SetNote sets the "note" edge to the UserNote entity.
+func (uniuo *UserNoteItemUpdateOne) SetNote(u *UserNote) *UserNoteItemUpdateOne {
+	return uniuo.SetNoteID(u.ID)
+}
+
 // Mutation returns the UserNoteItemMutation object of the builder.
 func (uniuo *UserNoteItemUpdateOne) Mutation() *UserNoteItemMutation {
 	return uniuo.mutation
+}
+
+// ClearNote clears the "note" edge to the UserNote entity.
+func (uniuo *UserNoteItemUpdateOne) ClearNote() *UserNoteItemUpdateOne {
+	uniuo.mutation.ClearNote()
+	return uniuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -172,12 +280,18 @@ func (uniuo *UserNoteItemUpdateOne) Save(ctx context.Context) (*UserNoteItem, er
 	)
 	uniuo.defaults()
 	if len(uniuo.hooks) == 0 {
+		if err = uniuo.check(); err != nil {
+			return nil, err
+		}
 		node, err = uniuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*UserNoteItemMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = uniuo.check(); err != nil {
+				return nil, err
 			}
 			uniuo.mutation = mutation
 			node, err = uniuo.sqlSave(ctx)
@@ -233,6 +347,19 @@ func (uniuo *UserNoteItemUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (uniuo *UserNoteItemUpdateOne) check() error {
+	if v, ok := uniuo.mutation.Text(); ok {
+		if err := usernoteitem.TextValidator(v); err != nil {
+			return &ValidationError{Name: "text", err: fmt.Errorf(`ent: validator failed for field "UserNoteItem.text": %w`, err)}
+		}
+	}
+	if _, ok := uniuo.mutation.NoteID(); uniuo.mutation.NoteCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "UserNoteItem.note"`)
+	}
+	return nil
+}
+
 func (uniuo *UserNoteItemUpdateOne) sqlSave(ctx context.Context) (_node *UserNoteItem, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -274,6 +401,48 @@ func (uniuo *UserNoteItemUpdateOne) sqlSave(ctx context.Context) (_node *UserNot
 			Value:  value,
 			Column: usernoteitem.FieldUpdateTime,
 		})
+	}
+	if value, ok := uniuo.mutation.Text(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usernoteitem.FieldText,
+		})
+	}
+	if uniuo.mutation.NoteCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usernoteitem.NoteTable,
+			Columns: []string{usernoteitem.NoteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usernote.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uniuo.mutation.NoteIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usernoteitem.NoteTable,
+			Columns: []string{usernoteitem.NoteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usernote.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &UserNoteItem{config: uniuo.config}
 	_spec.Assign = _node.assignValues

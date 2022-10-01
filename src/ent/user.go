@@ -49,11 +49,13 @@ type UserEdges struct {
 	Activities []*UserActivity `json:"activities,omitempty"`
 	// Qualifications holds the value of the qualifications edge.
 	Qualifications []*UserQualification `json:"qualifications,omitempty"`
-	// Careergroups holds the value of the careergroups edge.
-	Careergroups []*UserCareerGroup `json:"careergroups,omitempty"`
+	// CareerGroups holds the value of the careerGroups edge.
+	CareerGroups []*UserCareerGroup `json:"careerGroups,omitempty"`
+	// Notes holds the value of the notes edge.
+	Notes []*UserNote `json:"notes,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // ActivitiesOrErr returns the Activities value or an error if the edge
@@ -74,13 +76,22 @@ func (e UserEdges) QualificationsOrErr() ([]*UserQualification, error) {
 	return nil, &NotLoadedError{edge: "qualifications"}
 }
 
-// CareergroupsOrErr returns the Careergroups value or an error if the edge
+// CareerGroupsOrErr returns the CareerGroups value or an error if the edge
 // was not loaded in eager-loading.
-func (e UserEdges) CareergroupsOrErr() ([]*UserCareerGroup, error) {
+func (e UserEdges) CareerGroupsOrErr() ([]*UserCareerGroup, error) {
 	if e.loadedTypes[2] {
-		return e.Careergroups, nil
+		return e.CareerGroups, nil
 	}
-	return nil, &NotLoadedError{edge: "careergroups"}
+	return nil, &NotLoadedError{edge: "careerGroups"}
+}
+
+// NotesOrErr returns the Notes value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) NotesOrErr() ([]*UserNote, error) {
+	if e.loadedTypes[3] {
+		return e.Notes, nil
+	}
+	return nil, &NotLoadedError{edge: "notes"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -201,9 +212,14 @@ func (u *User) QueryQualifications() *UserQualificationQuery {
 	return (&UserClient{config: u.config}).QueryQualifications(u)
 }
 
-// QueryCareergroups queries the "careergroups" edge of the User entity.
-func (u *User) QueryCareergroups() *UserCareerGroupQuery {
-	return (&UserClient{config: u.config}).QueryCareergroups(u)
+// QueryCareerGroups queries the "careerGroups" edge of the User entity.
+func (u *User) QueryCareerGroups() *UserCareerGroupQuery {
+	return (&UserClient{config: u.config}).QueryCareerGroups(u)
+}
+
+// QueryNotes queries the "notes" edge of the User entity.
+func (u *User) QueryNotes() *UserNoteQuery {
+	return (&UserClient{config: u.config}).QueryNotes(u)
 }
 
 // Update returns a builder for updating this User.

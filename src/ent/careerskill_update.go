@@ -81,15 +81,15 @@ func (csu *CareerSkillUpdate) ClearVersion() *CareerSkillUpdate {
 	return csu
 }
 
-// SetCareerskillgroupID sets the "careerskillgroup" edge to the CareerSkillGroup entity by ID.
-func (csu *CareerSkillUpdate) SetCareerskillgroupID(id int) *CareerSkillUpdate {
-	csu.mutation.SetCareerskillgroupID(id)
+// SetCareerSkillGroupID sets the "careerSkillGroup" edge to the CareerSkillGroup entity by ID.
+func (csu *CareerSkillUpdate) SetCareerSkillGroupID(id int) *CareerSkillUpdate {
+	csu.mutation.SetCareerSkillGroupID(id)
 	return csu
 }
 
-// SetCareerskillgroup sets the "careerskillgroup" edge to the CareerSkillGroup entity.
-func (csu *CareerSkillUpdate) SetCareerskillgroup(c *CareerSkillGroup) *CareerSkillUpdate {
-	return csu.SetCareerskillgroupID(c.ID)
+// SetCareerSkillGroup sets the "careerSkillGroup" edge to the CareerSkillGroup entity.
+func (csu *CareerSkillUpdate) SetCareerSkillGroup(c *CareerSkillGroup) *CareerSkillUpdate {
+	return csu.SetCareerSkillGroupID(c.ID)
 }
 
 // Mutation returns the CareerSkillMutation object of the builder.
@@ -97,9 +97,9 @@ func (csu *CareerSkillUpdate) Mutation() *CareerSkillMutation {
 	return csu.mutation
 }
 
-// ClearCareerskillgroup clears the "careerskillgroup" edge to the CareerSkillGroup entity.
-func (csu *CareerSkillUpdate) ClearCareerskillgroup() *CareerSkillUpdate {
-	csu.mutation.ClearCareerskillgroup()
+// ClearCareerSkillGroup clears the "careerSkillGroup" edge to the CareerSkillGroup entity.
+func (csu *CareerSkillUpdate) ClearCareerSkillGroup() *CareerSkillUpdate {
+	csu.mutation.ClearCareerSkillGroup()
 	return csu
 }
 
@@ -189,8 +189,8 @@ func (csu *CareerSkillUpdate) check() error {
 			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "CareerSkill.version": %w`, err)}
 		}
 	}
-	if _, ok := csu.mutation.CareerskillgroupID(); csu.mutation.CareerskillgroupCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "CareerSkill.careerskillgroup"`)
+	if _, ok := csu.mutation.CareerSkillGroupID(); csu.mutation.CareerSkillGroupCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "CareerSkill.careerSkillGroup"`)
 	}
 	return nil
 }
@@ -253,12 +253,12 @@ func (csu *CareerSkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: careerskill.FieldVersion,
 		})
 	}
-	if csu.mutation.CareerskillgroupCleared() {
+	if csu.mutation.CareerSkillGroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   careerskill.CareerskillgroupTable,
-			Columns: []string{careerskill.CareerskillgroupColumn},
+			Table:   careerskill.CareerSkillGroupTable,
+			Columns: []string{careerskill.CareerSkillGroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -269,12 +269,12 @@ func (csu *CareerSkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := csu.mutation.CareerskillgroupIDs(); len(nodes) > 0 {
+	if nodes := csu.mutation.CareerSkillGroupIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   careerskill.CareerskillgroupTable,
-			Columns: []string{careerskill.CareerskillgroupColumn},
+			Table:   careerskill.CareerSkillGroupTable,
+			Columns: []string{careerskill.CareerSkillGroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -359,15 +359,15 @@ func (csuo *CareerSkillUpdateOne) ClearVersion() *CareerSkillUpdateOne {
 	return csuo
 }
 
-// SetCareerskillgroupID sets the "careerskillgroup" edge to the CareerSkillGroup entity by ID.
-func (csuo *CareerSkillUpdateOne) SetCareerskillgroupID(id int) *CareerSkillUpdateOne {
-	csuo.mutation.SetCareerskillgroupID(id)
+// SetCareerSkillGroupID sets the "careerSkillGroup" edge to the CareerSkillGroup entity by ID.
+func (csuo *CareerSkillUpdateOne) SetCareerSkillGroupID(id int) *CareerSkillUpdateOne {
+	csuo.mutation.SetCareerSkillGroupID(id)
 	return csuo
 }
 
-// SetCareerskillgroup sets the "careerskillgroup" edge to the CareerSkillGroup entity.
-func (csuo *CareerSkillUpdateOne) SetCareerskillgroup(c *CareerSkillGroup) *CareerSkillUpdateOne {
-	return csuo.SetCareerskillgroupID(c.ID)
+// SetCareerSkillGroup sets the "careerSkillGroup" edge to the CareerSkillGroup entity.
+func (csuo *CareerSkillUpdateOne) SetCareerSkillGroup(c *CareerSkillGroup) *CareerSkillUpdateOne {
+	return csuo.SetCareerSkillGroupID(c.ID)
 }
 
 // Mutation returns the CareerSkillMutation object of the builder.
@@ -375,9 +375,9 @@ func (csuo *CareerSkillUpdateOne) Mutation() *CareerSkillMutation {
 	return csuo.mutation
 }
 
-// ClearCareerskillgroup clears the "careerskillgroup" edge to the CareerSkillGroup entity.
-func (csuo *CareerSkillUpdateOne) ClearCareerskillgroup() *CareerSkillUpdateOne {
-	csuo.mutation.ClearCareerskillgroup()
+// ClearCareerSkillGroup clears the "careerSkillGroup" edge to the CareerSkillGroup entity.
+func (csuo *CareerSkillUpdateOne) ClearCareerSkillGroup() *CareerSkillUpdateOne {
+	csuo.mutation.ClearCareerSkillGroup()
 	return csuo
 }
 
@@ -480,8 +480,8 @@ func (csuo *CareerSkillUpdateOne) check() error {
 			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "CareerSkill.version": %w`, err)}
 		}
 	}
-	if _, ok := csuo.mutation.CareerskillgroupID(); csuo.mutation.CareerskillgroupCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "CareerSkill.careerskillgroup"`)
+	if _, ok := csuo.mutation.CareerSkillGroupID(); csuo.mutation.CareerSkillGroupCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "CareerSkill.careerSkillGroup"`)
 	}
 	return nil
 }
@@ -561,12 +561,12 @@ func (csuo *CareerSkillUpdateOne) sqlSave(ctx context.Context) (_node *CareerSki
 			Column: careerskill.FieldVersion,
 		})
 	}
-	if csuo.mutation.CareerskillgroupCleared() {
+	if csuo.mutation.CareerSkillGroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   careerskill.CareerskillgroupTable,
-			Columns: []string{careerskill.CareerskillgroupColumn},
+			Table:   careerskill.CareerSkillGroupTable,
+			Columns: []string{careerskill.CareerSkillGroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -577,12 +577,12 @@ func (csuo *CareerSkillUpdateOne) sqlSave(ctx context.Context) (_node *CareerSki
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := csuo.mutation.CareerskillgroupIDs(); len(nodes) > 0 {
+	if nodes := csuo.mutation.CareerSkillGroupIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   careerskill.CareerskillgroupTable,
-			Columns: []string{careerskill.CareerskillgroupColumn},
+			Table:   careerskill.CareerSkillGroupTable,
+			Columns: []string{careerskill.CareerSkillGroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

@@ -28,15 +28,15 @@ func (ctdc *CareerTaskDescriptionCreate) SetDescription(s string) *CareerTaskDes
 	return ctdc
 }
 
-// SetCareertaskID sets the "careertask" edge to the CareerTask entity by ID.
-func (ctdc *CareerTaskDescriptionCreate) SetCareertaskID(id int) *CareerTaskDescriptionCreate {
-	ctdc.mutation.SetCareertaskID(id)
+// SetCareerTaskID sets the "careerTask" edge to the CareerTask entity by ID.
+func (ctdc *CareerTaskDescriptionCreate) SetCareerTaskID(id int) *CareerTaskDescriptionCreate {
+	ctdc.mutation.SetCareerTaskID(id)
 	return ctdc
 }
 
-// SetCareertask sets the "careertask" edge to the CareerTask entity.
-func (ctdc *CareerTaskDescriptionCreate) SetCareertask(c *CareerTask) *CareerTaskDescriptionCreate {
-	return ctdc.SetCareertaskID(c.ID)
+// SetCareerTask sets the "careerTask" edge to the CareerTask entity.
+func (ctdc *CareerTaskDescriptionCreate) SetCareerTask(c *CareerTask) *CareerTaskDescriptionCreate {
+	return ctdc.SetCareerTaskID(c.ID)
 }
 
 // Mutation returns the CareerTaskDescriptionMutation object of the builder.
@@ -123,8 +123,8 @@ func (ctdc *CareerTaskDescriptionCreate) check() error {
 			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "CareerTaskDescription.description": %w`, err)}
 		}
 	}
-	if _, ok := ctdc.mutation.CareertaskID(); !ok {
-		return &ValidationError{Name: "careertask", err: errors.New(`ent: missing required edge "CareerTaskDescription.careertask"`)}
+	if _, ok := ctdc.mutation.CareerTaskID(); !ok {
+		return &ValidationError{Name: "careerTask", err: errors.New(`ent: missing required edge "CareerTaskDescription.careerTask"`)}
 	}
 	return nil
 }
@@ -162,12 +162,12 @@ func (ctdc *CareerTaskDescriptionCreate) createSpec() (*CareerTaskDescription, *
 		})
 		_node.Description = value
 	}
-	if nodes := ctdc.mutation.CareertaskIDs(); len(nodes) > 0 {
+	if nodes := ctdc.mutation.CareerTaskIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   careertaskdescription.CareertaskTable,
-			Columns: []string{careertaskdescription.CareertaskColumn},
+			Table:   careertaskdescription.CareerTaskTable,
+			Columns: []string{careertaskdescription.CareerTaskColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -179,7 +179,7 @@ func (ctdc *CareerTaskDescriptionCreate) createSpec() (*CareerTaskDescription, *
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.careertask_id = &nodes[0]
+		_node.career_task_id = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -15,8 +15,19 @@ const (
 	FieldCreateTime = "create_time"
 	// FieldUpdateTime holds the string denoting the update_time field in the database.
 	FieldUpdateTime = "update_time"
+	// FieldText holds the string denoting the text field in the database.
+	FieldText = "text"
+	// EdgeNote holds the string denoting the note edge name in mutations.
+	EdgeNote = "note"
 	// Table holds the table name of the usernoteitem in the database.
 	Table = "user_note_items"
+	// NoteTable is the table that holds the note relation/edge.
+	NoteTable = "user_note_items"
+	// NoteInverseTable is the table name for the UserNote entity.
+	// It exists in this package in order to avoid circular dependency with the "usernote" package.
+	NoteInverseTable = "user_notes"
+	// NoteColumn is the table column denoting the note relation/edge.
+	NoteColumn = "user_note_id"
 )
 
 // Columns holds all SQL columns for usernoteitem fields.
@@ -24,12 +35,24 @@ var Columns = []string{
 	FieldID,
 	FieldCreateTime,
 	FieldUpdateTime,
+	FieldText,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "user_note_items"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"user_note_id",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -43,4 +66,6 @@ var (
 	DefaultUpdateTime func() time.Time
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
+	// TextValidator is a validator for the "text" field. It is called by the builders before save.
+	TextValidator func(string) error
 )

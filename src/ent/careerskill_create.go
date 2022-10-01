@@ -85,15 +85,15 @@ func (csc *CareerSkillCreate) SetNillableVersion(s *string) *CareerSkillCreate {
 	return csc
 }
 
-// SetCareerskillgroupID sets the "careerskillgroup" edge to the CareerSkillGroup entity by ID.
-func (csc *CareerSkillCreate) SetCareerskillgroupID(id int) *CareerSkillCreate {
-	csc.mutation.SetCareerskillgroupID(id)
+// SetCareerSkillGroupID sets the "careerSkillGroup" edge to the CareerSkillGroup entity by ID.
+func (csc *CareerSkillCreate) SetCareerSkillGroupID(id int) *CareerSkillCreate {
+	csc.mutation.SetCareerSkillGroupID(id)
 	return csc
 }
 
-// SetCareerskillgroup sets the "careerskillgroup" edge to the CareerSkillGroup entity.
-func (csc *CareerSkillCreate) SetCareerskillgroup(c *CareerSkillGroup) *CareerSkillCreate {
-	return csc.SetCareerskillgroupID(c.ID)
+// SetCareerSkillGroup sets the "careerSkillGroup" edge to the CareerSkillGroup entity.
+func (csc *CareerSkillCreate) SetCareerSkillGroup(c *CareerSkillGroup) *CareerSkillCreate {
+	return csc.SetCareerSkillGroupID(c.ID)
 }
 
 // Mutation returns the CareerSkillMutation object of the builder.
@@ -209,8 +209,8 @@ func (csc *CareerSkillCreate) check() error {
 			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "CareerSkill.version": %w`, err)}
 		}
 	}
-	if _, ok := csc.mutation.CareerskillgroupID(); !ok {
-		return &ValidationError{Name: "careerskillgroup", err: errors.New(`ent: missing required edge "CareerSkill.careerskillgroup"`)}
+	if _, ok := csc.mutation.CareerSkillGroupID(); !ok {
+		return &ValidationError{Name: "careerSkillGroup", err: errors.New(`ent: missing required edge "CareerSkill.careerSkillGroup"`)}
 	}
 	return nil
 }
@@ -280,12 +280,12 @@ func (csc *CareerSkillCreate) createSpec() (*CareerSkill, *sqlgraph.CreateSpec) 
 		})
 		_node.Version = &value
 	}
-	if nodes := csc.mutation.CareerskillgroupIDs(); len(nodes) > 0 {
+	if nodes := csc.mutation.CareerSkillGroupIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   careerskill.CareerskillgroupTable,
-			Columns: []string{careerskill.CareerskillgroupColumn},
+			Table:   careerskill.CareerSkillGroupTable,
+			Columns: []string{careerskill.CareerSkillGroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
