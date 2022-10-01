@@ -24,6 +24,9 @@ type UserActivity func(*sql.Selector)
 // UserCareer is the predicate function for usercareer builders.
 type UserCareer func(*sql.Selector)
 
+// UserCareerDescription is the predicate function for usercareerdescription builders.
+type UserCareerDescription func(*sql.Selector)
+
 // UserCareerGroup is the predicate function for usercareergroup builders.
 type UserCareerGroup func(*sql.Selector)
 

@@ -14,6 +14,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
+	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
 )
 
@@ -211,6 +212,21 @@ func (uu *UserUpdate) AddQualifications(u ...*UserQualification) *UserUpdate {
 	return uu.AddQualificationIDs(ids...)
 }
 
+// AddCareergroupIDs adds the "careergroups" edge to the UserCareerGroup entity by IDs.
+func (uu *UserUpdate) AddCareergroupIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddCareergroupIDs(ids...)
+	return uu
+}
+
+// AddCareergroups adds the "careergroups" edges to the UserCareerGroup entity.
+func (uu *UserUpdate) AddCareergroups(u ...*UserCareerGroup) *UserUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.AddCareergroupIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -256,6 +272,27 @@ func (uu *UserUpdate) RemoveQualifications(u ...*UserQualification) *UserUpdate 
 		ids[i] = u[i].ID
 	}
 	return uu.RemoveQualificationIDs(ids...)
+}
+
+// ClearCareergroups clears all "careergroups" edges to the UserCareerGroup entity.
+func (uu *UserUpdate) ClearCareergroups() *UserUpdate {
+	uu.mutation.ClearCareergroups()
+	return uu
+}
+
+// RemoveCareergroupIDs removes the "careergroups" edge to UserCareerGroup entities by IDs.
+func (uu *UserUpdate) RemoveCareergroupIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveCareergroupIDs(ids...)
+	return uu
+}
+
+// RemoveCareergroups removes "careergroups" edges to UserCareerGroup entities.
+func (uu *UserUpdate) RemoveCareergroups(u ...*UserCareerGroup) *UserUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.RemoveCareergroupIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -624,6 +661,60 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.CareergroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CareergroupsTable,
+			Columns: []string{user.CareergroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareergroup.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedCareergroupsIDs(); len(nodes) > 0 && !uu.mutation.CareergroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CareergroupsTable,
+			Columns: []string{user.CareergroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareergroup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.CareergroupsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CareergroupsTable,
+			Columns: []string{user.CareergroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareergroup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -824,6 +915,21 @@ func (uuo *UserUpdateOne) AddQualifications(u ...*UserQualification) *UserUpdate
 	return uuo.AddQualificationIDs(ids...)
 }
 
+// AddCareergroupIDs adds the "careergroups" edge to the UserCareerGroup entity by IDs.
+func (uuo *UserUpdateOne) AddCareergroupIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddCareergroupIDs(ids...)
+	return uuo
+}
+
+// AddCareergroups adds the "careergroups" edges to the UserCareerGroup entity.
+func (uuo *UserUpdateOne) AddCareergroups(u ...*UserCareerGroup) *UserUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.AddCareergroupIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -869,6 +975,27 @@ func (uuo *UserUpdateOne) RemoveQualifications(u ...*UserQualification) *UserUpd
 		ids[i] = u[i].ID
 	}
 	return uuo.RemoveQualificationIDs(ids...)
+}
+
+// ClearCareergroups clears all "careergroups" edges to the UserCareerGroup entity.
+func (uuo *UserUpdateOne) ClearCareergroups() *UserUpdateOne {
+	uuo.mutation.ClearCareergroups()
+	return uuo
+}
+
+// RemoveCareergroupIDs removes the "careergroups" edge to UserCareerGroup entities by IDs.
+func (uuo *UserUpdateOne) RemoveCareergroupIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveCareergroupIDs(ids...)
+	return uuo
+}
+
+// RemoveCareergroups removes "careergroups" edges to UserCareerGroup entities.
+func (uuo *UserUpdateOne) RemoveCareergroups(u ...*UserCareerGroup) *UserUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.RemoveCareergroupIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1259,6 +1386,60 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: userqualification.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.CareergroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CareergroupsTable,
+			Columns: []string{user.CareergroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareergroup.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedCareergroupsIDs(); len(nodes) > 0 && !uuo.mutation.CareergroupsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CareergroupsTable,
+			Columns: []string{user.CareergroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareergroup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.CareergroupsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CareergroupsTable,
+			Columns: []string{user.CareergroupsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareergroup.FieldID,
 				},
 			},
 		}

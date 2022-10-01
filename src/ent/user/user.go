@@ -37,6 +37,8 @@ const (
 	EdgeActivities = "activities"
 	// EdgeQualifications holds the string denoting the qualifications edge name in mutations.
 	EdgeQualifications = "qualifications"
+	// EdgeCareergroups holds the string denoting the careergroups edge name in mutations.
+	EdgeCareergroups = "careergroups"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// ActivitiesTable is the table that holds the activities relation/edge.
@@ -53,6 +55,13 @@ const (
 	QualificationsInverseTable = "user_qualifications"
 	// QualificationsColumn is the table column denoting the qualifications relation/edge.
 	QualificationsColumn = "user_id"
+	// CareergroupsTable is the table that holds the careergroups relation/edge.
+	CareergroupsTable = "user_career_groups"
+	// CareergroupsInverseTable is the table name for the UserCareerGroup entity.
+	// It exists in this package in order to avoid circular dependency with the "usercareergroup" package.
+	CareergroupsInverseTable = "user_career_groups"
+	// CareergroupsColumn is the table column denoting the careergroups relation/edge.
+	CareergroupsColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.

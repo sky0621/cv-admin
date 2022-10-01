@@ -16,6 +16,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
+	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
@@ -43,6 +44,8 @@ type Client struct {
 	UserActivity *UserActivityClient
 	// UserCareer is the client for interacting with the UserCareer builders.
 	UserCareer *UserCareerClient
+	// UserCareerDescription is the client for interacting with the UserCareerDescription builders.
+	UserCareerDescription *UserCareerDescriptionClient
 	// UserCareerGroup is the client for interacting with the UserCareerGroup builders.
 	UserCareerGroup *UserCareerGroupClient
 	// UserNote is the client for interacting with the UserNote builders.
@@ -70,6 +73,7 @@ func (c *Client) init() {
 	c.User = NewUserClient(c.config)
 	c.UserActivity = NewUserActivityClient(c.config)
 	c.UserCareer = NewUserCareerClient(c.config)
+	c.UserCareerDescription = NewUserCareerDescriptionClient(c.config)
 	c.UserCareerGroup = NewUserCareerGroupClient(c.config)
 	c.UserNote = NewUserNoteClient(c.config)
 	c.UserNoteItem = NewUserNoteItemClient(c.config)
@@ -105,18 +109,19 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:               ctx,
-		config:            cfg,
-		CareerSkill:       NewCareerSkillClient(cfg),
-		CareerSkillGroup:  NewCareerSkillGroupClient(cfg),
-		CareerTask:        NewCareerTaskClient(cfg),
-		User:              NewUserClient(cfg),
-		UserActivity:      NewUserActivityClient(cfg),
-		UserCareer:        NewUserCareerClient(cfg),
-		UserCareerGroup:   NewUserCareerGroupClient(cfg),
-		UserNote:          NewUserNoteClient(cfg),
-		UserNoteItem:      NewUserNoteItemClient(cfg),
-		UserQualification: NewUserQualificationClient(cfg),
+		ctx:                   ctx,
+		config:                cfg,
+		CareerSkill:           NewCareerSkillClient(cfg),
+		CareerSkillGroup:      NewCareerSkillGroupClient(cfg),
+		CareerTask:            NewCareerTaskClient(cfg),
+		User:                  NewUserClient(cfg),
+		UserActivity:          NewUserActivityClient(cfg),
+		UserCareer:            NewUserCareerClient(cfg),
+		UserCareerDescription: NewUserCareerDescriptionClient(cfg),
+		UserCareerGroup:       NewUserCareerGroupClient(cfg),
+		UserNote:              NewUserNoteClient(cfg),
+		UserNoteItem:          NewUserNoteItemClient(cfg),
+		UserQualification:     NewUserQualificationClient(cfg),
 	}, nil
 }
 
@@ -134,18 +139,19 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:               ctx,
-		config:            cfg,
-		CareerSkill:       NewCareerSkillClient(cfg),
-		CareerSkillGroup:  NewCareerSkillGroupClient(cfg),
-		CareerTask:        NewCareerTaskClient(cfg),
-		User:              NewUserClient(cfg),
-		UserActivity:      NewUserActivityClient(cfg),
-		UserCareer:        NewUserCareerClient(cfg),
-		UserCareerGroup:   NewUserCareerGroupClient(cfg),
-		UserNote:          NewUserNoteClient(cfg),
-		UserNoteItem:      NewUserNoteItemClient(cfg),
-		UserQualification: NewUserQualificationClient(cfg),
+		ctx:                   ctx,
+		config:                cfg,
+		CareerSkill:           NewCareerSkillClient(cfg),
+		CareerSkillGroup:      NewCareerSkillGroupClient(cfg),
+		CareerTask:            NewCareerTaskClient(cfg),
+		User:                  NewUserClient(cfg),
+		UserActivity:          NewUserActivityClient(cfg),
+		UserCareer:            NewUserCareerClient(cfg),
+		UserCareerDescription: NewUserCareerDescriptionClient(cfg),
+		UserCareerGroup:       NewUserCareerGroupClient(cfg),
+		UserNote:              NewUserNoteClient(cfg),
+		UserNoteItem:          NewUserNoteItemClient(cfg),
+		UserQualification:     NewUserQualificationClient(cfg),
 	}, nil
 }
 
@@ -180,6 +186,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.User.Use(hooks...)
 	c.UserActivity.Use(hooks...)
 	c.UserCareer.Use(hooks...)
+	c.UserCareerDescription.Use(hooks...)
 	c.UserCareerGroup.Use(hooks...)
 	c.UserNote.Use(hooks...)
 	c.UserNoteItem.Use(hooks...)
@@ -573,6 +580,22 @@ func (c *UserClient) QueryQualifications(u *User) *UserQualificationQuery {
 	return query
 }
 
+// QueryCareergroups queries the careergroups edge of a User.
+func (c *UserClient) QueryCareergroups(u *User) *UserCareerGroupQuery {
+	query := &UserCareerGroupQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(usercareergroup.Table, usercareergroup.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CareergroupsTable, user.CareergroupsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -769,9 +792,147 @@ func (c *UserCareerClient) GetX(ctx context.Context, id int) *UserCareer {
 	return obj
 }
 
+// QueryCareergroup queries the careergroup edge of a UserCareer.
+func (c *UserCareerClient) QueryCareergroup(uc *UserCareer) *UserCareerGroupQuery {
+	query := &UserCareerGroupQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := uc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usercareer.Table, usercareer.FieldID, id),
+			sqlgraph.To(usercareergroup.Table, usercareergroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, usercareer.CareergroupTable, usercareer.CareergroupColumn),
+		)
+		fromV = sqlgraph.Neighbors(uc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCareerdescriptions queries the careerdescriptions edge of a UserCareer.
+func (c *UserCareerClient) QueryCareerdescriptions(uc *UserCareer) *UserCareerDescriptionQuery {
+	query := &UserCareerDescriptionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := uc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usercareer.Table, usercareer.FieldID, id),
+			sqlgraph.To(usercareerdescription.Table, usercareerdescription.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, usercareer.CareerdescriptionsTable, usercareer.CareerdescriptionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(uc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserCareerClient) Hooks() []Hook {
 	return c.hooks.UserCareer
+}
+
+// UserCareerDescriptionClient is a client for the UserCareerDescription schema.
+type UserCareerDescriptionClient struct {
+	config
+}
+
+// NewUserCareerDescriptionClient returns a client for the UserCareerDescription from the given config.
+func NewUserCareerDescriptionClient(c config) *UserCareerDescriptionClient {
+	return &UserCareerDescriptionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `usercareerdescription.Hooks(f(g(h())))`.
+func (c *UserCareerDescriptionClient) Use(hooks ...Hook) {
+	c.hooks.UserCareerDescription = append(c.hooks.UserCareerDescription, hooks...)
+}
+
+// Create returns a builder for creating a UserCareerDescription entity.
+func (c *UserCareerDescriptionClient) Create() *UserCareerDescriptionCreate {
+	mutation := newUserCareerDescriptionMutation(c.config, OpCreate)
+	return &UserCareerDescriptionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of UserCareerDescription entities.
+func (c *UserCareerDescriptionClient) CreateBulk(builders ...*UserCareerDescriptionCreate) *UserCareerDescriptionCreateBulk {
+	return &UserCareerDescriptionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for UserCareerDescription.
+func (c *UserCareerDescriptionClient) Update() *UserCareerDescriptionUpdate {
+	mutation := newUserCareerDescriptionMutation(c.config, OpUpdate)
+	return &UserCareerDescriptionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *UserCareerDescriptionClient) UpdateOne(ucd *UserCareerDescription) *UserCareerDescriptionUpdateOne {
+	mutation := newUserCareerDescriptionMutation(c.config, OpUpdateOne, withUserCareerDescription(ucd))
+	return &UserCareerDescriptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *UserCareerDescriptionClient) UpdateOneID(id int) *UserCareerDescriptionUpdateOne {
+	mutation := newUserCareerDescriptionMutation(c.config, OpUpdateOne, withUserCareerDescriptionID(id))
+	return &UserCareerDescriptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for UserCareerDescription.
+func (c *UserCareerDescriptionClient) Delete() *UserCareerDescriptionDelete {
+	mutation := newUserCareerDescriptionMutation(c.config, OpDelete)
+	return &UserCareerDescriptionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *UserCareerDescriptionClient) DeleteOne(ucd *UserCareerDescription) *UserCareerDescriptionDeleteOne {
+	return c.DeleteOneID(ucd.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *UserCareerDescriptionClient) DeleteOneID(id int) *UserCareerDescriptionDeleteOne {
+	builder := c.Delete().Where(usercareerdescription.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &UserCareerDescriptionDeleteOne{builder}
+}
+
+// Query returns a query builder for UserCareerDescription.
+func (c *UserCareerDescriptionClient) Query() *UserCareerDescriptionQuery {
+	return &UserCareerDescriptionQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a UserCareerDescription entity by its id.
+func (c *UserCareerDescriptionClient) Get(ctx context.Context, id int) (*UserCareerDescription, error) {
+	return c.Query().Where(usercareerdescription.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *UserCareerDescriptionClient) GetX(ctx context.Context, id int) *UserCareerDescription {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryCareer queries the career edge of a UserCareerDescription.
+func (c *UserCareerDescriptionClient) QueryCareer(ucd *UserCareerDescription) *UserCareerQuery {
+	query := &UserCareerQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ucd.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usercareerdescription.Table, usercareerdescription.FieldID, id),
+			sqlgraph.To(usercareer.Table, usercareer.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, usercareerdescription.CareerTable, usercareerdescription.CareerColumn),
+		)
+		fromV = sqlgraph.Neighbors(ucd.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *UserCareerDescriptionClient) Hooks() []Hook {
+	return c.hooks.UserCareerDescription
 }
 
 // UserCareerGroupClient is a client for the UserCareerGroup schema.
@@ -857,6 +1018,38 @@ func (c *UserCareerGroupClient) GetX(ctx context.Context, id int) *UserCareerGro
 		panic(err)
 	}
 	return obj
+}
+
+// QueryUser queries the user edge of a UserCareerGroup.
+func (c *UserCareerGroupClient) QueryUser(ucg *UserCareerGroup) *UserQuery {
+	query := &UserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ucg.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usercareergroup.Table, usercareergroup.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, usercareergroup.UserTable, usercareergroup.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(ucg.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCareers queries the careers edge of a UserCareerGroup.
+func (c *UserCareerGroupClient) QueryCareers(ucg *UserCareerGroup) *UserCareerQuery {
+	query := &UserCareerQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ucg.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usercareergroup.Table, usercareergroup.FieldID, id),
+			sqlgraph.To(usercareer.Table, usercareer.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, usercareergroup.CareersTable, usercareergroup.CareersColumn),
+		)
+		fromV = sqlgraph.Neighbors(ucg.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // Hooks returns the client hooks.

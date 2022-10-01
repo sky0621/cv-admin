@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
+	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 )
 
 // UserCareer is the model entity for the UserCareer schema.
@@ -20,6 +21,49 @@ type UserCareer struct {
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
+	// From holds the value of the "from" field.
+	From string `json:"from,omitempty"`
+	// To holds the value of the "to" field.
+	To string `json:"to,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the UserCareerQuery when eager-loading is set.
+	Edges          UserCareerEdges `json:"edges"`
+	careergroup_id *int
+}
+
+// UserCareerEdges holds the relations/edges for other nodes in the graph.
+type UserCareerEdges struct {
+	// Careergroup holds the value of the careergroup edge.
+	Careergroup *UserCareerGroup `json:"careergroup,omitempty"`
+	// Careerdescriptions holds the value of the careerdescriptions edge.
+	Careerdescriptions []*UserCareerDescription `json:"careerdescriptions,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [2]bool
+}
+
+// CareergroupOrErr returns the Careergroup value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e UserCareerEdges) CareergroupOrErr() (*UserCareerGroup, error) {
+	if e.loadedTypes[0] {
+		if e.Careergroup == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: usercareergroup.Label}
+		}
+		return e.Careergroup, nil
+	}
+	return nil, &NotLoadedError{edge: "careergroup"}
+}
+
+// CareerdescriptionsOrErr returns the Careerdescriptions value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserCareerEdges) CareerdescriptionsOrErr() ([]*UserCareerDescription, error) {
+	if e.loadedTypes[1] {
+		return e.Careerdescriptions, nil
+	}
+	return nil, &NotLoadedError{edge: "careerdescriptions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -29,8 +73,12 @@ func (*UserCareer) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case usercareer.FieldID:
 			values[i] = new(sql.NullInt64)
+		case usercareer.FieldName, usercareer.FieldFrom, usercareer.FieldTo:
+			values[i] = new(sql.NullString)
 		case usercareer.FieldCreateTime, usercareer.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
+		case usercareer.ForeignKeys[0]: // careergroup_id
+			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type UserCareer", columns[i])
 		}
@@ -64,9 +112,44 @@ func (uc *UserCareer) assignValues(columns []string, values []interface{}) error
 			} else if value.Valid {
 				uc.UpdateTime = value.Time
 			}
+		case usercareer.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				uc.Name = value.String
+			}
+		case usercareer.FieldFrom:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field from", values[i])
+			} else if value.Valid {
+				uc.From = value.String
+			}
+		case usercareer.FieldTo:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field to", values[i])
+			} else if value.Valid {
+				uc.To = value.String
+			}
+		case usercareer.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field careergroup_id", value)
+			} else if value.Valid {
+				uc.careergroup_id = new(int)
+				*uc.careergroup_id = int(value.Int64)
+			}
 		}
 	}
 	return nil
+}
+
+// QueryCareergroup queries the "careergroup" edge of the UserCareer entity.
+func (uc *UserCareer) QueryCareergroup() *UserCareerGroupQuery {
+	return (&UserCareerClient{config: uc.config}).QueryCareergroup(uc)
+}
+
+// QueryCareerdescriptions queries the "careerdescriptions" edge of the UserCareer entity.
+func (uc *UserCareer) QueryCareerdescriptions() *UserCareerDescriptionQuery {
+	return (&UserCareerClient{config: uc.config}).QueryCareerdescriptions(uc)
 }
 
 // Update returns a builder for updating this UserCareer.
@@ -97,6 +180,15 @@ func (uc *UserCareer) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("update_time=")
 	builder.WriteString(uc.UpdateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(uc.Name)
+	builder.WriteString(", ")
+	builder.WriteString("from=")
+	builder.WriteString(uc.From)
+	builder.WriteString(", ")
+	builder.WriteString("to=")
+	builder.WriteString(uc.To)
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -14,6 +14,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
+	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
 )
 
@@ -28,6 +29,7 @@ type UserQuery struct {
 	predicates         []predicate.User
 	withActivities     *UserActivityQuery
 	withQualifications *UserQualificationQuery
+	withCareergroups   *UserCareerGroupQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -101,6 +103,28 @@ func (uq *UserQuery) QueryQualifications() *UserQualificationQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(userqualification.Table, userqualification.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.QualificationsTable, user.QualificationsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCareergroups chains the current query on the "careergroups" edge.
+func (uq *UserQuery) QueryCareergroups() *UserCareerGroupQuery {
+	query := &UserCareerGroupQuery{config: uq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(usercareergroup.Table, usercareergroup.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CareergroupsTable, user.CareergroupsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -291,6 +315,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		predicates:         append([]predicate.User{}, uq.predicates...),
 		withActivities:     uq.withActivities.Clone(),
 		withQualifications: uq.withQualifications.Clone(),
+		withCareergroups:   uq.withCareergroups.Clone(),
 		// clone intermediate query.
 		sql:    uq.sql.Clone(),
 		path:   uq.path,
@@ -317,6 +342,17 @@ func (uq *UserQuery) WithQualifications(opts ...func(*UserQualificationQuery)) *
 		opt(query)
 	}
 	uq.withQualifications = query
+	return uq
+}
+
+// WithCareergroups tells the query-builder to eager-load the nodes that are connected to
+// the "careergroups" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithCareergroups(opts ...func(*UserCareerGroupQuery)) *UserQuery {
+	query := &UserCareerGroupQuery{config: uq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withCareergroups = query
 	return uq
 }
 
@@ -388,9 +424,10 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			uq.withActivities != nil,
 			uq.withQualifications != nil,
+			uq.withCareergroups != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -422,6 +459,13 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := uq.loadQualifications(ctx, query, nodes,
 			func(n *User) { n.Edges.Qualifications = []*UserQualification{} },
 			func(n *User, e *UserQualification) { n.Edges.Qualifications = append(n.Edges.Qualifications, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withCareergroups; query != nil {
+		if err := uq.loadCareergroups(ctx, query, nodes,
+			func(n *User) { n.Edges.Careergroups = []*UserCareerGroup{} },
+			func(n *User, e *UserCareerGroup) { n.Edges.Careergroups = append(n.Edges.Careergroups, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -472,6 +516,37 @@ func (uq *UserQuery) loadQualifications(ctx context.Context, query *UserQualific
 	query.withFKs = true
 	query.Where(predicate.UserQualification(func(s *sql.Selector) {
 		s.Where(sql.InValues(user.QualificationsColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_id
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadCareergroups(ctx context.Context, query *UserCareerGroupQuery, nodes []*User, init func(*User), assign func(*User, *UserCareerGroup)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.UserCareerGroup(func(s *sql.Selector) {
+		s.Where(sql.InValues(user.CareergroupsColumn, fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

@@ -24,16 +24,17 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
-	CareerSkill       []ent.Hook
-	CareerSkillGroup  []ent.Hook
-	CareerTask        []ent.Hook
-	User              []ent.Hook
-	UserActivity      []ent.Hook
-	UserCareer        []ent.Hook
-	UserCareerGroup   []ent.Hook
-	UserNote          []ent.Hook
-	UserNoteItem      []ent.Hook
-	UserQualification []ent.Hook
+	CareerSkill           []ent.Hook
+	CareerSkillGroup      []ent.Hook
+	CareerTask            []ent.Hook
+	User                  []ent.Hook
+	UserActivity          []ent.Hook
+	UserCareer            []ent.Hook
+	UserCareerDescription []ent.Hook
+	UserCareerGroup       []ent.Hook
+	UserNote              []ent.Hook
+	UserNoteItem          []ent.Hook
+	UserQualification     []ent.Hook
 }
 
 // Options applies the options on the config object.

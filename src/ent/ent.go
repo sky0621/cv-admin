@@ -16,6 +16,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
+	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
@@ -40,16 +41,17 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		careerskill.Table:       careerskill.ValidColumn,
-		careerskillgroup.Table:  careerskillgroup.ValidColumn,
-		careertask.Table:        careertask.ValidColumn,
-		user.Table:              user.ValidColumn,
-		useractivity.Table:      useractivity.ValidColumn,
-		usercareer.Table:        usercareer.ValidColumn,
-		usercareergroup.Table:   usercareergroup.ValidColumn,
-		usernote.Table:          usernote.ValidColumn,
-		usernoteitem.Table:      usernoteitem.ValidColumn,
-		userqualification.Table: userqualification.ValidColumn,
+		careerskill.Table:           careerskill.ValidColumn,
+		careerskillgroup.Table:      careerskillgroup.ValidColumn,
+		careertask.Table:            careertask.ValidColumn,
+		user.Table:                  user.ValidColumn,
+		useractivity.Table:          useractivity.ValidColumn,
+		usercareer.Table:            usercareer.ValidColumn,
+		usercareerdescription.Table: usercareerdescription.ValidColumn,
+		usercareergroup.Table:       usercareergroup.ValidColumn,
+		usernote.Table:              usernote.ValidColumn,
+		usernoteitem.Table:          usernoteitem.ValidColumn,
+		userqualification.Table:     userqualification.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

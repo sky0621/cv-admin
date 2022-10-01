@@ -12,6 +12,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
+	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
+	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 )
 
 // UserCareerCreate is the builder for creating a UserCareer entity.
@@ -48,6 +50,50 @@ func (ucc *UserCareerCreate) SetNillableUpdateTime(t *time.Time) *UserCareerCrea
 		ucc.SetUpdateTime(*t)
 	}
 	return ucc
+}
+
+// SetName sets the "name" field.
+func (ucc *UserCareerCreate) SetName(s string) *UserCareerCreate {
+	ucc.mutation.SetName(s)
+	return ucc
+}
+
+// SetFrom sets the "from" field.
+func (ucc *UserCareerCreate) SetFrom(s string) *UserCareerCreate {
+	ucc.mutation.SetFrom(s)
+	return ucc
+}
+
+// SetTo sets the "to" field.
+func (ucc *UserCareerCreate) SetTo(s string) *UserCareerCreate {
+	ucc.mutation.SetTo(s)
+	return ucc
+}
+
+// SetCareergroupID sets the "careergroup" edge to the UserCareerGroup entity by ID.
+func (ucc *UserCareerCreate) SetCareergroupID(id int) *UserCareerCreate {
+	ucc.mutation.SetCareergroupID(id)
+	return ucc
+}
+
+// SetCareergroup sets the "careergroup" edge to the UserCareerGroup entity.
+func (ucc *UserCareerCreate) SetCareergroup(u *UserCareerGroup) *UserCareerCreate {
+	return ucc.SetCareergroupID(u.ID)
+}
+
+// AddCareerdescriptionIDs adds the "careerdescriptions" edge to the UserCareerDescription entity by IDs.
+func (ucc *UserCareerCreate) AddCareerdescriptionIDs(ids ...int) *UserCareerCreate {
+	ucc.mutation.AddCareerdescriptionIDs(ids...)
+	return ucc
+}
+
+// AddCareerdescriptions adds the "careerdescriptions" edges to the UserCareerDescription entity.
+func (ucc *UserCareerCreate) AddCareerdescriptions(u ...*UserCareerDescription) *UserCareerCreate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return ucc.AddCareerdescriptionIDs(ids...)
 }
 
 // Mutation returns the UserCareerMutation object of the builder.
@@ -145,6 +191,33 @@ func (ucc *UserCareerCreate) check() error {
 	if _, ok := ucc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "UserCareer.update_time"`)}
 	}
+	if _, ok := ucc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "UserCareer.name"`)}
+	}
+	if v, ok := ucc.mutation.Name(); ok {
+		if err := usercareer.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "UserCareer.name": %w`, err)}
+		}
+	}
+	if _, ok := ucc.mutation.From(); !ok {
+		return &ValidationError{Name: "from", err: errors.New(`ent: missing required field "UserCareer.from"`)}
+	}
+	if v, ok := ucc.mutation.From(); ok {
+		if err := usercareer.FromValidator(v); err != nil {
+			return &ValidationError{Name: "from", err: fmt.Errorf(`ent: validator failed for field "UserCareer.from": %w`, err)}
+		}
+	}
+	if _, ok := ucc.mutation.To(); !ok {
+		return &ValidationError{Name: "to", err: errors.New(`ent: missing required field "UserCareer.to"`)}
+	}
+	if v, ok := ucc.mutation.To(); ok {
+		if err := usercareer.ToValidator(v); err != nil {
+			return &ValidationError{Name: "to", err: fmt.Errorf(`ent: validator failed for field "UserCareer.to": %w`, err)}
+		}
+	}
+	if _, ok := ucc.mutation.CareergroupID(); !ok {
+		return &ValidationError{Name: "careergroup", err: errors.New(`ent: missing required edge "UserCareer.careergroup"`)}
+	}
 	return nil
 }
 
@@ -188,6 +261,69 @@ func (ucc *UserCareerCreate) createSpec() (*UserCareer, *sqlgraph.CreateSpec) {
 			Column: usercareer.FieldUpdateTime,
 		})
 		_node.UpdateTime = value
+	}
+	if value, ok := ucc.mutation.Name(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usercareer.FieldName,
+		})
+		_node.Name = value
+	}
+	if value, ok := ucc.mutation.From(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usercareer.FieldFrom,
+		})
+		_node.From = value
+	}
+	if value, ok := ucc.mutation.To(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usercareer.FieldTo,
+		})
+		_node.To = value
+	}
+	if nodes := ucc.mutation.CareergroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usercareer.CareergroupTable,
+			Columns: []string{usercareer.CareergroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareergroup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.careergroup_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ucc.mutation.CareerdescriptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usercareer.CareerdescriptionsTable,
+			Columns: []string{usercareer.CareerdescriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareerdescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -265,6 +401,42 @@ func (u *UserCareerUpsert) UpdateUpdateTime() *UserCareerUpsert {
 	return u
 }
 
+// SetName sets the "name" field.
+func (u *UserCareerUpsert) SetName(v string) *UserCareerUpsert {
+	u.Set(usercareer.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *UserCareerUpsert) UpdateName() *UserCareerUpsert {
+	u.SetExcluded(usercareer.FieldName)
+	return u
+}
+
+// SetFrom sets the "from" field.
+func (u *UserCareerUpsert) SetFrom(v string) *UserCareerUpsert {
+	u.Set(usercareer.FieldFrom, v)
+	return u
+}
+
+// UpdateFrom sets the "from" field to the value that was provided on create.
+func (u *UserCareerUpsert) UpdateFrom() *UserCareerUpsert {
+	u.SetExcluded(usercareer.FieldFrom)
+	return u
+}
+
+// SetTo sets the "to" field.
+func (u *UserCareerUpsert) SetTo(v string) *UserCareerUpsert {
+	u.Set(usercareer.FieldTo, v)
+	return u
+}
+
+// UpdateTo sets the "to" field to the value that was provided on create.
+func (u *UserCareerUpsert) UpdateTo() *UserCareerUpsert {
+	u.SetExcluded(usercareer.FieldTo)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -335,6 +507,48 @@ func (u *UserCareerUpsertOne) SetUpdateTime(v time.Time) *UserCareerUpsertOne {
 func (u *UserCareerUpsertOne) UpdateUpdateTime() *UserCareerUpsertOne {
 	return u.Update(func(s *UserCareerUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *UserCareerUpsertOne) SetName(v string) *UserCareerUpsertOne {
+	return u.Update(func(s *UserCareerUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *UserCareerUpsertOne) UpdateName() *UserCareerUpsertOne {
+	return u.Update(func(s *UserCareerUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetFrom sets the "from" field.
+func (u *UserCareerUpsertOne) SetFrom(v string) *UserCareerUpsertOne {
+	return u.Update(func(s *UserCareerUpsert) {
+		s.SetFrom(v)
+	})
+}
+
+// UpdateFrom sets the "from" field to the value that was provided on create.
+func (u *UserCareerUpsertOne) UpdateFrom() *UserCareerUpsertOne {
+	return u.Update(func(s *UserCareerUpsert) {
+		s.UpdateFrom()
+	})
+}
+
+// SetTo sets the "to" field.
+func (u *UserCareerUpsertOne) SetTo(v string) *UserCareerUpsertOne {
+	return u.Update(func(s *UserCareerUpsert) {
+		s.SetTo(v)
+	})
+}
+
+// UpdateTo sets the "to" field to the value that was provided on create.
+func (u *UserCareerUpsertOne) UpdateTo() *UserCareerUpsertOne {
+	return u.Update(func(s *UserCareerUpsert) {
+		s.UpdateTo()
 	})
 }
 
@@ -570,6 +784,48 @@ func (u *UserCareerUpsertBulk) SetUpdateTime(v time.Time) *UserCareerUpsertBulk 
 func (u *UserCareerUpsertBulk) UpdateUpdateTime() *UserCareerUpsertBulk {
 	return u.Update(func(s *UserCareerUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *UserCareerUpsertBulk) SetName(v string) *UserCareerUpsertBulk {
+	return u.Update(func(s *UserCareerUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *UserCareerUpsertBulk) UpdateName() *UserCareerUpsertBulk {
+	return u.Update(func(s *UserCareerUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetFrom sets the "from" field.
+func (u *UserCareerUpsertBulk) SetFrom(v string) *UserCareerUpsertBulk {
+	return u.Update(func(s *UserCareerUpsert) {
+		s.SetFrom(v)
+	})
+}
+
+// UpdateFrom sets the "from" field to the value that was provided on create.
+func (u *UserCareerUpsertBulk) UpdateFrom() *UserCareerUpsertBulk {
+	return u.Update(func(s *UserCareerUpsert) {
+		s.UpdateFrom()
+	})
+}
+
+// SetTo sets the "to" field.
+func (u *UserCareerUpsertBulk) SetTo(v string) *UserCareerUpsertBulk {
+	return u.Update(func(s *UserCareerUpsert) {
+		s.SetTo(v)
+	})
+}
+
+// UpdateTo sets the "to" field to the value that was provided on create.
+func (u *UserCareerUpsertBulk) UpdateTo() *UserCareerUpsertBulk {
+	return u.Update(func(s *UserCareerUpsert) {
+		s.UpdateTo()
 	})
 }
 

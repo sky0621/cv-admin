@@ -12,6 +12,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
+	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
@@ -188,6 +189,80 @@ func init() {
 	usercareer.DefaultUpdateTime = usercareerDescUpdateTime.Default.(func() time.Time)
 	// usercareer.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	usercareer.UpdateDefaultUpdateTime = usercareerDescUpdateTime.UpdateDefault.(func() time.Time)
+	// usercareerDescName is the schema descriptor for name field.
+	usercareerDescName := usercareerFields[0].Descriptor()
+	// usercareer.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	usercareer.NameValidator = func() func(string) error {
+		validators := usercareerDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// usercareerDescFrom is the schema descriptor for from field.
+	usercareerDescFrom := usercareerFields[1].Descriptor()
+	// usercareer.FromValidator is a validator for the "from" field. It is called by the builders before save.
+	usercareer.FromValidator = func() func(string) error {
+		validators := usercareerDescFrom.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(from string) error {
+			for _, fn := range fns {
+				if err := fn(from); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// usercareerDescTo is the schema descriptor for to field.
+	usercareerDescTo := usercareerFields[2].Descriptor()
+	// usercareer.ToValidator is a validator for the "to" field. It is called by the builders before save.
+	usercareer.ToValidator = func() func(string) error {
+		validators := usercareerDescTo.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(to string) error {
+			for _, fn := range fns {
+				if err := fn(to); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	usercareerdescriptionFields := schema.UserCareerDescription{}.Fields()
+	_ = usercareerdescriptionFields
+	// usercareerdescriptionDescDescription is the schema descriptor for description field.
+	usercareerdescriptionDescDescription := usercareerdescriptionFields[0].Descriptor()
+	// usercareerdescription.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	usercareerdescription.DescriptionValidator = func() func(string) error {
+		validators := usercareerdescriptionDescDescription.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(description string) error {
+			for _, fn := range fns {
+				if err := fn(description); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	usercareergroupMixin := schema.UserCareerGroup{}.Mixin()
 	usercareergroupMixinFields0 := usercareergroupMixin[0].Fields()
 	_ = usercareergroupMixinFields0
@@ -203,6 +278,24 @@ func init() {
 	usercareergroup.DefaultUpdateTime = usercareergroupDescUpdateTime.Default.(func() time.Time)
 	// usercareergroup.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	usercareergroup.UpdateDefaultUpdateTime = usercareergroupDescUpdateTime.UpdateDefault.(func() time.Time)
+	// usercareergroupDescLabel is the schema descriptor for label field.
+	usercareergroupDescLabel := usercareergroupFields[0].Descriptor()
+	// usercareergroup.LabelValidator is a validator for the "label" field. It is called by the builders before save.
+	usercareergroup.LabelValidator = func() func(string) error {
+		validators := usercareergroupDescLabel.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(label string) error {
+			for _, fn := range fns {
+				if err := fn(label); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	usernoteMixin := schema.UserNote{}.Mixin()
 	usernoteMixinFields0 := usernoteMixin[0].Fields()
 	_ = usernoteMixinFields0

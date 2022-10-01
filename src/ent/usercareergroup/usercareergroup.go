@@ -15,8 +15,28 @@ const (
 	FieldCreateTime = "create_time"
 	// FieldUpdateTime holds the string denoting the update_time field in the database.
 	FieldUpdateTime = "update_time"
+	// FieldLabel holds the string denoting the label field in the database.
+	FieldLabel = "label"
+	// EdgeUser holds the string denoting the user edge name in mutations.
+	EdgeUser = "user"
+	// EdgeCareers holds the string denoting the careers edge name in mutations.
+	EdgeCareers = "careers"
 	// Table holds the table name of the usercareergroup in the database.
 	Table = "user_career_groups"
+	// UserTable is the table that holds the user relation/edge.
+	UserTable = "user_career_groups"
+	// UserInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UserInverseTable = "users"
+	// UserColumn is the table column denoting the user relation/edge.
+	UserColumn = "user_id"
+	// CareersTable is the table that holds the careers relation/edge.
+	CareersTable = "user_careers"
+	// CareersInverseTable is the table name for the UserCareer entity.
+	// It exists in this package in order to avoid circular dependency with the "usercareer" package.
+	CareersInverseTable = "user_careers"
+	// CareersColumn is the table column denoting the careers relation/edge.
+	CareersColumn = "careergroup_id"
 )
 
 // Columns holds all SQL columns for usercareergroup fields.
@@ -24,12 +44,24 @@ var Columns = []string{
 	FieldID,
 	FieldCreateTime,
 	FieldUpdateTime,
+	FieldLabel,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "user_career_groups"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"user_id",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -43,4 +75,6 @@ var (
 	DefaultUpdateTime func() time.Time
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
+	// LabelValidator is a validator for the "label" field. It is called by the builders before save.
+	LabelValidator func(string) error
 )

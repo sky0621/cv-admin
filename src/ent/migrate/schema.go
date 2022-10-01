@@ -94,24 +94,66 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString},
+		{Name: "from", Type: field.TypeString},
+		{Name: "to", Type: field.TypeString},
+		{Name: "careergroup_id", Type: field.TypeInt},
 	}
 	// UserCareersTable holds the schema information for the "user_careers" table.
 	UserCareersTable = &schema.Table{
 		Name:       "user_careers",
 		Columns:    UserCareersColumns,
 		PrimaryKey: []*schema.Column{UserCareersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_careers_user_career_groups_careers",
+				Columns:    []*schema.Column{UserCareersColumns[6]},
+				RefColumns: []*schema.Column{UserCareerGroupsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// UserCareerDescriptionsColumns holds the columns for the "user_career_descriptions" table.
+	UserCareerDescriptionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "description", Type: field.TypeString},
+		{Name: "career_id", Type: field.TypeInt},
+	}
+	// UserCareerDescriptionsTable holds the schema information for the "user_career_descriptions" table.
+	UserCareerDescriptionsTable = &schema.Table{
+		Name:       "user_career_descriptions",
+		Columns:    UserCareerDescriptionsColumns,
+		PrimaryKey: []*schema.Column{UserCareerDescriptionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_career_descriptions_user_careers_careerdescriptions",
+				Columns:    []*schema.Column{UserCareerDescriptionsColumns[2]},
+				RefColumns: []*schema.Column{UserCareersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 	}
 	// UserCareerGroupsColumns holds the columns for the "user_career_groups" table.
 	UserCareerGroupsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
+		{Name: "label", Type: field.TypeString},
+		{Name: "user_id", Type: field.TypeInt},
 	}
 	// UserCareerGroupsTable holds the schema information for the "user_career_groups" table.
 	UserCareerGroupsTable = &schema.Table{
 		Name:       "user_career_groups",
 		Columns:    UserCareerGroupsColumns,
 		PrimaryKey: []*schema.Column{UserCareerGroupsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_career_groups_users_careergroups",
+				Columns:    []*schema.Column{UserCareerGroupsColumns[4]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 	}
 	// UserNotesColumns holds the columns for the "user_notes" table.
 	UserNotesColumns = []*schema.Column{
@@ -171,6 +213,7 @@ var (
 		UsersTable,
 		UserActivitiesTable,
 		UserCareersTable,
+		UserCareerDescriptionsTable,
 		UserCareerGroupsTable,
 		UserNotesTable,
 		UserNoteItemsTable,
@@ -180,5 +223,8 @@ var (
 
 func init() {
 	UserActivitiesTable.ForeignKeys[0].RefTable = UsersTable
+	UserCareersTable.ForeignKeys[0].RefTable = UserCareerGroupsTable
+	UserCareerDescriptionsTable.ForeignKeys[0].RefTable = UserCareersTable
+	UserCareerGroupsTable.ForeignKeys[0].RefTable = UsersTable
 	UserQualificationsTable.ForeignKeys[0].RefTable = UsersTable
 }

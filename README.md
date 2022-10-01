@@ -39,7 +39,7 @@ go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
 
 ```
 cd src/adapter/gateway/ent
-go run -mod=mod entgo.io/ent/cmd/ent init User UserActivity UserQualification UserCareerGroup UserCareer CareerTask CareerSkillGroup CareerSkill UserNote UserNoteItem
+go run -mod=mod entgo.io/ent/cmd/ent init User UserActivity UserQualification UserCareerGroup UserCareer UserCareerDescription UserCareerPeriod CareerTask CareerSkillGroup CareerSkill UserNote UserNoteItem
 ```
 
 ### cobra

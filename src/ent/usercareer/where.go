@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 )
 
@@ -91,6 +92,27 @@ func CreateTime(v time.Time) predicate.UserCareer {
 func UpdateTime(v time.Time) predicate.UserCareer {
 	return predicate.UserCareer(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUpdateTime), v))
+	})
+}
+
+// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+func Name(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldName), v))
+	})
+}
+
+// From applies equality check predicate on the "from" field. It's identical to FromEQ.
+func From(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldFrom), v))
+	})
+}
+
+// To applies equality check predicate on the "to" field. It's identical to ToEQ.
+func To(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTo), v))
 	})
 }
 
@@ -219,6 +241,359 @@ func UpdateTimeLT(v time.Time) predicate.UserCareer {
 func UpdateTimeLTE(v time.Time) predicate.UserCareer {
 	return predicate.UserCareer(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdateTime), v))
+	})
+}
+
+// NameEQ applies the EQ predicate on the "name" field.
+func NameEQ(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldName), v))
+	})
+}
+
+// NameNEQ applies the NEQ predicate on the "name" field.
+func NameNEQ(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldName), v))
+	})
+}
+
+// NameIn applies the In predicate on the "name" field.
+func NameIn(vs ...string) predicate.UserCareer {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldName), v...))
+	})
+}
+
+// NameNotIn applies the NotIn predicate on the "name" field.
+func NameNotIn(vs ...string) predicate.UserCareer {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldName), v...))
+	})
+}
+
+// NameGT applies the GT predicate on the "name" field.
+func NameGT(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldName), v))
+	})
+}
+
+// NameGTE applies the GTE predicate on the "name" field.
+func NameGTE(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldName), v))
+	})
+}
+
+// NameLT applies the LT predicate on the "name" field.
+func NameLT(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldName), v))
+	})
+}
+
+// NameLTE applies the LTE predicate on the "name" field.
+func NameLTE(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldName), v))
+	})
+}
+
+// NameContains applies the Contains predicate on the "name" field.
+func NameContains(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldName), v))
+	})
+}
+
+// NameHasPrefix applies the HasPrefix predicate on the "name" field.
+func NameHasPrefix(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldName), v))
+	})
+}
+
+// NameHasSuffix applies the HasSuffix predicate on the "name" field.
+func NameHasSuffix(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldName), v))
+	})
+}
+
+// NameEqualFold applies the EqualFold predicate on the "name" field.
+func NameEqualFold(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldName), v))
+	})
+}
+
+// NameContainsFold applies the ContainsFold predicate on the "name" field.
+func NameContainsFold(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldName), v))
+	})
+}
+
+// FromEQ applies the EQ predicate on the "from" field.
+func FromEQ(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldFrom), v))
+	})
+}
+
+// FromNEQ applies the NEQ predicate on the "from" field.
+func FromNEQ(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldFrom), v))
+	})
+}
+
+// FromIn applies the In predicate on the "from" field.
+func FromIn(vs ...string) predicate.UserCareer {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldFrom), v...))
+	})
+}
+
+// FromNotIn applies the NotIn predicate on the "from" field.
+func FromNotIn(vs ...string) predicate.UserCareer {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldFrom), v...))
+	})
+}
+
+// FromGT applies the GT predicate on the "from" field.
+func FromGT(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldFrom), v))
+	})
+}
+
+// FromGTE applies the GTE predicate on the "from" field.
+func FromGTE(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldFrom), v))
+	})
+}
+
+// FromLT applies the LT predicate on the "from" field.
+func FromLT(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldFrom), v))
+	})
+}
+
+// FromLTE applies the LTE predicate on the "from" field.
+func FromLTE(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldFrom), v))
+	})
+}
+
+// FromContains applies the Contains predicate on the "from" field.
+func FromContains(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldFrom), v))
+	})
+}
+
+// FromHasPrefix applies the HasPrefix predicate on the "from" field.
+func FromHasPrefix(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldFrom), v))
+	})
+}
+
+// FromHasSuffix applies the HasSuffix predicate on the "from" field.
+func FromHasSuffix(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldFrom), v))
+	})
+}
+
+// FromEqualFold applies the EqualFold predicate on the "from" field.
+func FromEqualFold(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldFrom), v))
+	})
+}
+
+// FromContainsFold applies the ContainsFold predicate on the "from" field.
+func FromContainsFold(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldFrom), v))
+	})
+}
+
+// ToEQ applies the EQ predicate on the "to" field.
+func ToEQ(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTo), v))
+	})
+}
+
+// ToNEQ applies the NEQ predicate on the "to" field.
+func ToNEQ(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTo), v))
+	})
+}
+
+// ToIn applies the In predicate on the "to" field.
+func ToIn(vs ...string) predicate.UserCareer {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldTo), v...))
+	})
+}
+
+// ToNotIn applies the NotIn predicate on the "to" field.
+func ToNotIn(vs ...string) predicate.UserCareer {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldTo), v...))
+	})
+}
+
+// ToGT applies the GT predicate on the "to" field.
+func ToGT(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTo), v))
+	})
+}
+
+// ToGTE applies the GTE predicate on the "to" field.
+func ToGTE(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTo), v))
+	})
+}
+
+// ToLT applies the LT predicate on the "to" field.
+func ToLT(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTo), v))
+	})
+}
+
+// ToLTE applies the LTE predicate on the "to" field.
+func ToLTE(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTo), v))
+	})
+}
+
+// ToContains applies the Contains predicate on the "to" field.
+func ToContains(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldTo), v))
+	})
+}
+
+// ToHasPrefix applies the HasPrefix predicate on the "to" field.
+func ToHasPrefix(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldTo), v))
+	})
+}
+
+// ToHasSuffix applies the HasSuffix predicate on the "to" field.
+func ToHasSuffix(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldTo), v))
+	})
+}
+
+// ToEqualFold applies the EqualFold predicate on the "to" field.
+func ToEqualFold(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldTo), v))
+	})
+}
+
+// ToContainsFold applies the ContainsFold predicate on the "to" field.
+func ToContainsFold(v string) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldTo), v))
+	})
+}
+
+// HasCareergroup applies the HasEdge predicate on the "careergroup" edge.
+func HasCareergroup() predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CareergroupTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CareergroupTable, CareergroupColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCareergroupWith applies the HasEdge predicate on the "careergroup" edge with a given conditions (other predicates).
+func HasCareergroupWith(preds ...predicate.UserCareerGroup) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CareergroupInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CareergroupTable, CareergroupColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCareerdescriptions applies the HasEdge predicate on the "careerdescriptions" edge.
+func HasCareerdescriptions() predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CareerdescriptionsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareerdescriptionsTable, CareerdescriptionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCareerdescriptionsWith applies the HasEdge predicate on the "careerdescriptions" edge with a given conditions (other predicates).
+func HasCareerdescriptionsWith(preds ...predicate.UserCareerDescription) predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CareerdescriptionsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareerdescriptionsTable, CareerdescriptionsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

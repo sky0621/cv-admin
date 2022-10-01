@@ -15,8 +15,8 @@ type UserCareer struct {
 func (UserCareer) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").NotEmpty().Validate(maxRuneCount(100)),
-		field.String("url").Validate(rangeRuneCount(1, 4096)).Optional().Nillable(),
-		field.String("icon").Validate(maxRuneCount(40)).Optional().Nillable(),
+		field.String("from").NotEmpty().Validate(fixedRuneCount(6)),
+		field.String("to").NotEmpty().Validate(fixedRuneCount(6)),
 	}
 }
 
@@ -30,5 +30,6 @@ func (UserCareer) Mixin() []ent.Mixin {
 func (UserCareer) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("careergroup", UserCareerGroup.Type).Ref("careers").Unique().Required(),
+		edge.To("careerdescriptions", UserCareerDescription.Type).StorageKey(edge.Column("career_id")),
 	}
 }

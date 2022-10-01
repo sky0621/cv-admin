@@ -49,9 +49,11 @@ type UserEdges struct {
 	Activities []*UserActivity `json:"activities,omitempty"`
 	// Qualifications holds the value of the qualifications edge.
 	Qualifications []*UserQualification `json:"qualifications,omitempty"`
+	// Careergroups holds the value of the careergroups edge.
+	Careergroups []*UserCareerGroup `json:"careergroups,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // ActivitiesOrErr returns the Activities value or an error if the edge
@@ -70,6 +72,15 @@ func (e UserEdges) QualificationsOrErr() ([]*UserQualification, error) {
 		return e.Qualifications, nil
 	}
 	return nil, &NotLoadedError{edge: "qualifications"}
+}
+
+// CareergroupsOrErr returns the Careergroups value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) CareergroupsOrErr() ([]*UserCareerGroup, error) {
+	if e.loadedTypes[2] {
+		return e.Careergroups, nil
+	}
+	return nil, &NotLoadedError{edge: "careergroups"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -188,6 +199,11 @@ func (u *User) QueryActivities() *UserActivityQuery {
 // QueryQualifications queries the "qualifications" edge of the User entity.
 func (u *User) QueryQualifications() *UserQualificationQuery {
 	return (&UserClient{config: u.config}).QueryQualifications(u)
+}
+
+// QueryCareergroups queries the "careergroups" edge of the User entity.
+func (u *User) QueryCareergroups() *UserCareerGroupQuery {
+	return (&UserClient{config: u.config}).QueryCareergroups(u)
 }
 
 // Update returns a builder for updating this User.

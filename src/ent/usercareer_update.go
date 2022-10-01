@@ -13,6 +13,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
+	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
+	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 )
 
 // UserCareerUpdate is the builder for updating UserCareer entities.
@@ -34,9 +36,80 @@ func (ucu *UserCareerUpdate) SetUpdateTime(t time.Time) *UserCareerUpdate {
 	return ucu
 }
 
+// SetName sets the "name" field.
+func (ucu *UserCareerUpdate) SetName(s string) *UserCareerUpdate {
+	ucu.mutation.SetName(s)
+	return ucu
+}
+
+// SetFrom sets the "from" field.
+func (ucu *UserCareerUpdate) SetFrom(s string) *UserCareerUpdate {
+	ucu.mutation.SetFrom(s)
+	return ucu
+}
+
+// SetTo sets the "to" field.
+func (ucu *UserCareerUpdate) SetTo(s string) *UserCareerUpdate {
+	ucu.mutation.SetTo(s)
+	return ucu
+}
+
+// SetCareergroupID sets the "careergroup" edge to the UserCareerGroup entity by ID.
+func (ucu *UserCareerUpdate) SetCareergroupID(id int) *UserCareerUpdate {
+	ucu.mutation.SetCareergroupID(id)
+	return ucu
+}
+
+// SetCareergroup sets the "careergroup" edge to the UserCareerGroup entity.
+func (ucu *UserCareerUpdate) SetCareergroup(u *UserCareerGroup) *UserCareerUpdate {
+	return ucu.SetCareergroupID(u.ID)
+}
+
+// AddCareerdescriptionIDs adds the "careerdescriptions" edge to the UserCareerDescription entity by IDs.
+func (ucu *UserCareerUpdate) AddCareerdescriptionIDs(ids ...int) *UserCareerUpdate {
+	ucu.mutation.AddCareerdescriptionIDs(ids...)
+	return ucu
+}
+
+// AddCareerdescriptions adds the "careerdescriptions" edges to the UserCareerDescription entity.
+func (ucu *UserCareerUpdate) AddCareerdescriptions(u ...*UserCareerDescription) *UserCareerUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return ucu.AddCareerdescriptionIDs(ids...)
+}
+
 // Mutation returns the UserCareerMutation object of the builder.
 func (ucu *UserCareerUpdate) Mutation() *UserCareerMutation {
 	return ucu.mutation
+}
+
+// ClearCareergroup clears the "careergroup" edge to the UserCareerGroup entity.
+func (ucu *UserCareerUpdate) ClearCareergroup() *UserCareerUpdate {
+	ucu.mutation.ClearCareergroup()
+	return ucu
+}
+
+// ClearCareerdescriptions clears all "careerdescriptions" edges to the UserCareerDescription entity.
+func (ucu *UserCareerUpdate) ClearCareerdescriptions() *UserCareerUpdate {
+	ucu.mutation.ClearCareerdescriptions()
+	return ucu
+}
+
+// RemoveCareerdescriptionIDs removes the "careerdescriptions" edge to UserCareerDescription entities by IDs.
+func (ucu *UserCareerUpdate) RemoveCareerdescriptionIDs(ids ...int) *UserCareerUpdate {
+	ucu.mutation.RemoveCareerdescriptionIDs(ids...)
+	return ucu
+}
+
+// RemoveCareerdescriptions removes "careerdescriptions" edges to UserCareerDescription entities.
+func (ucu *UserCareerUpdate) RemoveCareerdescriptions(u ...*UserCareerDescription) *UserCareerUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return ucu.RemoveCareerdescriptionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -47,12 +120,18 @@ func (ucu *UserCareerUpdate) Save(ctx context.Context) (int, error) {
 	)
 	ucu.defaults()
 	if len(ucu.hooks) == 0 {
+		if err = ucu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = ucu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*UserCareerMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = ucu.check(); err != nil {
+				return 0, err
 			}
 			ucu.mutation = mutation
 			affected, err = ucu.sqlSave(ctx)
@@ -102,6 +181,29 @@ func (ucu *UserCareerUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ucu *UserCareerUpdate) check() error {
+	if v, ok := ucu.mutation.Name(); ok {
+		if err := usercareer.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "UserCareer.name": %w`, err)}
+		}
+	}
+	if v, ok := ucu.mutation.From(); ok {
+		if err := usercareer.FromValidator(v); err != nil {
+			return &ValidationError{Name: "from", err: fmt.Errorf(`ent: validator failed for field "UserCareer.from": %w`, err)}
+		}
+	}
+	if v, ok := ucu.mutation.To(); ok {
+		if err := usercareer.ToValidator(v); err != nil {
+			return &ValidationError{Name: "to", err: fmt.Errorf(`ent: validator failed for field "UserCareer.to": %w`, err)}
+		}
+	}
+	if _, ok := ucu.mutation.CareergroupID(); ucu.mutation.CareergroupCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "UserCareer.careergroup"`)
+	}
+	return nil
+}
+
 func (ucu *UserCareerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -126,6 +228,116 @@ func (ucu *UserCareerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Value:  value,
 			Column: usercareer.FieldUpdateTime,
 		})
+	}
+	if value, ok := ucu.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usercareer.FieldName,
+		})
+	}
+	if value, ok := ucu.mutation.From(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usercareer.FieldFrom,
+		})
+	}
+	if value, ok := ucu.mutation.To(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usercareer.FieldTo,
+		})
+	}
+	if ucu.mutation.CareergroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usercareer.CareergroupTable,
+			Columns: []string{usercareer.CareergroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareergroup.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ucu.mutation.CareergroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usercareer.CareergroupTable,
+			Columns: []string{usercareer.CareergroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareergroup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ucu.mutation.CareerdescriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usercareer.CareerdescriptionsTable,
+			Columns: []string{usercareer.CareerdescriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareerdescription.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ucu.mutation.RemovedCareerdescriptionsIDs(); len(nodes) > 0 && !ucu.mutation.CareerdescriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usercareer.CareerdescriptionsTable,
+			Columns: []string{usercareer.CareerdescriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareerdescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ucu.mutation.CareerdescriptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usercareer.CareerdescriptionsTable,
+			Columns: []string{usercareer.CareerdescriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareerdescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ucu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -152,9 +364,80 @@ func (ucuo *UserCareerUpdateOne) SetUpdateTime(t time.Time) *UserCareerUpdateOne
 	return ucuo
 }
 
+// SetName sets the "name" field.
+func (ucuo *UserCareerUpdateOne) SetName(s string) *UserCareerUpdateOne {
+	ucuo.mutation.SetName(s)
+	return ucuo
+}
+
+// SetFrom sets the "from" field.
+func (ucuo *UserCareerUpdateOne) SetFrom(s string) *UserCareerUpdateOne {
+	ucuo.mutation.SetFrom(s)
+	return ucuo
+}
+
+// SetTo sets the "to" field.
+func (ucuo *UserCareerUpdateOne) SetTo(s string) *UserCareerUpdateOne {
+	ucuo.mutation.SetTo(s)
+	return ucuo
+}
+
+// SetCareergroupID sets the "careergroup" edge to the UserCareerGroup entity by ID.
+func (ucuo *UserCareerUpdateOne) SetCareergroupID(id int) *UserCareerUpdateOne {
+	ucuo.mutation.SetCareergroupID(id)
+	return ucuo
+}
+
+// SetCareergroup sets the "careergroup" edge to the UserCareerGroup entity.
+func (ucuo *UserCareerUpdateOne) SetCareergroup(u *UserCareerGroup) *UserCareerUpdateOne {
+	return ucuo.SetCareergroupID(u.ID)
+}
+
+// AddCareerdescriptionIDs adds the "careerdescriptions" edge to the UserCareerDescription entity by IDs.
+func (ucuo *UserCareerUpdateOne) AddCareerdescriptionIDs(ids ...int) *UserCareerUpdateOne {
+	ucuo.mutation.AddCareerdescriptionIDs(ids...)
+	return ucuo
+}
+
+// AddCareerdescriptions adds the "careerdescriptions" edges to the UserCareerDescription entity.
+func (ucuo *UserCareerUpdateOne) AddCareerdescriptions(u ...*UserCareerDescription) *UserCareerUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return ucuo.AddCareerdescriptionIDs(ids...)
+}
+
 // Mutation returns the UserCareerMutation object of the builder.
 func (ucuo *UserCareerUpdateOne) Mutation() *UserCareerMutation {
 	return ucuo.mutation
+}
+
+// ClearCareergroup clears the "careergroup" edge to the UserCareerGroup entity.
+func (ucuo *UserCareerUpdateOne) ClearCareergroup() *UserCareerUpdateOne {
+	ucuo.mutation.ClearCareergroup()
+	return ucuo
+}
+
+// ClearCareerdescriptions clears all "careerdescriptions" edges to the UserCareerDescription entity.
+func (ucuo *UserCareerUpdateOne) ClearCareerdescriptions() *UserCareerUpdateOne {
+	ucuo.mutation.ClearCareerdescriptions()
+	return ucuo
+}
+
+// RemoveCareerdescriptionIDs removes the "careerdescriptions" edge to UserCareerDescription entities by IDs.
+func (ucuo *UserCareerUpdateOne) RemoveCareerdescriptionIDs(ids ...int) *UserCareerUpdateOne {
+	ucuo.mutation.RemoveCareerdescriptionIDs(ids...)
+	return ucuo
+}
+
+// RemoveCareerdescriptions removes "careerdescriptions" edges to UserCareerDescription entities.
+func (ucuo *UserCareerUpdateOne) RemoveCareerdescriptions(u ...*UserCareerDescription) *UserCareerUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return ucuo.RemoveCareerdescriptionIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -172,12 +455,18 @@ func (ucuo *UserCareerUpdateOne) Save(ctx context.Context) (*UserCareer, error) 
 	)
 	ucuo.defaults()
 	if len(ucuo.hooks) == 0 {
+		if err = ucuo.check(); err != nil {
+			return nil, err
+		}
 		node, err = ucuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*UserCareerMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = ucuo.check(); err != nil {
+				return nil, err
 			}
 			ucuo.mutation = mutation
 			node, err = ucuo.sqlSave(ctx)
@@ -233,6 +522,29 @@ func (ucuo *UserCareerUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ucuo *UserCareerUpdateOne) check() error {
+	if v, ok := ucuo.mutation.Name(); ok {
+		if err := usercareer.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "UserCareer.name": %w`, err)}
+		}
+	}
+	if v, ok := ucuo.mutation.From(); ok {
+		if err := usercareer.FromValidator(v); err != nil {
+			return &ValidationError{Name: "from", err: fmt.Errorf(`ent: validator failed for field "UserCareer.from": %w`, err)}
+		}
+	}
+	if v, ok := ucuo.mutation.To(); ok {
+		if err := usercareer.ToValidator(v); err != nil {
+			return &ValidationError{Name: "to", err: fmt.Errorf(`ent: validator failed for field "UserCareer.to": %w`, err)}
+		}
+	}
+	if _, ok := ucuo.mutation.CareergroupID(); ucuo.mutation.CareergroupCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "UserCareer.careergroup"`)
+	}
+	return nil
+}
+
 func (ucuo *UserCareerUpdateOne) sqlSave(ctx context.Context) (_node *UserCareer, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -274,6 +586,116 @@ func (ucuo *UserCareerUpdateOne) sqlSave(ctx context.Context) (_node *UserCareer
 			Value:  value,
 			Column: usercareer.FieldUpdateTime,
 		})
+	}
+	if value, ok := ucuo.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usercareer.FieldName,
+		})
+	}
+	if value, ok := ucuo.mutation.From(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usercareer.FieldFrom,
+		})
+	}
+	if value, ok := ucuo.mutation.To(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: usercareer.FieldTo,
+		})
+	}
+	if ucuo.mutation.CareergroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usercareer.CareergroupTable,
+			Columns: []string{usercareer.CareergroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareergroup.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ucuo.mutation.CareergroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   usercareer.CareergroupTable,
+			Columns: []string{usercareer.CareergroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareergroup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ucuo.mutation.CareerdescriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usercareer.CareerdescriptionsTable,
+			Columns: []string{usercareer.CareerdescriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareerdescription.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ucuo.mutation.RemovedCareerdescriptionsIDs(); len(nodes) > 0 && !ucuo.mutation.CareerdescriptionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usercareer.CareerdescriptionsTable,
+			Columns: []string{usercareer.CareerdescriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareerdescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ucuo.mutation.CareerdescriptionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usercareer.CareerdescriptionsTable,
+			Columns: []string{usercareer.CareerdescriptionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: usercareerdescription.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &UserCareer{config: ucuo.config}
 	_spec.Assign = _node.assignValues

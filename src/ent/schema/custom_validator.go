@@ -23,6 +23,16 @@ func maxRuneCount(maxLen int) func(s string) error {
 	}
 }
 
+func fixedRuneCount(len int) func(s string) error {
+	rangeFunc := rangeRuneCount(len, len)
+	return func(s string) error {
+		if err := rangeFunc(s); err != nil {
+			return err
+		}
+		return nil
+	}
+}
+
 func rangeRuneCount(minLen, maxLen int) func(s string) error {
 	minFunc := minRuneCount(minLen)
 	maxFunc := maxRuneCount(maxLen)

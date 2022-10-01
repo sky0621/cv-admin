@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -11,18 +12,23 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
+	"github.com/sky0621/cv-admin/src/ent/user"
+	"github.com/sky0621/cv-admin/src/ent/usercareer"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 )
 
 // UserCareerGroupQuery is the builder for querying UserCareerGroup entities.
 type UserCareerGroupQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
-	order      []OrderFunc
-	fields     []string
-	predicates []predicate.UserCareerGroup
+	limit       *int
+	offset      *int
+	unique      *bool
+	order       []OrderFunc
+	fields      []string
+	predicates  []predicate.UserCareerGroup
+	withUser    *UserQuery
+	withCareers *UserCareerQuery
+	withFKs     bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -57,6 +63,50 @@ func (ucgq *UserCareerGroupQuery) Unique(unique bool) *UserCareerGroupQuery {
 func (ucgq *UserCareerGroupQuery) Order(o ...OrderFunc) *UserCareerGroupQuery {
 	ucgq.order = append(ucgq.order, o...)
 	return ucgq
+}
+
+// QueryUser chains the current query on the "user" edge.
+func (ucgq *UserCareerGroupQuery) QueryUser() *UserQuery {
+	query := &UserQuery{config: ucgq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ucgq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ucgq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usercareergroup.Table, usercareergroup.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, usercareergroup.UserTable, usercareergroup.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ucgq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCareers chains the current query on the "careers" edge.
+func (ucgq *UserCareerGroupQuery) QueryCareers() *UserCareerQuery {
+	query := &UserCareerQuery{config: ucgq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ucgq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ucgq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usercareergroup.Table, usercareergroup.FieldID, selector),
+			sqlgraph.To(usercareer.Table, usercareer.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, usercareergroup.CareersTable, usercareergroup.CareersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ucgq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first UserCareerGroup entity from the query.
@@ -235,16 +285,40 @@ func (ucgq *UserCareerGroupQuery) Clone() *UserCareerGroupQuery {
 		return nil
 	}
 	return &UserCareerGroupQuery{
-		config:     ucgq.config,
-		limit:      ucgq.limit,
-		offset:     ucgq.offset,
-		order:      append([]OrderFunc{}, ucgq.order...),
-		predicates: append([]predicate.UserCareerGroup{}, ucgq.predicates...),
+		config:      ucgq.config,
+		limit:       ucgq.limit,
+		offset:      ucgq.offset,
+		order:       append([]OrderFunc{}, ucgq.order...),
+		predicates:  append([]predicate.UserCareerGroup{}, ucgq.predicates...),
+		withUser:    ucgq.withUser.Clone(),
+		withCareers: ucgq.withCareers.Clone(),
 		// clone intermediate query.
 		sql:    ucgq.sql.Clone(),
 		path:   ucgq.path,
 		unique: ucgq.unique,
 	}
+}
+
+// WithUser tells the query-builder to eager-load the nodes that are connected to
+// the "user" edge. The optional arguments are used to configure the query builder of the edge.
+func (ucgq *UserCareerGroupQuery) WithUser(opts ...func(*UserQuery)) *UserCareerGroupQuery {
+	query := &UserQuery{config: ucgq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ucgq.withUser = query
+	return ucgq
+}
+
+// WithCareers tells the query-builder to eager-load the nodes that are connected to
+// the "careers" edge. The optional arguments are used to configure the query builder of the edge.
+func (ucgq *UserCareerGroupQuery) WithCareers(opts ...func(*UserCareerQuery)) *UserCareerGroupQuery {
+	query := &UserCareerQuery{config: ucgq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ucgq.withCareers = query
+	return ucgq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -313,15 +387,27 @@ func (ucgq *UserCareerGroupQuery) prepareQuery(ctx context.Context) error {
 
 func (ucgq *UserCareerGroupQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*UserCareerGroup, error) {
 	var (
-		nodes = []*UserCareerGroup{}
-		_spec = ucgq.querySpec()
+		nodes       = []*UserCareerGroup{}
+		withFKs     = ucgq.withFKs
+		_spec       = ucgq.querySpec()
+		loadedTypes = [2]bool{
+			ucgq.withUser != nil,
+			ucgq.withCareers != nil,
+		}
 	)
+	if ucgq.withUser != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, usercareergroup.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		return (*UserCareerGroup).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []interface{}) error {
 		node := &UserCareerGroup{config: ucgq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -333,7 +419,81 @@ func (ucgq *UserCareerGroupQuery) sqlAll(ctx context.Context, hooks ...queryHook
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := ucgq.withUser; query != nil {
+		if err := ucgq.loadUser(ctx, query, nodes, nil,
+			func(n *UserCareerGroup, e *User) { n.Edges.User = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := ucgq.withCareers; query != nil {
+		if err := ucgq.loadCareers(ctx, query, nodes,
+			func(n *UserCareerGroup) { n.Edges.Careers = []*UserCareer{} },
+			func(n *UserCareerGroup, e *UserCareer) { n.Edges.Careers = append(n.Edges.Careers, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (ucgq *UserCareerGroupQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*UserCareerGroup, init func(*UserCareerGroup), assign func(*UserCareerGroup, *User)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*UserCareerGroup)
+	for i := range nodes {
+		if nodes[i].user_id == nil {
+			continue
+		}
+		fk := *nodes[i].user_id
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (ucgq *UserCareerGroupQuery) loadCareers(ctx context.Context, query *UserCareerQuery, nodes []*UserCareerGroup, init func(*UserCareerGroup), assign func(*UserCareerGroup, *UserCareer)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*UserCareerGroup)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.InValues(usercareergroup.CareersColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.careergroup_id
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "careergroup_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "careergroup_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (ucgq *UserCareerGroupQuery) sqlCount(ctx context.Context) (int, error) {

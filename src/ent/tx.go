@@ -24,6 +24,8 @@ type Tx struct {
 	UserActivity *UserActivityClient
 	// UserCareer is the client for interacting with the UserCareer builders.
 	UserCareer *UserCareerClient
+	// UserCareerDescription is the client for interacting with the UserCareerDescription builders.
+	UserCareerDescription *UserCareerDescriptionClient
 	// UserCareerGroup is the client for interacting with the UserCareerGroup builders.
 	UserCareerGroup *UserCareerGroupClient
 	// UserNote is the client for interacting with the UserNote builders.
@@ -173,6 +175,7 @@ func (tx *Tx) init() {
 	tx.User = NewUserClient(tx.config)
 	tx.UserActivity = NewUserActivityClient(tx.config)
 	tx.UserCareer = NewUserCareerClient(tx.config)
+	tx.UserCareerDescription = NewUserCareerDescriptionClient(tx.config)
 	tx.UserCareerGroup = NewUserCareerGroupClient(tx.config)
 	tx.UserNote = NewUserNoteClient(tx.config)
 	tx.UserNoteItem = NewUserNoteItemClient(tx.config)
