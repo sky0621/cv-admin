@@ -15,8 +15,23 @@ const (
 	FieldCreateTime = "create_time"
 	// FieldUpdateTime holds the string denoting the update_time field in the database.
 	FieldUpdateTime = "update_time"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
+	// FieldURL holds the string denoting the url field in the database.
+	FieldURL = "url"
+	// FieldVersion holds the string denoting the version field in the database.
+	FieldVersion = "version"
+	// EdgeCareerskillgroup holds the string denoting the careerskillgroup edge name in mutations.
+	EdgeCareerskillgroup = "careerskillgroup"
 	// Table holds the table name of the careerskill in the database.
 	Table = "career_skills"
+	// CareerskillgroupTable is the table that holds the careerskillgroup relation/edge.
+	CareerskillgroupTable = "career_skills"
+	// CareerskillgroupInverseTable is the table name for the CareerSkillGroup entity.
+	// It exists in this package in order to avoid circular dependency with the "careerskillgroup" package.
+	CareerskillgroupInverseTable = "career_skill_groups"
+	// CareerskillgroupColumn is the table column denoting the careerskillgroup relation/edge.
+	CareerskillgroupColumn = "career_skill_group_id"
 )
 
 // Columns holds all SQL columns for careerskill fields.
@@ -24,12 +39,26 @@ var Columns = []string{
 	FieldID,
 	FieldCreateTime,
 	FieldUpdateTime,
+	FieldName,
+	FieldURL,
+	FieldVersion,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "career_skills"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"career_skill_group_id",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -43,4 +72,10 @@ var (
 	DefaultUpdateTime func() time.Time
 	// UpdateDefaultUpdateTime holds the default value on update for the "update_time" field.
 	UpdateDefaultUpdateTime func() time.Time
+	// NameValidator is a validator for the "name" field. It is called by the builders before save.
+	NameValidator func(string) error
+	// URLValidator is a validator for the "url" field. It is called by the builders before save.
+	URLValidator func(string) error
+	// VersionValidator is a validator for the "version" field. It is called by the builders before save.
+	VersionValidator func(string) error
 )

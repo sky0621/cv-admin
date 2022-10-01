@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/careerskill"
+	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
 )
 
 // CareerSkill is the model entity for the CareerSkill schema.
@@ -20,6 +21,38 @@ type CareerSkill struct {
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
+	// URL holds the value of the "url" field.
+	URL *string `json:"url,omitempty"`
+	// Version holds the value of the "version" field.
+	Version *string `json:"version,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the CareerSkillQuery when eager-loading is set.
+	Edges                 CareerSkillEdges `json:"edges"`
+	career_skill_group_id *int
+}
+
+// CareerSkillEdges holds the relations/edges for other nodes in the graph.
+type CareerSkillEdges struct {
+	// Careerskillgroup holds the value of the careerskillgroup edge.
+	Careerskillgroup *CareerSkillGroup `json:"careerskillgroup,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// CareerskillgroupOrErr returns the Careerskillgroup value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CareerSkillEdges) CareerskillgroupOrErr() (*CareerSkillGroup, error) {
+	if e.loadedTypes[0] {
+		if e.Careerskillgroup == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: careerskillgroup.Label}
+		}
+		return e.Careerskillgroup, nil
+	}
+	return nil, &NotLoadedError{edge: "careerskillgroup"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -29,8 +62,12 @@ func (*CareerSkill) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case careerskill.FieldID:
 			values[i] = new(sql.NullInt64)
+		case careerskill.FieldName, careerskill.FieldURL, careerskill.FieldVersion:
+			values[i] = new(sql.NullString)
 		case careerskill.FieldCreateTime, careerskill.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
+		case careerskill.ForeignKeys[0]: // career_skill_group_id
+			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type CareerSkill", columns[i])
 		}
@@ -64,9 +101,41 @@ func (cs *CareerSkill) assignValues(columns []string, values []interface{}) erro
 			} else if value.Valid {
 				cs.UpdateTime = value.Time
 			}
+		case careerskill.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				cs.Name = value.String
+			}
+		case careerskill.FieldURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field url", values[i])
+			} else if value.Valid {
+				cs.URL = new(string)
+				*cs.URL = value.String
+			}
+		case careerskill.FieldVersion:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field version", values[i])
+			} else if value.Valid {
+				cs.Version = new(string)
+				*cs.Version = value.String
+			}
+		case careerskill.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field career_skill_group_id", value)
+			} else if value.Valid {
+				cs.career_skill_group_id = new(int)
+				*cs.career_skill_group_id = int(value.Int64)
+			}
 		}
 	}
 	return nil
+}
+
+// QueryCareerskillgroup queries the "careerskillgroup" edge of the CareerSkill entity.
+func (cs *CareerSkill) QueryCareerskillgroup() *CareerSkillGroupQuery {
+	return (&CareerSkillClient{config: cs.config}).QueryCareerskillgroup(cs)
 }
 
 // Update returns a builder for updating this CareerSkill.
@@ -97,6 +166,19 @@ func (cs *CareerSkill) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("update_time=")
 	builder.WriteString(cs.UpdateTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(cs.Name)
+	builder.WriteString(", ")
+	if v := cs.URL; v != nil {
+		builder.WriteString("url=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := cs.Version; v != nil {
+		builder.WriteString("version=")
+		builder.WriteString(*v)
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -34,6 +34,6 @@ func (UserCareerGroup) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From(userEdgeName, User.Type).Ref(userCareerGroupsRef).Unique().Required(),
 
-		edge.To(userCareerRef, UserCareer.Type).StorageKey(edge.Column("careergroup_id")),
+		edge.To(userCareersRef, UserCareer.Type).StorageKey(edge.Column("careergroup_id")),
 	}
 }

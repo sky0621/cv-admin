@@ -52,15 +52,20 @@ const (
 // CareerSkillMutation represents an operation that mutates the CareerSkill nodes in the graph.
 type CareerSkillMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	create_time   *time.Time
-	update_time   *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*CareerSkill, error)
-	predicates    []predicate.CareerSkill
+	op                      Op
+	typ                     string
+	id                      *int
+	create_time             *time.Time
+	update_time             *time.Time
+	name                    *string
+	url                     *string
+	version                 *string
+	clearedFields           map[string]struct{}
+	careerskillgroup        *int
+	clearedcareerskillgroup bool
+	done                    bool
+	oldValue                func(context.Context) (*CareerSkill, error)
+	predicates              []predicate.CareerSkill
 }
 
 var _ ent.Mutation = (*CareerSkillMutation)(nil)
@@ -233,6 +238,179 @@ func (m *CareerSkillMutation) ResetUpdateTime() {
 	m.update_time = nil
 }
 
+// SetName sets the "name" field.
+func (m *CareerSkillMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *CareerSkillMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the CareerSkill entity.
+// If the CareerSkill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CareerSkillMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *CareerSkillMutation) ResetName() {
+	m.name = nil
+}
+
+// SetURL sets the "url" field.
+func (m *CareerSkillMutation) SetURL(s string) {
+	m.url = &s
+}
+
+// URL returns the value of the "url" field in the mutation.
+func (m *CareerSkillMutation) URL() (r string, exists bool) {
+	v := m.url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldURL returns the old "url" field's value of the CareerSkill entity.
+// If the CareerSkill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CareerSkillMutation) OldURL(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldURL: %w", err)
+	}
+	return oldValue.URL, nil
+}
+
+// ClearURL clears the value of the "url" field.
+func (m *CareerSkillMutation) ClearURL() {
+	m.url = nil
+	m.clearedFields[careerskill.FieldURL] = struct{}{}
+}
+
+// URLCleared returns if the "url" field was cleared in this mutation.
+func (m *CareerSkillMutation) URLCleared() bool {
+	_, ok := m.clearedFields[careerskill.FieldURL]
+	return ok
+}
+
+// ResetURL resets all changes to the "url" field.
+func (m *CareerSkillMutation) ResetURL() {
+	m.url = nil
+	delete(m.clearedFields, careerskill.FieldURL)
+}
+
+// SetVersion sets the "version" field.
+func (m *CareerSkillMutation) SetVersion(s string) {
+	m.version = &s
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *CareerSkillMutation) Version() (r string, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the CareerSkill entity.
+// If the CareerSkill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CareerSkillMutation) OldVersion(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// ClearVersion clears the value of the "version" field.
+func (m *CareerSkillMutation) ClearVersion() {
+	m.version = nil
+	m.clearedFields[careerskill.FieldVersion] = struct{}{}
+}
+
+// VersionCleared returns if the "version" field was cleared in this mutation.
+func (m *CareerSkillMutation) VersionCleared() bool {
+	_, ok := m.clearedFields[careerskill.FieldVersion]
+	return ok
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *CareerSkillMutation) ResetVersion() {
+	m.version = nil
+	delete(m.clearedFields, careerskill.FieldVersion)
+}
+
+// SetCareerskillgroupID sets the "careerskillgroup" edge to the CareerSkillGroup entity by id.
+func (m *CareerSkillMutation) SetCareerskillgroupID(id int) {
+	m.careerskillgroup = &id
+}
+
+// ClearCareerskillgroup clears the "careerskillgroup" edge to the CareerSkillGroup entity.
+func (m *CareerSkillMutation) ClearCareerskillgroup() {
+	m.clearedcareerskillgroup = true
+}
+
+// CareerskillgroupCleared reports if the "careerskillgroup" edge to the CareerSkillGroup entity was cleared.
+func (m *CareerSkillMutation) CareerskillgroupCleared() bool {
+	return m.clearedcareerskillgroup
+}
+
+// CareerskillgroupID returns the "careerskillgroup" edge ID in the mutation.
+func (m *CareerSkillMutation) CareerskillgroupID() (id int, exists bool) {
+	if m.careerskillgroup != nil {
+		return *m.careerskillgroup, true
+	}
+	return
+}
+
+// CareerskillgroupIDs returns the "careerskillgroup" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CareerskillgroupID instead. It exists only for internal usage by the builders.
+func (m *CareerSkillMutation) CareerskillgroupIDs() (ids []int) {
+	if id := m.careerskillgroup; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCareerskillgroup resets all changes to the "careerskillgroup" edge.
+func (m *CareerSkillMutation) ResetCareerskillgroup() {
+	m.careerskillgroup = nil
+	m.clearedcareerskillgroup = false
+}
+
 // Where appends a list predicates to the CareerSkillMutation builder.
 func (m *CareerSkillMutation) Where(ps ...predicate.CareerSkill) {
 	m.predicates = append(m.predicates, ps...)
@@ -252,12 +430,21 @@ func (m *CareerSkillMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CareerSkillMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 5)
 	if m.create_time != nil {
 		fields = append(fields, careerskill.FieldCreateTime)
 	}
 	if m.update_time != nil {
 		fields = append(fields, careerskill.FieldUpdateTime)
+	}
+	if m.name != nil {
+		fields = append(fields, careerskill.FieldName)
+	}
+	if m.url != nil {
+		fields = append(fields, careerskill.FieldURL)
+	}
+	if m.version != nil {
+		fields = append(fields, careerskill.FieldVersion)
 	}
 	return fields
 }
@@ -271,6 +458,12 @@ func (m *CareerSkillMutation) Field(name string) (ent.Value, bool) {
 		return m.CreateTime()
 	case careerskill.FieldUpdateTime:
 		return m.UpdateTime()
+	case careerskill.FieldName:
+		return m.Name()
+	case careerskill.FieldURL:
+		return m.URL()
+	case careerskill.FieldVersion:
+		return m.Version()
 	}
 	return nil, false
 }
@@ -284,6 +477,12 @@ func (m *CareerSkillMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldCreateTime(ctx)
 	case careerskill.FieldUpdateTime:
 		return m.OldUpdateTime(ctx)
+	case careerskill.FieldName:
+		return m.OldName(ctx)
+	case careerskill.FieldURL:
+		return m.OldURL(ctx)
+	case careerskill.FieldVersion:
+		return m.OldVersion(ctx)
 	}
 	return nil, fmt.Errorf("unknown CareerSkill field %s", name)
 }
@@ -306,6 +505,27 @@ func (m *CareerSkillMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdateTime(v)
+		return nil
+	case careerskill.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case careerskill.FieldURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetURL(v)
+		return nil
+	case careerskill.FieldVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
 		return nil
 	}
 	return fmt.Errorf("unknown CareerSkill field %s", name)
@@ -336,7 +556,14 @@ func (m *CareerSkillMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *CareerSkillMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(careerskill.FieldURL) {
+		fields = append(fields, careerskill.FieldURL)
+	}
+	if m.FieldCleared(careerskill.FieldVersion) {
+		fields = append(fields, careerskill.FieldVersion)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -349,6 +576,14 @@ func (m *CareerSkillMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *CareerSkillMutation) ClearField(name string) error {
+	switch name {
+	case careerskill.FieldURL:
+		m.ClearURL()
+		return nil
+	case careerskill.FieldVersion:
+		m.ClearVersion()
+		return nil
+	}
 	return fmt.Errorf("unknown CareerSkill nullable field %s", name)
 }
 
@@ -362,73 +597,113 @@ func (m *CareerSkillMutation) ResetField(name string) error {
 	case careerskill.FieldUpdateTime:
 		m.ResetUpdateTime()
 		return nil
+	case careerskill.FieldName:
+		m.ResetName()
+		return nil
+	case careerskill.FieldURL:
+		m.ResetURL()
+		return nil
+	case careerskill.FieldVersion:
+		m.ResetVersion()
+		return nil
 	}
 	return fmt.Errorf("unknown CareerSkill field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CareerSkillMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.careerskillgroup != nil {
+		edges = append(edges, careerskill.EdgeCareerskillgroup)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *CareerSkillMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case careerskill.EdgeCareerskillgroup:
+		if id := m.careerskillgroup; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CareerSkillMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *CareerSkillMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CareerSkillMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedcareerskillgroup {
+		edges = append(edges, careerskill.EdgeCareerskillgroup)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *CareerSkillMutation) EdgeCleared(name string) bool {
+	switch name {
+	case careerskill.EdgeCareerskillgroup:
+		return m.clearedcareerskillgroup
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *CareerSkillMutation) ClearEdge(name string) error {
+	switch name {
+	case careerskill.EdgeCareerskillgroup:
+		m.ClearCareerskillgroup()
+		return nil
+	}
 	return fmt.Errorf("unknown CareerSkill unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *CareerSkillMutation) ResetEdge(name string) error {
+	switch name {
+	case careerskill.EdgeCareerskillgroup:
+		m.ResetCareerskillgroup()
+		return nil
+	}
 	return fmt.Errorf("unknown CareerSkill edge %s", name)
 }
 
 // CareerSkillGroupMutation represents an operation that mutates the CareerSkillGroup nodes in the graph.
 type CareerSkillGroupMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	create_time   *time.Time
-	update_time   *time.Time
-	label         *string
-	clearedFields map[string]struct{}
-	career        *int
-	clearedcareer bool
-	done          bool
-	oldValue      func(context.Context) (*CareerSkillGroup, error)
-	predicates    []predicate.CareerSkillGroup
+	op                  Op
+	typ                 string
+	id                  *int
+	create_time         *time.Time
+	update_time         *time.Time
+	label               *string
+	clearedFields       map[string]struct{}
+	career              *int
+	clearedcareer       bool
+	careerskills        map[int]struct{}
+	removedcareerskills map[int]struct{}
+	clearedcareerskills bool
+	done                bool
+	oldValue            func(context.Context) (*CareerSkillGroup, error)
+	predicates          []predicate.CareerSkillGroup
 }
 
 var _ ent.Mutation = (*CareerSkillGroupMutation)(nil)
@@ -676,6 +951,60 @@ func (m *CareerSkillGroupMutation) ResetCareer() {
 	m.clearedcareer = false
 }
 
+// AddCareerskillIDs adds the "careerskills" edge to the CareerSkill entity by ids.
+func (m *CareerSkillGroupMutation) AddCareerskillIDs(ids ...int) {
+	if m.careerskills == nil {
+		m.careerskills = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.careerskills[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCareerskills clears the "careerskills" edge to the CareerSkill entity.
+func (m *CareerSkillGroupMutation) ClearCareerskills() {
+	m.clearedcareerskills = true
+}
+
+// CareerskillsCleared reports if the "careerskills" edge to the CareerSkill entity was cleared.
+func (m *CareerSkillGroupMutation) CareerskillsCleared() bool {
+	return m.clearedcareerskills
+}
+
+// RemoveCareerskillIDs removes the "careerskills" edge to the CareerSkill entity by IDs.
+func (m *CareerSkillGroupMutation) RemoveCareerskillIDs(ids ...int) {
+	if m.removedcareerskills == nil {
+		m.removedcareerskills = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.careerskills, ids[i])
+		m.removedcareerskills[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCareerskills returns the removed IDs of the "careerskills" edge to the CareerSkill entity.
+func (m *CareerSkillGroupMutation) RemovedCareerskillsIDs() (ids []int) {
+	for id := range m.removedcareerskills {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CareerskillsIDs returns the "careerskills" edge IDs in the mutation.
+func (m *CareerSkillGroupMutation) CareerskillsIDs() (ids []int) {
+	for id := range m.careerskills {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCareerskills resets all changes to the "careerskills" edge.
+func (m *CareerSkillGroupMutation) ResetCareerskills() {
+	m.careerskills = nil
+	m.clearedcareerskills = false
+	m.removedcareerskills = nil
+}
+
 // Where appends a list predicates to the CareerSkillGroupMutation builder.
 func (m *CareerSkillGroupMutation) Where(ps ...predicate.CareerSkillGroup) {
 	m.predicates = append(m.predicates, ps...)
@@ -828,9 +1157,12 @@ func (m *CareerSkillGroupMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CareerSkillGroupMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.career != nil {
 		edges = append(edges, careerskillgroup.EdgeCareer)
+	}
+	if m.careerskills != nil {
+		edges = append(edges, careerskillgroup.EdgeCareerskills)
 	}
 	return edges
 }
@@ -843,13 +1175,22 @@ func (m *CareerSkillGroupMutation) AddedIDs(name string) []ent.Value {
 		if id := m.career; id != nil {
 			return []ent.Value{*id}
 		}
+	case careerskillgroup.EdgeCareerskills:
+		ids := make([]ent.Value, 0, len(m.careerskills))
+		for id := range m.careerskills {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CareerSkillGroupMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.removedcareerskills != nil {
+		edges = append(edges, careerskillgroup.EdgeCareerskills)
+	}
 	return edges
 }
 
@@ -857,15 +1198,24 @@ func (m *CareerSkillGroupMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *CareerSkillGroupMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case careerskillgroup.EdgeCareerskills:
+		ids := make([]ent.Value, 0, len(m.removedcareerskills))
+		for id := range m.removedcareerskills {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CareerSkillGroupMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedcareer {
 		edges = append(edges, careerskillgroup.EdgeCareer)
+	}
+	if m.clearedcareerskills {
+		edges = append(edges, careerskillgroup.EdgeCareerskills)
 	}
 	return edges
 }
@@ -876,6 +1226,8 @@ func (m *CareerSkillGroupMutation) EdgeCleared(name string) bool {
 	switch name {
 	case careerskillgroup.EdgeCareer:
 		return m.clearedcareer
+	case careerskillgroup.EdgeCareerskills:
+		return m.clearedcareerskills
 	}
 	return false
 }
@@ -897,6 +1249,9 @@ func (m *CareerSkillGroupMutation) ResetEdge(name string) error {
 	switch name {
 	case careerskillgroup.EdgeCareer:
 		m.ResetCareer()
+		return nil
+	case careerskillgroup.EdgeCareerskills:
+		m.ResetCareerskills()
 		return nil
 	}
 	return fmt.Errorf("unknown CareerSkillGroup edge %s", name)

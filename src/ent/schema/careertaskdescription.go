@@ -6,7 +6,7 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-const careerTaskDescriptionRef = "careertaskdescriptions"
+const careerTaskDescriptionsRef = "careertaskdescriptions"
 
 // CareerTaskDescription holds the schema definition for the CareerTaskDescription entity.
 type CareerTaskDescription struct {
@@ -23,6 +23,6 @@ func (CareerTaskDescription) Fields() []ent.Field {
 // Edges of the CareerTaskDescription.
 func (CareerTaskDescription) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From(careerTaskEdgeName, CareerTask.Type).Ref(careerTaskDescriptionRef).Unique().Required(),
+		edge.From(careerTaskEdgeName, CareerTask.Type).Ref(careerTaskDescriptionsRef).Unique().Required(),
 	}
 }

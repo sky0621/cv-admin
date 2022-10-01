@@ -6,7 +6,10 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-const careerSkillGroupRef = "careerskillgroups"
+const (
+	careerSkillGroupEdgeName = "careerskillgroup"
+	careerSkillGroupsRef     = "careerskillgroups"
+)
 
 // CareerSkillGroup holds the schema definition for the CareerSkillGroup entity.
 type CareerSkillGroup struct {
@@ -29,6 +32,8 @@ func (CareerSkillGroup) Mixin() []ent.Mixin {
 // Edges of the CareerSkillGroup.
 func (CareerSkillGroup) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From(userCareerEdgeName, UserCareer.Type).Ref(careerSkillGroupRef).Unique().Required(),
+		edge.From(userCareerEdgeName, UserCareer.Type).Ref(careerSkillGroupsRef).Unique().Required(),
+
+		edge.To(careerSkillsRef, CareerSkill.Type).StorageKey(edge.Column("career_skill_group_id")),
 	}
 }

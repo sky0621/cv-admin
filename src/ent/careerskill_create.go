@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/careerskill"
+	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
 )
 
 // CareerSkillCreate is the builder for creating a CareerSkill entity.
@@ -48,6 +49,51 @@ func (csc *CareerSkillCreate) SetNillableUpdateTime(t *time.Time) *CareerSkillCr
 		csc.SetUpdateTime(*t)
 	}
 	return csc
+}
+
+// SetName sets the "name" field.
+func (csc *CareerSkillCreate) SetName(s string) *CareerSkillCreate {
+	csc.mutation.SetName(s)
+	return csc
+}
+
+// SetURL sets the "url" field.
+func (csc *CareerSkillCreate) SetURL(s string) *CareerSkillCreate {
+	csc.mutation.SetURL(s)
+	return csc
+}
+
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (csc *CareerSkillCreate) SetNillableURL(s *string) *CareerSkillCreate {
+	if s != nil {
+		csc.SetURL(*s)
+	}
+	return csc
+}
+
+// SetVersion sets the "version" field.
+func (csc *CareerSkillCreate) SetVersion(s string) *CareerSkillCreate {
+	csc.mutation.SetVersion(s)
+	return csc
+}
+
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (csc *CareerSkillCreate) SetNillableVersion(s *string) *CareerSkillCreate {
+	if s != nil {
+		csc.SetVersion(*s)
+	}
+	return csc
+}
+
+// SetCareerskillgroupID sets the "careerskillgroup" edge to the CareerSkillGroup entity by ID.
+func (csc *CareerSkillCreate) SetCareerskillgroupID(id int) *CareerSkillCreate {
+	csc.mutation.SetCareerskillgroupID(id)
+	return csc
+}
+
+// SetCareerskillgroup sets the "careerskillgroup" edge to the CareerSkillGroup entity.
+func (csc *CareerSkillCreate) SetCareerskillgroup(c *CareerSkillGroup) *CareerSkillCreate {
+	return csc.SetCareerskillgroupID(c.ID)
 }
 
 // Mutation returns the CareerSkillMutation object of the builder.
@@ -145,6 +191,27 @@ func (csc *CareerSkillCreate) check() error {
 	if _, ok := csc.mutation.UpdateTime(); !ok {
 		return &ValidationError{Name: "update_time", err: errors.New(`ent: missing required field "CareerSkill.update_time"`)}
 	}
+	if _, ok := csc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "CareerSkill.name"`)}
+	}
+	if v, ok := csc.mutation.Name(); ok {
+		if err := careerskill.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "CareerSkill.name": %w`, err)}
+		}
+	}
+	if v, ok := csc.mutation.URL(); ok {
+		if err := careerskill.URLValidator(v); err != nil {
+			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "CareerSkill.url": %w`, err)}
+		}
+	}
+	if v, ok := csc.mutation.Version(); ok {
+		if err := careerskill.VersionValidator(v); err != nil {
+			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "CareerSkill.version": %w`, err)}
+		}
+	}
+	if _, ok := csc.mutation.CareerskillgroupID(); !ok {
+		return &ValidationError{Name: "careerskillgroup", err: errors.New(`ent: missing required edge "CareerSkill.careerskillgroup"`)}
+	}
 	return nil
 }
 
@@ -188,6 +255,50 @@ func (csc *CareerSkillCreate) createSpec() (*CareerSkill, *sqlgraph.CreateSpec) 
 			Column: careerskill.FieldUpdateTime,
 		})
 		_node.UpdateTime = value
+	}
+	if value, ok := csc.mutation.Name(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: careerskill.FieldName,
+		})
+		_node.Name = value
+	}
+	if value, ok := csc.mutation.URL(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: careerskill.FieldURL,
+		})
+		_node.URL = &value
+	}
+	if value, ok := csc.mutation.Version(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: careerskill.FieldVersion,
+		})
+		_node.Version = &value
+	}
+	if nodes := csc.mutation.CareerskillgroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   careerskill.CareerskillgroupTable,
+			Columns: []string{careerskill.CareerskillgroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskillgroup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.career_skill_group_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -265,6 +376,54 @@ func (u *CareerSkillUpsert) UpdateUpdateTime() *CareerSkillUpsert {
 	return u
 }
 
+// SetName sets the "name" field.
+func (u *CareerSkillUpsert) SetName(v string) *CareerSkillUpsert {
+	u.Set(careerskill.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *CareerSkillUpsert) UpdateName() *CareerSkillUpsert {
+	u.SetExcluded(careerskill.FieldName)
+	return u
+}
+
+// SetURL sets the "url" field.
+func (u *CareerSkillUpsert) SetURL(v string) *CareerSkillUpsert {
+	u.Set(careerskill.FieldURL, v)
+	return u
+}
+
+// UpdateURL sets the "url" field to the value that was provided on create.
+func (u *CareerSkillUpsert) UpdateURL() *CareerSkillUpsert {
+	u.SetExcluded(careerskill.FieldURL)
+	return u
+}
+
+// ClearURL clears the value of the "url" field.
+func (u *CareerSkillUpsert) ClearURL() *CareerSkillUpsert {
+	u.SetNull(careerskill.FieldURL)
+	return u
+}
+
+// SetVersion sets the "version" field.
+func (u *CareerSkillUpsert) SetVersion(v string) *CareerSkillUpsert {
+	u.Set(careerskill.FieldVersion, v)
+	return u
+}
+
+// UpdateVersion sets the "version" field to the value that was provided on create.
+func (u *CareerSkillUpsert) UpdateVersion() *CareerSkillUpsert {
+	u.SetExcluded(careerskill.FieldVersion)
+	return u
+}
+
+// ClearVersion clears the value of the "version" field.
+func (u *CareerSkillUpsert) ClearVersion() *CareerSkillUpsert {
+	u.SetNull(careerskill.FieldVersion)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -335,6 +494,62 @@ func (u *CareerSkillUpsertOne) SetUpdateTime(v time.Time) *CareerSkillUpsertOne 
 func (u *CareerSkillUpsertOne) UpdateUpdateTime() *CareerSkillUpsertOne {
 	return u.Update(func(s *CareerSkillUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *CareerSkillUpsertOne) SetName(v string) *CareerSkillUpsertOne {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *CareerSkillUpsertOne) UpdateName() *CareerSkillUpsertOne {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetURL sets the "url" field.
+func (u *CareerSkillUpsertOne) SetURL(v string) *CareerSkillUpsertOne {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.SetURL(v)
+	})
+}
+
+// UpdateURL sets the "url" field to the value that was provided on create.
+func (u *CareerSkillUpsertOne) UpdateURL() *CareerSkillUpsertOne {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.UpdateURL()
+	})
+}
+
+// ClearURL clears the value of the "url" field.
+func (u *CareerSkillUpsertOne) ClearURL() *CareerSkillUpsertOne {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.ClearURL()
+	})
+}
+
+// SetVersion sets the "version" field.
+func (u *CareerSkillUpsertOne) SetVersion(v string) *CareerSkillUpsertOne {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.SetVersion(v)
+	})
+}
+
+// UpdateVersion sets the "version" field to the value that was provided on create.
+func (u *CareerSkillUpsertOne) UpdateVersion() *CareerSkillUpsertOne {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.UpdateVersion()
+	})
+}
+
+// ClearVersion clears the value of the "version" field.
+func (u *CareerSkillUpsertOne) ClearVersion() *CareerSkillUpsertOne {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.ClearVersion()
 	})
 }
 
@@ -570,6 +785,62 @@ func (u *CareerSkillUpsertBulk) SetUpdateTime(v time.Time) *CareerSkillUpsertBul
 func (u *CareerSkillUpsertBulk) UpdateUpdateTime() *CareerSkillUpsertBulk {
 	return u.Update(func(s *CareerSkillUpsert) {
 		s.UpdateUpdateTime()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *CareerSkillUpsertBulk) SetName(v string) *CareerSkillUpsertBulk {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *CareerSkillUpsertBulk) UpdateName() *CareerSkillUpsertBulk {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetURL sets the "url" field.
+func (u *CareerSkillUpsertBulk) SetURL(v string) *CareerSkillUpsertBulk {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.SetURL(v)
+	})
+}
+
+// UpdateURL sets the "url" field to the value that was provided on create.
+func (u *CareerSkillUpsertBulk) UpdateURL() *CareerSkillUpsertBulk {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.UpdateURL()
+	})
+}
+
+// ClearURL clears the value of the "url" field.
+func (u *CareerSkillUpsertBulk) ClearURL() *CareerSkillUpsertBulk {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.ClearURL()
+	})
+}
+
+// SetVersion sets the "version" field.
+func (u *CareerSkillUpsertBulk) SetVersion(v string) *CareerSkillUpsertBulk {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.SetVersion(v)
+	})
+}
+
+// UpdateVersion sets the "version" field to the value that was provided on create.
+func (u *CareerSkillUpsertBulk) UpdateVersion() *CareerSkillUpsertBulk {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.UpdateVersion()
+	})
+}
+
+// ClearVersion clears the value of the "version" field.
+func (u *CareerSkillUpsertBulk) ClearVersion() *CareerSkillUpsertBulk {
+	return u.Update(func(s *CareerSkillUpsert) {
+		s.ClearVersion()
 	})
 }
 

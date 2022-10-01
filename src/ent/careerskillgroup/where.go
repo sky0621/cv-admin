@@ -350,6 +350,34 @@ func HasCareerWith(preds ...predicate.UserCareer) predicate.CareerSkillGroup {
 	})
 }
 
+// HasCareerskills applies the HasEdge predicate on the "careerskills" edge.
+func HasCareerskills() predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CareerskillsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareerskillsTable, CareerskillsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCareerskillsWith applies the HasEdge predicate on the "careerskills" edge with a given conditions (other predicates).
+func HasCareerskillsWith(preds ...predicate.CareerSkill) predicate.CareerSkillGroup {
+	return predicate.CareerSkillGroup(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CareerskillsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareerskillsTable, CareerskillsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.CareerSkillGroup) predicate.CareerSkillGroup {
 	return predicate.CareerSkillGroup(func(s *sql.Selector) {

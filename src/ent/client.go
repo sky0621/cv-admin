@@ -285,6 +285,22 @@ func (c *CareerSkillClient) GetX(ctx context.Context, id int) *CareerSkill {
 	return obj
 }
 
+// QueryCareerskillgroup queries the careerskillgroup edge of a CareerSkill.
+func (c *CareerSkillClient) QueryCareerskillgroup(cs *CareerSkill) *CareerSkillGroupQuery {
+	query := &CareerSkillGroupQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := cs.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(careerskill.Table, careerskill.FieldID, id),
+			sqlgraph.To(careerskillgroup.Table, careerskillgroup.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, careerskill.CareerskillgroupTable, careerskill.CareerskillgroupColumn),
+		)
+		fromV = sqlgraph.Neighbors(cs.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CareerSkillClient) Hooks() []Hook {
 	return c.hooks.CareerSkill
@@ -384,6 +400,22 @@ func (c *CareerSkillGroupClient) QueryCareer(csg *CareerSkillGroup) *UserCareerQ
 			sqlgraph.From(careerskillgroup.Table, careerskillgroup.FieldID, id),
 			sqlgraph.To(usercareer.Table, usercareer.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, careerskillgroup.CareerTable, careerskillgroup.CareerColumn),
+		)
+		fromV = sqlgraph.Neighbors(csg.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCareerskills queries the careerskills edge of a CareerSkillGroup.
+func (c *CareerSkillGroupClient) QueryCareerskills(csg *CareerSkillGroup) *CareerSkillQuery {
+	query := &CareerSkillQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := csg.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(careerskillgroup.Table, careerskillgroup.FieldID, id),
+			sqlgraph.To(careerskill.Table, careerskill.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, careerskillgroup.CareerskillsTable, careerskillgroup.CareerskillsColumn),
 		)
 		fromV = sqlgraph.Neighbors(csg.driver.Dialect(), step)
 		return fromV, nil

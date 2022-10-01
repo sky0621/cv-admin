@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/careerskill"
+	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 )
 
@@ -34,9 +35,72 @@ func (csu *CareerSkillUpdate) SetUpdateTime(t time.Time) *CareerSkillUpdate {
 	return csu
 }
 
+// SetName sets the "name" field.
+func (csu *CareerSkillUpdate) SetName(s string) *CareerSkillUpdate {
+	csu.mutation.SetName(s)
+	return csu
+}
+
+// SetURL sets the "url" field.
+func (csu *CareerSkillUpdate) SetURL(s string) *CareerSkillUpdate {
+	csu.mutation.SetURL(s)
+	return csu
+}
+
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (csu *CareerSkillUpdate) SetNillableURL(s *string) *CareerSkillUpdate {
+	if s != nil {
+		csu.SetURL(*s)
+	}
+	return csu
+}
+
+// ClearURL clears the value of the "url" field.
+func (csu *CareerSkillUpdate) ClearURL() *CareerSkillUpdate {
+	csu.mutation.ClearURL()
+	return csu
+}
+
+// SetVersion sets the "version" field.
+func (csu *CareerSkillUpdate) SetVersion(s string) *CareerSkillUpdate {
+	csu.mutation.SetVersion(s)
+	return csu
+}
+
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (csu *CareerSkillUpdate) SetNillableVersion(s *string) *CareerSkillUpdate {
+	if s != nil {
+		csu.SetVersion(*s)
+	}
+	return csu
+}
+
+// ClearVersion clears the value of the "version" field.
+func (csu *CareerSkillUpdate) ClearVersion() *CareerSkillUpdate {
+	csu.mutation.ClearVersion()
+	return csu
+}
+
+// SetCareerskillgroupID sets the "careerskillgroup" edge to the CareerSkillGroup entity by ID.
+func (csu *CareerSkillUpdate) SetCareerskillgroupID(id int) *CareerSkillUpdate {
+	csu.mutation.SetCareerskillgroupID(id)
+	return csu
+}
+
+// SetCareerskillgroup sets the "careerskillgroup" edge to the CareerSkillGroup entity.
+func (csu *CareerSkillUpdate) SetCareerskillgroup(c *CareerSkillGroup) *CareerSkillUpdate {
+	return csu.SetCareerskillgroupID(c.ID)
+}
+
 // Mutation returns the CareerSkillMutation object of the builder.
 func (csu *CareerSkillUpdate) Mutation() *CareerSkillMutation {
 	return csu.mutation
+}
+
+// ClearCareerskillgroup clears the "careerskillgroup" edge to the CareerSkillGroup entity.
+func (csu *CareerSkillUpdate) ClearCareerskillgroup() *CareerSkillUpdate {
+	csu.mutation.ClearCareerskillgroup()
+	return csu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -47,12 +111,18 @@ func (csu *CareerSkillUpdate) Save(ctx context.Context) (int, error) {
 	)
 	csu.defaults()
 	if len(csu.hooks) == 0 {
+		if err = csu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = csu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*CareerSkillMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = csu.check(); err != nil {
+				return 0, err
 			}
 			csu.mutation = mutation
 			affected, err = csu.sqlSave(ctx)
@@ -102,6 +172,29 @@ func (csu *CareerSkillUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (csu *CareerSkillUpdate) check() error {
+	if v, ok := csu.mutation.Name(); ok {
+		if err := careerskill.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "CareerSkill.name": %w`, err)}
+		}
+	}
+	if v, ok := csu.mutation.URL(); ok {
+		if err := careerskill.URLValidator(v); err != nil {
+			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "CareerSkill.url": %w`, err)}
+		}
+	}
+	if v, ok := csu.mutation.Version(); ok {
+		if err := careerskill.VersionValidator(v); err != nil {
+			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "CareerSkill.version": %w`, err)}
+		}
+	}
+	if _, ok := csu.mutation.CareerskillgroupID(); csu.mutation.CareerskillgroupCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "CareerSkill.careerskillgroup"`)
+	}
+	return nil
+}
+
 func (csu *CareerSkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -126,6 +219,74 @@ func (csu *CareerSkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Value:  value,
 			Column: careerskill.FieldUpdateTime,
 		})
+	}
+	if value, ok := csu.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: careerskill.FieldName,
+		})
+	}
+	if value, ok := csu.mutation.URL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: careerskill.FieldURL,
+		})
+	}
+	if csu.mutation.URLCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: careerskill.FieldURL,
+		})
+	}
+	if value, ok := csu.mutation.Version(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: careerskill.FieldVersion,
+		})
+	}
+	if csu.mutation.VersionCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: careerskill.FieldVersion,
+		})
+	}
+	if csu.mutation.CareerskillgroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   careerskill.CareerskillgroupTable,
+			Columns: []string{careerskill.CareerskillgroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskillgroup.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := csu.mutation.CareerskillgroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   careerskill.CareerskillgroupTable,
+			Columns: []string{careerskill.CareerskillgroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskillgroup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, csu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -152,9 +313,72 @@ func (csuo *CareerSkillUpdateOne) SetUpdateTime(t time.Time) *CareerSkillUpdateO
 	return csuo
 }
 
+// SetName sets the "name" field.
+func (csuo *CareerSkillUpdateOne) SetName(s string) *CareerSkillUpdateOne {
+	csuo.mutation.SetName(s)
+	return csuo
+}
+
+// SetURL sets the "url" field.
+func (csuo *CareerSkillUpdateOne) SetURL(s string) *CareerSkillUpdateOne {
+	csuo.mutation.SetURL(s)
+	return csuo
+}
+
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (csuo *CareerSkillUpdateOne) SetNillableURL(s *string) *CareerSkillUpdateOne {
+	if s != nil {
+		csuo.SetURL(*s)
+	}
+	return csuo
+}
+
+// ClearURL clears the value of the "url" field.
+func (csuo *CareerSkillUpdateOne) ClearURL() *CareerSkillUpdateOne {
+	csuo.mutation.ClearURL()
+	return csuo
+}
+
+// SetVersion sets the "version" field.
+func (csuo *CareerSkillUpdateOne) SetVersion(s string) *CareerSkillUpdateOne {
+	csuo.mutation.SetVersion(s)
+	return csuo
+}
+
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (csuo *CareerSkillUpdateOne) SetNillableVersion(s *string) *CareerSkillUpdateOne {
+	if s != nil {
+		csuo.SetVersion(*s)
+	}
+	return csuo
+}
+
+// ClearVersion clears the value of the "version" field.
+func (csuo *CareerSkillUpdateOne) ClearVersion() *CareerSkillUpdateOne {
+	csuo.mutation.ClearVersion()
+	return csuo
+}
+
+// SetCareerskillgroupID sets the "careerskillgroup" edge to the CareerSkillGroup entity by ID.
+func (csuo *CareerSkillUpdateOne) SetCareerskillgroupID(id int) *CareerSkillUpdateOne {
+	csuo.mutation.SetCareerskillgroupID(id)
+	return csuo
+}
+
+// SetCareerskillgroup sets the "careerskillgroup" edge to the CareerSkillGroup entity.
+func (csuo *CareerSkillUpdateOne) SetCareerskillgroup(c *CareerSkillGroup) *CareerSkillUpdateOne {
+	return csuo.SetCareerskillgroupID(c.ID)
+}
+
 // Mutation returns the CareerSkillMutation object of the builder.
 func (csuo *CareerSkillUpdateOne) Mutation() *CareerSkillMutation {
 	return csuo.mutation
+}
+
+// ClearCareerskillgroup clears the "careerskillgroup" edge to the CareerSkillGroup entity.
+func (csuo *CareerSkillUpdateOne) ClearCareerskillgroup() *CareerSkillUpdateOne {
+	csuo.mutation.ClearCareerskillgroup()
+	return csuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -172,12 +396,18 @@ func (csuo *CareerSkillUpdateOne) Save(ctx context.Context) (*CareerSkill, error
 	)
 	csuo.defaults()
 	if len(csuo.hooks) == 0 {
+		if err = csuo.check(); err != nil {
+			return nil, err
+		}
 		node, err = csuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*CareerSkillMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = csuo.check(); err != nil {
+				return nil, err
 			}
 			csuo.mutation = mutation
 			node, err = csuo.sqlSave(ctx)
@@ -233,6 +463,29 @@ func (csuo *CareerSkillUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (csuo *CareerSkillUpdateOne) check() error {
+	if v, ok := csuo.mutation.Name(); ok {
+		if err := careerskill.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "CareerSkill.name": %w`, err)}
+		}
+	}
+	if v, ok := csuo.mutation.URL(); ok {
+		if err := careerskill.URLValidator(v); err != nil {
+			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "CareerSkill.url": %w`, err)}
+		}
+	}
+	if v, ok := csuo.mutation.Version(); ok {
+		if err := careerskill.VersionValidator(v); err != nil {
+			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "CareerSkill.version": %w`, err)}
+		}
+	}
+	if _, ok := csuo.mutation.CareerskillgroupID(); csuo.mutation.CareerskillgroupCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "CareerSkill.careerskillgroup"`)
+	}
+	return nil
+}
+
 func (csuo *CareerSkillUpdateOne) sqlSave(ctx context.Context) (_node *CareerSkill, err error) {
 	_spec := &sqlgraph.UpdateSpec{
 		Node: &sqlgraph.NodeSpec{
@@ -274,6 +527,74 @@ func (csuo *CareerSkillUpdateOne) sqlSave(ctx context.Context) (_node *CareerSki
 			Value:  value,
 			Column: careerskill.FieldUpdateTime,
 		})
+	}
+	if value, ok := csuo.mutation.Name(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: careerskill.FieldName,
+		})
+	}
+	if value, ok := csuo.mutation.URL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: careerskill.FieldURL,
+		})
+	}
+	if csuo.mutation.URLCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: careerskill.FieldURL,
+		})
+	}
+	if value, ok := csuo.mutation.Version(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: careerskill.FieldVersion,
+		})
+	}
+	if csuo.mutation.VersionCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: careerskill.FieldVersion,
+		})
+	}
+	if csuo.mutation.CareerskillgroupCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   careerskill.CareerskillgroupTable,
+			Columns: []string{careerskill.CareerskillgroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskillgroup.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := csuo.mutation.CareerskillgroupIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   careerskill.CareerskillgroupTable,
+			Columns: []string{careerskill.CareerskillgroupColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskillgroup.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &CareerSkill{config: csuo.config}
 	_spec.Assign = _node.assignValues
