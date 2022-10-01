@@ -1,6 +1,10 @@
 package schema
 
-import "entgo.io/ent"
+import (
+	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
+	"entgo.io/ent/schema/field"
+)
 
 // UserCareerGroup holds the schema definition for the UserCareerGroup entity.
 type UserCareerGroup struct {
@@ -9,7 +13,9 @@ type UserCareerGroup struct {
 
 // Fields of the UserCareerGroup.
 func (UserCareerGroup) Fields() []ent.Field {
-	return nil
+	return []ent.Field{
+		field.String("label").NotEmpty().Validate(maxRuneCount(100)),
+	}
 }
 
 func (UserCareerGroup) Mixin() []ent.Mixin {
@@ -20,5 +26,8 @@ func (UserCareerGroup) Mixin() []ent.Mixin {
 
 // Edges of the UserCareerGroup.
 func (UserCareerGroup) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.From("user", User.Type).Ref("careergroups").Unique().Required(),
+		edge.To("careers", UserCareer.Type).StorageKey(edge.Column("careergroup_id")),
+	}
 }

@@ -37,5 +37,6 @@ func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("activities", UserActivity.Type).StorageKey(edge.Column("user_id")),
 		edge.To("qualifications", UserQualification.Type).StorageKey(edge.Column("user_id")),
+		edge.To("careergroups", UserCareerGroup.Type).StorageKey(edge.Column("user_id")),
 	}
 }
