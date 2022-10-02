@@ -6,9 +6,7 @@ import (
 )
 
 func rules(fieldPtr any, rules []v.Rule, optionRules ...v.Rule) *v.FieldRules {
-	for _, r := range optionRules {
-		rules = append(rules, r)
-	}
+	rules = append(rules, optionRules...)
 	return v.Field(fieldPtr, rules...)
 }
 

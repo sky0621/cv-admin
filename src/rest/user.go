@@ -2,6 +2,7 @@ package rest
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -48,15 +49,18 @@ func (s *ServerImpl) getUserByUserId(ctx echo.Context, byUserId UserId) (*ent.Us
 	if err != nil {
 		switch {
 		case errors.As(err, &notFound):
-			sendClientError(ctx, http.StatusNotFound, "user is none")
+			err2 := sendClientError(ctx, http.StatusNotFound, "user is none")
+			fmt.Println(err2) // TODO: multi error ?
 			return nil, err
 		}
-		sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		err2 := sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		fmt.Println(err2) // TODO: multi error ?
 		return nil, err
 	}
 
 	if entUser == nil {
-		sendClientError(ctx, http.StatusNotFound, "user is none")
+		err2 := sendClientError(ctx, http.StatusNotFound, "user is none")
+		fmt.Println(err2) // TODO: multi error ?
 		return nil, errors.New("user is none")
 	}
 
@@ -145,7 +149,9 @@ func (s *ServerImpl) PutUsersByUserIdActivities(ctx echo.Context, byUserId UserI
 	var results []*ent.UserActivity
 	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
 		for _, activity := range entUser.Edges.Activities {
-			tx.UserActivity.DeleteOne(activity).Exec(rCtx)
+			if err := tx.UserActivity.DeleteOne(activity).Exec(rCtx); err != nil {
+				return err
+			}
 		}
 		for _, activity := range userActivities {
 			result, err := ToEntUserActivityCreate(activity, entUser.ID, tx.UserActivity.Create()).Save(rCtx)
@@ -208,7 +214,9 @@ func (s *ServerImpl) PutUsersByUserIdQualifications(ctx echo.Context, byUserId U
 	var results []*ent.UserQualification
 	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
 		for _, qualification := range entUser.Edges.Qualifications {
-			tx.UserQualification.DeleteOne(qualification).Exec(rCtx)
+			if err := tx.UserQualification.DeleteOne(qualification).Exec(rCtx); err != nil {
+				return err
+			}
 		}
 		for _, qualification := range userQualifications {
 			result, err := ToEntUserQualificationCreate(qualification, entUser.ID, tx.UserQualification.Create()).Save(rCtx)
