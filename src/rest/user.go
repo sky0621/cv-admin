@@ -67,6 +67,29 @@ func (s *ServerImpl) getUserByUserId(ctx echo.Context, byUserId UserId) (*ent.Us
 	return entUser, nil
 }
 
+func (s *ServerImpl) getUserByUserIdWithXXX(ctx echo.Context, byUserId UserId, fn func(q *ent.UserQuery) *ent.UserQuery) (*ent.User, error) {
+	entUser, err := fn(s.dbClient.User.Query().Where(user.ID(byUserId))).Only(ctx.Request().Context())
+	if err != nil {
+		switch {
+		case errors.As(err, &notFound):
+			err2 := sendClientError(ctx, http.StatusNotFound, "user is none")
+			fmt.Println(err2) // TODO: multi error ?
+			return nil, err
+		}
+		err2 := sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		fmt.Println(err2) // TODO: multi error ?
+		return nil, err
+	}
+
+	if entUser == nil {
+		err2 := sendClientError(ctx, http.StatusNotFound, "user is none")
+		fmt.Println(err2) // TODO: multi error ?
+		return nil, errors.New("user is none")
+	}
+
+	return entUser, nil
+}
+
 // GetUsersByUserIdAttribute 属性取得
 // (GET /users/{byUserId}/attribute)
 func (s *ServerImpl) GetUsersByUserIdAttribute(ctx echo.Context, byUserId UserId) error {
@@ -120,19 +143,11 @@ func (s *ServerImpl) GetUsersByUserIdActivities(ctx echo.Context, byUserId UserI
 // PutUsersByUserIdActivities アクティビティ群最新化
 // (PUT /users/{byUserId}/activities)
 func (s *ServerImpl) PutUsersByUserIdActivities(ctx echo.Context, byUserId UserId) error {
-	rCtx := ctx.Request().Context()
-
-	entUser, err := s.dbClient.User.Query().Where(user.ID(byUserId)).WithActivities().Only(rCtx)
+	entUser, err := s.getUserByUserIdWithXXX(ctx, byUserId, func(q *ent.UserQuery) *ent.UserQuery {
+		return q.WithActivities()
+	})
 	if err != nil {
-		switch {
-		case errors.As(err, &notFound):
-			return sendClientError(ctx, http.StatusNotFound, "user is none")
-		}
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
-	}
-
-	if entUser == nil {
-		return sendClientError(ctx, http.StatusNotFound, "user is none")
+		return err
 	}
 
 	var userActivities UserActivities
@@ -145,6 +160,8 @@ func (s *ServerImpl) PutUsersByUserIdActivities(ctx echo.Context, byUserId UserI
 			return sendClientError(ctx, http.StatusBadRequest, err.Error())
 		}
 	}
+
+	rCtx := ctx.Request().Context()
 
 	var results []*ent.UserActivity
 	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
@@ -191,20 +208,14 @@ func (s *ServerImpl) GetUsersByUserIdQualifications(ctx echo.Context, byUserId U
 // PutUsersByUserIdQualifications 資格情報群最新化
 // (PUT /users/{byUserId}/qualifications)
 func (s *ServerImpl) PutUsersByUserIdQualifications(ctx echo.Context, byUserId UserId) error {
-	rCtx := ctx.Request().Context()
-
-	entUser, err := s.dbClient.User.Query().Where(user.ID(byUserId)).WithQualifications().Only(rCtx)
+	entUser, err := s.getUserByUserIdWithXXX(ctx, byUserId, func(q *ent.UserQuery) *ent.UserQuery {
+		return q.WithQualifications()
+	})
 	if err != nil {
-		switch {
-		case errors.As(err, &notFound):
-			return sendClientError(ctx, http.StatusNotFound, "user is none")
-		}
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		return err
 	}
 
-	if entUser == nil {
-		return sendClientError(ctx, http.StatusNotFound, "user is none")
-	}
+	rCtx := ctx.Request().Context()
 
 	var userQualifications []UserQualification
 	if err := ctx.Bind(&userQualifications); err != nil {
