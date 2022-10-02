@@ -59,14 +59,15 @@ func TestPostUsers(t *testing.T) {
 	}
 }
 
-func TestGetUsersByUserIdActivities(t *testing.T) {
+func TestGetUsersByUserIdAttribute(t *testing.T) {
 	resRecorder, err, dbCloseFunc := testExecRestWrapper(t, http.MethodGet, nil,
 		func(server ServerInterface, echoCtx echo.Context) error {
 			return server.GetUsersByUserIdAttribute(echoCtx, 1)
 		})
 	defer dbCloseFunc()
-	if assert.NoError(t, err) {
-		assert.Equal(t, http.StatusOK, resRecorder.Code)
+	fmt.Println(resRecorder)
+	if assert.Error(t, err) {
+		assert.Equal(t, http.StatusNotFound, resRecorder.Code)
 		// TODO: parse and check
 		fmt.Println(resRecorder.Body)
 	}
