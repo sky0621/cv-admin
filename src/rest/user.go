@@ -43,24 +43,33 @@ func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId UserId) erro
 	return ctx.NoContent(http.StatusNoContent)
 }
 
-// TODO: s.dbClient.User.Get ~ if entUser == nil までを共通化！
-
-// GetUsersByUserIdAttribute 属性取得
-// (GET /users/{byUserId}/attribute)
-func (s *ServerImpl) GetUsersByUserIdAttribute(ctx echo.Context, byUserId UserId) error {
+func (s *ServerImpl) getUserByUserId(ctx echo.Context, byUserId UserId) (*ent.User, error) {
 	entUser, err := s.dbClient.User.Get(ctx.Request().Context(), byUserId)
 	if err != nil {
 		switch {
 		case errors.As(err, &notFound):
-			return sendClientError(ctx, http.StatusNotFound, "user is none")
+			sendClientError(ctx, http.StatusNotFound, "user is none")
+			return nil, err
 		}
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		return nil, err
 	}
 
 	if entUser == nil {
-		return sendClientError(ctx, http.StatusNotFound, "user is none")
+		sendClientError(ctx, http.StatusNotFound, "user is none")
+		return nil, errors.New("user is none")
 	}
 
+	return entUser, nil
+}
+
+// GetUsersByUserIdAttribute 属性取得
+// (GET /users/{byUserId}/attribute)
+func (s *ServerImpl) GetUsersByUserIdAttribute(ctx echo.Context, byUserId UserId) error {
+	entUser, err := s.getUserByUserId(ctx, byUserId)
+	if err != nil {
+		return err
+	}
 	return ctx.JSON(http.StatusOK, ToSwaggerUserAttribute(entUser))
 }
 
@@ -87,22 +96,12 @@ func (s *ServerImpl) PutUsersByUserIdAttribute(ctx echo.Context, byUserId UserId
 // GetUsersByUserIdActivities アクティビティ群取得
 // (GET /users/{byUserId}/activities)
 func (s *ServerImpl) GetUsersByUserIdActivities(ctx echo.Context, byUserId UserId) error {
-	rCtx := ctx.Request().Context()
-
-	entUser, err := s.dbClient.User.Get(rCtx, byUserId)
+	entUser, err := s.getUserByUserId(ctx, byUserId)
 	if err != nil {
-		switch {
-		case errors.As(err, &notFound):
-			return sendClientError(ctx, http.StatusNotFound, "user is none")
-		}
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		return err
 	}
 
-	if entUser == nil {
-		return sendClientError(ctx, http.StatusNotFound, "user is none")
-	}
-
-	activities, err := entUser.QueryActivities().All(rCtx)
+	activities, err := entUser.QueryActivities().All(ctx.Request().Context())
 	if err != nil {
 		switch {
 		case errors.As(err, &notFound):
@@ -166,22 +165,12 @@ func (s *ServerImpl) PutUsersByUserIdActivities(ctx echo.Context, byUserId UserI
 // GetUsersByUserIdQualifications 資格情報群取得
 // (GET /users/{byUserId}/qualifications)
 func (s *ServerImpl) GetUsersByUserIdQualifications(ctx echo.Context, byUserId UserId) error {
-	rCtx := ctx.Request().Context()
-
-	entUser, err := s.dbClient.User.Get(rCtx, byUserId)
+	entUser, err := s.getUserByUserId(ctx, byUserId)
 	if err != nil {
-		switch {
-		case errors.As(err, &notFound):
-			return sendClientError(ctx, http.StatusNotFound, "user is none")
-		}
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		return err
 	}
 
-	if entUser == nil {
-		return sendClientError(ctx, http.StatusNotFound, "user is none")
-	}
-
-	qualifications, err := entUser.QueryQualifications().All(rCtx)
+	qualifications, err := entUser.QueryQualifications().All(ctx.Request().Context())
 	if err != nil {
 		switch {
 		case errors.As(err, &notFound):
