@@ -123,21 +123,14 @@ func (s *ServerImpl) PutUsersByUserIdAttribute(ctx echo.Context, byUserId UserId
 // GetUsersByUserIdActivities アクティビティ群取得
 // (GET /users/{byUserId}/activities)
 func (s *ServerImpl) GetUsersByUserIdActivities(ctx echo.Context, byUserId UserId) error {
-	entUser, err := s.getUserByUserId(ctx, byUserId)
+	entUser, err := s.getUserByUserIdWithXXX(ctx, byUserId, func(q *ent.UserQuery) *ent.UserQuery {
+		return q.WithActivities()
+	})
 	if err != nil {
 		return err
 	}
 
-	activities, err := entUser.QueryActivities().All(ctx.Request().Context())
-	if err != nil {
-		switch {
-		case errors.As(err, &notFound):
-			return sendClientError(ctx, http.StatusNotFound, "user activities are none")
-		}
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
-	}
-
-	return ctx.JSON(http.StatusOK, ToSwaggerUserActivities(activities))
+	return ctx.JSON(http.StatusOK, ToSwaggerUserActivities(entUser.Edges.Activities))
 }
 
 // PutUsersByUserIdActivities アクティビティ群最新化
@@ -188,21 +181,14 @@ func (s *ServerImpl) PutUsersByUserIdActivities(ctx echo.Context, byUserId UserI
 // GetUsersByUserIdQualifications 資格情報群取得
 // (GET /users/{byUserId}/qualifications)
 func (s *ServerImpl) GetUsersByUserIdQualifications(ctx echo.Context, byUserId UserId) error {
-	entUser, err := s.getUserByUserId(ctx, byUserId)
+	entUser, err := s.getUserByUserIdWithXXX(ctx, byUserId, func(q *ent.UserQuery) *ent.UserQuery {
+		return q.WithQualifications()
+	})
 	if err != nil {
 		return err
 	}
 
-	qualifications, err := entUser.QueryQualifications().All(ctx.Request().Context())
-	if err != nil {
-		switch {
-		case errors.As(err, &notFound):
-			return sendClientError(ctx, http.StatusNotFound, "user qualifications are none")
-		}
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
-	}
-
-	return ctx.JSON(http.StatusOK, ToSwaggerUserQualifications(qualifications))
+	return ctx.JSON(http.StatusOK, ToSwaggerUserQualifications(entUser.Edges.Qualifications))
 }
 
 // PutUsersByUserIdQualifications 資格情報群最新化
