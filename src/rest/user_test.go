@@ -36,14 +36,14 @@ func testExecRestWrapper(t *testing.T, method string, body io.Reader, fn func(se
 	err := fn(s, c)
 	return rec, err, func() {
 		dbCli.Close()
+		if err := os.Remove(testDBFilePath); err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
 func TestMain(m *testing.M) {
 	m.Run()
-	if err := os.Remove(testDBFilePath); err != nil {
-		fmt.Println(err)
-	}
 }
 
 func TestPostUsers(t *testing.T) {
