@@ -35,6 +35,7 @@ to quickly create a Cobra application.`,
 		 */
 		e := echo.New()
 		e.Use(echomiddleware.Logger())
+		e.Use(echomiddleware.Recover())
 		rest.RegisterHandlers(e, rest.NewRESTService(dbClient))
 		if err := http.ListenAndServe(":8080", e); err != nil {
 			panic(err)

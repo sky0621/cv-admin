@@ -29,3 +29,8 @@ func (u UserActivity) Validate() error {
 }
 
 // FIXME: UserQualification.Validate()
+func (u UserQualification) Validate() error {
+	return v.ValidateStruct(&u,
+		stringRule(&u.Name, 1, 100, v.Required),
+	)
+}
