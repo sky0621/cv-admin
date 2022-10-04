@@ -333,18 +333,6 @@ type (
 	}
 )
 
-// SetCreateTime sets the "create_time" field.
-func (u *UserCareerGroupUpsert) SetCreateTime(v time.Time) *UserCareerGroupUpsert {
-	u.Set(usercareergroup.FieldCreateTime, v)
-	return u
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserCareerGroupUpsert) UpdateCreateTime() *UserCareerGroupUpsert {
-	u.SetExcluded(usercareergroup.FieldCreateTime)
-	return u
-}
-
 // SetUpdateTime sets the "update_time" field.
 func (u *UserCareerGroupUpsert) SetUpdateTime(v time.Time) *UserCareerGroupUpsert {
 	u.Set(usercareergroup.FieldUpdateTime, v)
@@ -412,20 +400,6 @@ func (u *UserCareerGroupUpsertOne) Update(set func(*UserCareerGroupUpsert)) *Use
 		set(&UserCareerGroupUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreateTime sets the "create_time" field.
-func (u *UserCareerGroupUpsertOne) SetCreateTime(v time.Time) *UserCareerGroupUpsertOne {
-	return u.Update(func(s *UserCareerGroupUpsert) {
-		s.SetCreateTime(v)
-	})
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserCareerGroupUpsertOne) UpdateCreateTime() *UserCareerGroupUpsertOne {
-	return u.Update(func(s *UserCareerGroupUpsert) {
-		s.UpdateCreateTime()
-	})
 }
 
 // SetUpdateTime sets the "update_time" field.
@@ -661,20 +635,6 @@ func (u *UserCareerGroupUpsertBulk) Update(set func(*UserCareerGroupUpsert)) *Us
 		set(&UserCareerGroupUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreateTime sets the "create_time" field.
-func (u *UserCareerGroupUpsertBulk) SetCreateTime(v time.Time) *UserCareerGroupUpsertBulk {
-	return u.Update(func(s *UserCareerGroupUpsert) {
-		s.SetCreateTime(v)
-	})
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserCareerGroupUpsertBulk) UpdateCreateTime() *UserCareerGroupUpsertBulk {
-	return u.Update(func(s *UserCareerGroupUpsert) {
-		s.UpdateCreateTime()
-	})
 }
 
 // SetUpdateTime sets the "update_time" field.

@@ -360,18 +360,6 @@ type (
 	}
 )
 
-// SetCreateTime sets the "create_time" field.
-func (u *UserNoteUpsert) SetCreateTime(v time.Time) *UserNoteUpsert {
-	u.Set(usernote.FieldCreateTime, v)
-	return u
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserNoteUpsert) UpdateCreateTime() *UserNoteUpsert {
-	u.SetExcluded(usernote.FieldCreateTime)
-	return u
-}
-
 // SetUpdateTime sets the "update_time" field.
 func (u *UserNoteUpsert) SetUpdateTime(v time.Time) *UserNoteUpsert {
 	u.Set(usernote.FieldUpdateTime, v)
@@ -457,20 +445,6 @@ func (u *UserNoteUpsertOne) Update(set func(*UserNoteUpsert)) *UserNoteUpsertOne
 		set(&UserNoteUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreateTime sets the "create_time" field.
-func (u *UserNoteUpsertOne) SetCreateTime(v time.Time) *UserNoteUpsertOne {
-	return u.Update(func(s *UserNoteUpsert) {
-		s.SetCreateTime(v)
-	})
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserNoteUpsertOne) UpdateCreateTime() *UserNoteUpsertOne {
-	return u.Update(func(s *UserNoteUpsert) {
-		s.UpdateCreateTime()
-	})
 }
 
 // SetUpdateTime sets the "update_time" field.
@@ -727,20 +701,6 @@ func (u *UserNoteUpsertBulk) Update(set func(*UserNoteUpsert)) *UserNoteUpsertBu
 		set(&UserNoteUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreateTime sets the "create_time" field.
-func (u *UserNoteUpsertBulk) SetCreateTime(v time.Time) *UserNoteUpsertBulk {
-	return u.Update(func(s *UserNoteUpsert) {
-		s.SetCreateTime(v)
-	})
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserNoteUpsertBulk) UpdateCreateTime() *UserNoteUpsertBulk {
-	return u.Update(func(s *UserNoteUpsert) {
-		s.UpdateCreateTime()
-	})
 }
 
 // SetUpdateTime sets the "update_time" field.

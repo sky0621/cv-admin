@@ -363,10 +363,10 @@ func (uaq *UserActivityQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, useractivity.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*UserActivity).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &UserActivity{config: uaq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -430,11 +430,14 @@ func (uaq *UserActivityQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (uaq *UserActivityQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := uaq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := uaq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (uaq *UserActivityQuery) querySpec() *sqlgraph.QuerySpec {
@@ -535,7 +538,7 @@ func (uagb *UserActivityGroupBy) Aggregate(fns ...AggregateFunc) *UserActivityGr
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (uagb *UserActivityGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (uagb *UserActivityGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := uagb.path(ctx)
 	if err != nil {
 		return err
@@ -544,7 +547,7 @@ func (uagb *UserActivityGroupBy) Scan(ctx context.Context, v interface{}) error 
 	return uagb.sqlScan(ctx, v)
 }
 
-func (uagb *UserActivityGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (uagb *UserActivityGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range uagb.fields {
 		if !useractivity.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -591,7 +594,7 @@ type UserActivitySelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (uas *UserActivitySelect) Scan(ctx context.Context, v interface{}) error {
+func (uas *UserActivitySelect) Scan(ctx context.Context, v any) error {
 	if err := uas.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -599,7 +602,7 @@ func (uas *UserActivitySelect) Scan(ctx context.Context, v interface{}) error {
 	return uas.sqlScan(ctx, v)
 }
 
-func (uas *UserActivitySelect) sqlScan(ctx context.Context, v interface{}) error {
+func (uas *UserActivitySelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := uas.sql.Query()
 	if err := uas.driver.Query(ctx, query, args, rows); err != nil {

@@ -401,10 +401,10 @@ func (unq *UserNoteQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Us
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, usernote.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*UserNote).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &UserNote{config: unq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -506,11 +506,14 @@ func (unq *UserNoteQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (unq *UserNoteQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := unq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := unq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (unq *UserNoteQuery) querySpec() *sqlgraph.QuerySpec {
@@ -611,7 +614,7 @@ func (ungb *UserNoteGroupBy) Aggregate(fns ...AggregateFunc) *UserNoteGroupBy {
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (ungb *UserNoteGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (ungb *UserNoteGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := ungb.path(ctx)
 	if err != nil {
 		return err
@@ -620,7 +623,7 @@ func (ungb *UserNoteGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return ungb.sqlScan(ctx, v)
 }
 
-func (ungb *UserNoteGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (ungb *UserNoteGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range ungb.fields {
 		if !usernote.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -667,7 +670,7 @@ type UserNoteSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (uns *UserNoteSelect) Scan(ctx context.Context, v interface{}) error {
+func (uns *UserNoteSelect) Scan(ctx context.Context, v any) error {
 	if err := uns.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -675,7 +678,7 @@ func (uns *UserNoteSelect) Scan(ctx context.Context, v interface{}) error {
 	return uns.sqlScan(ctx, v)
 }
 
-func (uns *UserNoteSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (uns *UserNoteSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := uns.sql.Query()
 	if err := uns.driver.Query(ctx, query, args, rows); err != nil {

@@ -34,7 +34,7 @@ func IDNEQ(id int) predicate.CareerSkill {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...int) predicate.CareerSkill {
 	return predicate.CareerSkill(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...int) predicate.CareerSkill {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...int) predicate.CareerSkill {
 	return predicate.CareerSkill(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -132,7 +132,7 @@ func CreateTimeNEQ(v time.Time) predicate.CareerSkill {
 
 // CreateTimeIn applies the In predicate on the "create_time" field.
 func CreateTimeIn(vs ...time.Time) predicate.CareerSkill {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -143,7 +143,7 @@ func CreateTimeIn(vs ...time.Time) predicate.CareerSkill {
 
 // CreateTimeNotIn applies the NotIn predicate on the "create_time" field.
 func CreateTimeNotIn(vs ...time.Time) predicate.CareerSkill {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -196,7 +196,7 @@ func UpdateTimeNEQ(v time.Time) predicate.CareerSkill {
 
 // UpdateTimeIn applies the In predicate on the "update_time" field.
 func UpdateTimeIn(vs ...time.Time) predicate.CareerSkill {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -207,7 +207,7 @@ func UpdateTimeIn(vs ...time.Time) predicate.CareerSkill {
 
 // UpdateTimeNotIn applies the NotIn predicate on the "update_time" field.
 func UpdateTimeNotIn(vs ...time.Time) predicate.CareerSkill {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -260,7 +260,7 @@ func NameNEQ(v string) predicate.CareerSkill {
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.CareerSkill {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -271,7 +271,7 @@ func NameIn(vs ...string) predicate.CareerSkill {
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.CareerSkill {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -359,7 +359,7 @@ func URLNEQ(v string) predicate.CareerSkill {
 
 // URLIn applies the In predicate on the "url" field.
 func URLIn(vs ...string) predicate.CareerSkill {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -370,7 +370,7 @@ func URLIn(vs ...string) predicate.CareerSkill {
 
 // URLNotIn applies the NotIn predicate on the "url" field.
 func URLNotIn(vs ...string) predicate.CareerSkill {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -472,7 +472,7 @@ func VersionNEQ(v string) predicate.CareerSkill {
 
 // VersionIn applies the In predicate on the "version" field.
 func VersionIn(vs ...string) predicate.CareerSkill {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -483,7 +483,7 @@ func VersionIn(vs ...string) predicate.CareerSkill {
 
 // VersionNotIn applies the NotIn predicate on the "version" field.
 func VersionNotIn(vs ...string) predicate.CareerSkill {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

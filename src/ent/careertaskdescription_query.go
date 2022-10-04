@@ -363,10 +363,10 @@ func (ctdq *CareerTaskDescriptionQuery) sqlAll(ctx context.Context, hooks ...que
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, careertaskdescription.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*CareerTaskDescription).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &CareerTaskDescription{config: ctdq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -430,11 +430,14 @@ func (ctdq *CareerTaskDescriptionQuery) sqlCount(ctx context.Context) (int, erro
 }
 
 func (ctdq *CareerTaskDescriptionQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := ctdq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := ctdq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (ctdq *CareerTaskDescriptionQuery) querySpec() *sqlgraph.QuerySpec {
@@ -535,7 +538,7 @@ func (ctdgb *CareerTaskDescriptionGroupBy) Aggregate(fns ...AggregateFunc) *Care
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (ctdgb *CareerTaskDescriptionGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (ctdgb *CareerTaskDescriptionGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := ctdgb.path(ctx)
 	if err != nil {
 		return err
@@ -544,7 +547,7 @@ func (ctdgb *CareerTaskDescriptionGroupBy) Scan(ctx context.Context, v interface
 	return ctdgb.sqlScan(ctx, v)
 }
 
-func (ctdgb *CareerTaskDescriptionGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (ctdgb *CareerTaskDescriptionGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range ctdgb.fields {
 		if !careertaskdescription.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -591,7 +594,7 @@ type CareerTaskDescriptionSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ctds *CareerTaskDescriptionSelect) Scan(ctx context.Context, v interface{}) error {
+func (ctds *CareerTaskDescriptionSelect) Scan(ctx context.Context, v any) error {
 	if err := ctds.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -599,7 +602,7 @@ func (ctds *CareerTaskDescriptionSelect) Scan(ctx context.Context, v interface{}
 	return ctds.sqlScan(ctx, v)
 }
 
-func (ctds *CareerTaskDescriptionSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ctds *CareerTaskDescriptionSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ctds.sql.Query()
 	if err := ctds.driver.Query(ctx, query, args, rows); err != nil {

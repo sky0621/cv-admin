@@ -401,10 +401,10 @@ func (csgq *CareerSkillGroupQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, careerskillgroup.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*CareerSkillGroup).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &CareerSkillGroup{config: csgq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -506,11 +506,14 @@ func (csgq *CareerSkillGroupQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (csgq *CareerSkillGroupQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := csgq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := csgq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (csgq *CareerSkillGroupQuery) querySpec() *sqlgraph.QuerySpec {
@@ -611,7 +614,7 @@ func (csggb *CareerSkillGroupGroupBy) Aggregate(fns ...AggregateFunc) *CareerSki
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (csggb *CareerSkillGroupGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (csggb *CareerSkillGroupGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := csggb.path(ctx)
 	if err != nil {
 		return err
@@ -620,7 +623,7 @@ func (csggb *CareerSkillGroupGroupBy) Scan(ctx context.Context, v interface{}) e
 	return csggb.sqlScan(ctx, v)
 }
 
-func (csggb *CareerSkillGroupGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (csggb *CareerSkillGroupGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range csggb.fields {
 		if !careerskillgroup.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -667,7 +670,7 @@ type CareerSkillGroupSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (csgs *CareerSkillGroupSelect) Scan(ctx context.Context, v interface{}) error {
+func (csgs *CareerSkillGroupSelect) Scan(ctx context.Context, v any) error {
 	if err := csgs.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -675,7 +678,7 @@ func (csgs *CareerSkillGroupSelect) Scan(ctx context.Context, v interface{}) err
 	return csgs.sqlScan(ctx, v)
 }
 
-func (csgs *CareerSkillGroupSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (csgs *CareerSkillGroupSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := csgs.sql.Query()
 	if err := csgs.driver.Query(ctx, query, args, rows); err != nil {

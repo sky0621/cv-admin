@@ -363,10 +363,10 @@ func (ucdq *UserCareerDescriptionQuery) sqlAll(ctx context.Context, hooks ...que
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, usercareerdescription.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*UserCareerDescription).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &UserCareerDescription{config: ucdq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -430,11 +430,14 @@ func (ucdq *UserCareerDescriptionQuery) sqlCount(ctx context.Context) (int, erro
 }
 
 func (ucdq *UserCareerDescriptionQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := ucdq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := ucdq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (ucdq *UserCareerDescriptionQuery) querySpec() *sqlgraph.QuerySpec {
@@ -535,7 +538,7 @@ func (ucdgb *UserCareerDescriptionGroupBy) Aggregate(fns ...AggregateFunc) *User
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (ucdgb *UserCareerDescriptionGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (ucdgb *UserCareerDescriptionGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := ucdgb.path(ctx)
 	if err != nil {
 		return err
@@ -544,7 +547,7 @@ func (ucdgb *UserCareerDescriptionGroupBy) Scan(ctx context.Context, v interface
 	return ucdgb.sqlScan(ctx, v)
 }
 
-func (ucdgb *UserCareerDescriptionGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (ucdgb *UserCareerDescriptionGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range ucdgb.fields {
 		if !usercareerdescription.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -591,7 +594,7 @@ type UserCareerDescriptionSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ucds *UserCareerDescriptionSelect) Scan(ctx context.Context, v interface{}) error {
+func (ucds *UserCareerDescriptionSelect) Scan(ctx context.Context, v any) error {
 	if err := ucds.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -599,7 +602,7 @@ func (ucds *UserCareerDescriptionSelect) Scan(ctx context.Context, v interface{}
 	return ucds.sqlScan(ctx, v)
 }
 
-func (ucds *UserCareerDescriptionSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ucds *UserCareerDescriptionSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ucds.sql.Query()
 	if err := ucds.driver.Query(ctx, query, args, rows); err != nil {

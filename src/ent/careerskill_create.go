@@ -352,18 +352,6 @@ type (
 	}
 )
 
-// SetCreateTime sets the "create_time" field.
-func (u *CareerSkillUpsert) SetCreateTime(v time.Time) *CareerSkillUpsert {
-	u.Set(careerskill.FieldCreateTime, v)
-	return u
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *CareerSkillUpsert) UpdateCreateTime() *CareerSkillUpsert {
-	u.SetExcluded(careerskill.FieldCreateTime)
-	return u
-}
-
 // SetUpdateTime sets the "update_time" field.
 func (u *CareerSkillUpsert) SetUpdateTime(v time.Time) *CareerSkillUpsert {
 	u.Set(careerskill.FieldUpdateTime, v)
@@ -467,20 +455,6 @@ func (u *CareerSkillUpsertOne) Update(set func(*CareerSkillUpsert)) *CareerSkill
 		set(&CareerSkillUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreateTime sets the "create_time" field.
-func (u *CareerSkillUpsertOne) SetCreateTime(v time.Time) *CareerSkillUpsertOne {
-	return u.Update(func(s *CareerSkillUpsert) {
-		s.SetCreateTime(v)
-	})
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *CareerSkillUpsertOne) UpdateCreateTime() *CareerSkillUpsertOne {
-	return u.Update(func(s *CareerSkillUpsert) {
-		s.UpdateCreateTime()
-	})
 }
 
 // SetUpdateTime sets the "update_time" field.
@@ -758,20 +732,6 @@ func (u *CareerSkillUpsertBulk) Update(set func(*CareerSkillUpsert)) *CareerSkil
 		set(&CareerSkillUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreateTime sets the "create_time" field.
-func (u *CareerSkillUpsertBulk) SetCreateTime(v time.Time) *CareerSkillUpsertBulk {
-	return u.Update(func(s *CareerSkillUpsert) {
-		s.SetCreateTime(v)
-	})
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *CareerSkillUpsertBulk) UpdateCreateTime() *CareerSkillUpsertBulk {
-	return u.Update(func(s *CareerSkillUpsert) {
-		s.UpdateCreateTime()
-	})
 }
 
 // SetUpdateTime sets the "update_time" field.

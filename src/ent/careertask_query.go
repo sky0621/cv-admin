@@ -401,10 +401,10 @@ func (ctq *CareerTaskQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, careertask.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*CareerTask).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &CareerTask{config: ctq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -508,11 +508,14 @@ func (ctq *CareerTaskQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (ctq *CareerTaskQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := ctq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := ctq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (ctq *CareerTaskQuery) querySpec() *sqlgraph.QuerySpec {
@@ -613,7 +616,7 @@ func (ctgb *CareerTaskGroupBy) Aggregate(fns ...AggregateFunc) *CareerTaskGroupB
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (ctgb *CareerTaskGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (ctgb *CareerTaskGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := ctgb.path(ctx)
 	if err != nil {
 		return err
@@ -622,7 +625,7 @@ func (ctgb *CareerTaskGroupBy) Scan(ctx context.Context, v interface{}) error {
 	return ctgb.sqlScan(ctx, v)
 }
 
-func (ctgb *CareerTaskGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (ctgb *CareerTaskGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range ctgb.fields {
 		if !careertask.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -669,7 +672,7 @@ type CareerTaskSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (cts *CareerTaskSelect) Scan(ctx context.Context, v interface{}) error {
+func (cts *CareerTaskSelect) Scan(ctx context.Context, v any) error {
 	if err := cts.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -677,7 +680,7 @@ func (cts *CareerTaskSelect) Scan(ctx context.Context, v interface{}) error {
 	return cts.sqlScan(ctx, v)
 }
 
-func (cts *CareerTaskSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (cts *CareerTaskSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := cts.sql.Query()
 	if err := cts.driver.Query(ctx, query, args, rows); err != nil {

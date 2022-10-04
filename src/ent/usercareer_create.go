@@ -447,18 +447,6 @@ type (
 	}
 )
 
-// SetCreateTime sets the "create_time" field.
-func (u *UserCareerUpsert) SetCreateTime(v time.Time) *UserCareerUpsert {
-	u.Set(usercareer.FieldCreateTime, v)
-	return u
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserCareerUpsert) UpdateCreateTime() *UserCareerUpsert {
-	u.SetExcluded(usercareer.FieldCreateTime)
-	return u
-}
-
 // SetUpdateTime sets the "update_time" field.
 func (u *UserCareerUpsert) SetUpdateTime(v time.Time) *UserCareerUpsert {
 	u.Set(usercareer.FieldUpdateTime, v)
@@ -550,20 +538,6 @@ func (u *UserCareerUpsertOne) Update(set func(*UserCareerUpsert)) *UserCareerUps
 		set(&UserCareerUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreateTime sets the "create_time" field.
-func (u *UserCareerUpsertOne) SetCreateTime(v time.Time) *UserCareerUpsertOne {
-	return u.Update(func(s *UserCareerUpsert) {
-		s.SetCreateTime(v)
-	})
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserCareerUpsertOne) UpdateCreateTime() *UserCareerUpsertOne {
-	return u.Update(func(s *UserCareerUpsert) {
-		s.UpdateCreateTime()
-	})
 }
 
 // SetUpdateTime sets the "update_time" field.
@@ -827,20 +801,6 @@ func (u *UserCareerUpsertBulk) Update(set func(*UserCareerUpsert)) *UserCareerUp
 		set(&UserCareerUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreateTime sets the "create_time" field.
-func (u *UserCareerUpsertBulk) SetCreateTime(v time.Time) *UserCareerUpsertBulk {
-	return u.Update(func(s *UserCareerUpsert) {
-		s.SetCreateTime(v)
-	})
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserCareerUpsertBulk) UpdateCreateTime() *UserCareerUpsertBulk {
-	return u.Update(func(s *UserCareerUpsert) {
-		s.UpdateCreateTime()
-	})
 }
 
 // SetUpdateTime sets the "update_time" field.

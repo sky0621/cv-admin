@@ -352,18 +352,6 @@ type (
 	}
 )
 
-// SetCreateTime sets the "create_time" field.
-func (u *UserActivityUpsert) SetCreateTime(v time.Time) *UserActivityUpsert {
-	u.Set(useractivity.FieldCreateTime, v)
-	return u
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserActivityUpsert) UpdateCreateTime() *UserActivityUpsert {
-	u.SetExcluded(useractivity.FieldCreateTime)
-	return u
-}
-
 // SetUpdateTime sets the "update_time" field.
 func (u *UserActivityUpsert) SetUpdateTime(v time.Time) *UserActivityUpsert {
 	u.Set(useractivity.FieldUpdateTime, v)
@@ -467,20 +455,6 @@ func (u *UserActivityUpsertOne) Update(set func(*UserActivityUpsert)) *UserActiv
 		set(&UserActivityUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreateTime sets the "create_time" field.
-func (u *UserActivityUpsertOne) SetCreateTime(v time.Time) *UserActivityUpsertOne {
-	return u.Update(func(s *UserActivityUpsert) {
-		s.SetCreateTime(v)
-	})
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserActivityUpsertOne) UpdateCreateTime() *UserActivityUpsertOne {
-	return u.Update(func(s *UserActivityUpsert) {
-		s.UpdateCreateTime()
-	})
 }
 
 // SetUpdateTime sets the "update_time" field.
@@ -758,20 +732,6 @@ func (u *UserActivityUpsertBulk) Update(set func(*UserActivityUpsert)) *UserActi
 		set(&UserActivityUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreateTime sets the "create_time" field.
-func (u *UserActivityUpsertBulk) SetCreateTime(v time.Time) *UserActivityUpsertBulk {
-	return u.Update(func(s *UserActivityUpsert) {
-		s.SetCreateTime(v)
-	})
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserActivityUpsertBulk) UpdateCreateTime() *UserActivityUpsertBulk {
-	return u.Update(func(s *UserActivityUpsert) {
-		s.UpdateCreateTime()
-	})
 }
 
 // SetUpdateTime sets the "update_time" field.

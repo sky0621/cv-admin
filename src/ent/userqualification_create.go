@@ -406,18 +406,6 @@ type (
 	}
 )
 
-// SetCreateTime sets the "create_time" field.
-func (u *UserQualificationUpsert) SetCreateTime(v time.Time) *UserQualificationUpsert {
-	u.Set(userqualification.FieldCreateTime, v)
-	return u
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserQualificationUpsert) UpdateCreateTime() *UserQualificationUpsert {
-	u.SetExcluded(userqualification.FieldCreateTime)
-	return u
-}
-
 // SetUpdateTime sets the "update_time" field.
 func (u *UserQualificationUpsert) SetUpdateTime(v time.Time) *UserQualificationUpsert {
 	u.Set(userqualification.FieldUpdateTime, v)
@@ -557,20 +545,6 @@ func (u *UserQualificationUpsertOne) Update(set func(*UserQualificationUpsert)) 
 		set(&UserQualificationUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreateTime sets the "create_time" field.
-func (u *UserQualificationUpsertOne) SetCreateTime(v time.Time) *UserQualificationUpsertOne {
-	return u.Update(func(s *UserQualificationUpsert) {
-		s.SetCreateTime(v)
-	})
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserQualificationUpsertOne) UpdateCreateTime() *UserQualificationUpsertOne {
-	return u.Update(func(s *UserQualificationUpsert) {
-		s.UpdateCreateTime()
-	})
 }
 
 // SetUpdateTime sets the "update_time" field.
@@ -890,20 +864,6 @@ func (u *UserQualificationUpsertBulk) Update(set func(*UserQualificationUpsert))
 		set(&UserQualificationUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreateTime sets the "create_time" field.
-func (u *UserQualificationUpsertBulk) SetCreateTime(v time.Time) *UserQualificationUpsertBulk {
-	return u.Update(func(s *UserQualificationUpsert) {
-		s.SetCreateTime(v)
-	})
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *UserQualificationUpsertBulk) UpdateCreateTime() *UserQualificationUpsertBulk {
-	return u.Update(func(s *UserQualificationUpsert) {
-		s.UpdateCreateTime()
-	})
 }
 
 // SetUpdateTime sets the "update_time" field.

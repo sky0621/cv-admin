@@ -34,7 +34,7 @@ func IDNEQ(id int) predicate.UserQualification {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...int) predicate.UserQualification {
 	return predicate.UserQualification(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...int) predicate.UserQualification {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...int) predicate.UserQualification {
 	return predicate.UserQualification(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -146,7 +146,7 @@ func CreateTimeNEQ(v time.Time) predicate.UserQualification {
 
 // CreateTimeIn applies the In predicate on the "create_time" field.
 func CreateTimeIn(vs ...time.Time) predicate.UserQualification {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -157,7 +157,7 @@ func CreateTimeIn(vs ...time.Time) predicate.UserQualification {
 
 // CreateTimeNotIn applies the NotIn predicate on the "create_time" field.
 func CreateTimeNotIn(vs ...time.Time) predicate.UserQualification {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -210,7 +210,7 @@ func UpdateTimeNEQ(v time.Time) predicate.UserQualification {
 
 // UpdateTimeIn applies the In predicate on the "update_time" field.
 func UpdateTimeIn(vs ...time.Time) predicate.UserQualification {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -221,7 +221,7 @@ func UpdateTimeIn(vs ...time.Time) predicate.UserQualification {
 
 // UpdateTimeNotIn applies the NotIn predicate on the "update_time" field.
 func UpdateTimeNotIn(vs ...time.Time) predicate.UserQualification {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -274,7 +274,7 @@ func NameNEQ(v string) predicate.UserQualification {
 
 // NameIn applies the In predicate on the "name" field.
 func NameIn(vs ...string) predicate.UserQualification {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -285,7 +285,7 @@ func NameIn(vs ...string) predicate.UserQualification {
 
 // NameNotIn applies the NotIn predicate on the "name" field.
 func NameNotIn(vs ...string) predicate.UserQualification {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -373,7 +373,7 @@ func OrganizationNEQ(v string) predicate.UserQualification {
 
 // OrganizationIn applies the In predicate on the "organization" field.
 func OrganizationIn(vs ...string) predicate.UserQualification {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -384,7 +384,7 @@ func OrganizationIn(vs ...string) predicate.UserQualification {
 
 // OrganizationNotIn applies the NotIn predicate on the "organization" field.
 func OrganizationNotIn(vs ...string) predicate.UserQualification {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -486,7 +486,7 @@ func URLNEQ(v string) predicate.UserQualification {
 
 // URLIn applies the In predicate on the "url" field.
 func URLIn(vs ...string) predicate.UserQualification {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -497,7 +497,7 @@ func URLIn(vs ...string) predicate.UserQualification {
 
 // URLNotIn applies the NotIn predicate on the "url" field.
 func URLNotIn(vs ...string) predicate.UserQualification {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -599,7 +599,7 @@ func GotDateNEQ(v string) predicate.UserQualification {
 
 // GotDateIn applies the In predicate on the "got_date" field.
 func GotDateIn(vs ...string) predicate.UserQualification {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -610,7 +610,7 @@ func GotDateIn(vs ...string) predicate.UserQualification {
 
 // GotDateNotIn applies the NotIn predicate on the "got_date" field.
 func GotDateNotIn(vs ...string) predicate.UserQualification {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -712,7 +712,7 @@ func MemoNEQ(v string) predicate.UserQualification {
 
 // MemoIn applies the In predicate on the "memo" field.
 func MemoIn(vs ...string) predicate.UserQualification {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -723,7 +723,7 @@ func MemoIn(vs ...string) predicate.UserQualification {
 
 // MemoNotIn applies the NotIn predicate on the "memo" field.
 func MemoNotIn(vs ...string) predicate.UserQualification {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

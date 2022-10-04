@@ -363,10 +363,10 @@ func (uqq *UserQualificationQuery) sqlAll(ctx context.Context, hooks ...queryHoo
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, userqualification.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*UserQualification).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &UserQualification{config: uqq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -430,11 +430,14 @@ func (uqq *UserQualificationQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (uqq *UserQualificationQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := uqq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := uqq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (uqq *UserQualificationQuery) querySpec() *sqlgraph.QuerySpec {
@@ -535,7 +538,7 @@ func (uqgb *UserQualificationGroupBy) Aggregate(fns ...AggregateFunc) *UserQuali
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (uqgb *UserQualificationGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (uqgb *UserQualificationGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := uqgb.path(ctx)
 	if err != nil {
 		return err
@@ -544,7 +547,7 @@ func (uqgb *UserQualificationGroupBy) Scan(ctx context.Context, v interface{}) e
 	return uqgb.sqlScan(ctx, v)
 }
 
-func (uqgb *UserQualificationGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (uqgb *UserQualificationGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range uqgb.fields {
 		if !userqualification.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -591,7 +594,7 @@ type UserQualificationSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (uqs *UserQualificationSelect) Scan(ctx context.Context, v interface{}) error {
+func (uqs *UserQualificationSelect) Scan(ctx context.Context, v any) error {
 	if err := uqs.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -599,7 +602,7 @@ func (uqs *UserQualificationSelect) Scan(ctx context.Context, v interface{}) err
 	return uqs.sqlScan(ctx, v)
 }
 
-func (uqs *UserQualificationSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (uqs *UserQualificationSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := uqs.sql.Query()
 	if err := uqs.driver.Query(ctx, query, args, rows); err != nil {

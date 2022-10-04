@@ -401,10 +401,10 @@ func (ucgq *UserCareerGroupQuery) sqlAll(ctx context.Context, hooks ...queryHook
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, usercareergroup.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*UserCareerGroup).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &UserCareerGroup{config: ucgq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -506,11 +506,14 @@ func (ucgq *UserCareerGroupQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (ucgq *UserCareerGroupQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := ucgq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := ucgq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (ucgq *UserCareerGroupQuery) querySpec() *sqlgraph.QuerySpec {
@@ -611,7 +614,7 @@ func (ucggb *UserCareerGroupGroupBy) Aggregate(fns ...AggregateFunc) *UserCareer
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (ucggb *UserCareerGroupGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (ucggb *UserCareerGroupGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := ucggb.path(ctx)
 	if err != nil {
 		return err
@@ -620,7 +623,7 @@ func (ucggb *UserCareerGroupGroupBy) Scan(ctx context.Context, v interface{}) er
 	return ucggb.sqlScan(ctx, v)
 }
 
-func (ucggb *UserCareerGroupGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (ucggb *UserCareerGroupGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range ucggb.fields {
 		if !usercareergroup.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -667,7 +670,7 @@ type UserCareerGroupSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ucgs *UserCareerGroupSelect) Scan(ctx context.Context, v interface{}) error {
+func (ucgs *UserCareerGroupSelect) Scan(ctx context.Context, v any) error {
 	if err := ucgs.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -675,7 +678,7 @@ func (ucgs *UserCareerGroupSelect) Scan(ctx context.Context, v interface{}) erro
 	return ucgs.sqlScan(ctx, v)
 }
 
-func (ucgs *UserCareerGroupSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (ucgs *UserCareerGroupSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := ucgs.sql.Query()
 	if err := ucgs.driver.Query(ctx, query, args, rows); err != nil {

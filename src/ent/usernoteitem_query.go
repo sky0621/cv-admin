@@ -363,10 +363,10 @@ func (uniq *UserNoteItemQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, usernoteitem.ForeignKeys...)
 	}
-	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
+	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*UserNoteItem).scanValues(nil, columns)
 	}
-	_spec.Assign = func(columns []string, values []interface{}) error {
+	_spec.Assign = func(columns []string, values []any) error {
 		node := &UserNoteItem{config: uniq.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
@@ -430,11 +430,14 @@ func (uniq *UserNoteItemQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (uniq *UserNoteItemQuery) sqlExist(ctx context.Context) (bool, error) {
-	n, err := uniq.sqlCount(ctx)
-	if err != nil {
+	switch _, err := uniq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
 		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return n > 0, nil
 }
 
 func (uniq *UserNoteItemQuery) querySpec() *sqlgraph.QuerySpec {
@@ -535,7 +538,7 @@ func (unigb *UserNoteItemGroupBy) Aggregate(fns ...AggregateFunc) *UserNoteItemG
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (unigb *UserNoteItemGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (unigb *UserNoteItemGroupBy) Scan(ctx context.Context, v any) error {
 	query, err := unigb.path(ctx)
 	if err != nil {
 		return err
@@ -544,7 +547,7 @@ func (unigb *UserNoteItemGroupBy) Scan(ctx context.Context, v interface{}) error
 	return unigb.sqlScan(ctx, v)
 }
 
-func (unigb *UserNoteItemGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (unigb *UserNoteItemGroupBy) sqlScan(ctx context.Context, v any) error {
 	for _, f := range unigb.fields {
 		if !usernoteitem.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
@@ -591,7 +594,7 @@ type UserNoteItemSelect struct {
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (unis *UserNoteItemSelect) Scan(ctx context.Context, v interface{}) error {
+func (unis *UserNoteItemSelect) Scan(ctx context.Context, v any) error {
 	if err := unis.prepareQuery(ctx); err != nil {
 		return err
 	}
@@ -599,7 +602,7 @@ func (unis *UserNoteItemSelect) Scan(ctx context.Context, v interface{}) error {
 	return unis.sqlScan(ctx, v)
 }
 
-func (unis *UserNoteItemSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (unis *UserNoteItemSelect) sqlScan(ctx context.Context, v any) error {
 	rows := &sql.Rows{}
 	query, args := unis.sql.Query()
 	if err := unis.driver.Query(ctx, query, args, rows); err != nil {

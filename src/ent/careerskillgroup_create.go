@@ -333,18 +333,6 @@ type (
 	}
 )
 
-// SetCreateTime sets the "create_time" field.
-func (u *CareerSkillGroupUpsert) SetCreateTime(v time.Time) *CareerSkillGroupUpsert {
-	u.Set(careerskillgroup.FieldCreateTime, v)
-	return u
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *CareerSkillGroupUpsert) UpdateCreateTime() *CareerSkillGroupUpsert {
-	u.SetExcluded(careerskillgroup.FieldCreateTime)
-	return u
-}
-
 // SetUpdateTime sets the "update_time" field.
 func (u *CareerSkillGroupUpsert) SetUpdateTime(v time.Time) *CareerSkillGroupUpsert {
 	u.Set(careerskillgroup.FieldUpdateTime, v)
@@ -412,20 +400,6 @@ func (u *CareerSkillGroupUpsertOne) Update(set func(*CareerSkillGroupUpsert)) *C
 		set(&CareerSkillGroupUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreateTime sets the "create_time" field.
-func (u *CareerSkillGroupUpsertOne) SetCreateTime(v time.Time) *CareerSkillGroupUpsertOne {
-	return u.Update(func(s *CareerSkillGroupUpsert) {
-		s.SetCreateTime(v)
-	})
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *CareerSkillGroupUpsertOne) UpdateCreateTime() *CareerSkillGroupUpsertOne {
-	return u.Update(func(s *CareerSkillGroupUpsert) {
-		s.UpdateCreateTime()
-	})
 }
 
 // SetUpdateTime sets the "update_time" field.
@@ -661,20 +635,6 @@ func (u *CareerSkillGroupUpsertBulk) Update(set func(*CareerSkillGroupUpsert)) *
 		set(&CareerSkillGroupUpsert{UpdateSet: update})
 	}))
 	return u
-}
-
-// SetCreateTime sets the "create_time" field.
-func (u *CareerSkillGroupUpsertBulk) SetCreateTime(v time.Time) *CareerSkillGroupUpsertBulk {
-	return u.Update(func(s *CareerSkillGroupUpsert) {
-		s.SetCreateTime(v)
-	})
-}
-
-// UpdateCreateTime sets the "create_time" field to the value that was provided on create.
-func (u *CareerSkillGroupUpsertBulk) UpdateCreateTime() *CareerSkillGroupUpsertBulk {
-	return u.Update(func(s *CareerSkillGroupUpsert) {
-		s.UpdateCreateTime()
-	})
 }
 
 // SetUpdateTime sets the "update_time" field.

@@ -34,7 +34,7 @@ func IDNEQ(id int) predicate.UserNote {
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...int) predicate.UserNote {
 	return predicate.UserNote(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -45,7 +45,7 @@ func IDIn(ids ...int) predicate.UserNote {
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...int) predicate.UserNote {
 	return predicate.UserNote(func(s *sql.Selector) {
-		v := make([]interface{}, len(ids))
+		v := make([]any, len(ids))
 		for i := range v {
 			v[i] = ids[i]
 		}
@@ -118,7 +118,7 @@ func CreateTimeNEQ(v time.Time) predicate.UserNote {
 
 // CreateTimeIn applies the In predicate on the "create_time" field.
 func CreateTimeIn(vs ...time.Time) predicate.UserNote {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -129,7 +129,7 @@ func CreateTimeIn(vs ...time.Time) predicate.UserNote {
 
 // CreateTimeNotIn applies the NotIn predicate on the "create_time" field.
 func CreateTimeNotIn(vs ...time.Time) predicate.UserNote {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -182,7 +182,7 @@ func UpdateTimeNEQ(v time.Time) predicate.UserNote {
 
 // UpdateTimeIn applies the In predicate on the "update_time" field.
 func UpdateTimeIn(vs ...time.Time) predicate.UserNote {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -193,7 +193,7 @@ func UpdateTimeIn(vs ...time.Time) predicate.UserNote {
 
 // UpdateTimeNotIn applies the NotIn predicate on the "update_time" field.
 func UpdateTimeNotIn(vs ...time.Time) predicate.UserNote {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -246,7 +246,7 @@ func LabelNEQ(v string) predicate.UserNote {
 
 // LabelIn applies the In predicate on the "label" field.
 func LabelIn(vs ...string) predicate.UserNote {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -257,7 +257,7 @@ func LabelIn(vs ...string) predicate.UserNote {
 
 // LabelNotIn applies the NotIn predicate on the "label" field.
 func LabelNotIn(vs ...string) predicate.UserNote {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -345,7 +345,7 @@ func MemoNEQ(v string) predicate.UserNote {
 
 // MemoIn applies the In predicate on the "memo" field.
 func MemoIn(vs ...string) predicate.UserNote {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
@@ -356,7 +356,7 @@ func MemoIn(vs ...string) predicate.UserNote {
 
 // MemoNotIn applies the NotIn predicate on the "memo" field.
 func MemoNotIn(vs ...string) predicate.UserNote {
-	v := make([]interface{}, len(vs))
+	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}

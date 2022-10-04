@@ -47,8 +47,8 @@ func (e UserCareerDescriptionEdges) CareerOrErr() (*UserCareer, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*UserCareerDescription) scanValues(columns []string) ([]interface{}, error) {
-	values := make([]interface{}, len(columns))
+func (*UserCareerDescription) scanValues(columns []string) ([]any, error) {
+	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
 		case usercareerdescription.FieldID:
@@ -66,7 +66,7 @@ func (*UserCareerDescription) scanValues(columns []string) ([]interface{}, error
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the UserCareerDescription fields.
-func (ucd *UserCareerDescription) assignValues(columns []string, values []interface{}) error {
+func (ucd *UserCareerDescription) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
