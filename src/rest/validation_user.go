@@ -32,5 +32,7 @@ func (u UserActivity) Validate() error {
 func (u UserQualification) Validate() error {
 	return v.ValidateStruct(&u,
 		stringRule(&u.Name, 1, 100, v.Required),
+
+		// FIXME: 残りを実装！
 	)
 }

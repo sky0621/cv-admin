@@ -21,10 +21,24 @@ func (s *ServerImpl) GetUsersByUserIdCareergroups(ctx echo.Context, byUserId Use
 	return ctx.JSON(http.StatusOK, ToSwaggerUserCareerGroups(entUser.Edges.CareerGroups))
 }
 
-// キャリアグループ新規登録
+// PostUsersByUserIdCareergroups キャリアグループ新規登録
 // (POST /users/{byUserId}/careergroups)
 func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId UserId) error {
-	return ctx.String(http.StatusOK, "")
+	var userCareerGroup UserCareerGroup
+	if err := ctx.Bind(&userCareerGroup); err != nil {
+		return sendClientError(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	if err := userCareerGroup.Validate(); err != nil {
+		return sendClientError(ctx, http.StatusBadRequest, err.Error())
+	}
+
+	entUserCareerGroup, err := ToEntUserCareerGroupCreate(userCareerGroup, byUserId, s.dbClient.UserCareerGroup.Create()).Save(ctx.Request().Context())
+	if err != nil {
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusCreated, ToSwaggerUserCareerGroup(entUserCareerGroup))
 }
 
 // キャリアグループ削除

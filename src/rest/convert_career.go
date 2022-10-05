@@ -15,3 +15,9 @@ func ToSwaggerUserCareerGroups(entCareerGroups ent.UserCareerGroups) UserCareerG
 	}
 	return careerGroups
 }
+
+func ToEntUserCareerGroupCreate(u UserCareerGroup, userID int, c *ent.UserCareerGroupCreate) *ent.UserCareerGroupCreate {
+	return c.
+		SetLabel(*u.Label).
+		SetUserID(userID)
+}
