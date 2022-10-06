@@ -6,10 +6,33 @@ import (
 	"github.com/sky0621/cv-admin/src/ent"
 )
 
+// TODO: goverter での置き換えを試す。
+
+func ToSwaggerUserCareerDescription(entUserCareerDescription *ent.UserCareerDescription) string {
+	return entUserCareerDescription.Description
+}
+
+func ToSwaggerUserCareerDescriptions(entUserCareerDescriptions []*ent.UserCareerDescription) *CareerDescriptions {
+	careerDescriptions := make([]string, len(entUserCareerDescriptions))
+	for _, entUserCareerDescription := range entUserCareerDescriptions {
+		careerDescriptions = append(careerDescriptions, ToSwaggerUserCareerDescription(entUserCareerDescription))
+	}
+	return &careerDescriptions
+}
+
+func ToSwaggerUserCareer(entCareer *ent.UserCareer) UserCareer {
+	return UserCareer{
+		Name:        &entCareer.Name,
+		Description: ToSwaggerUserCareerDescriptions(entCareer.Edges.CareerDescriptions),
+	}
+}
+
 func ToSwaggerUserCareerGroup(entCareerGroup *ent.UserCareerGroup) UserCareerGroup {
 	var careerGroup UserCareerGroup
 	careerGroup.Label = &entCareerGroup.Label
-	//	careerGroup.Careers = &entCareerGroup.Edges.Careers
+	for _, entCareer := range entCareerGroup.Edges.Careers {
+		*careerGroup.Careers = append(*careerGroup.Careers, ToSwaggerUserCareer(entCareer))
+	}
 	return careerGroup
 }
 

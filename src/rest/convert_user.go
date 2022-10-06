@@ -8,6 +8,8 @@ import (
 	"github.com/sky0621/cv-admin/src/ent"
 )
 
+// TODO: goverter での置き換えを試す。
+
 func ToEntUserCreate(u UserAttribute, c *ent.UserCreate) *ent.UserCreate {
 	return c.
 		SetName(*u.Name).
