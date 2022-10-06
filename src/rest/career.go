@@ -3,6 +3,8 @@ package rest
 import (
 	"net/http"
 
+	"github.com/sky0621/cv-admin/src/ent/helper"
+
 	"github.com/sky0621/cv-admin/src/ent"
 
 	"github.com/labstack/echo/v4"
@@ -33,8 +35,31 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	entUserCareerGroup, err := ToEntUserCareerGroupCreate(userCareerGroup, byUserId, s.dbClient.UserCareerGroup.Create()).Save(ctx.Request().Context())
-	if err != nil {
+	rCtx := ctx.Request().Context()
+
+	var entUserCareerGroup *ent.UserCareerGroup
+	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
+		var err error
+		entUserCareerGroup, err = ToEntUserCareerGroupCreate(userCareerGroup, byUserId, s.dbClient.UserCareerGroup.Create()).Save(rCtx)
+		if err != nil {
+			return err
+		}
+
+		if userCareerGroup.Careers == nil {
+			return nil
+		}
+		builders := make([]*ent.UserCareerCreate, len(*userCareerGroup.Careers))
+		for _, career := range *userCareerGroup.Careers {
+			builders = append(builders, ToEntUserCareerCreate(career, entUserCareerGroup.ID, tx.UserCareer.Create()))
+		}
+		userCareers, err := tx.UserCareer.CreateBulk(builders...).Save(rCtx)
+		if err != nil {
+			return err
+		}
+		entUserCareerGroup.Edges.Careers = userCareers
+
+		return nil
+	}); err != nil {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
