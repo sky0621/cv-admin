@@ -48,7 +48,7 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 		if userCareerGroup.Careers == nil {
 			return nil
 		}
-		builders := make([]*ent.UserCareerCreate, len(*userCareerGroup.Careers))
+		var builders []*ent.UserCareerCreate
 		for _, career := range *userCareerGroup.Careers {
 			builders = append(builders, ToEntUserCareerCreate(career, entUserCareerGroup.ID, tx.UserCareer.Create()))
 		}
