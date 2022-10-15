@@ -3,6 +3,8 @@ package rest
 import (
 	"testing"
 
+	"github.com/sky0621/golang-utils/convert"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,11 +24,11 @@ func TestCareerPeriodFromToEntUserCareerFrom(t *testing.T) {
 		u      *CareerPeriodFrom
 		expect string
 	}{
-		"":             {u: &CareerPeriodFrom{Year: toPInt(2022), Month: toPInt(12)}, expect: "202212"},
-		"0埋め":          {u: &CareerPeriodFrom{Year: toPInt(2022), Month: toPInt(1)}, expect: "202201"},
+		"":             {u: &CareerPeriodFrom{Year: convert.ToPtr(2022), Month: convert.ToPtr(12)}, expect: "202212"},
+		"0埋め":          {u: &CareerPeriodFrom{Year: convert.ToPtr(2022), Month: convert.ToPtr(1)}, expect: "202201"},
 		"nil":          {u: nil, expect: ""},
-		"Year is nil":  {u: &CareerPeriodFrom{Month: toPInt(12)}, expect: ""},
-		"Month is nil": {u: &CareerPeriodFrom{Year: toPInt(2022)}, expect: ""},
+		"Year is nil":  {u: &CareerPeriodFrom{Month: convert.ToPtr(12)}, expect: ""},
+		"Month is nil": {u: &CareerPeriodFrom{Year: convert.ToPtr(2022)}, expect: ""},
 	}
 
 	for testName, tt := range tests {

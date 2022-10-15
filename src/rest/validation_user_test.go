@@ -3,21 +3,23 @@ package rest
 import (
 	"testing"
 
+	"github.com/sky0621/golang-utils/convert"
+
 	"github.com/stretchr/testify/assert"
 )
 
 func testNormalBirthday() *BirthDay {
 	return &BirthDay{
-		Year:  toPInt(1900),
-		Month: toPInt(1),
-		Day:   toPInt(1),
+		Year:  convert.ToPtr(1900),
+		Month: convert.ToPtr(1),
+		Day:   convert.ToPtr(1),
 	}
 }
 
 func TestUserAttribute_validate_NoError(t *testing.T) {
 	tests := map[string]struct{ u UserAttribute }{
-		"名前がある":   {u: UserAttribute{Name: toPStr("名前"), Birthday: testNormalBirthday()}},
-		"名前が1字":   {u: UserAttribute{Name: toPStr("x"), Birthday: testNormalBirthday()}},
+		"名前がある":   {u: UserAttribute{Name: convert.ToPtr("名前"), Birthday: testNormalBirthday()}},
+		"名前が1字":   {u: UserAttribute{Name: convert.ToPtr("x"), Birthday: testNormalBirthday()}},
 		"名前が100字": {u: UserAttribute{Name: toPLenStr("x", 100), Birthday: testNormalBirthday()}},
 
 		// TODO: 残りのケース
@@ -40,7 +42,7 @@ func TestUserAttribute_validate_HasError(t *testing.T) {
 	}{
 		"名前が無い":       {u: UserAttribute{Birthday: testNormalBirthday()}, errStr: "name: cannot be blank."},
 		"名前がnil":      {u: UserAttribute{Name: nil, Birthday: testNormalBirthday()}, errStr: "name: cannot be blank."},
-		"名前が空文字":      {u: UserAttribute{Name: toPStr(""), Birthday: testNormalBirthday()}, errStr: "name: cannot be blank."},
+		"名前が空文字":      {u: UserAttribute{Name: convert.ToPtr(""), Birthday: testNormalBirthday()}, errStr: "name: cannot be blank."},
 		"名前が100字を超える": {u: UserAttribute{Name: toPLenStr("x", 101), Birthday: testNormalBirthday()}, errStr: "name: the length must be between 1 and 100."},
 
 		// TODO: 残りのケース

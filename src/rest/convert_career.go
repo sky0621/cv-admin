@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/sky0621/cv-admin/src/ent"
+	"github.com/sky0621/golang-utils/convert"
 )
 
 // TODO: goverter での置き換えを試す。
@@ -21,8 +22,8 @@ func ToSwaggerUserCareerPeriodFrom(entFrom string) *CareerPeriodFrom {
 		panic(err) // MEMO: ありえないよう、DB格納時にチェック済み想定
 	}
 	return &CareerPeriodFrom{
-		Year:  toPInt(year),
-		Month: toPInt(month),
+		Year:  convert.ToPtr(year),
+		Month: convert.ToPtr(month),
 	}
 }
 
