@@ -5,19 +5,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/sky0621/cv-admin/src/ent/usercareer"
-
-	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
-
-	"github.com/sky0621/cv-admin/src/ent/useractivity"
-
-	"github.com/sky0621/cv-admin/src/ent/userqualification"
-
 	"github.com/labstack/echo/v4"
 
 	"github.com/sky0621/cv-admin/src/ent"
 	"github.com/sky0621/cv-admin/src/ent/helper"
 	"github.com/sky0621/cv-admin/src/ent/user"
+	"github.com/sky0621/cv-admin/src/ent/useractivity"
+	"github.com/sky0621/cv-admin/src/ent/usercareer"
+	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
+	"github.com/sky0621/cv-admin/src/ent/userqualification"
 )
 
 // PostUsers ユーザー登録
@@ -46,19 +42,8 @@ func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId UserId) error {
 	rCtx := ctx.Request().Context()
 
-	entUser, err := s.getUserByUserIdWithXXX(ctx, byUserId, func(q *ent.UserQuery) *ent.UserQuery {
-		return q.
-			WithNotes().
-			WithCareerGroups().
-			WithQualifications().
-			WithActivities()
-	})
-	if err != nil {
-		return err
-	}
-
 	// TODO: 直接 user_id 指定できるはず。。
-	careerGroups, err := s.dbClient.UserCareerGroup.Query().Where(usercareergroup.HasUserWith(user.ID(entUser.ID))).All(rCtx)
+	careerGroups, err := s.dbClient.UserCareerGroup.Query().Where(usercareergroup.HasUserWith(user.ID(byUserId))).All(rCtx)
 	if err != nil {
 		return err
 	}
@@ -70,28 +55,28 @@ func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId UserId) erro
 		}
 
 		// TODO: 直接 user_id 指定できるはず。。
-		_, err = tx.UserCareerGroup.Delete().Where(usercareergroup.HasUserWith(user.ID(entUser.ID))).Exec(rCtx)
+		_, err = tx.UserCareerGroup.Delete().Where(usercareergroup.HasUserWith(user.ID(byUserId))).Exec(rCtx)
 		if err != nil {
 			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 		}
 
 		// TODO: 直接 user_id 指定できるはず。。
-		_, err = tx.UserQualification.Delete().Where(userqualification.HasUserWith(user.ID(entUser.ID))).Exec(rCtx)
+		_, err = tx.UserQualification.Delete().Where(userqualification.HasUserWith(user.ID(byUserId))).Exec(rCtx)
 		if err != nil {
 			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 		}
 
 		// TODO: 直接 user_id 指定できるはず。。
-		_, err = tx.UserActivity.Delete().Where(useractivity.HasUserWith(user.ID(entUser.ID))).Exec(rCtx)
+		_, err = tx.UserActivity.Delete().Where(useractivity.HasUserWith(user.ID(byUserId))).Exec(rCtx)
 		if err != nil {
 			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 		}
 
-		/*		err = tx.User.DeleteOneID(byUserId).Exec(rCtx)
-				if err != nil {
-					return sendClientError(ctx, http.StatusInternalServerError, err.Error())
-				}
-		*/
+		err = tx.User.DeleteOneID(byUserId).Exec(rCtx)
+		if err != nil {
+			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		}
+
 		return nil
 	}); err != nil {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
