@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/sky0621/cv-admin/src/ent/useractivity"
+
+	"github.com/sky0621/cv-admin/src/ent/userqualification"
+
 	"github.com/labstack/echo/v4"
 
 	"github.com/sky0621/cv-admin/src/ent"
@@ -36,8 +40,33 @@ func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 // DeleteUsersByUserId 指定ユーザー削除
 // (DELETE /users/{byUserId})
 func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId UserId) error {
-	err := s.dbClient.User.DeleteOneID(byUserId).Exec(ctx.Request().Context())
+	rCtx := ctx.Request().Context()
+
+	entUser, err := s.getUserByUserIdWithXXX(ctx, byUserId, func(q *ent.UserQuery) *ent.UserQuery {
+		return q.WithActivities().WithQualifications().WithCareerGroups()
+	})
 	if err != nil {
+		return err
+	}
+
+	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
+		_, err := tx.UserQualification.Delete().Where(userqualification.HasUserWith(user.ID(entUser.ID))).Exec(rCtx)
+		if err != nil {
+			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		}
+
+		_, err = tx.UserActivity.Delete().Where(useractivity.HasUserWith(user.ID(entUser.ID))).Exec(rCtx)
+		if err != nil {
+			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		}
+
+		/*		err = tx.User.DeleteOneID(byUserId).Exec(rCtx)
+				if err != nil {
+					return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+				}
+		*/
+		return nil
+	}); err != nil {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
