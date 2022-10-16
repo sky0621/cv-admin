@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/sky0621/cv-admin/src/ent/usercareer"
+
+	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
+
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
 
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
@@ -43,18 +47,41 @@ func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId UserId) erro
 	rCtx := ctx.Request().Context()
 
 	entUser, err := s.getUserByUserIdWithXXX(ctx, byUserId, func(q *ent.UserQuery) *ent.UserQuery {
-		return q.WithActivities().WithQualifications().WithCareerGroups()
+		return q.
+			WithNotes().
+			WithCareerGroups().
+			WithQualifications().
+			WithActivities()
 	})
 	if err != nil {
 		return err
 	}
 
+	// TODO: 直接 user_id 指定できるはず。。
+	careerGroups, err := s.dbClient.UserCareerGroup.Query().Where(usercareergroup.HasUserWith(user.ID(entUser.ID))).All(rCtx)
+	if err != nil {
+		return err
+	}
+
 	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
-		_, err := tx.UserQualification.Delete().Where(userqualification.HasUserWith(user.ID(entUser.ID))).Exec(rCtx)
+		_, err := tx.UserCareer.Delete().Where(usercareer.HasCareerGroupWith(usercareergroup.IDIn(helper.PickupUserCareerGroupIDs(careerGroups)...))).Exec(rCtx)
 		if err != nil {
 			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 		}
 
+		// TODO: 直接 user_id 指定できるはず。。
+		_, err = tx.UserCareerGroup.Delete().Where(usercareergroup.HasUserWith(user.ID(entUser.ID))).Exec(rCtx)
+		if err != nil {
+			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		}
+
+		// TODO: 直接 user_id 指定できるはず。。
+		_, err = tx.UserQualification.Delete().Where(userqualification.HasUserWith(user.ID(entUser.ID))).Exec(rCtx)
+		if err != nil {
+			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		}
+
+		// TODO: 直接 user_id 指定できるはず。。
 		_, err = tx.UserActivity.Delete().Where(useractivity.HasUserWith(user.ID(entUser.ID))).Exec(rCtx)
 		if err != nil {
 			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
