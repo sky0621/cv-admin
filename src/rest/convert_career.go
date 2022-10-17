@@ -95,3 +95,9 @@ func ToEntUserCareerCreate(u UserCareer, userCareerGroupID int, c *ent.UserCaree
 		SetFrom(u.From.ToEntUserCareerFrom()).
 		SetTo(u.To.ToEntUserCareerTo())
 }
+
+func ToEntUserCareerDescriptionCreate(description string, userCareerID int, c *ent.UserCareerDescriptionCreate) *ent.UserCareerDescriptionCreate {
+	return c.
+		SetCareerID(userCareerID).
+		SetDescription(description)
+}

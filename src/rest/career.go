@@ -43,7 +43,7 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 	var entUserCareerGroup *ent.UserCareerGroup
 	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
 		var err error
-		entUserCareerGroup, err = ToEntUserCareerGroupCreate(userCareerGroup, byUserId, s.dbClient.UserCareerGroup.Create()).Save(rCtx)
+		entUserCareerGroup, err = ToEntUserCareerGroupCreate(userCareerGroup, byUserId, tx.UserCareerGroup.Create()).Save(rCtx)
 		if err != nil {
 			return err
 		}
@@ -51,15 +51,28 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 		if userCareerGroup.Careers == nil {
 			return nil
 		}
-		var builders []*ent.UserCareerCreate
+
+		var entCareers []*ent.UserCareer
 		for _, career := range *userCareerGroup.Careers {
-			builders = append(builders, ToEntUserCareerCreate(career, entUserCareerGroup.ID, tx.UserCareer.Create()))
+			entCareer, err := ToEntUserCareerCreate(career, byUserId, tx.UserCareer.Create()).Save(rCtx)
+			if err != nil {
+				return err
+			}
+
+			var descriptionCreates []*ent.UserCareerDescriptionCreate
+			for _, description := range *career.Description {
+				descriptionCreates = append(descriptionCreates, ToEntUserCareerDescriptionCreate(description, entCareer.ID, tx.UserCareerDescription.Create()))
+			}
+			entDescriptions, err := tx.UserCareerDescription.CreateBulk(descriptionCreates...).Save(rCtx)
+			if err != nil {
+				return err
+			}
+
+			entCareer.Edges.CareerDescriptions = entDescriptions
+			entCareers = append(entCareers, entCareer)
 		}
-		userCareers, err := tx.UserCareer.CreateBulk(builders...).Save(rCtx)
-		if err != nil {
-			return err
-		}
-		entUserCareerGroup.Edges.Careers = userCareers
+
+		entUserCareerGroup.Edges.Careers = entCareers
 
 		return nil
 	}); err != nil {
@@ -72,17 +85,20 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 // キャリアグループ削除
 // (DELETE /users/{byUserId}/careergroups/{byCareerGroupId})
 func (s *ServerImpl) DeleteUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error {
+	// FIXME:
 	return ctx.String(http.StatusOK, "")
 }
 
 // キャリアグループ更新
 // (PUT /users/{byUserId}/careergroups/{byCareerGroupId})
 func (s *ServerImpl) PutUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error {
+	// FIXME:
 	return ctx.String(http.StatusOK, "")
 }
 
 // キャリアグループ内キャリア群最新化
 // (PUT /users/{byUserId}/careergroups/{byCareerGroupId}/careers)
 func (s *ServerImpl) PutUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error {
+	// FIXME:
 	return ctx.String(http.StatusOK, "")
 }
