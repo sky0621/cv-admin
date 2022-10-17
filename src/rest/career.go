@@ -3,6 +3,9 @@ package rest
 import (
 	"net/http"
 
+	"github.com/sky0621/cv-admin/src/ent/user"
+	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
+
 	"github.com/sky0621/cv-admin/src/ent/helper"
 
 	"github.com/sky0621/cv-admin/src/ent"
@@ -13,14 +16,14 @@ import (
 // GetUsersByUserIdCareergroups キャリアグループ群取得
 // (GET /users/{byUserId}/careergroups)
 func (s *ServerImpl) GetUsersByUserIdCareergroups(ctx echo.Context, byUserId UserId) error {
-	entUser, err := s.getUserByUserIdWithXXX(ctx, byUserId, func(q *ent.UserQuery) *ent.UserQuery {
-		return q.WithCareerGroups()
-	})
+	// TODO: 直接 user_id 指定できるはず。。
+	careerGroups, err := s.dbClient.UserCareerGroup.Query().
+		Where(usercareergroup.HasUserWith(user.ID(byUserId))).WithCareers().All(ctx.Request().Context())
 	if err != nil {
-		return err
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, ToSwaggerUserCareerGroups(entUser.Edges.CareerGroups))
+	return ctx.JSON(http.StatusOK, ToSwaggerUserCareerGroups(careerGroups))
 }
 
 // PostUsersByUserIdCareergroups キャリアグループ新規登録
