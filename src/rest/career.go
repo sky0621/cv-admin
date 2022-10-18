@@ -54,7 +54,7 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 
 		var entCareers []*ent.UserCareer
 		for _, career := range *userCareerGroup.Careers {
-			entCareer, err := ToEntUserCareerCreate(career, byUserId, tx.UserCareer.Create()).Save(rCtx)
+			entCareer, err := ToEntUserCareerCreate(career, entUserCareerGroup.ID, tx.UserCareer.Create()).Save(rCtx)
 			if err != nil {
 				return err
 			}
