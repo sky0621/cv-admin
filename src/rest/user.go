@@ -3,6 +3,7 @@ package rest
 import (
 	"errors"
 	"fmt"
+	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -41,32 +42,40 @@ func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 // (DELETE /users/{byUserId})
 func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId UserId) error {
 	rCtx := ctx.Request().Context()
-
-	// TODO: 直接 user_id 指定できるはず。。
-	careerGroups, err := s.dbClient.UserCareerGroup.Query().Where(usercareergroup.HasUserWith(user.ID(byUserId))).All(rCtx)
-	if err != nil {
-		return err
-	}
-
 	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
-		_, err := tx.UserCareer.Delete().Where(usercareer.HasCareerGroupWith(usercareergroup.IDIn(helper.PickupUserCareerGroupIDs(careerGroups)...))).Exec(rCtx)
+		// TODO: 直接 user_id 指定できるはず。。
+		careerGroups, err := tx.UserCareerGroup.Query().Where(usercareergroup.HasUserWith(user.ID(byUserId))).All(rCtx)
+		if err != nil {
+			return err
+		}
+		careerGroupIDs := helper.PickupUserCareerGroupIDs(careerGroups)
+
+		careers, err := tx.UserCareer.Query().Where(usercareer.HasCareerGroupWith(usercareergroup.IDIn(careerGroupIDs...))).All(rCtx)
+		if err != nil {
+			return err
+		}
+		careerIDs := helper.PickupUserCareerIDs(careers)
+
+		_, err = tx.UserCareerDescription.Delete().Where(usercareerdescription.HasCareerWith(usercareer.IDIn(careerIDs...))).Exec(rCtx)
 		if err != nil {
 			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 		}
 
-		// TODO: 直接 user_id 指定できるはず。。
+		_, err = tx.UserCareer.Delete().Where(usercareer.IDIn(careerIDs...)).Exec(rCtx)
+		if err != nil {
+			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		}
+
 		_, err = tx.UserCareerGroup.Delete().Where(usercareergroup.HasUserWith(user.ID(byUserId))).Exec(rCtx)
 		if err != nil {
 			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 		}
 
-		// TODO: 直接 user_id 指定できるはず。。
 		_, err = tx.UserQualification.Delete().Where(userqualification.HasUserWith(user.ID(byUserId))).Exec(rCtx)
 		if err != nil {
 			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 		}
 
-		// TODO: 直接 user_id 指定できるはず。。
 		_, err = tx.UserActivity.Delete().Where(useractivity.HasUserWith(user.ID(byUserId))).Exec(rCtx)
 		if err != nil {
 			return sendClientError(ctx, http.StatusInternalServerError, err.Error())

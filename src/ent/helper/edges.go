@@ -17,3 +17,11 @@ func PickupUserCareerGroupIDs(careerGroups []*ent.UserCareerGroup) []int {
 	}
 	return results
 }
+
+func PickupUserCareerIDs(careers []*ent.UserCareer) []int {
+	results := make([]int, len(careers))
+	for _, cg := range careers {
+		results = append(results, cg.ID)
+	}
+	return results
+}
