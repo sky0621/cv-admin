@@ -102,3 +102,18 @@ func (s *ServerImpl) PutUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx echo
 	// FIXME:
 	return ctx.String(http.StatusOK, "")
 }
+
+// CareerPeriod キャリアの開始・終了年月を束ねるためのマーカーインタフェース
+type CareerPeriod interface {
+	Set(year, month *int)
+}
+
+func (f *CareerPeriodFrom) Set(year, month *int) {
+	f.Year = year
+	f.Month = month
+}
+
+func (f *CareerPeriodTo) Set(year, month *int) {
+	f.Year = year
+	f.Month = month
+}

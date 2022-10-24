@@ -10,21 +10,41 @@ import (
 
 // TODO: goverter での置き換えを試す。
 
-func ToSwaggerUserCareerPeriodFrom(entFrom string) *CareerPeriodFrom {
-	// TODO: validation
+func toSwaggerUserCareerPeriod(entCareerPeriod string, careerPeriod CareerPeriod) CareerPeriod {
+	if len(entCareerPeriod) != 6 {
+		return nil
+	}
 
-	year, err := strconv.Atoi(entFrom[:4])
+	year, err := strconv.Atoi(entCareerPeriod[:4])
 	if err != nil {
 		panic(err) // MEMO: ありえないよう、DB格納時にチェック済み想定
 	}
-	month, err := strconv.Atoi(entFrom[4:])
+	month, err := strconv.Atoi(entCareerPeriod[4:])
 	if err != nil {
 		panic(err) // MEMO: ありえないよう、DB格納時にチェック済み想定
 	}
-	return &CareerPeriodFrom{
-		Year:  convert.ToPtr(year),
-		Month: convert.ToPtr(month),
+
+	careerPeriod.Set(convert.ToPtr(year), convert.ToPtr(month))
+	return careerPeriod
+}
+
+func ToSwaggerUserCareerPeriodFrom(entCareerPeriod string) *CareerPeriodFrom {
+	p := toSwaggerUserCareerPeriod(entCareerPeriod, &CareerPeriodFrom{})
+	if p == nil {
+		return nil
 	}
+	return p.(*CareerPeriodFrom)
+}
+
+func ToSwaggerUserCareerPeriodTo(entCareerPeriod *string) *CareerPeriodTo {
+	if entCareerPeriod == nil {
+		return nil
+	}
+	p := toSwaggerUserCareerPeriod(*entCareerPeriod, &CareerPeriodTo{})
+	if p == nil {
+		return nil
+	}
+	return p.(*CareerPeriodTo)
 }
 
 func ToSwaggerUserCareerDescription(entUserCareerDescription *ent.UserCareerDescription) string {
@@ -47,6 +67,7 @@ func ToSwaggerUserCareer(entCareer *ent.UserCareer) UserCareer {
 		Name:        &entCareer.Name,
 		Description: ToSwaggerUserCareerDescriptions(entCareer.Edges.CareerDescriptions),
 		From:        ToSwaggerUserCareerPeriodFrom(entCareer.From),
+		To:          ToSwaggerUserCareerPeriodTo(entCareer.To),
 	}
 }
 
