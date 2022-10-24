@@ -21,7 +21,7 @@ func (UserCareer) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").NotEmpty().Validate(maxRuneCount(100)),
 		field.String("from").NotEmpty().Validate(fixedRuneCount(6)),
-		field.String("to").NotEmpty().Validate(fixedRuneCount(6)),
+		field.String("to").Validate(fixedRuneCount(6)).Optional().Nillable(),
 	}
 }
 

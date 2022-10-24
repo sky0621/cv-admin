@@ -56,6 +56,20 @@ func (ucu *UserCareerUpdate) SetTo(s string) *UserCareerUpdate {
 	return ucu
 }
 
+// SetNillableTo sets the "to" field if the given value is not nil.
+func (ucu *UserCareerUpdate) SetNillableTo(s *string) *UserCareerUpdate {
+	if s != nil {
+		ucu.SetTo(*s)
+	}
+	return ucu
+}
+
+// ClearTo clears the value of the "to" field.
+func (ucu *UserCareerUpdate) ClearTo() *UserCareerUpdate {
+	ucu.mutation.ClearTo()
+	return ucu
+}
+
 // SetCareerGroupID sets the "careerGroup" edge to the UserCareerGroup entity by ID.
 func (ucu *UserCareerUpdate) SetCareerGroupID(id int) *UserCareerUpdate {
 	ucu.mutation.SetCareerGroupID(id)
@@ -324,6 +338,12 @@ func (ucu *UserCareerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: usercareer.FieldTo,
 		})
 	}
+	if ucu.mutation.ToCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: usercareer.FieldTo,
+		})
+	}
 	if ucu.mutation.CareerGroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -561,6 +581,20 @@ func (ucuo *UserCareerUpdateOne) SetFrom(s string) *UserCareerUpdateOne {
 // SetTo sets the "to" field.
 func (ucuo *UserCareerUpdateOne) SetTo(s string) *UserCareerUpdateOne {
 	ucuo.mutation.SetTo(s)
+	return ucuo
+}
+
+// SetNillableTo sets the "to" field if the given value is not nil.
+func (ucuo *UserCareerUpdateOne) SetNillableTo(s *string) *UserCareerUpdateOne {
+	if s != nil {
+		ucuo.SetTo(*s)
+	}
+	return ucuo
+}
+
+// ClearTo clears the value of the "to" field.
+func (ucuo *UserCareerUpdateOne) ClearTo() *UserCareerUpdateOne {
+	ucuo.mutation.ClearTo()
 	return ucuo
 }
 
@@ -859,6 +893,12 @@ func (ucuo *UserCareerUpdateOne) sqlSave(ctx context.Context) (_node *UserCareer
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
+			Column: usercareer.FieldTo,
+		})
+	}
+	if ucuo.mutation.ToCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
 			Column: usercareer.FieldTo,
 		})
 	}

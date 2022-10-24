@@ -72,6 +72,14 @@ func (ucc *UserCareerCreate) SetTo(s string) *UserCareerCreate {
 	return ucc
 }
 
+// SetNillableTo sets the "to" field if the given value is not nil.
+func (ucc *UserCareerCreate) SetNillableTo(s *string) *UserCareerCreate {
+	if s != nil {
+		ucc.SetTo(*s)
+	}
+	return ucc
+}
+
 // SetCareerGroupID sets the "careerGroup" edge to the UserCareerGroup entity by ID.
 func (ucc *UserCareerCreate) SetCareerGroupID(id int) *UserCareerCreate {
 	ucc.mutation.SetCareerGroupID(id)
@@ -239,9 +247,6 @@ func (ucc *UserCareerCreate) check() error {
 			return &ValidationError{Name: "from", err: fmt.Errorf(`ent: validator failed for field "UserCareer.from": %w`, err)}
 		}
 	}
-	if _, ok := ucc.mutation.To(); !ok {
-		return &ValidationError{Name: "to", err: errors.New(`ent: missing required field "UserCareer.to"`)}
-	}
 	if v, ok := ucc.mutation.To(); ok {
 		if err := usercareer.ToValidator(v); err != nil {
 			return &ValidationError{Name: "to", err: fmt.Errorf(`ent: validator failed for field "UserCareer.to": %w`, err)}
@@ -316,7 +321,7 @@ func (ucc *UserCareerCreate) createSpec() (*UserCareer, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: usercareer.FieldTo,
 		})
-		_node.To = value
+		_node.To = &value
 	}
 	if nodes := ucc.mutation.CareerGroupIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -495,6 +500,12 @@ func (u *UserCareerUpsert) UpdateTo() *UserCareerUpsert {
 	return u
 }
 
+// ClearTo clears the value of the "to" field.
+func (u *UserCareerUpsert) ClearTo() *UserCareerUpsert {
+	u.SetNull(usercareer.FieldTo)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -593,6 +604,13 @@ func (u *UserCareerUpsertOne) SetTo(v string) *UserCareerUpsertOne {
 func (u *UserCareerUpsertOne) UpdateTo() *UserCareerUpsertOne {
 	return u.Update(func(s *UserCareerUpsert) {
 		s.UpdateTo()
+	})
+}
+
+// ClearTo clears the value of the "to" field.
+func (u *UserCareerUpsertOne) ClearTo() *UserCareerUpsertOne {
+	return u.Update(func(s *UserCareerUpsert) {
+		s.ClearTo()
 	})
 }
 
@@ -856,6 +874,13 @@ func (u *UserCareerUpsertBulk) SetTo(v string) *UserCareerUpsertBulk {
 func (u *UserCareerUpsertBulk) UpdateTo() *UserCareerUpsertBulk {
 	return u.Update(func(s *UserCareerUpsert) {
 		s.UpdateTo()
+	})
+}
+
+// ClearTo clears the value of the "to" field.
+func (u *UserCareerUpsertBulk) ClearTo() *UserCareerUpsertBulk {
+	return u.Update(func(s *UserCareerUpsert) {
+		s.ClearTo()
 	})
 }
 

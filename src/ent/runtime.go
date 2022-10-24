@@ -311,21 +311,7 @@ func init() {
 	// usercareerDescTo is the schema descriptor for to field.
 	usercareerDescTo := usercareerFields[2].Descriptor()
 	// usercareer.ToValidator is a validator for the "to" field. It is called by the builders before save.
-	usercareer.ToValidator = func() func(string) error {
-		validators := usercareerDescTo.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(to string) error {
-			for _, fn := range fns {
-				if err := fn(to); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	usercareer.ToValidator = usercareerDescTo.Validators[0].(func(string) error)
 	usercareerdescriptionFields := schema.UserCareerDescription{}.Fields()
 	_ = usercareerdescriptionFields
 	// usercareerdescriptionDescDescription is the schema descriptor for description field.

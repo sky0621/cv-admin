@@ -148,7 +148,7 @@ var (
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
 		{Name: "from", Type: field.TypeString},
-		{Name: "to", Type: field.TypeString},
+		{Name: "to", Type: field.TypeString, Nullable: true},
 		{Name: "career_group_id", Type: field.TypeInt},
 	}
 	// UserCareersTable holds the schema information for the "user_careers" table.

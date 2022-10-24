@@ -527,6 +527,20 @@ func ToHasSuffix(v string) predicate.UserCareer {
 	})
 }
 
+// ToIsNil applies the IsNil predicate on the "to" field.
+func ToIsNil() predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldTo)))
+	})
+}
+
+// ToNotNil applies the NotNil predicate on the "to" field.
+func ToNotNil() predicate.UserCareer {
+	return predicate.UserCareer(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldTo)))
+	})
+}
+
 // ToEqualFold applies the EqualFold predicate on the "to" field.
 func ToEqualFold(v string) predicate.UserCareer {
 	return predicate.UserCareer(func(s *sql.Selector) {

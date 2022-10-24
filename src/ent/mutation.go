@@ -4519,7 +4519,7 @@ func (m *UserCareerMutation) To() (r string, exists bool) {
 // OldTo returns the old "to" field's value of the UserCareer entity.
 // If the UserCareer object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserCareerMutation) OldTo(ctx context.Context) (v string, err error) {
+func (m *UserCareerMutation) OldTo(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTo is only allowed on UpdateOne operations")
 	}
@@ -4533,9 +4533,22 @@ func (m *UserCareerMutation) OldTo(ctx context.Context) (v string, err error) {
 	return oldValue.To, nil
 }
 
+// ClearTo clears the value of the "to" field.
+func (m *UserCareerMutation) ClearTo() {
+	m.to = nil
+	m.clearedFields[usercareer.FieldTo] = struct{}{}
+}
+
+// ToCleared returns if the "to" field was cleared in this mutation.
+func (m *UserCareerMutation) ToCleared() bool {
+	_, ok := m.clearedFields[usercareer.FieldTo]
+	return ok
+}
+
 // ResetTo resets all changes to the "to" field.
 func (m *UserCareerMutation) ResetTo() {
 	m.to = nil
+	delete(m.clearedFields, usercareer.FieldTo)
 }
 
 // SetCareerGroupID sets the "careerGroup" edge to the UserCareerGroup entity by id.
@@ -4884,7 +4897,11 @@ func (m *UserCareerMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserCareerMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(usercareer.FieldTo) {
+		fields = append(fields, usercareer.FieldTo)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -4897,6 +4914,11 @@ func (m *UserCareerMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserCareerMutation) ClearField(name string) error {
+	switch name {
+	case usercareer.FieldTo:
+		m.ClearTo()
+		return nil
+	}
 	return fmt.Errorf("unknown UserCareer nullable field %s", name)
 }
 

@@ -26,7 +26,7 @@ type UserCareer struct {
 	// From holds the value of the "from" field.
 	From string `json:"from,omitempty"`
 	// To holds the value of the "to" field.
-	To string `json:"to,omitempty"`
+	To *string `json:"to,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserCareerQuery when eager-loading is set.
 	Edges           UserCareerEdges `json:"edges"`
@@ -150,7 +150,8 @@ func (uc *UserCareer) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field to", values[i])
 			} else if value.Valid {
-				uc.To = value.String
+				uc.To = new(string)
+				*uc.To = value.String
 			}
 		case usercareer.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -219,8 +220,10 @@ func (uc *UserCareer) String() string {
 	builder.WriteString("from=")
 	builder.WriteString(uc.From)
 	builder.WriteString(", ")
-	builder.WriteString("to=")
-	builder.WriteString(uc.To)
+	if v := uc.To; v != nil {
+		builder.WriteString("to=")
+		builder.WriteString(*v)
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }
