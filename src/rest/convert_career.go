@@ -122,3 +122,9 @@ func ToEntUserCareerDescriptionCreate(description string, userCareerID int, c *e
 		SetCareerID(userCareerID).
 		SetDescription(description)
 }
+
+func ToEntUserCareerSkillGroup(u CareerSkillGroup, userCareerID int, c *ent.CareerSkillGroupCreate) *ent.CareerSkillGroupCreate {
+	return c.
+		SetCareerID(userCareerID).
+		SetLabel(*u.Label)
+}

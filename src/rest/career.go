@@ -73,6 +73,24 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 			}
 
 			entCareer.Edges.CareerDescriptions = entDescriptions
+
+			// TODO: SQL発行回数削減
+			for _, skillGroup := range *career.SkillGroups {
+				entCareerSkillGroup, err := ToEntUserCareerSkillGroup(skillGroup, entCareer.ID, tx.CareerSkillGroup.Create()).Save(rCtx)
+				if err != nil {
+					return err
+				}
+
+				if skillGroup.Skills != nil {
+					// TODO: SQL発行回数削減
+					for _, skill := range *skillGroup.Skills {
+
+					}
+				}
+			}
+
+			entCareer.Edges.CareerSkillGroups = entSkillGroups
+
 			entCareers = append(entCareers, entCareer)
 		}
 

@@ -673,6 +673,7 @@ components:
         version:
           $ref: "#/components/schemas/SkillVersion"
     CareerSkills:
+      type: array
       description: "１キャリアのスキル群"
       items:
         $ref: "#/components/schemas/CareerSkill"
@@ -691,6 +692,7 @@ components:
         skills:
           $ref: "#/components/schemas/CareerSkills"
     CareerSkillGroups:
+      type: array
       description: "１キャリアのスキルグループ群"
       items:
         $ref: "#/components/schemas/CareerSkillGroup"
