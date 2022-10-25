@@ -128,3 +128,11 @@ func ToEntUserCareerSkillGroup(u CareerSkillGroup, userCareerID int, c *ent.Care
 		SetCareerID(userCareerID).
 		SetLabel(*u.Label)
 }
+
+func ToEntUserCareerSkill(u CareerSkill, careerSkillGroupID int, c *ent.CareerSkillCreate) *ent.CareerSkillCreate {
+	return c.
+		SetCareerSkillGroupID(careerSkillGroupID).
+		SetName(*u.Name).
+		SetNillableURL(u.Url).
+		SetNillableVersion(u.Version)
+}

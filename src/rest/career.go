@@ -47,6 +47,9 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 	var entUserCareerGroup *ent.UserCareerGroup
 	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
 		var err error
+		/*
+		 * キャリアグループ本体の登録
+		 */
 		entUserCareerGroup, err = ToEntUserCareerGroupCreate(userCareerGroup, byUserId, tx.UserCareerGroup.Create()).Save(rCtx)
 		if err != nil {
 			return err
@@ -57,39 +60,67 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 		}
 
 		var entCareers []*ent.UserCareer
+		/*
+		 * キャリアグループ配下のキャリア群
+		 */
 		for _, career := range *userCareerGroup.Careers {
+			/*
+			 * キャリア本体の登録
+			 */
 			entCareer, err := ToEntUserCareerCreate(career, entUserCareerGroup.ID, tx.UserCareer.Create()).Save(rCtx)
 			if err != nil {
 				return err
 			}
 
-			var descriptionCreates []*ent.UserCareerDescriptionCreate
-			for _, description := range *career.Description {
-				descriptionCreates = append(descriptionCreates, ToEntUserCareerDescriptionCreate(description, entCareer.ID, tx.UserCareerDescription.Create()))
-			}
-			entDescriptions, err := tx.UserCareerDescription.CreateBulk(descriptionCreates...).Save(rCtx)
-			if err != nil {
-				return err
-			}
-
-			entCareer.Edges.CareerDescriptions = entDescriptions
-
-			// TODO: SQL発行回数削減
-			for _, skillGroup := range *career.SkillGroups {
-				entCareerSkillGroup, err := ToEntUserCareerSkillGroup(skillGroup, entCareer.ID, tx.CareerSkillGroup.Create()).Save(rCtx)
+			/*
+			 * キャリア説明群の登録
+			 */
+			if career.Description != nil {
+				var descriptionCreates []*ent.UserCareerDescriptionCreate
+				for _, description := range *career.Description {
+					descriptionCreates = append(descriptionCreates, ToEntUserCareerDescriptionCreate(description, entCareer.ID, tx.UserCareerDescription.Create()))
+				}
+				entDescriptions, err := tx.UserCareerDescription.CreateBulk(descriptionCreates...).Save(rCtx)
 				if err != nil {
 					return err
 				}
 
-				if skillGroup.Skills != nil {
-					// TODO: SQL発行回数削減
-					for _, skill := range *skillGroup.Skills {
-
-					}
-				}
+				entCareer.Edges.CareerDescriptions = entDescriptions
 			}
 
-			entCareer.Edges.CareerSkillGroups = entSkillGroups
+			/*
+			 * キャリア配下のスキルグループ群
+			 */
+			if career.SkillGroups != nil {
+				var careerSkillGroups []*ent.CareerSkillGroup
+				for _, skillGroup := range *career.SkillGroups {
+					/*
+					 * スキルグループ本体の登録
+					 */
+					entCareerSkillGroup, err := ToEntUserCareerSkillGroup(skillGroup, entCareer.ID, tx.CareerSkillGroup.Create()).Save(rCtx)
+					if err != nil {
+						return err
+					}
+
+					/*
+					 * スキルグループ配下のスキル群の登録
+					 */
+					if skillGroup.Skills != nil {
+						var careerSkillCreates []*ent.CareerSkillCreate
+						for _, skill := range *skillGroup.Skills {
+							careerSkillCreates = append(careerSkillCreates, ToEntUserCareerSkill(skill, entCareerSkillGroup.ID, tx.CareerSkill.Create()))
+						}
+						careerSkills, err := tx.CareerSkill.CreateBulk(careerSkillCreates...).Save(rCtx)
+						if err != nil {
+							return err
+						}
+
+						entCareerSkillGroup.Edges.CareerSkills = careerSkills
+					}
+					careerSkillGroups = append(careerSkillGroups, entCareerSkillGroup)
+				}
+				entCareer.Edges.CareerSkillGroups = careerSkillGroups
+			}
 
 			entCareers = append(entCareers, entCareer)
 		}
