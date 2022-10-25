@@ -18,7 +18,11 @@ import (
 func (s *ServerImpl) GetUsersByUserIdCareergroups(ctx echo.Context, byUserId UserId) error {
 	// TODO: 直接 user_id 指定できるはず。。
 	careerGroups, err := s.dbClient.UserCareerGroup.Query().
-		Where(usercareergroup.HasUserWith(user.ID(byUserId))).WithCareers().All(ctx.Request().Context())
+		Where(usercareergroup.HasUserWith(user.ID(byUserId))).WithCareers(func(q *ent.UserCareerQuery) {
+		q.WithCareerDescriptions()
+		q.WithCareerSkillGroups()
+		q.WithCareerTasks()
+	}).All(ctx.Request().Context())
 	if err != nil {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}

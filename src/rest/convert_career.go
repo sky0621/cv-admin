@@ -52,7 +52,7 @@ func ToSwaggerUserCareerDescription(entUserCareerDescription *ent.UserCareerDesc
 }
 
 func ToSwaggerUserCareerDescriptions(entUserCareerDescriptions []*ent.UserCareerDescription) *CareerDescriptions {
-	careerDescriptions := make([]string, len(entUserCareerDescriptions))
+	var careerDescriptions []string
 	for _, entUserCareerDescription := range entUserCareerDescriptions {
 		careerDescriptions = append(careerDescriptions, ToSwaggerUserCareerDescription(entUserCareerDescription))
 	}
