@@ -95,7 +95,7 @@ func ToSwaggerUserCareer(entCareer *ent.UserCareer) UserCareer {
 func ToSwaggerUserCareerGroup(entCareerGroup *ent.UserCareerGroup) UserCareerGroup {
 	careerGroup := UserCareerGroup{}
 	careerGroup.Label = &entCareerGroup.Label
-	careerGroup.Careers = &UserCareers{}
+	careerGroup.Careers = &[]UserCareer{}
 	for _, entCareer := range entCareerGroup.Edges.Careers {
 		*careerGroup.Careers = append(*careerGroup.Careers, ToSwaggerUserCareer(entCareer))
 	}

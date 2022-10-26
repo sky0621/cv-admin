@@ -26,7 +26,6 @@ paths:
       summary: "ユーザーアカウント登録"
       description: "ユーザーアカウントを登録する。"
       tags: ["users"]
-      deprecated: false
       requestBody:
         required: true
         content:
@@ -46,7 +45,6 @@ paths:
       summary: "指定ユーザーアカウント削除"
       description: "指定ユーザーアカウントを削除する。"
       tags: ["users"]
-      deprecated: false
       responses:
         "204":
           description: "No Content: 指定ユーザーアカウントの削除に成功。"
@@ -60,7 +58,6 @@ paths:
       summary: "属性更新"
       description: "指定ユーザーの属性を更新する。"
       tags: ["users"]
-      deprecated: false
       requestBody:
         description: "属性"
         required: true
@@ -79,7 +76,6 @@ paths:
       summary: "属性取得"
       description: "指定ユーザーの属性を取得する。"
       tags: ["users"]
-      deprecated: false
       responses:
         "200":
           $ref: "#/components/responses/200-OK-UserAttribute"
@@ -93,7 +89,6 @@ paths:
       summary: "アクティビティ群最新化"
       description: "指定ユーザーのアクティビティ群を最新化（総洗い替え）する。"
       tags: ["users"]
-      deprecated: false
       requestBody:
         description: "アクティビティ群"
         required: true
@@ -112,7 +107,6 @@ paths:
       summary: "アクティビティ群取得"
       description: "指定ユーザーのアクティビティ群を取得する。"
       tags: ["users"]
-      deprecated: false
       responses:
         "200":
           $ref: "#/components/responses/200-OK-UserActivities"
@@ -126,7 +120,6 @@ paths:
       summary: "資格情報群最新化"
       description: "指定ユーザーの資格情報群を最新化（総洗い替え）する。"
       tags: ["users"]
-      deprecated: false
       requestBody:
         description: "資格情報群"
         required: true
@@ -145,7 +138,6 @@ paths:
       summary: "資格情報群取得"
       description: "指定ユーザーの資格情報群を取得する。"
       tags: ["users"]
-      deprecated: false
       responses:
         "200":
           $ref: "#/components/responses/200-OK-UserQualifications"
@@ -159,7 +151,6 @@ paths:
       summary: "キャリアグループ新規登録"
       description: "キャリアグループを新規登録する。"
       tags: ["users"]
-      deprecated: false
       requestBody:
         required: true
         content:
@@ -177,7 +168,6 @@ paths:
       summary: "キャリアグループ群取得"
       description: "指定ユーザーのキャリアグループ群を取得する。"
       tags: ["users"]
-      deprecated: false
       responses:
         "200":
           $ref: "#/components/responses/200-OK-UserCareerGroups"
@@ -192,7 +182,6 @@ paths:
       summary: "キャリアグループ更新"
       description: "１キャリアグループを更新する。"
       tags: ["users"]
-      deprecated: false
       requestBody:
         required: true
         content:
@@ -210,7 +199,6 @@ paths:
       summary: "キャリアグループ削除"
       description: "１キャリアグループを削除する。"
       tags: ["users"]
-      deprecated: false
       responses:
         "204":
           description: "No Content: 指定キャリアグループの削除に成功。"
@@ -225,13 +213,15 @@ paths:
       summary: "キャリアグループ内キャリア群最新化"
       description: "１キャリアグループ内のキャリア群を最新化（総洗い替え）する。"
       tags: ["users"]
-      deprecated: false
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserCareers"
+              type: array
+              description: "１ユーザーのキャリアグループのキャリア群"
+              items:
+                $ref: "#/components/schemas/UserCareer"
       responses:
         "200":
           $ref: "#/components/responses/200-OK-UserCareers"
@@ -247,7 +237,6 @@ paths:
       summary: "注釈新規登録"
       description: "注釈を新規登録する。"
       tags: ["users"]
-      deprecated: false
       requestBody:
         required: true
         content:
@@ -265,7 +254,6 @@ paths:
       summary: "注釈群取得"
       description: "指定ユーザーの注釈群を取得する。"
       tags: ["users"]
-      deprecated: false
       responses:
         "200":
           $ref: "#/components/responses/200-OK-UserNotes"
@@ -280,7 +268,6 @@ paths:
       summary: "注釈更新"
       description: "１注釈を更新する。"
       tags: ["users"]
-      deprecated: false
       requestBody:
         required: true
         content:
@@ -298,7 +285,6 @@ paths:
       summary: "注釈削除"
       description: "１注釈を削除する。"
       tags: ["users"]
-      deprecated: false
       responses:
         "204":
           description: "No Content: 指定注釈の削除に成功。"
@@ -313,7 +299,6 @@ paths:
       summary: "注釈内要素群最新化"
       description: "１注釈内の要素群を最新化（総洗い替え）する。"
       tags: ["users"]
-      deprecated: false
       requestBody:
         required: true
         content:
@@ -334,14 +319,10 @@ components:
       type: integer
       format: int
       description: "ユーザーを一意に識別するキー"
-      nullable: false
-      deprecated: false
       example: 1
     UserName:
       type: string
       description: "ユーザーの本名"
-      nullable: false
-      deprecated: false
       example: "山田太郎"
       minLength: 1
       maxLength: 100
@@ -349,7 +330,6 @@ components:
       type: string
       description: "ユーザーのニックネーム"
       nullable: true
-      deprecated: false
       example: "ドカベン"
       minLength: 0
       maxLength: 100
@@ -358,7 +338,6 @@ components:
       format: uri
       description: "URL"
       nullable: true
-      deprecated: false
       example: "https:/example.com/205e460b479e2e2248aec07710c08d50"
       minLength: 0
       maxLength: 4096
@@ -366,8 +345,6 @@ components:
       type: integer
       format: int
       description: "生年月日の「年」"
-      nullable: false
-      deprecated: false
       example: 2022
       minimum: 1900
       maximum: 9999
@@ -375,8 +352,6 @@ components:
       type: integer
       format: int
       description: "生年月日の「月」"
-      nullable: false
-      deprecated: false
       example: 9
       minimum: 1
       maximum: 12
@@ -384,16 +359,12 @@ components:
       type: integer
       format: int
       description: "生年月日の「日」"
-      nullable: false
-      deprecated: false
       example: 10
       minimum: 1
       maximum: 31
     BirthDay:
       type: object
       description: "生年月日"
-      nullable: false
-      deprecated: false
       example: "{year: 2022, month: 9, day:10}"
       properties:
         year:
@@ -406,28 +377,23 @@ components:
       type: string
       description: "職業"
       nullable: true
-      deprecated: false
       example: "エンジニア"
       maxLength: 400
     BelongTo:
       type: string
       description: "所属"
       nullable: true
-      deprecated: false
       example: "フリー"
       maxLength: 400
     PR:
       type: string
       description: "PR"
       nullable: true
-      deprecated: false
       example: "私は20年以上のキャリアを持ち、〜〜"
       maxLength: 4000
     ActivityName:
       type: string
       description: "アクティビティ名"
-      nullable: false
-      deprecated: false
       example: "GitHub"
       minLength: 1
       maxLength: 80
@@ -435,14 +401,11 @@ components:
       type: string
       description: "アクティビティアイコン"
       nullable: true
-      deprecated: false
       example: "github"
       maxLength: 40
     QualificationName:
       type: string
       description: "資格名"
-      nullable: false
-      deprecated: false
       example: "Oracle Master"
       minLength: 1
       maxLength: 80
@@ -450,7 +413,6 @@ components:
       type: string
       description: "組織名"
       nullable: true
-      deprecated: false
       example: "Oracle"
       maxLength: 80
     QualificationGotDate:
@@ -458,20 +420,16 @@ components:
       format: date
       description: "取得日"
       nullable: true
-      deprecated: false
       example: "2022-09-10"
     QualificationMemo:
       type: string
       description: "メモ"
       nullable: true
-      deprecated: false
       example: "期限切れ"
       maxLength: 400
     CareerName:
       type: string
       description: "キャリア名"
-      nullable: false
-      deprecated: false
       example: "物流システム開発"
       minLength: 1
       maxLength: 100
@@ -479,22 +437,17 @@ components:
       type: array
       description: "キャリア説明"
       nullable: true
-      deprecated: false
       example: "['物流システムを新規開発する。']"
       maxLength: 400
       items:
         type: string
         description: "キャリア説明１文"
-        nullable: false
-        deprecated: false
         example: "物流システムを新規開発する。"
         minLength: 1
         maxLength: 80
     CareerPeriodFrom:
       type: object
       description: "キャリア期間年月From"
-      nullable: false
-      deprecated: false
       example: "{year: 2021, month: 9}"
       properties:
         year:
@@ -505,7 +458,6 @@ components:
       type: object
       description: "キャリア期間年月To"
       nullable: true
-      deprecated: false
       example: "{year: 2022, month: 10}"
       properties:
         year:
@@ -515,16 +467,12 @@ components:
     CareerGroupLabel:
       type: string
       description: "キャリアグループラベル"
-      nullable: false
-      deprecated: false
       example: "某コンサルティング会社にて就労"
       minLength: 1
       maxLength: 100
     TaskName:
       type: string
       description: "タスク名"
-      nullable: false
-      deprecated: false
       example: "バックエンドの機能拡張、不具合改修。"
       minLength: 1
       maxLength: 100
@@ -532,22 +480,17 @@ components:
       type: array
       description: "タスク説明"
       nullable: true
-      deprecated: false
       example: "['・分析APIのベース開発', '・各種バッチ開発']"
       maxLength: 400
       items:
         type: string
         description: "タスク説明１文"
-        nullable: false
-        deprecated: false
         example: "・分析APIのベース開発"
         minLength: 1
         maxLength: 80
     SkillName:
       type: string
       description: "スキル名"
-      nullable: false
-      deprecated: false
       example: "Golang"
       minLength: 1
       maxLength: 100
@@ -555,36 +498,28 @@ components:
       type: string
       description: "スキルバージョン"
       nullable: true
-      deprecated: false
       example: "v1.19"
       maxLength: 40
     SkillGroupLabel:
       type: string
       description: "スキルグループラベル"
       nullable: true
-      deprecated: false
       example: "Backend"
       maxLength: 100
     NoteId:
       type: integer
       format: int
       description: "注釈を一意に識別するID"
-      nullable: false
-      deprecated: false
       example: 1
     NoteItemText:
       type: string
       description: "注釈内の１要素"
-      nullable: false
-      deprecated: false
       example: "GraphQLを使っている"
       minLength: 1
       maxLength: 400
     NoteLabel:
       type: string
       description: "ラベル"
-      nullable: false
-      deprecated: false
       example: "就労条件"
       minLength: 1
       maxLength: 80
@@ -592,7 +527,6 @@ components:
       type: string
       description: "メモ"
       nullable: true
-      deprecated: false
       example: "以下、順不同。"
       maxLength: 400
     UserAttribute:
@@ -681,23 +615,14 @@ components:
       type: integer
       format: int
       description: "キャリアグループを一意に識別するID"
-      nullable: false
-      deprecated: false
       example: 1
     CareerSkillGroup:
       type: object
-      nullable: false
-      deprecated: false
       properties:
         label:
           $ref: "#/components/schemas/SkillGroupLabel"
         skills:
           $ref: "#/components/schemas/CareerSkills"
-    CareerSkillGroups:
-      type: array
-      description: "１キャリアのスキルグループ群"
-      items:
-        $ref: "#/components/schemas/CareerSkillGroup"
     UserCareer:
       type: object
       description: "１キャリアグループのキャリア"
@@ -715,15 +640,8 @@ components:
         skillGroups:
           type: array
           description: "１キャリアのスキルグループ群"
-          nullable: false
-          deprecated: false
           items:
             $ref: "#/components/schemas/CareerSkillGroup"
-    UserCareers:
-      type: array
-      description: "１ユーザーのキャリアグループのキャリア群"
-      items:
-        $ref: "#/components/schemas/UserCareer"
     UserCareerGroup:
       type: object
       description: "１ユーザーのキャリアグループ"
@@ -731,7 +649,10 @@ components:
         label:
           $ref: "#/components/schemas/CareerGroupLabel"
         careers:
-          $ref: "#/components/schemas/UserCareers"
+          type: array
+          description: "１ユーザーのキャリアグループのキャリア群"
+          items:
+            $ref: "#/components/schemas/UserCareer"
     UserCareerGroups:
       type: array
       description: "１ユーザーのキャリアグループ群"
@@ -780,8 +701,6 @@ components:
     ErrorMessage:
       type: string
       description: "エラーメッセージ"
-      nullable: false
-      deprecated: false
       example: "xxxx"
       minLength: 1
       maxLength: 80
@@ -846,7 +765,10 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/UserCareers"
+            type: array
+            description: "１ユーザーのキャリアグループのキャリア群"
+            items:
+              $ref: "#/components/schemas/UserCareer"
     200-OK-UserCareerGroups:
       description: "OK: 指定ユーザーのキャリアグループ群を返却する。"
       content:
