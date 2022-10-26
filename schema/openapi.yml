@@ -686,6 +686,8 @@ components:
       example: 1
     CareerSkillGroup:
       type: object
+      nullable: false
+      deprecated: false
       properties:
         label:
           $ref: "#/components/schemas/SkillGroupLabel"
@@ -711,7 +713,12 @@ components:
         tasks:
           $ref: "#/components/schemas/CareerTasks"
         skillGroups:
-          $ref: "#/components/schemas/CareerSkillGroups"
+          type: array
+          description: "１キャリアのスキルグループ群"
+          nullable: false
+          deprecated: false
+          items:
+            $ref: "#/components/schemas/CareerSkillGroup"
     UserCareers:
       type: array
       description: "１ユーザーのキャリアグループのキャリア群"
