@@ -324,44 +324,30 @@ components:
       type: string
       description: "ユーザーの本名"
       example: "山田太郎"
-      minLength: 1
-      maxLength: 100
     UserNickName:
       type: string
       description: "ユーザーのニックネーム"
-      nullable: true
       example: "ドカベン"
-      minLength: 0
-      maxLength: 100
     Url:
       type: string
       format: uri
       description: "URL"
-      nullable: true
       example: "https:/example.com/205e460b479e2e2248aec07710c08d50"
-      minLength: 0
-      maxLength: 4096
     Year:
       type: integer
       format: int
       description: "生年月日の「年」"
       example: 2022
-      minimum: 1900
-      maximum: 9999
     Month:
       type: integer
       format: int
       description: "生年月日の「月」"
       example: 9
-      minimum: 1
-      maximum: 12
     Day:
       type: integer
       format: int
       description: "生年月日の「日」"
       example: 10
-      minimum: 1
-      maximum: 31
     BirthDay:
       type: object
       description: "生年月日"
@@ -376,75 +362,52 @@ components:
     Job:
       type: string
       description: "職業"
-      nullable: true
       example: "エンジニア"
-      maxLength: 400
     BelongTo:
       type: string
       description: "所属"
-      nullable: true
       example: "フリー"
-      maxLength: 400
     PR:
       type: string
       description: "PR"
-      nullable: true
       example: "私は20年以上のキャリアを持ち、〜〜"
-      maxLength: 4000
     ActivityName:
       type: string
       description: "アクティビティ名"
       example: "GitHub"
-      minLength: 1
-      maxLength: 80
     ActivityIcon:
       type: string
       description: "アクティビティアイコン"
-      nullable: true
       example: "github"
-      maxLength: 40
     QualificationName:
       type: string
       description: "資格名"
       example: "Oracle Master"
-      minLength: 1
-      maxLength: 80
     QualificationOrg:
       type: string
       description: "組織名"
-      nullable: true
       example: "Oracle"
-      maxLength: 80
     QualificationGotDate:
       type: string
       format: date
       description: "取得日"
-      nullable: true
       example: "2022-09-10"
     QualificationMemo:
       type: string
       description: "メモ"
-      nullable: true
       example: "期限切れ"
-      maxLength: 400
     CareerName:
       type: string
       description: "キャリア名"
       example: "物流システム開発"
-      minLength: 1
-      maxLength: 100
     CareerDescriptions:
       type: array
       description: "キャリア説明"
-      nullable: true
       example: "['物流システムを新規開発する。']"
-      maxLength: 400
       items:
         type: string
         description: "キャリア説明１文"
         example: "物流システムを新規開発する。"
-        minLength: 1
-        maxLength: 80
     CareerPeriodFrom:
       type: object
       description: "キャリア期間年月From"
@@ -457,7 +420,6 @@ components:
     CareerPeriodTo:
       type: object
       description: "キャリア期間年月To"
-      nullable: true
       example: "{year: 2022, month: 10}"
       properties:
         year:
@@ -468,44 +430,30 @@ components:
       type: string
       description: "キャリアグループラベル"
       example: "某コンサルティング会社にて就労"
-      minLength: 1
-      maxLength: 100
     TaskName:
       type: string
       description: "タスク名"
       example: "バックエンドの機能拡張、不具合改修。"
-      minLength: 1
-      maxLength: 100
     TaskDescriptions:
       type: array
       description: "タスク説明"
-      nullable: true
       example: "['・分析APIのベース開発', '・各種バッチ開発']"
-      maxLength: 400
       items:
         type: string
         description: "タスク説明１文"
         example: "・分析APIのベース開発"
-        minLength: 1
-        maxLength: 80
     SkillName:
       type: string
       description: "スキル名"
       example: "Golang"
-      minLength: 1
-      maxLength: 100
     SkillVersion:
       type: string
       description: "スキルバージョン"
-      nullable: true
       example: "v1.19"
-      maxLength: 40
     SkillGroupLabel:
       type: string
       description: "スキルグループラベル"
-      nullable: true
       example: "Backend"
-      maxLength: 100
     NoteId:
       type: integer
       format: int
@@ -515,20 +463,14 @@ components:
       type: string
       description: "注釈内の１要素"
       example: "GraphQLを使っている"
-      minLength: 1
-      maxLength: 400
     NoteLabel:
       type: string
       description: "ラベル"
       example: "就労条件"
-      minLength: 1
-      maxLength: 80
     NoteMemo:
       type: string
       description: "メモ"
-      nullable: true
       example: "以下、順不同。"
-      maxLength: 400
     UserAttribute:
       type: object
       description: "１ユーザーの属性"
