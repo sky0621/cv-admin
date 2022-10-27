@@ -102,8 +102,8 @@ func ToSwaggerUserCareerGroup(entCareerGroup *ent.UserCareerGroup) UserCareerGro
 	return careerGroup
 }
 
-func ToSwaggerUserCareerGroups(entCareerGroups ent.UserCareerGroups) UserCareerGroups {
-	var careerGroups UserCareerGroups
+func ToSwaggerUserCareerGroups(entCareerGroups ent.UserCareerGroups) []UserCareerGroup {
+	var careerGroups []UserCareerGroup
 	for _, entCareerGroup := range entCareerGroups {
 		careerGroups = append(careerGroups, ToSwaggerUserCareerGroup(entCareerGroup))
 	}

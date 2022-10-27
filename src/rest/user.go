@@ -3,6 +3,8 @@ package rest
 import (
 	"errors"
 	"fmt"
+	"github.com/sky0621/cv-admin/src/ent/careerskill"
+	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
 	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"net/http"
 
@@ -55,6 +57,22 @@ func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId UserId) erro
 			return err
 		}
 		careerIDs := helper.PickupUserCareerIDs(careers)
+
+		skillGroups, err := tx.CareerSkillGroup.Query().Where(careerskillgroup.HasCareerWith(usercareer.IDIn(careerIDs...))).All(rCtx)
+		if err != nil {
+			return err
+		}
+		skillGroupIDs := helper.PickupCareerSkillGroupIDs(skillGroups)
+
+		_, err = tx.CareerSkill.Delete().Where(careerskill.HasCareerSkillGroupWith(careerskillgroup.IDIn(skillGroupIDs...))).Exec(rCtx)
+		if err != nil {
+			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		}
+
+		_, err = tx.CareerSkillGroup.Delete().Where(careerskillgroup.IDIn(skillGroupIDs...)).Exec(rCtx)
+		if err != nil {
+			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		}
 
 		_, err = tx.UserCareerDescription.Delete().Where(usercareerdescription.HasCareerWith(usercareer.IDIn(careerIDs...))).Exec(rCtx)
 		if err != nil {

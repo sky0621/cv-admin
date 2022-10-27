@@ -310,7 +310,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserNoteItems"
+              type: array
+              items:
+               $ref: "#/components/schemas/UserNoteItem"
       responses:
         "200":
           $ref: "#/components/responses/200-OK-UserNoteItems"
@@ -406,6 +408,14 @@ components:
       type: string
       description: "キャリア名"
       example: "物流システム開発"
+    CareerDescription:
+      type: array
+      description: "キャリア説明"
+      example: "['静的サイトのリニューアル', '動画配信サイト構築']"
+      items:
+        type: string
+        description: "キャリア説明１文"
+        example: "静的サイトのリニューアル"
     CareerPeriodFrom:
       type: object
       description: "キャリア期間年月From"
@@ -538,12 +548,12 @@ components:
       example: 1
     CareerSkillGroup:
       type: object
+      description: "１キャリアのスキルグループ"
       properties:
         label:
           $ref: "#/components/schemas/SkillGroupLabel"
         skills:
           type: array
-          description: "１キャリアのスキル群"
           items:
             $ref: "#/components/schemas/CareerSkill"
     UserCareer:
@@ -553,13 +563,7 @@ components:
         name:
           $ref: "#/components/schemas/CareerName"
         description:
-          type: array
-          description: "キャリア説明"
-          example: "['物流システムを新規開発する。']"
-          items:
-            type: string
-            description: "キャリア説明１文"
-            example: "物流システムを新規開発する。"
+          $ref: "#/components/schemas/CareerDescription"
         from:
           $ref: "#/components/schemas/CareerPeriodFrom"
         to:
@@ -585,11 +589,6 @@ components:
           description: "１ユーザーのキャリアグループのキャリア群"
           items:
             $ref: "#/components/schemas/UserCareer"
-    UserCareerGroups:
-      type: array
-      description: "１ユーザーのキャリアグループ群"
-      items:
-        $ref: "#/components/schemas/UserCareerGroup"
     UserCareerGroupOwn:
       type: object
       description: "１ユーザーのキャリアグループ自身"
@@ -602,11 +601,6 @@ components:
       properties:
         text:
           $ref: "#/components/schemas/NoteItemText"
-    UserNoteItems:
-      type: array
-      description: "１ユーザーの注釈内の要素群"
-      items:
-        $ref: "#/components/schemas/UserNoteItem"
     UserNoteOwn:
       type: object
       description: "１ユーザーの注釈自身"
@@ -624,12 +618,9 @@ components:
         memo:
           $ref: "#/components/schemas/NoteMemo"
         items:
-          $ref: "#/components/schemas/UserNoteItems"
-    UserNotes:
-      type: array
-      description: "１ユーザーの注釈群"
-      items:
-        $ref: "#/components/schemas/UserNote"
+          type: array
+          items:
+            $ref: "#/components/schemas/UserNoteItem"
     ErrorMessage:
       type: string
       description: "エラーメッセージ"
@@ -686,7 +677,6 @@ components:
         application/json:
           schema:
             type: array
-            description: "１ユーザーのアクティビティ群"
             items:
               $ref: "#/components/schemas/UserActivity"
     200-OK-UserQualifications:
@@ -695,7 +685,6 @@ components:
         application/json:
           schema:
             type: array
-            description: "１ユーザーの資格情報群"
             items:
               $ref: "#/components/schemas/UserQualification"
     200-OK-UserCareers:
@@ -704,7 +693,6 @@ components:
         application/json:
           schema:
             type: array
-            description: "１ユーザーのキャリアグループのキャリア群"
             items:
               $ref: "#/components/schemas/UserCareer"
     200-OK-UserCareerGroups:
@@ -712,7 +700,9 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/UserCareerGroups"
+            type: array
+            items:
+              $ref: "#/components/schemas/UserCareerGroup"
     200-OK-UserCareerGroupOwn:
       description: "OK: 指定ユーザーのキャリアグループ自身を返却する。"
       content:
@@ -724,7 +714,9 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/UserNoteItems"
+            type: array
+            items:
+              $ref: "#/components/schemas/UserNoteItem"
     200-OK-UserNoteOwn:
       description: "OK: 指定ユーザーの注釈自身を返却する。"
       content:
@@ -742,7 +734,9 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/UserNotes"
+            type: array
+            items:
+              $ref: "#/components/schemas/UserNote"
     400-BadRequest:
       description: "Bad Request: 属性に誤りがある。"
       content:
