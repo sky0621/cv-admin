@@ -521,11 +521,6 @@ components:
           $ref: "#/components/schemas/TaskName"
         description:
           $ref: "#/components/schemas/TaskDescriptions"
-    CareerTasks:
-      type: array
-      description: "１キャリアのタスク群"
-      items:
-        $ref: "#/components/schemas/CareerTask"
     CareerSkill:
       type: object
       description: "１キャリアのスキル"
@@ -572,7 +567,10 @@ components:
         to:
           $ref: "#/components/schemas/CareerPeriodTo"
         tasks:
-          $ref: "#/components/schemas/CareerTasks"
+          type: array
+          description: "１キャリアのタスク群"
+          items:
+            $ref: "#/components/schemas/CareerTask"
         skillGroups:
           type: array
           description: "１キャリアのスキルグループ群"
