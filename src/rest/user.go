@@ -193,7 +193,7 @@ func (s *ServerImpl) PutUsersByUserIdActivities(ctx echo.Context, byUserId UserI
 		return err
 	}
 
-	var userActivities UserActivities
+	var userActivities []UserActivity
 	if err := ctx.Bind(&userActivities); err != nil {
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}

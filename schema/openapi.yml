@@ -95,7 +95,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserActivities"
+              type: array
+              description: "１ユーザーのアクティビティ群"
+              items:
+                $ref: "#/components/schemas/UserActivity"
       responses:
         "200":
           $ref: "#/components/responses/200-OK-UserActivities"
@@ -501,11 +504,6 @@ components:
           $ref: "#/components/schemas/Url"
         icon:
           $ref: "#/components/schemas/ActivityIcon"
-    UserActivities:
-      type: array
-      description: "１ユーザーのアクティビティ群"
-      items:
-        $ref: "#/components/schemas/UserActivity"
     UserQualification:
       type: object
       description: "１ユーザーの資格情報"
@@ -695,7 +693,10 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/UserActivities"
+            type: array
+            description: "１ユーザーのアクティビティ群"
+            items:
+              $ref: "#/components/schemas/UserActivity"
     200-OK-UserQualifications:
       description: "OK: 指定ユーザーの資格情報群を返却する。"
       content:

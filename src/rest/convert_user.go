@@ -69,8 +69,8 @@ func ToSwaggerUserActivity(entActivity *ent.UserActivity) UserActivity {
 	return activity
 }
 
-func ToSwaggerUserActivities(entActivities []*ent.UserActivity) UserActivities {
-	var activities UserActivities
+func ToSwaggerUserActivities(entActivities []*ent.UserActivity) []UserActivity {
+	var activities []UserActivity
 	for _, entActivity := range entActivities {
 		activities = append(activities, ToSwaggerUserActivity(entActivity))
 	}
