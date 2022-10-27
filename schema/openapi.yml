@@ -432,7 +432,7 @@ components:
       type: string
       description: "タスク名"
       example: "バックエンドの機能拡張、不具合改修。"
-    TaskDescriptions:
+    TaskDescription:
       type: array
       description: "タスク説明"
       example: "['・分析APIのベース開発', '・各種バッチ開発']"
@@ -520,7 +520,7 @@ components:
         name:
           $ref: "#/components/schemas/TaskName"
         description:
-          $ref: "#/components/schemas/TaskDescriptions"
+          $ref: "#/components/schemas/TaskDescription"
     CareerSkill:
       type: object
       description: "１キャリアのスキル"
@@ -531,11 +531,6 @@ components:
           $ref: "#/components/schemas/Url"
         version:
           $ref: "#/components/schemas/SkillVersion"
-    CareerSkills:
-      type: array
-      description: "１キャリアのスキル群"
-      items:
-        $ref: "#/components/schemas/CareerSkill"
     CareerGroupId:
       type: integer
       format: int
@@ -547,7 +542,10 @@ components:
         label:
           $ref: "#/components/schemas/SkillGroupLabel"
         skills:
-          $ref: "#/components/schemas/CareerSkills"
+          type: array
+          description: "１キャリアのスキル群"
+          items:
+            $ref: "#/components/schemas/CareerSkill"
     UserCareer:
       type: object
       description: "１キャリアグループのキャリア"
