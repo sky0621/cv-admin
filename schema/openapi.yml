@@ -129,7 +129,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserQualifications"
+              type: array
+              description: "１ユーザーの資格情報群"
+              items:
+                $ref: "#/components/schemas/UserQualification"
       responses:
         "200":
           $ref: "#/components/responses/200-OK-UserQualifications"
@@ -403,14 +406,6 @@ components:
       type: string
       description: "キャリア名"
       example: "物流システム開発"
-    CareerDescriptions:
-      type: array
-      description: "キャリア説明"
-      example: "['物流システムを新規開発する。']"
-      items:
-        type: string
-        description: "キャリア説明１文"
-        example: "物流システムを新規開発する。"
     CareerPeriodFrom:
       type: object
       description: "キャリア期間年月From"
@@ -518,11 +513,6 @@ components:
           $ref: "#/components/schemas/QualificationGotDate"
         memo:
           $ref: "#/components/schemas/QualificationMemo"
-    UserQualifications:
-      type: array
-      description: "１ユーザーの資格情報群"
-      items:
-        $ref: "#/components/schemas/UserQualification"
     CareerTask:
       type: object
       description: "１キャリアのタスク"
@@ -570,7 +560,13 @@ components:
         name:
           $ref: "#/components/schemas/CareerName"
         description:
-          $ref: "#/components/schemas/CareerDescriptions"
+          type: array
+          description: "キャリア説明"
+          example: "['物流システムを新規開発する。']"
+          items:
+            type: string
+            description: "キャリア説明１文"
+            example: "物流システムを新規開発する。"
         from:
           $ref: "#/components/schemas/CareerPeriodFrom"
         to:
@@ -702,7 +698,10 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/UserQualifications"
+            type: array
+            description: "１ユーザーの資格情報群"
+            items:
+              $ref: "#/components/schemas/UserQualification"
     200-OK-UserCareers:
       description: "OK: 指定ユーザーの１キャリアグループ内のキャリア群を返却する。"
       content:

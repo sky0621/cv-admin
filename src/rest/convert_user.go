@@ -114,8 +114,8 @@ func ToSwaggerUserQualification(entQualification *ent.UserQualification) UserQua
 	return qualification
 }
 
-func ToSwaggerUserQualifications(entQualifications []*ent.UserQualification) UserQualifications {
-	var qualifications UserQualifications
+func ToSwaggerUserQualifications(entQualifications []*ent.UserQualification) []UserQualification {
+	var qualifications []UserQualification
 	for _, entQualification := range entQualifications {
 		qualifications = append(qualifications, ToSwaggerUserQualification(entQualification))
 	}
