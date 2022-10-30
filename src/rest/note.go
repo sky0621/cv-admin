@@ -1,17 +1,26 @@
 package rest
 
 import (
-	"github.com/sky0621/cv-admin/src/ent"
-	"github.com/sky0621/cv-admin/src/ent/helper"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+
+	"github.com/sky0621/cv-admin/src/ent"
+	"github.com/sky0621/cv-admin/src/ent/helper"
+	"github.com/sky0621/cv-admin/src/ent/user"
+	"github.com/sky0621/cv-admin/src/ent/usernote"
 )
 
-// 注釈群取得
+// GetUsersByUserIdNotes 注釈群取得
 // (GET /users/{byUserId}/notes)
 func (s *ServerImpl) GetUsersByUserIdNotes(ctx echo.Context, byUserId UserId) error {
-	return ctx.String(http.StatusOK, "")
+	// TODO: 直接 user_id 指定できるはず。。
+	userNotes, err := s.dbClient.UserNote.Query().Where(usernote.HasUserWith(user.ID(byUserId))).WithNoteItems().All(ctx.Request().Context())
+	if err != nil {
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, ToSwaggerUserNotes(userNotes))
 }
 
 // PostUsersByUserIdNotes 注釈新規登録
@@ -60,17 +69,20 @@ func (s *ServerImpl) PostUsersByUserIdNotes(ctx echo.Context, byUserId UserId) e
 // 注釈削除
 // (DELETE /users/{byUserId}/notes/{byNoteId})
 func (s *ServerImpl) DeleteUsersByUserIdNotesByNoteId(ctx echo.Context, byUserId UserId, byNoteId NoteId) error {
+	// FIXME:
 	return ctx.String(http.StatusOK, "")
 }
 
 // 注釈更新
 // (PUT /users/{byUserId}/notes/{byNoteId})
 func (s *ServerImpl) PutUsersByUserIdNotesByNoteId(ctx echo.Context, byUserId UserId, byNoteId NoteId) error {
+	// FIXME:
 	return ctx.String(http.StatusOK, "")
 }
 
 // 注釈内要素群最新化
 // (PUT /users/{byUserId}/notes/{byNoteId}/items)
 func (s *ServerImpl) PutUsersByUserIdNotesByNoteIdItems(ctx echo.Context, byUserId UserId, byNoteId NoteId) error {
+	// FIXME:
 	return ctx.String(http.StatusOK, "")
 }

@@ -3,14 +3,12 @@ package rest
 import (
 	"net/http"
 
-	"github.com/sky0621/cv-admin/src/ent/user"
-	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
-
-	"github.com/sky0621/cv-admin/src/ent/helper"
+	"github.com/labstack/echo/v4"
 
 	"github.com/sky0621/cv-admin/src/ent"
-
-	"github.com/labstack/echo/v4"
+	"github.com/sky0621/cv-admin/src/ent/helper"
+	"github.com/sky0621/cv-admin/src/ent/user"
+	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 )
 
 // GetUsersByUserIdCareergroups キャリアグループ群取得

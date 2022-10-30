@@ -2,6 +2,7 @@ package rest
 
 import (
 	"github.com/labstack/echo/v4"
+
 	"github.com/sky0621/cv-admin/src/ent"
 )
 

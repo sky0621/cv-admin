@@ -3,20 +3,20 @@ package rest
 import (
 	"errors"
 	"fmt"
-	"github.com/sky0621/cv-admin/src/ent/careerskill"
-	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
-	"github.com/sky0621/cv-admin/src/ent/careertask"
-	"github.com/sky0621/cv-admin/src/ent/careertaskdescription"
-	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 
 	"github.com/sky0621/cv-admin/src/ent"
+	"github.com/sky0621/cv-admin/src/ent/careerskill"
+	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
+	"github.com/sky0621/cv-admin/src/ent/careertask"
+	"github.com/sky0621/cv-admin/src/ent/careertaskdescription"
 	"github.com/sky0621/cv-admin/src/ent/helper"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
+	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
 )

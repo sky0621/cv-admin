@@ -38,6 +38,14 @@ func ToSwaggerUserNote(entUserNote *ent.UserNote) UserNote {
 	return un
 }
 
+func ToSwaggerUserNotes(entUserNote []*ent.UserNote) []UserNote {
+	var userNotes []UserNote
+	for _, entUserNote := range entUserNote {
+		userNotes = append(userNotes, ToSwaggerUserNote(entUserNote))
+	}
+	return userNotes
+}
+
 func ToEntUserNoteCreate(u UserNote, userID int, c *ent.UserNoteCreate) *ent.UserNoteCreate {
 	return c.
 		SetUserID(userID).
