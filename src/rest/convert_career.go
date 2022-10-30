@@ -62,15 +62,25 @@ func ToSwaggerUserCareerDescriptions(entUserCareerDescriptions []*ent.UserCareer
 	return &careerDescriptions
 }
 
+func ToSwaggerCareerSkill(entCareer *ent.CareerSkill) CareerSkill {
+	return CareerSkill{
+		Name:    &entCareer.Name,
+		Url:     entCareer.URL,
+		Version: entCareer.Version,
+	}
+}
+
 func ToSwaggerCareerSkillGroup(entCareerSkillGroup *ent.CareerSkillGroup) *CareerSkillGroup {
 	if entCareerSkillGroup == nil {
 		return nil
 	}
+	var careerSkills []CareerSkill
 	for _, entCareerSkill := range entCareerSkillGroup.Edges.CareerSkills {
-		fmt.Println(entCareerSkill)
+		careerSkills = append(careerSkills, ToSwaggerCareerSkill(entCareerSkill))
 	}
 	return &CareerSkillGroup{
-		Label: &entCareerSkillGroup.Label,
+		Label:  &entCareerSkillGroup.Label,
+		Skills: &careerSkills,
 	}
 }
 
