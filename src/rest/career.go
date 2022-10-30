@@ -93,6 +93,41 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 			}
 
 			/*
+			 * キャリア配下のタスク群
+			 */
+			if career.Tasks != nil {
+				var careerTasks []*ent.CareerTask
+				for _, task := range *career.Tasks {
+					/*
+					 * タスク本体の登録
+					 */
+					entCareerTask, err := ToEntCareerTaskCreate(task, entCareer.ID, tx.CareerTask.Create()).Save(rCtx)
+					if err != nil {
+						return err
+					}
+
+					/*
+					 * タスク説明群の登録
+					 */
+					if task.Description != nil {
+						var taskDescriptionCreates []*ent.CareerTaskDescriptionCreate
+						for _, description := range *task.Description {
+							taskDescriptionCreates = append(taskDescriptionCreates, ToEntCareerTaskDescriptionCreate(description, entCareerTask.ID, tx.CareerTaskDescription.Create()))
+						}
+						entDescriptions, err := tx.CareerTaskDescription.CreateBulk(taskDescriptionCreates...).Save(rCtx)
+						if err != nil {
+							return err
+						}
+						entCareerTask.Edges.CareerTaskDescriptions = entDescriptions
+					}
+
+					careerTasks = append(careerTasks, entCareerTask)
+				}
+
+				entCareer.Edges.CareerTasks = careerTasks
+			}
+
+			/*
 			 * キャリア配下のスキルグループ群
 			 */
 			if career.SkillGroups != nil {
@@ -101,7 +136,7 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 					/*
 					 * スキルグループ本体の登録
 					 */
-					entCareerSkillGroup, err := ToEntUserCareerSkillGroup(skillGroup, entCareer.ID, tx.CareerSkillGroup.Create()).Save(rCtx)
+					entCareerSkillGroup, err := ToEntCareerSkillGroupCreate(skillGroup, entCareer.ID, tx.CareerSkillGroup.Create()).Save(rCtx)
 					if err != nil {
 						return err
 					}
@@ -112,7 +147,7 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 					if skillGroup.Skills != nil {
 						var careerSkillCreates []*ent.CareerSkillCreate
 						for _, skill := range *skillGroup.Skills {
-							careerSkillCreates = append(careerSkillCreates, ToEntUserCareerSkill(skill, entCareerSkillGroup.ID, tx.CareerSkill.Create()))
+							careerSkillCreates = append(careerSkillCreates, ToEntCareerSkillCreate(skill, entCareerSkillGroup.ID, tx.CareerSkill.Create()))
 						}
 						careerSkills, err := tx.CareerSkill.CreateBulk(careerSkillCreates...).Save(rCtx)
 						if err != nil {
@@ -126,7 +161,6 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 				entCareer.Edges.CareerSkillGroups = careerSkillGroups
 			}
 
-			entCareers = append(entCareers, entCareer)
 		}
 
 		entUserCareerGroup.Edges.Careers = entCareers

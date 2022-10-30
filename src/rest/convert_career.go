@@ -154,13 +154,25 @@ func ToEntUserCareerDescriptionCreate(description string, userCareerID int, c *e
 		SetDescription(description)
 }
 
-func ToEntUserCareerSkillGroup(u CareerSkillGroup, userCareerID int, c *ent.CareerSkillGroupCreate) *ent.CareerSkillGroupCreate {
+func ToEntCareerTaskCreate(u CareerTask, userCareerID int, c *ent.CareerTaskCreate) *ent.CareerTaskCreate {
+	return c.
+		SetCareerID(userCareerID).
+		SetName(*u.Name)
+}
+
+func ToEntCareerTaskDescriptionCreate(description string, careerTaskID int, c *ent.CareerTaskDescriptionCreate) *ent.CareerTaskDescriptionCreate {
+	return c.
+		SetCareerTaskID(careerTaskID).
+		SetDescription(description)
+}
+
+func ToEntCareerSkillGroupCreate(u CareerSkillGroup, userCareerID int, c *ent.CareerSkillGroupCreate) *ent.CareerSkillGroupCreate {
 	return c.
 		SetCareerID(userCareerID).
 		SetLabel(*u.Label)
 }
 
-func ToEntUserCareerSkill(u CareerSkill, careerSkillGroupID int, c *ent.CareerSkillCreate) *ent.CareerSkillCreate {
+func ToEntCareerSkillCreate(u CareerSkill, careerSkillGroupID int, c *ent.CareerSkillCreate) *ent.CareerSkillCreate {
 	return c.
 		SetCareerSkillGroupID(careerSkillGroupID).
 		SetName(*u.Name).
