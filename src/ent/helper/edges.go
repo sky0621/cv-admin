@@ -26,6 +26,14 @@ func PickupUserCareerIDs(careers []*ent.UserCareer) []int {
 	return results
 }
 
+func PickupCareerTaskIDs(tasks []*ent.CareerTask) []int {
+	results := make([]int, len(tasks))
+	for _, t := range tasks {
+		results = append(results, t.ID)
+	}
+	return results
+}
+
 func PickupCareerSkillGroupIDs(skillGroups []*ent.CareerSkillGroup) []int {
 	results := make([]int, len(skillGroups))
 	for _, sg := range skillGroups {

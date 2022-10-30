@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/sky0621/cv-admin/src/ent/careerskill"
 	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
+	"github.com/sky0621/cv-admin/src/ent/careertask"
+	"github.com/sky0621/cv-admin/src/ent/careertaskdescription"
 	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"net/http"
 
@@ -58,6 +60,22 @@ func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId UserId) erro
 		}
 		careerIDs := helper.PickupUserCareerIDs(careers)
 
+		tasks, err := tx.CareerTask.Query().Where(careertask.HasCareerWith(usercareer.IDIn(careerIDs...))).All(rCtx)
+		if err != nil {
+			return err
+		}
+		taskIDs := helper.PickupCareerTaskIDs(tasks)
+
+		_, err = tx.CareerTaskDescription.Delete().Where(careertaskdescription.HasCareerTaskWith(careertask.IDIn(taskIDs...))).Exec(rCtx)
+		if err != nil {
+			return err
+		}
+
+		_, err = tx.CareerTask.Delete().Where(careertask.IDIn(taskIDs...)).Exec(rCtx)
+		if err != nil {
+			return err
+		}
+
 		skillGroups, err := tx.CareerSkillGroup.Query().Where(careerskillgroup.HasCareerWith(usercareer.IDIn(careerIDs...))).All(rCtx)
 		if err != nil {
 			return err
@@ -66,42 +84,42 @@ func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId UserId) erro
 
 		_, err = tx.CareerSkill.Delete().Where(careerskill.HasCareerSkillGroupWith(careerskillgroup.IDIn(skillGroupIDs...))).Exec(rCtx)
 		if err != nil {
-			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+			return err
 		}
 
 		_, err = tx.CareerSkillGroup.Delete().Where(careerskillgroup.IDIn(skillGroupIDs...)).Exec(rCtx)
 		if err != nil {
-			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+			return err
 		}
 
 		_, err = tx.UserCareerDescription.Delete().Where(usercareerdescription.HasCareerWith(usercareer.IDIn(careerIDs...))).Exec(rCtx)
 		if err != nil {
-			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+			return err
 		}
 
 		_, err = tx.UserCareer.Delete().Where(usercareer.IDIn(careerIDs...)).Exec(rCtx)
 		if err != nil {
-			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+			return err
 		}
 
 		_, err = tx.UserCareerGroup.Delete().Where(usercareergroup.HasUserWith(user.ID(byUserId))).Exec(rCtx)
 		if err != nil {
-			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+			return err
 		}
 
 		_, err = tx.UserQualification.Delete().Where(userqualification.HasUserWith(user.ID(byUserId))).Exec(rCtx)
 		if err != nil {
-			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+			return err
 		}
 
 		_, err = tx.UserActivity.Delete().Where(useractivity.HasUserWith(user.ID(byUserId))).Exec(rCtx)
 		if err != nil {
-			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+			return err
 		}
 
 		err = tx.User.DeleteOneID(byUserId).Exec(rCtx)
 		if err != nil {
-			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+			return err
 		}
 
 		return nil
