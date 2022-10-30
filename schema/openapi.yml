@@ -185,7 +185,7 @@ paths:
       - $ref: "#/components/parameters/userId"
       - $ref: "#/components/parameters/careerGroupId"
     put:
-      summary: "キャリアグループ更新"
+      summary: "【未実装】キャリアグループ更新"
       description: "１キャリアグループを更新する。"
       tags: ["users"]
       requestBody:
@@ -202,7 +202,7 @@ paths:
         "404":
           $ref: "#/components/responses/404-NotFound"
     delete:
-      summary: "キャリアグループ削除"
+      summary: "【未実装】キャリアグループ削除"
       description: "１キャリアグループを削除する。"
       tags: ["users"]
       responses:
@@ -216,7 +216,7 @@ paths:
       - $ref: "#/components/parameters/userId"
       - $ref: "#/components/parameters/careerGroupId"
     put:
-      summary: "キャリアグループ内キャリア群最新化"
+      summary: "【未実装】キャリアグループ内キャリア群最新化"
       description: "１キャリアグループ内のキャリア群を最新化（総洗い替え）する。"
       tags: ["users"]
       requestBody:
@@ -271,7 +271,7 @@ paths:
       - $ref: "#/components/parameters/userId"
       - $ref: "#/components/parameters/noteId"
     put:
-      summary: "注釈更新"
+      summary: "【未実装】注釈更新"
       description: "１注釈を更新する。"
       tags: ["users"]
       requestBody:
@@ -288,7 +288,7 @@ paths:
         "404":
           $ref: "#/components/responses/404-NotFound"
     delete:
-      summary: "注釈削除"
+      summary: "【未実装】注釈削除"
       description: "１注釈を削除する。"
       tags: ["users"]
       responses:
@@ -302,7 +302,7 @@ paths:
       - $ref: "#/components/parameters/userId"
       - $ref: "#/components/parameters/noteId"
     put:
-      summary: "注釈内要素群最新化"
+      summary: "【未実装】注釈内要素群最新化"
       description: "１注釈内の要素群を最新化（総洗い替え）する。"
       tags: ["users"]
       requestBody:
