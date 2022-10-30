@@ -161,6 +161,7 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 				entCareer.Edges.CareerSkillGroups = careerSkillGroups
 			}
 
+			entCareers = append(entCareers, entCareer)
 		}
 
 		entUserCareerGroup.Edges.Careers = entCareers

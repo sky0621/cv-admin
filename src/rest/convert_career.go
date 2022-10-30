@@ -84,6 +84,46 @@ func ToSwaggerCareerSkillGroup(entCareerSkillGroup *ent.CareerSkillGroup) *Caree
 	}
 }
 
+func ToSwaggerCareerTaskDescription(entCareerTaskDescription *ent.CareerTaskDescription) string {
+	return entCareerTaskDescription.Description
+}
+
+func ToSwaggerCareerTaskDescriptions(entCareerTaskDescriptions []*ent.CareerTaskDescription) *TaskDescription {
+	var careerDescriptions TaskDescription
+	for _, entTaskDescription := range entCareerTaskDescriptions {
+		careerDescriptions = append(careerDescriptions, ToSwaggerCareerTaskDescription(entTaskDescription))
+	}
+	return &careerDescriptions
+}
+
+func ToSwaggerCareerTask(entCareerTask *ent.CareerTask) *CareerTask {
+	if entCareerTask == nil {
+		return nil
+	}
+	if entCareerTask.Edges.CareerTaskDescriptions == nil {
+		return &CareerTask{
+			Name: &entCareerTask.Name,
+		}
+	}
+
+	var careerDescriptions TaskDescription
+	for _, entTaskDescription := range entCareerTask.Edges.CareerTaskDescriptions {
+		careerDescriptions = append(careerDescriptions, ToSwaggerCareerTaskDescription(entTaskDescription))
+	}
+	return &CareerTask{
+		Name:        &entCareerTask.Name,
+		Description: ToSwaggerCareerTaskDescriptions(entCareerTask.Edges.CareerTaskDescriptions),
+	}
+}
+
+func ToSwaggerCareerTasks(entCareerTasks []*ent.CareerTask) *[]CareerTask {
+	var careerTasks []CareerTask
+	for _, entCareerTask := range entCareerTasks {
+		careerTasks = append(careerTasks, *ToSwaggerCareerTask(entCareerTask))
+	}
+	return &careerTasks
+}
+
 func ToSwaggerCareerSkillGroups(entCareerSkillGroups []*ent.CareerSkillGroup) *[]CareerSkillGroup {
 	var careerSkillGroups []CareerSkillGroup
 	for _, entCareerSkillGroup := range entCareerSkillGroups {
@@ -98,6 +138,7 @@ func ToSwaggerUserCareer(entCareer *ent.UserCareer) UserCareer {
 		Description: ToSwaggerUserCareerDescriptions(entCareer.Edges.CareerDescriptions),
 		From:        ToSwaggerUserCareerPeriodFrom(entCareer.From),
 		To:          ToSwaggerUserCareerPeriodTo(entCareer.To),
+		Tasks:       ToSwaggerCareerTasks(entCareer.Edges.CareerTasks),
 		SkillGroups: ToSwaggerCareerSkillGroups(entCareer.Edges.CareerSkillGroups),
 	}
 }
