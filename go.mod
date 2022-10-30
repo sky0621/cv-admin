@@ -11,7 +11,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.15
 	github.com/sky0621/golang-utils v0.0.1
 	github.com/spf13/cobra v1.6.0
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 )
 
 require (
