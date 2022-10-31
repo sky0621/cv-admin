@@ -41,3 +41,11 @@ func PickupCareerSkillGroupIDs(skillGroups []*ent.CareerSkillGroup) []int {
 	}
 	return results
 }
+
+func PickupUserNoteIDs(notes []*ent.UserNote) []int {
+	results := make([]int, len(notes))
+	for _, n := range notes {
+		results = append(results, n.ID)
+	}
+	return results
+}

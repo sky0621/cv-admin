@@ -18,6 +18,8 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
 	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
+	"github.com/sky0621/cv-admin/src/ent/usernote"
+	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
 )
 
@@ -47,6 +49,20 @@ func (s *ServerImpl) PostUsers(ctx echo.Context) error {
 func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId UserId) error {
 	rCtx := ctx.Request().Context()
 	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
+		/*
+		 * user
+		 *   |- user_activities
+		 *   |- user_qualifications
+		 *   |- user_career_groups
+		 *   |   |- user_careers
+		 *   |       |- user_career_descriptions
+		 *   |       |- career_tasks
+		 *   |           |- career_task_descriptions
+		 *   |       |- career_skill_groups
+		 *   |           |- career_skills
+		 *   |- user_notes
+		 *       |- user_note_items
+		 */
 		// TODO: 直接 user_id 指定できるはず。。
 		careerGroups, err := tx.UserCareerGroup.Query().Where(usercareergroup.HasUserWith(user.ID(byUserId))).All(rCtx)
 		if err != nil {
@@ -103,6 +119,22 @@ func (s *ServerImpl) DeleteUsersByUserId(ctx echo.Context, byUserId UserId) erro
 		}
 
 		_, err = tx.UserCareerGroup.Delete().Where(usercareergroup.HasUserWith(user.ID(byUserId))).Exec(rCtx)
+		if err != nil {
+			return err
+		}
+
+		notes, err := tx.UserNote.Query().Where(usernote.HasUserWith(user.ID(byUserId))).All(rCtx)
+		if err != nil {
+			return err
+		}
+		noteIDs := helper.PickupUserNoteIDs(notes)
+
+		_, err = tx.UserNoteItem.Delete().Where(usernoteitem.HasNoteWith(usernote.IDIn(noteIDs...))).Exec(rCtx)
+		if err != nil {
+			return err
+		}
+
+		_, err = tx.UserNote.Delete().Where(usernote.HasUserWith(user.ID(byUserId))).Exec(rCtx)
 		if err != nil {
 			return err
 		}
