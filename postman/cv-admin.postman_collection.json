@@ -491,6 +491,142 @@
 			"response": []
 		},
 		{
+			"name": "create user careergroup: 某グループ企業にて就労",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"label\": \"某グループ企業にて就労\",\n    \"careers\": [\n        {\n            \"name\": \"飲食店予約サービスエンハンス開発\",\n            \"description\": [\"ネット予約No.1サービス\"],\n            \"from\":  { \"year\": 2016, \"month\": 4 },\n            \"to\":  { \"year\": 2016, \"month\": 9 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Java\", \"url\": \"https://www.java.com/ja/\", \"version\": \"v6\" },\n                        { \"name\": \"Oracle\", \"url\": \"https://www.oracle.com/jp/database/technologies/\" },\n                        { \"name\": \"Seasar2\", \"url\": \"https://www.seasar.org/\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                { \"name\": \"-\", \"description\": [\"機能拡張、不具合修正の案件に要件を詰める段階からリリースまで担当。\"] }\n            ]\n        },\n        {\n            \"name\": \"小学生・中学生向け教育Webアプリエンハンス開発\",\n            \"description\": [\"オンラインでの授業動画視聴とドリル実施機能を提供し、実施結果を集約・分析することで、保護者への学習状況伝達や子供への次にトライすべき授業の促しなどを行う。\"],\n            \"from\":  { \"year\": 2014, \"month\": 11 },\n            \"to\":  { \"year\": 2016, \"month\": 3 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Java\", \"url\": \"https://www.java.com/ja/\", \"version\": \"v6\" },\n                        { \"name\": \"Oracle\", \"url\": \"https://www.oracle.com/jp/database/technologies/\" },\n                        { \"name\": \"Seasar2\", \"url\": \"https://www.seasar.org/\" }\n                    ]\n                },\n                {\n                    \"label\": \"Others\",\n                    \"skills\": [\n                        { \"name\": \"Scrum\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                {\n                    \"name\": \"ウォーターフォール開発（2014/11～2015/04）\",\n                    \"description\": [\n                        \"2015/03まではサービスの商用化（決済機能付加）に向けた開発要員として参加。\",\n                        \"メインとなる決済機能の方式設計から共通機能の実装部分を主に担当。\",\n                        \"2015/04の商用化後の開発では追加機能（アンケート機能付加等）案件のアーキテクトとして参加。\"\n                    ]\n                },\n                {\n                    \"name\": \"Scrum開発（2015/05～2016/03）\",\n                    \"description\": [\n                        \"チームビルディングから参加。\",\n                        \"クロスファンクショナルに全機能、全工程を横断的に実施。\",\n                        \"主な着手案件は、「決済機能の追加」、「学習実績に応じたミッション提示機能の追加」、「保護者への（子供の）学習状況提示機能の追加」など。\"\n                    ]\n                }\n            ]\n        }\n      ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/careergroups",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"careergroups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create user careergroup: 某サービス企業にて就労",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"label\": \"某サービス企業にて就労\",\n    \"careers\": [\n        {\n            \"name\": \"某大手損保会社が所有するアプリを集約するポータルサイト構築\",\n            \"description\": [\"ビジネスロジックはWebシステムにて実現し、iOS/AndroidアプリがWebView内でWebシステムにアクセスする。\"],\n            \"from\":  { \"year\": 2014, \"month\": 4 },\n            \"to\":  { \"year\": 2014, \"month\": 9 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Java\", \"url\": \"https://www.java.com/ja/\", \"version\": \"v6\" },\n                        { \"name\": \"MySQL\", \"url\": \"https://www.mysql.com/jp/\" },\n                        { \"name\": \"Seasar2\", \"url\": \"https://www.seasar.org/\" },\n                        { \"name\": \"Android\", \"version\": \"v4\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                {\n                    \"name\": \"-\",\n                    \"description\": [\n                        \"以下のチーム体制となり、(3)を担当。\",\n                        \"(1)プロジェクトマネージャ【１名】\",\n                        \"(2)プロジェクトリーダー【１名】\",\n                        \"(3)Webアプリ／Androidアプリ／Batch 担当【１名】\",\n                        \"(4)iOSアプリ担当【１名】\",\n                        \"(5)テスト／その他作業担当【１名】\",\n                        \"(6)リリース後運用方式検討担当【１名】\"\n                    ]\n                }\n            ]\n        },\n        {\n            \"name\": \"某大手損保会社の保険料試算システムの保守・運用　※上のプロジェクトと期間重複\",\n            \"description\": [\"ビジネスロジックはWebシステムにて実現し、iPad/Androidタブレット用アプリがWebView内でWebシステムにアクセスする。\"],\n            \"from\":  { \"year\": 2013, \"month\": 7 },\n            \"to\":  { \"year\": 2014, \"month\": 9 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Java\", \"url\": \"https://www.java.com/ja/\", \"version\": \"v6\" },\n                        { \"name\": \"Seasar2\", \"url\": \"https://www.seasar.org/\" },\n                        { \"name\": \"Android\", \"version\": \"v4\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                {\n                    \"name\": \"-\",\n                    \"description\": [\n                        \"定期的に発生する保険料試算条件・項目見直しに伴うアプリ改修やエンドユーザ企業の２社統合に伴うシステムリプレースに着手。\",\n                        \"以下のチーム体制となり、(3)を担当。\",\n                        \"(1)プロジェクトマネージャ【１名】\",\n                        \"(2)プロジェクトリーダー【１名】\",\n                        \"(3)Webアプリ／Androidアプリ担当【１名】\",\n                        \"(4)iOSアプリ担当【１名】\",\n                        \"(5)テスト／その他作業担当【１名】\"\n                    ]\n                }\n            ]\n        }\n      ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/careergroups",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"careergroups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create user careergroup: 某動画配信サービスシステム会社にて就労",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"label\": \"某動画配信サービスシステム会社にて就労\",\n    \"careers\": [\n        {\n            \"name\": \"各種Webサイト構築\",\n            \"description\": [\"静的サイトリニューアルや動画配信サイト構築等\"],\n            \"from\":  { \"year\": 2012, \"month\": 3 },\n            \"to\":  { \"year\": 2013, \"month\": 6 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"PHP\", \"url\": \"https://www.php.net/\", \"version\": \"v5\" },\n                        { \"name\": \"MySQL\", \"url\": \"https://www.mysql.com/jp/\" },\n                        { \"name\": \"Kohana\" },\n                        { \"name\": \"Python\", \"version\": \"v2系\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                {\n                    \"name\": \"-\",\n                    \"description\": [\n                        \"別担当者が概要をまとめた要件に基づいて、設計からリリース、保守・運用まで全機能一人で担当。\",\n                        \"以下、案件群を開発\",\n                        \"- 某ゴルフ雑誌　静的サイトリニューアル\",\n                        \"- 某娯楽メーカー動画配信サイト構築\",\n                        \"- 某メーカーの子ども向け動画配信サイト構築\",\n                        \"- 某メーカーのアニメ配信サイト構築\",\n                        \"- 某ファッション口コミ情報共有サイト構築\"\n                    ]\n                }\n            ]\n        },\n        {\n            \"name\": \"某大手ゴルフメーカー向け販促用Androidアプリ開発\",\n            \"description\": [\"Androidアプリの設計・実装・テスト全般。\"],\n            \"from\":  { \"year\": 2011, \"month\": 10 },\n            \"to\":  { \"year\": 2012, \"month\": 2 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Android\", \"version\": \"v2.3\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                {\n                    \"name\": \"詳細\",\n                    \"description\": [\n                        \"画面デザイン会社担当者との打ち合わせ、仕様の詰め、及び、機能の実現可否の調査・検討、画面（遷移）・DB・SD保存情報・プリファレンス保持情報等、各種設計・実装。\",\n                        \"対象機種ごとのテスト・不具合改修まで、デザイン・要件決定以後の全タスクを担当。\",\n                        \"また、アプリリリース後、製品カタログの更新や機能追加も担当。\"\n                    ]\n                },\n                {\n                    \"name\": \"要員\",\n                    \"description\": [\n                        \"主担当としてアサインされる。サポート役として別要員１名。\"\n                    ]\n                },\n                {\n                    \"name\": \"実装機能群\",\n                    \"description\": [\n                        \"- スイングチェック（自分のスイングを録画。Webから落としたプロプレイヤーのスイング動画と同時比較再生。再生動画に線や○を表示しスイング軌道や重心の確認。）\",\n                        \"- 製品カタログ表示(WebView)\",\n                        \"- CM再生(BrightcovePlayer)\",\n                        \"- クラブ、ボール選択チャート(WebView)\",\n                        \"- 壁紙ダウンロード、壁紙設定\"\n                    ]\n                }\n            ]\n        }\n      ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/careergroups",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"careergroups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create user careergroup: 約９年半のサマリ",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"label\": \"約９年半のサマリ\",\n    \"careers\": [\n        {\n            \"name\": \"各種Webサイト構築\",\n            \"description\": [\"新卒から各種プロジェクトに参画\"],\n            \"from\":  { \"year\": 2002, \"month\": 4 },\n            \"to\":  { \"year\": 2011, \"month\": 9 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Java\" },\n                        { \"name\": \"Oracle\" },\n                        { \"name\": \"PostgreSQL\" },\n                        { \"name\": \"DB2\" },\n                        { \"name\": \"MySQL\" },\n                        { \"name\": \"Struts\" },\n                        { \"name\": \"UML\" },\n                        { \"name\": \"XML/XSLT\" },\n                        { \"name\": \"SOAP\" },\n                        { \"name\": \"WebSAM\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                {\n                    \"name\": \"-\",\n                    \"description\": [\n                        \"以下、案件群\",\n                        \"・某企業社内人材紹介・人材派遣情報管理システム構築\",\n                        \"・モバイルEdyシステム構築\",\n                        \"・i アプリ実行プラットフォームソフトバージョンアップ\",\n                        \"・某大手クレジットカード会社次世代基幹システム構築\",\n                        \"・デジタルアーカイブ検索システムカスタマイズ\",\n                        \"・某検索ポータルサイトリニューアル\",\n                        \"・貿易保険引受業務システム構築\",\n                        \"・某大手電機メーカー営業支援システム運用・保守\",\n                        \"・某大手銀行グループファイナンスサービス会社の決済代行システム構築\",\n                        \"・次世代ネットワーク回収代行システム構築\",\n                        \"・SaaS基盤管理UIリプレース\",\n                        \"・某大手不動産ポータルサイトリニューアル\",\n                        \"・某大手通信会社コンテンツ会員管理システム\",\n                        \"・某大手システム会社向けネットワーク管理システム\"\n                    ]\n                }\n            ]\n        }\n      ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/careergroups",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"careergroups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "get user notes",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
