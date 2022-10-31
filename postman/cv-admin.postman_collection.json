@@ -1,0 +1,701 @@
+{
+	"info": {
+		"_postman_id": "5e2fe744-d3e2-445f-a1d7-41150638dcb7",
+		"name": "cv-admin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create user",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"佐々木正太郎\",\n    \"nickname\": \"sky0621\",\n    \"avatarUrl\": \"https://ja.gravatar.com/userimage/103323766/40c79e18ac3d0ce74017393d14309c70.png\",\n    \"birthday\": {\n        \"year\": 1978, \"month\": 6, \"day\": 1\n    },\n    \"job\": \"ソフトウェア開発者\",\n    \"belongTo\": \"フリー（個人事業主）\",\n    \"pr\": \"2002年より、主にJavaで構築するWebシステム開発に従事してきました。\\n\\n関わったシステム・サービスのジャンルは多岐に渡ります。\\n・人材紹介・人材派遣サービス、会員管理サービス\\n・決済代行システム\\n・検索ポータル、ニュース配信サイト、不動産ポータル、医療系情報ポータル\\n・貿易保険、損害保険\\n・営業支援システム\\n・ネットワーク管理、防災用IoT機器管理\\n・アニメ動画配信、小中学生向け学習サイト\\n・飲食予約サービス\\n・チャットボット、ネット広告\\n等々\\n\\n2016年からは、Golang及びクラウド(AWSないしGCP)を使ったシステム開発に従事。\\n2018年以降は左記に加えフロントエンドにVue.js/Nuxt.jsを使うWebシステム開発が中心。\\n2019年以降の開発ではGraphQL、\\n2022年からはReactも使用しています。\\n\\n工程としては実装メインで関わることが多いですが、要件定義から設計、テスト、リリース、保守・運用まで一通りこなせます。\\n\\nその他の経験としては、\\n過去、Androidアプリ（v2.3及びv4の頃）開発、\\nPHP（v5）でのWebアプリ開発に2年ほど関わっており、\\nまた、Javaで「教育」系Webシステム開発時に１年ほどScrumを（チーム作りから）経験しています。\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user attribute",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/attribute",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"attribute"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update user",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"佐々木正太郎x\",\n    \"nickname\": \"sky0621x\",\n    \"avatarUrl\": \"https://ja.gravatar.com/userimage/103323766/40c79e18ac3d0ce74017393d14309c70.pngx\",\n    \"birthday\": {\n        \"year\": 1979, \"month\": 7, \"day\": 2\n    },\n    \"job\": \"ソフトウェア開発者x\",\n    \"belongTo\": \"フリー（個人事業主）x\",\n    \"pr\": \"x2002年より、主にJavaで構築するWebシステム開発に従事してきました。\\n\\n関わったシステム・サービスのジャンルは多岐に渡ります。\\n・人材紹介・人材派遣サービス、会員管理サービス\\n・決済代行システム\\n・検索ポータル、ニュース配信サイト、不動産ポータル、医療系情報ポータル\\n・貿易保険、損害保険\\n・営業支援システム\\n・ネットワーク管理、防災用IoT機器管理\\n・アニメ動画配信、小中学生向け学習サイト\\n・飲食予約サービス\\n・チャットボット、ネット広告\\n等々\\n\\n2016年からは、Golang及びクラウド(AWSないしGCP)を使ったシステム開発に従事。\\n2018年以降は左記に加えフロントエンドにVue.js/Nuxt.jsを使うWebシステム開発が中心。\\n2019年以降の開発ではGraphQL、\\n2022年からはReactも使用しています。\\n\\n工程としては実装メインで関わることが多いですが、要件定義から設計、テスト、リリース、保守・運用まで一通りこなせます。\\n\\nその他の経験としては、\\n過去、Androidアプリ（v2.3及びv4の頃）開発、\\nPHP（v5）でのWebアプリ開発に2年ほど関わっており、\\nまた、Javaで「教育」系Webシステム開発時に１年ほどScrumを（チーム作りから）経験しています。\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/attribute",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"attribute"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete user",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user activities",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/activities",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"activities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update user activities",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"name\": \"Qiita\",\n        \"url\": \"https://qiita.com/sky0621\",\n        \"icon\": \"pi pi-globe\"\n    },\n    {\n        \"name\": \"GitHub\",\n        \"url\": \"https://github.com/sky0621/\",\n        \"icon\": \"pi pi-github\"\n    },\n    {\n        \"name\": \"当サイト構築ソース\",\n        \"url\": \"https://github.com/sky0621/cv\",\n        \"icon\": \"pi pi-globe\"\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/activities",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"activities"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user qualifications",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/qualifications",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"qualifications"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update user qualifications",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"name\": \"Associate Cloud Engineer\",\n        \"organization\": \"Google\",\n        \"url\": \"https://cloud.google.com/certification/cloud-engineer?hl=ja\",\n        \"gotDate\": \"2018-09-24\",\n        \"memo\": \"有効期限切れ・・・。\"\n    }\n\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/qualifications",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"qualifications"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user careergroups",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/careergroups",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"careergroups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create user careergroup: EdTech系企業にて就労",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"label\": \"EdTech系企業にて就労\",\n    \"careers\": [\n        {\n            \"name\": \"プログラミング教育システム開発・保守\",\n            \"description\": [\"学習塾生向けテキストプログラミング教育システムの新規リリース及び保守・運用。\"],\n            \"from\":  { \"year\": 2022, \"month\": 1 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Frontend(SPA)\",\n                    \"skills\": [\n                        { \"name\": \"TypeScript\", \"url\": \"https://www.typescriptlang.org/\", \"version\": \"v4.8\" },\n                        { \"name\": \"React\", \"url\": \"https://ja.reactjs.org/\", \"version\": \"v18.2\" },\n                        { \"name\": \"React Router\", \"url\": \"https://reactrouter.com/en/main\", \"version\": \"v6.4\" },\n                        { \"name\": \"React Hooks\", \"url\": \"https://ja.reactjs.org/docs/hooks-intro.html\" },\n                        { \"name\": \"Redux\", \"url\": \"https://redux.js.org/\", \"version\": \"v8\" },\n                        { \"name\": \"Redux Toolkit\", \"url\": \"https://redux-toolkit.js.org/\" },\n                        { \"name\": \"React Hook Form\", \"url\": \"https://react-hook-form.com/\", \"version\": \"v7\" },\n                        { \"name\": \"CSS Modules\", \"url\": \"https://github.com/css-modules/css-modules\" },\n                        { \"name\": \"Prettier\", \"url\": \"https://prettier.io/\", \"version\": \"v2.7\" },\n                        { \"name\": \"Jest\", \"url\": \"https://jestjs.io/ja/\", \"version\": \"v27.5\" },\n                        { \"name\": \"scaffdog\", \"url\": \"https://scaff.dog/\", \"version\": \"v2\" },\n                        { \"name\": \"Yarn\", \"url\": \"https://yarnpkg.com/\", \"version\": \"v1.22\" }\n                    ]\n                },\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Golang\", \"url\": \"https://go.dev/\", \"version\": \"v1.18\" },\n                        { \"name\": \"chi\", \"url\": \"https://go-chi.io/#/\", \"version\": \"v5\" },\n                        { \"name\": \"wire\", \"url\": \"https://github.com/google/wire\" },\n                        { \"name\": \"ent\", \"url\": \"https://entgo.io/ja/\" },\n                        { \"name\": \"go-swagger\", \"url\": \"https://goswagger.io/\" },\n                        { \"name\": \"goverter\", \"url\": \"https://github.com/jmattheis/goverter\" },\n                        { \"name\": \"sqldef\", \"url\": \"https://sqldef.github.io/\" }\n                    ]\n                },\n                {\n                    \"label\": \"Infra(AWS)\",\n                    \"skills\": [\n                        { \"name\": \"EC2\" },\n                        { \"name\": \"ECS\" },\n                        { \"name\": \"Fargate\" },\n                        { \"name\": \"S3\" },\n                        { \"name\": \"RDS(MySQL/Aurora)\" },\n                        { \"name\": \"CloudFront\" },\n                        { \"name\": \"CodeBuild\" }\n                    ]\n                },\n                {\n                    \"label\": \"Others\",\n                    \"skills\": [\n                        { \"name\": \"docker\", \"url\": \"https://www.docker.com/\" },\n                        { \"name\": \"docker-compose\", \"url\": \"https://docs.docker.jp/compose/toc.html\" },\n                        { \"name\": \"Apiary\", \"url\": \"https://apiary.io/\" },\n                        { \"name\": \"SendGrid\", \"url\": \"https://www.twilio.com/ja/sendgrid/email-api\" },\n                        { \"name\": \"Sentry\", \"url\": \"https://sentry.io/welcome/\" },\n                        { \"name\": \"Clean Architecture\" },\n                        { \"name\": \"Jenkins\", \"url\": \"https://www.jenkins.io/\" },\n                        { \"name\": \"Wrike\", \"url\": \"https://www.wrike.com/ja/\" },\n                        { \"name\": \"Confluence\", \"url\": \"https://www.atlassian.com/ja\" },\n                        { \"name\": \"GitHub\", \"url\": \"https://github.co.jp/\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                { \"name\": \"バックエンド\", \"description\": [\"保守を担当\"] },\n                { \"name\": \"フロントエンド\", \"description\": [\"開発を担当\"] }\n            ]\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/careergroups",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"careergroups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create user careergroup: AdTech系企業にて就労",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"label\": \"AdTech系企業にて就労\",\n    \"careers\": [\n        {\n            \"name\": \"Web広告出稿管理システム新規開発\",\n            \"description\": [\"動画広告専用の出稿管理システムの新規リリース及び保守・運用。\"],\n            \"from\":  { \"year\": 2019, \"month\": 10 },\n            \"to\":  { \"year\": 2021, \"month\": 12 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Frontend(SSR/SPA)\",\n                    \"skills\": [\n                        { \"name\": \"TypeScript\", \"url\": \"https://www.typescriptlang.org/\" },\n                        { \"name\": \"Vue.js\", \"url\": \"https://jp.vuejs.org/index.html\", \"version\": \"v2\" },\n                        { \"name\": \"NuxtJS\", \"url\": \"https://nuxtjs.org/ja/\", \"version\": \"v2\" },\n                        { \"name\": \"Vuetify\", \"url\": \"https://vuetifyjs.com/ja/\" },\n                        { \"name\": \"Apollo\", \"url\": \"https://www.apollographql.com/\" },\n                        { \"name\": \"Axios\", \"url\": \"https://axios-http.com/\" },\n                        { \"name\": \"Prettier\", \"url\": \"https://prettier.io/\" },\n                        { \"name\": \"Jest\", \"url\": \"https://jestjs.io/ja/\" },\n                        { \"name\": \"Yarn\", \"url\": \"https://yarnpkg.com/\" }\n                    ]\n                },\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Golang\", \"url\": \"https://go.dev/\", \"version\": \"v1.16\" },\n                        { \"name\": \"chi\", \"url\": \"https://go-chi.io/#/\" },\n                        { \"name\": \"wire\", \"url\": \"https://github.com/google/wire\" },\n                        { \"name\": \"gqlgen\", \"url\": \"https://gqlgen.com/\" },\n                        { \"name\": \"SQLBoiler\", \"url\": \"https://github.com/volatiletech/sqlboiler\" }\n                    ]\n                },\n                {\n                    \"label\": \"Infra(GCP)\",\n                    \"skills\": [\n                        { \"name\": \"GKE\" },\n                        { \"name\": \"Cloud SQL(PostgreSQL)\" },\n                        { \"name\": \"Cloud Storage\" },\n                        { \"name\": \"Cloud Pub/Sub\" },\n                        { \"name\": \"Cloud Functions\" },\n                        { \"name\": \"Cloud Run\" },\n                        { \"name\": \"Firestore(Native mode)\" },\n                        { \"name\": \"Cloud Tasks\" },\n                        { \"name\": \"Cloud Scheduler\" },\n                        { \"name\": \"Memorystore\" },\n                        { \"name\": \"API Gateway\" },\n                        { \"name\": \"Cloud Build\" },\n                        { \"name\": \"Cloud Deploy\" },\n                        { \"name\": \"Container Registry\" }\n                    ]\n                },\n                {\n                    \"label\": \"Others\",\n                    \"skills\": [\n                        { \"name\": \"docker\", \"url\": \"https://www.docker.com/\" },\n                        { \"name\": \"docker-compose\", \"url\": \"https://docs.docker.jp/compose/toc.html\" },\n                        { \"name\": \"GraphQL\", \"url\": \"https://graphql.org/\" },\n                        { \"name\": \"gRPC\", \"url\": \"https://grpc.io/\" },\n                        { \"name\": \"gRPC-Gateway\", \"url\": \"https://grpc-ecosystem.github.io/grpc-gateway/\" },\n                        { \"name\": \"Auth0\", \"url\": \"https://auth0.com/jp\" },\n                        { \"name\": \"Terraform\", \"url\": \"https://www.terraform.io/\" },\n                        { \"name\": \"SendGrid\", \"url\": \"https://www.twilio.com/ja/sendgrid/email-api\" },\n                        { \"name\": \"Sentry\", \"url\": \"https://sentry.io/welcome/\" },\n                        { \"name\": \"GitHub\", \"url\": \"https://github.co.jp/\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                { \"name\": \"-\", \"description\": [\"機能開発・品質強化を機能、技術スタック、得意フェーズ問わず全般的に担当\"] }\n            ]\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/careergroups",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"careergroups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create user careergroup: MedTech系企業にて就労",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"label\": \"MedTech系企業にて就労\",\n    \"careers\": [\n        {\n            \"name\": \"医療系ポータルサイトWebシステム保守・運用\",\n            \"description\": [\"サービス毎に異なるプログラミング言語・アーキテクチャを持つ医療系ポータルサイト\"],\n            \"from\":  { \"year\": 2019, \"month\": 6 },\n            \"to\":  { \"year\": 2019, \"month\": 9 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Frontend(SPA)\",\n                    \"skills\": [\n                        { \"name\": \"Vue.js\", \"url\": \"https://jp.vuejs.org/index.html\", \"version\": \"v2\" }\n                    ]\n                },\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Java\", \"url\": \"https://www.java.com/ja/\", \"version\": \"v1.8\" },\n                        { \"name\": \"Spring\", \"url\": \"https://spring.io/\" },\n                        { \"name\": \"Scala\", \"url\": \"https://www.scala-lang.org/\", \"version\": \"v2.11\" },\n                        { \"name\": \"play\", \"url\": \"https://www.playframework.com/\", \"version\": \"v2.4\" },\n                        { \"name\": \"Kotlin\", \"url\": \"https://kotlinlang.org/\" }\n                    ]\n                },\n                {\n                    \"label\": \"Infra(AWS)\",\n                    \"skills\": [\n                        { \"name\": \"ECS\" }\n                    ]\n                },\n                {\n                    \"label\": \"Others\",\n                    \"skills\": [\n                        { \"name\": \"Terraform\", \"url\": \"https://www.terraform.io/\", \"version\": \"v0.11\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                {\n                    \"name\": \"バックエンド/フロントエンド\",\n                    \"description\": [\n                        \"Java8/Springで構築されたサービスのエンハンス開発\",\n                        \"Scala2.11/play2.4で構築されたサービスのエンハンス開発\",\n                        \"Kotlin/SpringBoot/Vue.jsで構築されたサービスのエンハンス開発etc...\"\n                    ]\n                }\n            ]\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/careergroups",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"careergroups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create user careergroup: Google Cloud Platformパートナー会社にて就労",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"label\": \"Google Cloud Platformパートナー会社にて就労\",\n    \"careers\": [\n        {\n            \"name\": \"防災用IoT機器管理Webシステム新規開発\",\n            \"description\": [\"防災用のIoT機器に対してWeb上からAPI経由で指示を出したり状態を管理するサービス\"],\n            \"from\":  { \"year\": 2018, \"month\": 11 },\n            \"to\":  { \"year\": 2019, \"month\": 5 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Frontend(SPA)\",\n                    \"skills\": [\n                        { \"name\": \"Vue.js\", \"url\": \"https://jp.vuejs.org/index.html\", \"version\": \"v2\" },\n                        { \"name\": \"NuxtJS\", \"url\": \"https://nuxtjs.org/ja/\", \"version\": \"v2\" },\n                        { \"name\": \"Vuex\", \"url\": \"https://vuex.vuejs.org/ja/\" },\n                        { \"name\": \"Vuetify\", \"url\": \"https://vuetifyjs.com/ja/\" },\n                        { \"name\": \"Axios\", \"url\": \"https://axios-http.com/\" }\n                    ]\n                },\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Golang\", \"url\": \"https://go.dev/\", \"version\": \"v1.11\" },\n                        { \"name\": \"Echo\", \"url\": \"https://echo.labstack.com/\" },\n                        { \"name\": \"GORM\", \"url\": \"https://gorm.io/ja_JP/\" }\n                    ]\n                },\n                {\n                    \"label\": \"Infra(GCP)\",\n                    \"skills\": [\n                        { \"name\": \"App Engine(Standard)\" },\n                        { \"name\": \"Cloud SQL(PostgreSQL)\" },\n                        { \"name\": \"Cloud Datastore\" },\n                        { \"name\": \"Bigtable\" },\n                        { \"name\": \"Cloud Functions(Node.js/TypeScript)\" },\n                        { \"name\": \"FirebaseAuth\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                { \"name\": \"Backend(Go)側\", \"description\": [\"プロトタイプ作成。\"] },\n                { \"name\": \"Frontend(Vue/Nuxt.js)側\", \"description\": [\"各機能(認証認可, お知らせ機能, 各種バッチ関連)の実装。\"] }\n            ]\n        },\n        {\n            \"name\": \"購買分析基盤新規開発\",\n            \"description\": [\"顧客の購買状況・行動を分析するサービス\"],\n            \"from\":  { \"year\": 2018, \"month\": 10 },\n            \"to\":  { \"year\": 2018, \"month\": 11 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Java\", \"url\": \"https://www.java.com/ja/\", \"version\": \"v1.8\" }\n                    ]\n                },\n                {\n                    \"label\": \"Infra(GCP)\",\n                    \"skills\": [\n                        { \"name\": \"App Engine(Standard)\" },\n                        { \"name\": \"Cloud Datastore\" },\n                        { \"name\": \"BigQuery\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                { \"name\": \"Backend\", \"description\": [\"分析APIのベース部分の実装。（期間限定のサポート要員として参画）\"] }\n            ]\n        },\n        {\n            \"name\": \"手書き帳票の識字Webシステム新規開発\",\n            \"description\": [\"手書きの帳票を、あらかじめ登録しておいたテンプレートと突き合わせて（WebAPIを使って）識字分析するサービス\"],\n            \"from\":  { \"year\": 2018, \"month\": 8 },\n            \"to\":  { \"year\": 2018, \"month\": 9 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Frontend\",\n                    \"skills\": [\n                        { \"name\": \"Angular\", \"url\": \"https://angular.jp/\", \"version\": \"v6\" },\n                        { \"name\": \"TypeScript\", \"url\": \"https://www.typescriptlang.org/\" }\n                    ]\n                },\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Java\", \"url\": \"https://www.java.com/ja/\", \"version\": \"v1.8\" }\n                    ]\n                },\n                {\n                    \"label\": \"Infra(GCP)\",\n                    \"skills\": [\n                        { \"name\": \"App Engine(Standard)\" },\n                        { \"name\": \"Cloud Datastore\" },\n                        { \"name\": \"BigQuery\" },\n                        { \"name\": \"Cloud Endpoints\" },\n                        { \"name\": \"FirebaseAuth\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                { \"name\": \"Backend\", \"description\": [\"機能改修全般。及びテストコードの充実化。\"] }\n            ]\n        }\n      ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/careergroups",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"careergroups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create user careergroup: AdTech系システム会社にて就労",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"label\": \"AdTech系システム会社にて就労\",\n    \"careers\": [\n        {\n            \"name\": \"Facebookメッセンジャーチャットボット開発\",\n            \"description\": [\"企業のFacebookボットとエンドユーザとのメッセージのやり取りをフックし、あらかじめ管理画面で設定したシナリオに応じたコンテンツを返却するサービス\"],\n            \"from\":  { \"year\": 2017, \"month\": 12 },\n            \"to\":  { \"year\": 2018, \"month\": 6 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Golang\", \"url\": \"https://go.dev/\", \"version\": \"v1.9\" },\n                        { \"name\": \"Echo\", \"url\": \"https://echo.labstack.com/\" },\n                        { \"name\": \"GORM\", \"url\": \"https://gorm.io/ja_JP/\" },\n                        { \"name\": \"gRPC\", \"url\": \"https://grpc.io/\" }\n                    ]\n                },\n                {\n                    \"label\": \"Infra(GCP)\",\n                    \"skills\": [\n                        { \"name\": \"GKE\" },\n                        { \"name\": \"Cloud SQL(MySQL)\" },\n                        { \"name\": \"Cloud Datastore\" },\n                        { \"name\": \"Cloud Pub/Sub\" },\n                        { \"name\": \"Cloud Functions(Golang)\" },\n                        { \"name\": \"Container Registry\" }\n                    ]\n                },\n                {\n                    \"label\": \"Others\",\n                    \"skills\": [\n                        { \"name\": \"docker\", \"url\": \"https://www.docker.com/\" },\n                        { \"name\": \"MicroService\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                {\n                    \"name\": \"バックエンド\",\n                    \"description\": [\n                        \"FacebookメッセンジャーAPIを使用したチャットボット機能の設計・開発・テスト等。\",\n                        \"- Facebookから送信されるメッセージを受信してキューに積む機能\",\n                        \"- エンドユーザのメッセンジャー端末に表示対象コンテンツを送信する機能\",\n                        \"- エンドユーザのメッセンジャー端末に送信すべき内容を（AI機能を持つ他サービスから取得し）加工する機能\"\n                    ]\n                }\n            ]\n        },\n        {\n            \"name\": \"LINEチャットボット開発\",\n            \"description\": [\n                \"企業のLINEページにてエンドユーザとのやり取り（FAQやアンケート回答等）をWebhookのメッセージとして受信し、あらかじめ管理画面にて設定した特定キーワードに対する応答コンテンツなどを返す。\",\n                \"また、蓄積したエンドユーザとのメッセージのやり取りやアンケート回答結果からセグメンテーションを行い、セグメントを絞ったLINEメッセージを一斉配信する。\"\n            ],\n            \"from\":  { \"year\": 2016, \"month\": 11 },\n            \"to\":  { \"year\": 2017, \"month\": 12 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Golang\", \"url\": \"https://go.dev/\", \"version\": \"v1.7\" },\n                        { \"name\": \"Echo\", \"url\": \"https://echo.labstack.com/\" },\n                        { \"name\": \"GORM\", \"url\": \"https://gorm.io/ja_JP/\" },\n                        { \"name\": \"gRPC\", \"url\": \"https://grpc.io/\" }\n                    ]\n                },\n                {\n                    \"label\": \"Infra(AWS)\",\n                    \"skills\": [\n                        { \"name\": \"EC2\" },\n                        { \"name\": \"S3\" },\n                        { \"name\": \"Cloud Front\" },\n                        { \"name\": \"SQS\" },\n                        { \"name\": \"RDB\" },\n                        { \"name\": \"DynamoDB\" },\n                        { \"name\": \"RedShift\" },\n                        { \"name\": \"ElastiCache\" },\n                        { \"name\": \"ECR\" }\n                    ]\n                },\n                {\n                    \"label\": \"Others\",\n                    \"skills\": [\n                        { \"name\": \"docker\", \"url\": \"https://www.docker.com/\" },\n                        { \"name\": \"MicroService\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                {\n                    \"name\": \"バックエンド\",\n                    \"description\": [\n                        \"LINE-APIを使用したチャットボット機能の設計・開発・テスト・リリース作業等。\",\n                        \"LINEから送信されるメッセージを受信、対応するコンテンツを返却するバックエンド側のメイン動線を担当。\"\n                    ]\n                }\n            ]\n        }\n      ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/careergroups",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"careergroups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user notes",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/notes",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"notes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create note: 就労状況",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"label\": \"就労状況\",\n    \"items\": [\n        {\n            \"text\": \"就労中。 フリーとして参画できる案件であれば内容次第で話を聞きたい。\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/notes",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"notes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create note: 就労条件",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"label\": \"就労条件\",\n    \"items\": [\n        { \"text\": \"【必須】リモートワーク可の案件\" },\n        { \"text\": \"【必須】新規開発、ないし、ローンチから１年以内の案件\" },\n        { \"text\": \"【必須】フロントエンド、バックエンド、インフラ各要素万遍なく関われる案件\" },\n        { \"text\": \"【必須】フロントエンドは React、または Vue.js\" },\n        { \"text\": \"【必須】バックエンドは Golang もしくは Java、Kotlin、Scala等のJVM系言語\" },\n        { \"text\": \"【必須】インフラは AWS または GCP\" },\n        { \"text\": \"GraphQLを使っている\" },\n        { \"text\": \"Scrum開発を行っている\" },\n        { \"text\": \"未経験可であれば Rust も挑戦したい\" }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/notes",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"notes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create note: 理想とする現場",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"label\": \"理想とする現場\",\n    \"items\": [\n        { \"text\": \"全メンバーがHRT(謙虚・尊敬・信頼)を意識している。\" },\n        { \"text\": \"プロダクトを磨き込む意識がある。\" },\n        { \"text\": \"新しい技術にチャレンジする。\" },\n        { \"text\": \"負債と向き合い、改善を求める。\" }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/notes",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"notes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create note: 家庭学習の状況",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"label\": \"家庭学習の状況\",\n    \"memo\": \"以下、写経、チュートリアル、検証実装を実施中。\",\n    \"items\": [\n        {\n            \"text\": \"React\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/notes",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"notes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create note: 未経験だが興味があるもの",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"label\": \"未経験だが興味があるもの\",\n    \"items\": [\n        {\n            \"text\": \"IoT\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/users/{{user_id}}/notes",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"{{user_id}}",
+						"notes"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
