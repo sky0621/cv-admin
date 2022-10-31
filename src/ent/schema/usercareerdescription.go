@@ -16,7 +16,7 @@ type UserCareerDescription struct {
 // Fields of the UserCareerDescription.
 func (UserCareerDescription) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("description").NotEmpty().Validate(maxRuneCount(80)),
+		field.String("description").NotEmpty().Validate(maxRuneCount(400)),
 	}
 }
 
