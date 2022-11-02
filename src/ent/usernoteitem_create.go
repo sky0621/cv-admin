@@ -203,27 +203,15 @@ func (unic *UserNoteItemCreate) createSpec() (*UserNoteItem, *sqlgraph.CreateSpe
 	)
 	_spec.OnConflict = unic.conflict
 	if value, ok := unic.mutation.CreateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: usernoteitem.FieldCreateTime,
-		})
+		_spec.SetField(usernoteitem.FieldCreateTime, field.TypeTime, value)
 		_node.CreateTime = value
 	}
 	if value, ok := unic.mutation.UpdateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: usernoteitem.FieldUpdateTime,
-		})
+		_spec.SetField(usernoteitem.FieldUpdateTime, field.TypeTime, value)
 		_node.UpdateTime = value
 	}
 	if value, ok := unic.mutation.Text(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usernoteitem.FieldText,
-		})
+		_spec.SetField(usernoteitem.FieldText, field.TypeString, value)
 		_node.Text = value
 	}
 	if nodes := unic.mutation.NoteIDs(); len(nodes) > 0 {

@@ -332,6 +332,11 @@ func (ucdq *UserCareerDescriptionQuery) Select(fields ...string) *UserCareerDesc
 	return selbuild
 }
 
+// Aggregate returns a UserCareerDescriptionSelect configured with the given aggregations.
+func (ucdq *UserCareerDescriptionQuery) Aggregate(fns ...AggregateFunc) *UserCareerDescriptionSelect {
+	return ucdq.Select().Aggregate(fns...)
+}
+
 func (ucdq *UserCareerDescriptionQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range ucdq.fields {
 		if !usercareerdescription.ValidColumn(f) {
@@ -572,8 +577,6 @@ func (ucdgb *UserCareerDescriptionGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range ucdgb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(ucdgb.fields)+len(ucdgb.fns))
 		for _, f := range ucdgb.fields {
@@ -593,6 +596,12 @@ type UserCareerDescriptionSelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (ucds *UserCareerDescriptionSelect) Aggregate(fns ...AggregateFunc) *UserCareerDescriptionSelect {
+	ucds.fns = append(ucds.fns, fns...)
+	return ucds
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (ucds *UserCareerDescriptionSelect) Scan(ctx context.Context, v any) error {
 	if err := ucds.prepareQuery(ctx); err != nil {
@@ -603,6 +612,16 @@ func (ucds *UserCareerDescriptionSelect) Scan(ctx context.Context, v any) error 
 }
 
 func (ucds *UserCareerDescriptionSelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(ucds.fns))
+	for _, fn := range ucds.fns {
+		aggregation = append(aggregation, fn(ucds.sql))
+	}
+	switch n := len(*ucds.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		ucds.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		ucds.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := ucds.sql.Query()
 	if err := ucds.driver.Query(ctx, query, args, rows); err != nil {

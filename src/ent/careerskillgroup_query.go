@@ -369,6 +369,11 @@ func (csgq *CareerSkillGroupQuery) Select(fields ...string) *CareerSkillGroupSel
 	return selbuild
 }
 
+// Aggregate returns a CareerSkillGroupSelect configured with the given aggregations.
+func (csgq *CareerSkillGroupQuery) Aggregate(fns ...AggregateFunc) *CareerSkillGroupSelect {
+	return csgq.Select().Aggregate(fns...)
+}
+
 func (csgq *CareerSkillGroupQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range csgq.fields {
 		if !careerskillgroup.ValidColumn(f) {
@@ -648,8 +653,6 @@ func (csggb *CareerSkillGroupGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range csggb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(csggb.fields)+len(csggb.fns))
 		for _, f := range csggb.fields {
@@ -669,6 +672,12 @@ type CareerSkillGroupSelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (csgs *CareerSkillGroupSelect) Aggregate(fns ...AggregateFunc) *CareerSkillGroupSelect {
+	csgs.fns = append(csgs.fns, fns...)
+	return csgs
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (csgs *CareerSkillGroupSelect) Scan(ctx context.Context, v any) error {
 	if err := csgs.prepareQuery(ctx); err != nil {
@@ -679,6 +688,16 @@ func (csgs *CareerSkillGroupSelect) Scan(ctx context.Context, v any) error {
 }
 
 func (csgs *CareerSkillGroupSelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(csgs.fns))
+	for _, fn := range csgs.fns {
+		aggregation = append(aggregation, fn(csgs.sql))
+	}
+	switch n := len(*csgs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		csgs.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		csgs.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := csgs.sql.Query()
 	if err := csgs.driver.Query(ctx, query, args, rows); err != nil {

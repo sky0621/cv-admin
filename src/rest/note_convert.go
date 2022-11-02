@@ -2,6 +2,8 @@ package rest
 
 import "github.com/sky0621/cv-admin/src/ent"
 
+// TODO: goverter での置き換えを試す。
+
 func ToSwaggerUserNoteItem(entNoteItem *ent.UserNoteItem) UserNoteItem {
 	if entNoteItem == nil {
 		return UserNoteItem{}

@@ -14,6 +14,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
 	"github.com/sky0621/cv-admin/src/ent/careertask"
 	"github.com/sky0621/cv-admin/src/ent/careertaskdescription"
+	"github.com/sky0621/cv-admin/src/ent/skill"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
@@ -41,6 +42,8 @@ type Client struct {
 	CareerTask *CareerTaskClient
 	// CareerTaskDescription is the client for interacting with the CareerTaskDescription builders.
 	CareerTaskDescription *CareerTaskDescriptionClient
+	// Skill is the client for interacting with the Skill builders.
+	Skill *SkillClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserActivity is the client for interacting with the UserActivity builders.
@@ -74,6 +77,7 @@ func (c *Client) init() {
 	c.CareerSkillGroup = NewCareerSkillGroupClient(c.config)
 	c.CareerTask = NewCareerTaskClient(c.config)
 	c.CareerTaskDescription = NewCareerTaskDescriptionClient(c.config)
+	c.Skill = NewSkillClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserActivity = NewUserActivityClient(c.config)
 	c.UserCareer = NewUserCareerClient(c.config)
@@ -119,6 +123,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		CareerSkillGroup:      NewCareerSkillGroupClient(cfg),
 		CareerTask:            NewCareerTaskClient(cfg),
 		CareerTaskDescription: NewCareerTaskDescriptionClient(cfg),
+		Skill:                 NewSkillClient(cfg),
 		User:                  NewUserClient(cfg),
 		UserActivity:          NewUserActivityClient(cfg),
 		UserCareer:            NewUserCareerClient(cfg),
@@ -150,6 +155,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		CareerSkillGroup:      NewCareerSkillGroupClient(cfg),
 		CareerTask:            NewCareerTaskClient(cfg),
 		CareerTaskDescription: NewCareerTaskDescriptionClient(cfg),
+		Skill:                 NewSkillClient(cfg),
 		User:                  NewUserClient(cfg),
 		UserActivity:          NewUserActivityClient(cfg),
 		UserCareer:            NewUserCareerClient(cfg),
@@ -190,6 +196,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.CareerSkillGroup.Use(hooks...)
 	c.CareerTask.Use(hooks...)
 	c.CareerTaskDescription.Use(hooks...)
+	c.Skill.Use(hooks...)
 	c.User.Use(hooks...)
 	c.UserActivity.Use(hooks...)
 	c.UserCareer.Use(hooks...)
@@ -256,7 +263,7 @@ func (c *CareerSkillClient) DeleteOne(cs *CareerSkill) *CareerSkillDeleteOne {
 	return c.DeleteOneID(cs.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *CareerSkillClient) DeleteOneID(id int) *CareerSkillDeleteOne {
 	builder := c.Delete().Where(careerskill.ID(id))
 	builder.mutation.id = &id
@@ -288,7 +295,7 @@ func (c *CareerSkillClient) GetX(ctx context.Context, id int) *CareerSkill {
 // QueryCareerSkillGroup queries the careerSkillGroup edge of a CareerSkill.
 func (c *CareerSkillClient) QueryCareerSkillGroup(cs *CareerSkill) *CareerSkillGroupQuery {
 	query := &CareerSkillGroupQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := cs.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(careerskill.Table, careerskill.FieldID, id),
@@ -362,7 +369,7 @@ func (c *CareerSkillGroupClient) DeleteOne(csg *CareerSkillGroup) *CareerSkillGr
 	return c.DeleteOneID(csg.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *CareerSkillGroupClient) DeleteOneID(id int) *CareerSkillGroupDeleteOne {
 	builder := c.Delete().Where(careerskillgroup.ID(id))
 	builder.mutation.id = &id
@@ -394,7 +401,7 @@ func (c *CareerSkillGroupClient) GetX(ctx context.Context, id int) *CareerSkillG
 // QueryCareer queries the career edge of a CareerSkillGroup.
 func (c *CareerSkillGroupClient) QueryCareer(csg *CareerSkillGroup) *UserCareerQuery {
 	query := &UserCareerQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := csg.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(careerskillgroup.Table, careerskillgroup.FieldID, id),
@@ -410,7 +417,7 @@ func (c *CareerSkillGroupClient) QueryCareer(csg *CareerSkillGroup) *UserCareerQ
 // QueryCareerSkills queries the careerSkills edge of a CareerSkillGroup.
 func (c *CareerSkillGroupClient) QueryCareerSkills(csg *CareerSkillGroup) *CareerSkillQuery {
 	query := &CareerSkillQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := csg.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(careerskillgroup.Table, careerskillgroup.FieldID, id),
@@ -484,7 +491,7 @@ func (c *CareerTaskClient) DeleteOne(ct *CareerTask) *CareerTaskDeleteOne {
 	return c.DeleteOneID(ct.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *CareerTaskClient) DeleteOneID(id int) *CareerTaskDeleteOne {
 	builder := c.Delete().Where(careertask.ID(id))
 	builder.mutation.id = &id
@@ -516,7 +523,7 @@ func (c *CareerTaskClient) GetX(ctx context.Context, id int) *CareerTask {
 // QueryCareer queries the career edge of a CareerTask.
 func (c *CareerTaskClient) QueryCareer(ct *CareerTask) *UserCareerQuery {
 	query := &UserCareerQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ct.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(careertask.Table, careertask.FieldID, id),
@@ -532,7 +539,7 @@ func (c *CareerTaskClient) QueryCareer(ct *CareerTask) *UserCareerQuery {
 // QueryCareerTaskDescriptions queries the careerTaskDescriptions edge of a CareerTask.
 func (c *CareerTaskClient) QueryCareerTaskDescriptions(ct *CareerTask) *CareerTaskDescriptionQuery {
 	query := &CareerTaskDescriptionQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ct.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(careertask.Table, careertask.FieldID, id),
@@ -606,7 +613,7 @@ func (c *CareerTaskDescriptionClient) DeleteOne(ctd *CareerTaskDescription) *Car
 	return c.DeleteOneID(ctd.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *CareerTaskDescriptionClient) DeleteOneID(id int) *CareerTaskDescriptionDeleteOne {
 	builder := c.Delete().Where(careertaskdescription.ID(id))
 	builder.mutation.id = &id
@@ -638,7 +645,7 @@ func (c *CareerTaskDescriptionClient) GetX(ctx context.Context, id int) *CareerT
 // QueryCareerTask queries the careerTask edge of a CareerTaskDescription.
 func (c *CareerTaskDescriptionClient) QueryCareerTask(ctd *CareerTaskDescription) *CareerTaskQuery {
 	query := &CareerTaskQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ctd.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(careertaskdescription.Table, careertaskdescription.FieldID, id),
@@ -654,6 +661,96 @@ func (c *CareerTaskDescriptionClient) QueryCareerTask(ctd *CareerTaskDescription
 // Hooks returns the client hooks.
 func (c *CareerTaskDescriptionClient) Hooks() []Hook {
 	return c.hooks.CareerTaskDescription
+}
+
+// SkillClient is a client for the Skill schema.
+type SkillClient struct {
+	config
+}
+
+// NewSkillClient returns a client for the Skill from the given config.
+func NewSkillClient(c config) *SkillClient {
+	return &SkillClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `skill.Hooks(f(g(h())))`.
+func (c *SkillClient) Use(hooks ...Hook) {
+	c.hooks.Skill = append(c.hooks.Skill, hooks...)
+}
+
+// Create returns a builder for creating a Skill entity.
+func (c *SkillClient) Create() *SkillCreate {
+	mutation := newSkillMutation(c.config, OpCreate)
+	return &SkillCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Skill entities.
+func (c *SkillClient) CreateBulk(builders ...*SkillCreate) *SkillCreateBulk {
+	return &SkillCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Skill.
+func (c *SkillClient) Update() *SkillUpdate {
+	mutation := newSkillMutation(c.config, OpUpdate)
+	return &SkillUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SkillClient) UpdateOne(s *Skill) *SkillUpdateOne {
+	mutation := newSkillMutation(c.config, OpUpdateOne, withSkill(s))
+	return &SkillUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SkillClient) UpdateOneID(id int) *SkillUpdateOne {
+	mutation := newSkillMutation(c.config, OpUpdateOne, withSkillID(id))
+	return &SkillUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Skill.
+func (c *SkillClient) Delete() *SkillDelete {
+	mutation := newSkillMutation(c.config, OpDelete)
+	return &SkillDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SkillClient) DeleteOne(s *Skill) *SkillDeleteOne {
+	return c.DeleteOneID(s.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SkillClient) DeleteOneID(id int) *SkillDeleteOne {
+	builder := c.Delete().Where(skill.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SkillDeleteOne{builder}
+}
+
+// Query returns a query builder for Skill.
+func (c *SkillClient) Query() *SkillQuery {
+	return &SkillQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Skill entity by its id.
+func (c *SkillClient) Get(ctx context.Context, id int) (*Skill, error) {
+	return c.Query().Where(skill.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SkillClient) GetX(ctx context.Context, id int) *Skill {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SkillClient) Hooks() []Hook {
+	return c.hooks.Skill
 }
 
 // UserClient is a client for the User schema.
@@ -712,7 +809,7 @@ func (c *UserClient) DeleteOne(u *User) *UserDeleteOne {
 	return c.DeleteOneID(u.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *UserClient) DeleteOneID(id int) *UserDeleteOne {
 	builder := c.Delete().Where(user.ID(id))
 	builder.mutation.id = &id
@@ -744,7 +841,7 @@ func (c *UserClient) GetX(ctx context.Context, id int) *User {
 // QueryActivities queries the activities edge of a User.
 func (c *UserClient) QueryActivities(u *User) *UserActivityQuery {
 	query := &UserActivityQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
@@ -760,7 +857,7 @@ func (c *UserClient) QueryActivities(u *User) *UserActivityQuery {
 // QueryQualifications queries the qualifications edge of a User.
 func (c *UserClient) QueryQualifications(u *User) *UserQualificationQuery {
 	query := &UserQualificationQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
@@ -776,7 +873,7 @@ func (c *UserClient) QueryQualifications(u *User) *UserQualificationQuery {
 // QueryCareerGroups queries the careerGroups edge of a User.
 func (c *UserClient) QueryCareerGroups(u *User) *UserCareerGroupQuery {
 	query := &UserCareerGroupQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
@@ -792,7 +889,7 @@ func (c *UserClient) QueryCareerGroups(u *User) *UserCareerGroupQuery {
 // QueryNotes queries the notes edge of a User.
 func (c *UserClient) QueryNotes(u *User) *UserNoteQuery {
 	query := &UserNoteQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
@@ -866,7 +963,7 @@ func (c *UserActivityClient) DeleteOne(ua *UserActivity) *UserActivityDeleteOne 
 	return c.DeleteOneID(ua.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *UserActivityClient) DeleteOneID(id int) *UserActivityDeleteOne {
 	builder := c.Delete().Where(useractivity.ID(id))
 	builder.mutation.id = &id
@@ -898,7 +995,7 @@ func (c *UserActivityClient) GetX(ctx context.Context, id int) *UserActivity {
 // QueryUser queries the user edge of a UserActivity.
 func (c *UserActivityClient) QueryUser(ua *UserActivity) *UserQuery {
 	query := &UserQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ua.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(useractivity.Table, useractivity.FieldID, id),
@@ -972,7 +1069,7 @@ func (c *UserCareerClient) DeleteOne(uc *UserCareer) *UserCareerDeleteOne {
 	return c.DeleteOneID(uc.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *UserCareerClient) DeleteOneID(id int) *UserCareerDeleteOne {
 	builder := c.Delete().Where(usercareer.ID(id))
 	builder.mutation.id = &id
@@ -1004,7 +1101,7 @@ func (c *UserCareerClient) GetX(ctx context.Context, id int) *UserCareer {
 // QueryCareerGroup queries the careerGroup edge of a UserCareer.
 func (c *UserCareerClient) QueryCareerGroup(uc *UserCareer) *UserCareerGroupQuery {
 	query := &UserCareerGroupQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := uc.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareer.Table, usercareer.FieldID, id),
@@ -1020,7 +1117,7 @@ func (c *UserCareerClient) QueryCareerGroup(uc *UserCareer) *UserCareerGroupQuer
 // QueryCareerDescriptions queries the careerDescriptions edge of a UserCareer.
 func (c *UserCareerClient) QueryCareerDescriptions(uc *UserCareer) *UserCareerDescriptionQuery {
 	query := &UserCareerDescriptionQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := uc.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareer.Table, usercareer.FieldID, id),
@@ -1036,7 +1133,7 @@ func (c *UserCareerClient) QueryCareerDescriptions(uc *UserCareer) *UserCareerDe
 // QueryCareerTasks queries the careerTasks edge of a UserCareer.
 func (c *UserCareerClient) QueryCareerTasks(uc *UserCareer) *CareerTaskQuery {
 	query := &CareerTaskQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := uc.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareer.Table, usercareer.FieldID, id),
@@ -1052,7 +1149,7 @@ func (c *UserCareerClient) QueryCareerTasks(uc *UserCareer) *CareerTaskQuery {
 // QueryCareerSkillGroups queries the careerSkillGroups edge of a UserCareer.
 func (c *UserCareerClient) QueryCareerSkillGroups(uc *UserCareer) *CareerSkillGroupQuery {
 	query := &CareerSkillGroupQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := uc.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareer.Table, usercareer.FieldID, id),
@@ -1126,7 +1223,7 @@ func (c *UserCareerDescriptionClient) DeleteOne(ucd *UserCareerDescription) *Use
 	return c.DeleteOneID(ucd.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *UserCareerDescriptionClient) DeleteOneID(id int) *UserCareerDescriptionDeleteOne {
 	builder := c.Delete().Where(usercareerdescription.ID(id))
 	builder.mutation.id = &id
@@ -1158,7 +1255,7 @@ func (c *UserCareerDescriptionClient) GetX(ctx context.Context, id int) *UserCar
 // QueryCareer queries the career edge of a UserCareerDescription.
 func (c *UserCareerDescriptionClient) QueryCareer(ucd *UserCareerDescription) *UserCareerQuery {
 	query := &UserCareerQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ucd.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareerdescription.Table, usercareerdescription.FieldID, id),
@@ -1232,7 +1329,7 @@ func (c *UserCareerGroupClient) DeleteOne(ucg *UserCareerGroup) *UserCareerGroup
 	return c.DeleteOneID(ucg.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *UserCareerGroupClient) DeleteOneID(id int) *UserCareerGroupDeleteOne {
 	builder := c.Delete().Where(usercareergroup.ID(id))
 	builder.mutation.id = &id
@@ -1264,7 +1361,7 @@ func (c *UserCareerGroupClient) GetX(ctx context.Context, id int) *UserCareerGro
 // QueryUser queries the user edge of a UserCareerGroup.
 func (c *UserCareerGroupClient) QueryUser(ucg *UserCareerGroup) *UserQuery {
 	query := &UserQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ucg.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareergroup.Table, usercareergroup.FieldID, id),
@@ -1280,7 +1377,7 @@ func (c *UserCareerGroupClient) QueryUser(ucg *UserCareerGroup) *UserQuery {
 // QueryCareers queries the careers edge of a UserCareerGroup.
 func (c *UserCareerGroupClient) QueryCareers(ucg *UserCareerGroup) *UserCareerQuery {
 	query := &UserCareerQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ucg.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usercareergroup.Table, usercareergroup.FieldID, id),
@@ -1354,7 +1451,7 @@ func (c *UserNoteClient) DeleteOne(un *UserNote) *UserNoteDeleteOne {
 	return c.DeleteOneID(un.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *UserNoteClient) DeleteOneID(id int) *UserNoteDeleteOne {
 	builder := c.Delete().Where(usernote.ID(id))
 	builder.mutation.id = &id
@@ -1386,7 +1483,7 @@ func (c *UserNoteClient) GetX(ctx context.Context, id int) *UserNote {
 // QueryUser queries the user edge of a UserNote.
 func (c *UserNoteClient) QueryUser(un *UserNote) *UserQuery {
 	query := &UserQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := un.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usernote.Table, usernote.FieldID, id),
@@ -1402,7 +1499,7 @@ func (c *UserNoteClient) QueryUser(un *UserNote) *UserQuery {
 // QueryNoteItems queries the noteItems edge of a UserNote.
 func (c *UserNoteClient) QueryNoteItems(un *UserNote) *UserNoteItemQuery {
 	query := &UserNoteItemQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := un.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usernote.Table, usernote.FieldID, id),
@@ -1476,7 +1573,7 @@ func (c *UserNoteItemClient) DeleteOne(uni *UserNoteItem) *UserNoteItemDeleteOne
 	return c.DeleteOneID(uni.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *UserNoteItemClient) DeleteOneID(id int) *UserNoteItemDeleteOne {
 	builder := c.Delete().Where(usernoteitem.ID(id))
 	builder.mutation.id = &id
@@ -1508,7 +1605,7 @@ func (c *UserNoteItemClient) GetX(ctx context.Context, id int) *UserNoteItem {
 // QueryNote queries the note edge of a UserNoteItem.
 func (c *UserNoteItemClient) QueryNote(uni *UserNoteItem) *UserNoteQuery {
 	query := &UserNoteQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := uni.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(usernoteitem.Table, usernoteitem.FieldID, id),
@@ -1582,7 +1679,7 @@ func (c *UserQualificationClient) DeleteOne(uq *UserQualification) *UserQualific
 	return c.DeleteOneID(uq.ID)
 }
 
-// DeleteOne returns a builder for deleting the given entity by its id.
+// DeleteOneID returns a builder for deleting the given entity by its id.
 func (c *UserQualificationClient) DeleteOneID(id int) *UserQualificationDeleteOne {
 	builder := c.Delete().Where(userqualification.ID(id))
 	builder.mutation.id = &id
@@ -1614,7 +1711,7 @@ func (c *UserQualificationClient) GetX(ctx context.Context, id int) *UserQualifi
 // QueryUser queries the user edge of a UserQualification.
 func (c *UserQualificationClient) QueryUser(uq *UserQualification) *UserQuery {
 	query := &UserQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := uq.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(userqualification.Table, userqualification.FieldID, id),

@@ -148,11 +148,7 @@ func (ctdu *CareerTaskDescriptionUpdate) sqlSave(ctx context.Context) (n int, er
 		}
 	}
 	if value, ok := ctdu.mutation.Description(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careertaskdescription.FieldDescription,
-		})
+		_spec.SetField(careertaskdescription.FieldDescription, field.TypeString, value)
 	}
 	if ctdu.mutation.CareerTaskCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -358,11 +354,7 @@ func (ctduo *CareerTaskDescriptionUpdateOne) sqlSave(ctx context.Context) (_node
 		}
 	}
 	if value, ok := ctduo.mutation.Description(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careertaskdescription.FieldDescription,
-		})
+		_spec.SetField(careertaskdescription.FieldDescription, field.TypeString, value)
 	}
 	if ctduo.mutation.CareerTaskCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -332,6 +332,11 @@ func (csq *CareerSkillQuery) Select(fields ...string) *CareerSkillSelect {
 	return selbuild
 }
 
+// Aggregate returns a CareerSkillSelect configured with the given aggregations.
+func (csq *CareerSkillQuery) Aggregate(fns ...AggregateFunc) *CareerSkillSelect {
+	return csq.Select().Aggregate(fns...)
+}
+
 func (csq *CareerSkillQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range csq.fields {
 		if !careerskill.ValidColumn(f) {
@@ -572,8 +577,6 @@ func (csgb *CareerSkillGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range csgb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(csgb.fields)+len(csgb.fns))
 		for _, f := range csgb.fields {
@@ -593,6 +596,12 @@ type CareerSkillSelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (css *CareerSkillSelect) Aggregate(fns ...AggregateFunc) *CareerSkillSelect {
+	css.fns = append(css.fns, fns...)
+	return css
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (css *CareerSkillSelect) Scan(ctx context.Context, v any) error {
 	if err := css.prepareQuery(ctx); err != nil {
@@ -603,6 +612,16 @@ func (css *CareerSkillSelect) Scan(ctx context.Context, v any) error {
 }
 
 func (css *CareerSkillSelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(css.fns))
+	for _, fn := range css.fns {
+		aggregation = append(aggregation, fn(css.sql))
+	}
+	switch n := len(*css.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		css.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		css.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := css.sql.Query()
 	if err := css.driver.Query(ctx, query, args, rows); err != nil {

@@ -219,27 +219,15 @@ func (csgc *CareerSkillGroupCreate) createSpec() (*CareerSkillGroup, *sqlgraph.C
 	)
 	_spec.OnConflict = csgc.conflict
 	if value, ok := csgc.mutation.CreateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: careerskillgroup.FieldCreateTime,
-		})
+		_spec.SetField(careerskillgroup.FieldCreateTime, field.TypeTime, value)
 		_node.CreateTime = value
 	}
 	if value, ok := csgc.mutation.UpdateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: careerskillgroup.FieldUpdateTime,
-		})
+		_spec.SetField(careerskillgroup.FieldUpdateTime, field.TypeTime, value)
 		_node.UpdateTime = value
 	}
 	if value, ok := csgc.mutation.Label(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careerskillgroup.FieldLabel,
-		})
+		_spec.SetField(careerskillgroup.FieldLabel, field.TypeString, value)
 		_node.Label = value
 	}
 	if nodes := csgc.mutation.CareerIDs(); len(nodes) > 0 {

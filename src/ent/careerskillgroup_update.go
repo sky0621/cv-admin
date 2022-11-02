@@ -201,18 +201,10 @@ func (csgu *CareerSkillGroupUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 	}
 	if value, ok := csgu.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: careerskillgroup.FieldUpdateTime,
-		})
+		_spec.SetField(careerskillgroup.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := csgu.mutation.Label(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careerskillgroup.FieldLabel,
-		})
+		_spec.SetField(careerskillgroup.FieldLabel, field.TypeString, value)
 	}
 	if csgu.mutation.CareerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -523,18 +515,10 @@ func (csguo *CareerSkillGroupUpdateOne) sqlSave(ctx context.Context) (_node *Car
 		}
 	}
 	if value, ok := csguo.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: careerskillgroup.FieldUpdateTime,
-		})
+		_spec.SetField(careerskillgroup.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := csguo.mutation.Label(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careerskillgroup.FieldLabel,
-		})
+		_spec.SetField(careerskillgroup.FieldLabel, field.TypeString, value)
 	}
 	if csguo.mutation.CareerCleared() {
 		edge := &sqlgraph.EdgeSpec{

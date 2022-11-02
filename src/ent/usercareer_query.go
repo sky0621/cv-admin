@@ -441,6 +441,11 @@ func (ucq *UserCareerQuery) Select(fields ...string) *UserCareerSelect {
 	return selbuild
 }
 
+// Aggregate returns a UserCareerSelect configured with the given aggregations.
+func (ucq *UserCareerQuery) Aggregate(fns ...AggregateFunc) *UserCareerSelect {
+	return ucq.Select().Aggregate(fns...)
+}
+
 func (ucq *UserCareerQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range ucq.fields {
 		if !usercareer.ValidColumn(f) {
@@ -802,8 +807,6 @@ func (ucgb *UserCareerGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range ucgb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(ucgb.fields)+len(ucgb.fns))
 		for _, f := range ucgb.fields {
@@ -823,6 +826,12 @@ type UserCareerSelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (ucs *UserCareerSelect) Aggregate(fns ...AggregateFunc) *UserCareerSelect {
+	ucs.fns = append(ucs.fns, fns...)
+	return ucs
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (ucs *UserCareerSelect) Scan(ctx context.Context, v any) error {
 	if err := ucs.prepareQuery(ctx); err != nil {
@@ -833,6 +842,16 @@ func (ucs *UserCareerSelect) Scan(ctx context.Context, v any) error {
 }
 
 func (ucs *UserCareerSelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(ucs.fns))
+	for _, fn := range ucs.fns {
+		aggregation = append(aggregation, fn(ucs.sql))
+	}
+	switch n := len(*ucs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		ucs.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		ucs.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := ucs.sql.Query()
 	if err := ucs.driver.Query(ctx, query, args, rows); err != nil {

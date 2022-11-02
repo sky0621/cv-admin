@@ -219,27 +219,15 @@ func (ctc *CareerTaskCreate) createSpec() (*CareerTask, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = ctc.conflict
 	if value, ok := ctc.mutation.CreateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: careertask.FieldCreateTime,
-		})
+		_spec.SetField(careertask.FieldCreateTime, field.TypeTime, value)
 		_node.CreateTime = value
 	}
 	if value, ok := ctc.mutation.UpdateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: careertask.FieldUpdateTime,
-		})
+		_spec.SetField(careertask.FieldUpdateTime, field.TypeTime, value)
 		_node.UpdateTime = value
 	}
 	if value, ok := ctc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careertask.FieldName,
-		})
+		_spec.SetField(careertask.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if nodes := ctc.mutation.CareerIDs(); len(nodes) > 0 {

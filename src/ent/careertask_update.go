@@ -201,18 +201,10 @@ func (ctu *CareerTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := ctu.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: careertask.FieldUpdateTime,
-		})
+		_spec.SetField(careertask.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := ctu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careertask.FieldName,
-		})
+		_spec.SetField(careertask.FieldName, field.TypeString, value)
 	}
 	if ctu.mutation.CareerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -523,18 +515,10 @@ func (ctuo *CareerTaskUpdateOne) sqlSave(ctx context.Context) (_node *CareerTask
 		}
 	}
 	if value, ok := ctuo.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: careertask.FieldUpdateTime,
-		})
+		_spec.SetField(careertask.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := ctuo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careertask.FieldName,
-		})
+		_spec.SetField(careertask.FieldName, field.TypeString, value)
 	}
 	if ctuo.mutation.CareerCleared() {
 		edge := &sqlgraph.EdgeSpec{

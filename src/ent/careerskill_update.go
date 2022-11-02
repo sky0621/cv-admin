@@ -214,44 +214,22 @@ func (csu *CareerSkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := csu.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: careerskill.FieldUpdateTime,
-		})
+		_spec.SetField(careerskill.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := csu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careerskill.FieldName,
-		})
+		_spec.SetField(careerskill.FieldName, field.TypeString, value)
 	}
 	if value, ok := csu.mutation.URL(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careerskill.FieldURL,
-		})
+		_spec.SetField(careerskill.FieldURL, field.TypeString, value)
 	}
 	if csu.mutation.URLCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: careerskill.FieldURL,
-		})
+		_spec.ClearField(careerskill.FieldURL, field.TypeString)
 	}
 	if value, ok := csu.mutation.Version(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careerskill.FieldVersion,
-		})
+		_spec.SetField(careerskill.FieldVersion, field.TypeString, value)
 	}
 	if csu.mutation.VersionCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: careerskill.FieldVersion,
-		})
+		_spec.ClearField(careerskill.FieldVersion, field.TypeString)
 	}
 	if csu.mutation.CareerSkillGroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -522,44 +500,22 @@ func (csuo *CareerSkillUpdateOne) sqlSave(ctx context.Context) (_node *CareerSki
 		}
 	}
 	if value, ok := csuo.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: careerskill.FieldUpdateTime,
-		})
+		_spec.SetField(careerskill.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := csuo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careerskill.FieldName,
-		})
+		_spec.SetField(careerskill.FieldName, field.TypeString, value)
 	}
 	if value, ok := csuo.mutation.URL(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careerskill.FieldURL,
-		})
+		_spec.SetField(careerskill.FieldURL, field.TypeString, value)
 	}
 	if csuo.mutation.URLCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: careerskill.FieldURL,
-		})
+		_spec.ClearField(careerskill.FieldURL, field.TypeString)
 	}
 	if value, ok := csuo.mutation.Version(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careerskill.FieldVersion,
-		})
+		_spec.SetField(careerskill.FieldVersion, field.TypeString, value)
 	}
 	if csuo.mutation.VersionCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: careerskill.FieldVersion,
-		})
+		_spec.ClearField(careerskill.FieldVersion, field.TypeString)
 	}
 	if csuo.mutation.CareerSkillGroupCleared() {
 		edge := &sqlgraph.EdgeSpec{

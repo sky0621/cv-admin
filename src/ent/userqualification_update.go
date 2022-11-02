@@ -264,70 +264,34 @@ func (uqu *UserQualificationUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 	}
 	if value, ok := uqu.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: userqualification.FieldUpdateTime,
-		})
+		_spec.SetField(userqualification.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := uqu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldName,
-		})
+		_spec.SetField(userqualification.FieldName, field.TypeString, value)
 	}
 	if value, ok := uqu.mutation.Organization(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldOrganization,
-		})
+		_spec.SetField(userqualification.FieldOrganization, field.TypeString, value)
 	}
 	if uqu.mutation.OrganizationCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: userqualification.FieldOrganization,
-		})
+		_spec.ClearField(userqualification.FieldOrganization, field.TypeString)
 	}
 	if value, ok := uqu.mutation.URL(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldURL,
-		})
+		_spec.SetField(userqualification.FieldURL, field.TypeString, value)
 	}
 	if uqu.mutation.URLCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: userqualification.FieldURL,
-		})
+		_spec.ClearField(userqualification.FieldURL, field.TypeString)
 	}
 	if value, ok := uqu.mutation.GotDate(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldGotDate,
-		})
+		_spec.SetField(userqualification.FieldGotDate, field.TypeString, value)
 	}
 	if uqu.mutation.GotDateCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: userqualification.FieldGotDate,
-		})
+		_spec.ClearField(userqualification.FieldGotDate, field.TypeString)
 	}
 	if value, ok := uqu.mutation.Memo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldMemo,
-		})
+		_spec.SetField(userqualification.FieldMemo, field.TypeString, value)
 	}
 	if uqu.mutation.MemoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: userqualification.FieldMemo,
-		})
+		_spec.ClearField(userqualification.FieldMemo, field.TypeString)
 	}
 	if uqu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -648,70 +612,34 @@ func (uquo *UserQualificationUpdateOne) sqlSave(ctx context.Context) (_node *Use
 		}
 	}
 	if value, ok := uquo.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: userqualification.FieldUpdateTime,
-		})
+		_spec.SetField(userqualification.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := uquo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldName,
-		})
+		_spec.SetField(userqualification.FieldName, field.TypeString, value)
 	}
 	if value, ok := uquo.mutation.Organization(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldOrganization,
-		})
+		_spec.SetField(userqualification.FieldOrganization, field.TypeString, value)
 	}
 	if uquo.mutation.OrganizationCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: userqualification.FieldOrganization,
-		})
+		_spec.ClearField(userqualification.FieldOrganization, field.TypeString)
 	}
 	if value, ok := uquo.mutation.URL(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldURL,
-		})
+		_spec.SetField(userqualification.FieldURL, field.TypeString, value)
 	}
 	if uquo.mutation.URLCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: userqualification.FieldURL,
-		})
+		_spec.ClearField(userqualification.FieldURL, field.TypeString)
 	}
 	if value, ok := uquo.mutation.GotDate(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldGotDate,
-		})
+		_spec.SetField(userqualification.FieldGotDate, field.TypeString, value)
 	}
 	if uquo.mutation.GotDateCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: userqualification.FieldGotDate,
-		})
+		_spec.ClearField(userqualification.FieldGotDate, field.TypeString)
 	}
 	if value, ok := uquo.mutation.Memo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldMemo,
-		})
+		_spec.SetField(userqualification.FieldMemo, field.TypeString, value)
 	}
 	if uquo.mutation.MemoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: userqualification.FieldMemo,
-		})
+		_spec.ClearField(userqualification.FieldMemo, field.TypeString)
 	}
 	if uquo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

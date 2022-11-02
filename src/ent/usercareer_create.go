@@ -284,43 +284,23 @@ func (ucc *UserCareerCreate) createSpec() (*UserCareer, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = ucc.conflict
 	if value, ok := ucc.mutation.CreateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: usercareer.FieldCreateTime,
-		})
+		_spec.SetField(usercareer.FieldCreateTime, field.TypeTime, value)
 		_node.CreateTime = value
 	}
 	if value, ok := ucc.mutation.UpdateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: usercareer.FieldUpdateTime,
-		})
+		_spec.SetField(usercareer.FieldUpdateTime, field.TypeTime, value)
 		_node.UpdateTime = value
 	}
 	if value, ok := ucc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usercareer.FieldName,
-		})
+		_spec.SetField(usercareer.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := ucc.mutation.From(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usercareer.FieldFrom,
-		})
+		_spec.SetField(usercareer.FieldFrom, field.TypeString, value)
 		_node.From = value
 	}
 	if value, ok := ucc.mutation.To(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usercareer.FieldTo,
-		})
+		_spec.SetField(usercareer.FieldTo, field.TypeString, value)
 		_node.To = &value
 	}
 	if nodes := ucc.mutation.CareerGroupIDs(); len(nodes) > 0 {

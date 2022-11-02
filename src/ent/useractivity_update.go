@@ -214,44 +214,22 @@ func (uau *UserActivityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := uau.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: useractivity.FieldUpdateTime,
-		})
+		_spec.SetField(useractivity.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := uau.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: useractivity.FieldName,
-		})
+		_spec.SetField(useractivity.FieldName, field.TypeString, value)
 	}
 	if value, ok := uau.mutation.URL(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: useractivity.FieldURL,
-		})
+		_spec.SetField(useractivity.FieldURL, field.TypeString, value)
 	}
 	if uau.mutation.URLCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: useractivity.FieldURL,
-		})
+		_spec.ClearField(useractivity.FieldURL, field.TypeString)
 	}
 	if value, ok := uau.mutation.Icon(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: useractivity.FieldIcon,
-		})
+		_spec.SetField(useractivity.FieldIcon, field.TypeString, value)
 	}
 	if uau.mutation.IconCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: useractivity.FieldIcon,
-		})
+		_spec.ClearField(useractivity.FieldIcon, field.TypeString)
 	}
 	if uau.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -522,44 +500,22 @@ func (uauo *UserActivityUpdateOne) sqlSave(ctx context.Context) (_node *UserActi
 		}
 	}
 	if value, ok := uauo.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: useractivity.FieldUpdateTime,
-		})
+		_spec.SetField(useractivity.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := uauo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: useractivity.FieldName,
-		})
+		_spec.SetField(useractivity.FieldName, field.TypeString, value)
 	}
 	if value, ok := uauo.mutation.URL(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: useractivity.FieldURL,
-		})
+		_spec.SetField(useractivity.FieldURL, field.TypeString, value)
 	}
 	if uauo.mutation.URLCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: useractivity.FieldURL,
-		})
+		_spec.ClearField(useractivity.FieldURL, field.TypeString)
 	}
 	if value, ok := uauo.mutation.Icon(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: useractivity.FieldIcon,
-		})
+		_spec.SetField(useractivity.FieldIcon, field.TypeString, value)
 	}
 	if uauo.mutation.IconCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: useractivity.FieldIcon,
-		})
+		_spec.ClearField(useractivity.FieldIcon, field.TypeString)
 	}
 	if uauo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

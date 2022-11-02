@@ -18,6 +18,9 @@ type CareerTask func(*sql.Selector)
 // CareerTaskDescription is the predicate function for careertaskdescription builders.
 type CareerTaskDescription func(*sql.Selector)
 
+// Skill is the predicate function for skill builders.
+type Skill func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
 

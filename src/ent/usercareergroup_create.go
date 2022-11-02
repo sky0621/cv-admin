@@ -219,27 +219,15 @@ func (ucgc *UserCareerGroupCreate) createSpec() (*UserCareerGroup, *sqlgraph.Cre
 	)
 	_spec.OnConflict = ucgc.conflict
 	if value, ok := ucgc.mutation.CreateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: usercareergroup.FieldCreateTime,
-		})
+		_spec.SetField(usercareergroup.FieldCreateTime, field.TypeTime, value)
 		_node.CreateTime = value
 	}
 	if value, ok := ucgc.mutation.UpdateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: usercareergroup.FieldUpdateTime,
-		})
+		_spec.SetField(usercareergroup.FieldUpdateTime, field.TypeTime, value)
 		_node.UpdateTime = value
 	}
 	if value, ok := ucgc.mutation.Label(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usercareergroup.FieldLabel,
-		})
+		_spec.SetField(usercareergroup.FieldLabel, field.TypeString, value)
 		_node.Label = value
 	}
 	if nodes := ucgc.mutation.UserIDs(); len(nodes) > 0 {

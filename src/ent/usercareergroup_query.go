@@ -369,6 +369,11 @@ func (ucgq *UserCareerGroupQuery) Select(fields ...string) *UserCareerGroupSelec
 	return selbuild
 }
 
+// Aggregate returns a UserCareerGroupSelect configured with the given aggregations.
+func (ucgq *UserCareerGroupQuery) Aggregate(fns ...AggregateFunc) *UserCareerGroupSelect {
+	return ucgq.Select().Aggregate(fns...)
+}
+
 func (ucgq *UserCareerGroupQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range ucgq.fields {
 		if !usercareergroup.ValidColumn(f) {
@@ -648,8 +653,6 @@ func (ucggb *UserCareerGroupGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range ucggb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(ucggb.fields)+len(ucggb.fns))
 		for _, f := range ucggb.fields {
@@ -669,6 +672,12 @@ type UserCareerGroupSelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (ucgs *UserCareerGroupSelect) Aggregate(fns ...AggregateFunc) *UserCareerGroupSelect {
+	ucgs.fns = append(ucgs.fns, fns...)
+	return ucgs
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (ucgs *UserCareerGroupSelect) Scan(ctx context.Context, v any) error {
 	if err := ucgs.prepareQuery(ctx); err != nil {
@@ -679,6 +688,16 @@ func (ucgs *UserCareerGroupSelect) Scan(ctx context.Context, v any) error {
 }
 
 func (ucgs *UserCareerGroupSelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(ucgs.fns))
+	for _, fn := range ucgs.fns {
+		aggregation = append(aggregation, fn(ucgs.sql))
+	}
+	switch n := len(*ucgs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		ucgs.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		ucgs.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := ucgs.sql.Query()
 	if err := ucgs.driver.Query(ctx, query, args, rows); err != nil {

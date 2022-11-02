@@ -332,6 +332,11 @@ func (uqq *UserQualificationQuery) Select(fields ...string) *UserQualificationSe
 	return selbuild
 }
 
+// Aggregate returns a UserQualificationSelect configured with the given aggregations.
+func (uqq *UserQualificationQuery) Aggregate(fns ...AggregateFunc) *UserQualificationSelect {
+	return uqq.Select().Aggregate(fns...)
+}
+
 func (uqq *UserQualificationQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range uqq.fields {
 		if !userqualification.ValidColumn(f) {
@@ -572,8 +577,6 @@ func (uqgb *UserQualificationGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range uqgb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(uqgb.fields)+len(uqgb.fns))
 		for _, f := range uqgb.fields {
@@ -593,6 +596,12 @@ type UserQualificationSelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (uqs *UserQualificationSelect) Aggregate(fns ...AggregateFunc) *UserQualificationSelect {
+	uqs.fns = append(uqs.fns, fns...)
+	return uqs
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (uqs *UserQualificationSelect) Scan(ctx context.Context, v any) error {
 	if err := uqs.prepareQuery(ctx); err != nil {
@@ -603,6 +612,16 @@ func (uqs *UserQualificationSelect) Scan(ctx context.Context, v any) error {
 }
 
 func (uqs *UserQualificationSelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(uqs.fns))
+	for _, fn := range uqs.fns {
+		aggregation = append(aggregation, fn(uqs.sql))
+	}
+	switch n := len(*uqs.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		uqs.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		uqs.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := uqs.sql.Query()
 	if err := uqs.driver.Query(ctx, query, args, rows); err != nil {

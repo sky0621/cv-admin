@@ -96,6 +96,20 @@ var (
 			},
 		},
 	}
+	// SkillsColumns holds the columns for the "skills" table.
+	SkillsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString},
+		{Name: "url", Type: field.TypeString, Nullable: true},
+	}
+	// SkillsTable holds the schema information for the "skills" table.
+	SkillsTable = &schema.Table{
+		Name:       "skills",
+		Columns:    SkillsColumns,
+		PrimaryKey: []*schema.Column{SkillsColumns[0]},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -284,6 +298,7 @@ var (
 		CareerSkillGroupsTable,
 		CareerTasksTable,
 		CareerTaskDescriptionsTable,
+		SkillsTable,
 		UsersTable,
 		UserActivitiesTable,
 		UserCareersTable,

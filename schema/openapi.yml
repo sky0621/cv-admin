@@ -17,10 +17,28 @@ servers:
 tags:
   - name: "users"
     description: "ユーザーに対するCRUD"
+  - name: "skills"
+    description: "スキルに対するCRUD"
 
 security: []
 
 paths:
+  "/skills":
+    post:
+      summary: "スキル登録"
+      description: "スキルを登録する。"
+      tags: ["skills"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Skill"
+      responses:
+        "201":
+          $ref: "#/components/responses/201-Created-Skill"
+        "400":
+          $ref: "#/components/responses/400-BadRequest"
   "/users":
     post:
       summary: "ユーザーアカウント登録"
@@ -323,6 +341,21 @@ paths:
 
 components:
   schemas:
+    SkillId:
+      type: integer
+      format: int
+      description: "スキルを一意に識別するキー"
+      example: 1
+    Skill:
+      type: object
+      description: "１スキルの属性"
+      properties:
+        id:
+          $ref: "#/components/schemas/SkillId"
+        name:
+          $ref: "#/components/schemas/SkillName"
+        url:
+          $ref: "#/components/schemas/Url"
     UserId:
       type: integer
       format: int
@@ -659,6 +692,12 @@ components:
         $ref: "#/components/schemas/CareerGroupId"
 
   responses:
+    201-Created-Skill:
+      description: "Created: 指定スキルの属性を返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Skill"
     201-Created-UserAttribute:
       description: "Created: 指定ユーザーの属性を返却する。"
       content:

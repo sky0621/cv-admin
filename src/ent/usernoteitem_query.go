@@ -332,6 +332,11 @@ func (uniq *UserNoteItemQuery) Select(fields ...string) *UserNoteItemSelect {
 	return selbuild
 }
 
+// Aggregate returns a UserNoteItemSelect configured with the given aggregations.
+func (uniq *UserNoteItemQuery) Aggregate(fns ...AggregateFunc) *UserNoteItemSelect {
+	return uniq.Select().Aggregate(fns...)
+}
+
 func (uniq *UserNoteItemQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range uniq.fields {
 		if !usernoteitem.ValidColumn(f) {
@@ -572,8 +577,6 @@ func (unigb *UserNoteItemGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range unigb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(unigb.fields)+len(unigb.fns))
 		for _, f := range unigb.fields {
@@ -593,6 +596,12 @@ type UserNoteItemSelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (unis *UserNoteItemSelect) Aggregate(fns ...AggregateFunc) *UserNoteItemSelect {
+	unis.fns = append(unis.fns, fns...)
+	return unis
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (unis *UserNoteItemSelect) Scan(ctx context.Context, v any) error {
 	if err := unis.prepareQuery(ctx); err != nil {
@@ -603,6 +612,16 @@ func (unis *UserNoteItemSelect) Scan(ctx context.Context, v any) error {
 }
 
 func (unis *UserNoteItemSelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(unis.fns))
+	for _, fn := range unis.fns {
+		aggregation = append(aggregation, fn(unis.sql))
+	}
+	switch n := len(*unis.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		unis.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		unis.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := unis.sql.Query()
 	if err := unis.driver.Query(ctx, query, args, rows); err != nil {

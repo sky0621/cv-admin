@@ -14,6 +14,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
 	"github.com/sky0621/cv-admin/src/ent/careertask"
 	"github.com/sky0621/cv-admin/src/ent/careertaskdescription"
+	"github.com/sky0621/cv-admin/src/ent/skill"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
@@ -46,6 +47,7 @@ func columnChecker(table string) func(string) error {
 		careerskillgroup.Table:      careerskillgroup.ValidColumn,
 		careertask.Table:            careertask.ValidColumn,
 		careertaskdescription.Table: careertaskdescription.ValidColumn,
+		skill.Table:                 skill.ValidColumn,
 		user.Table:                  user.ValidColumn,
 		useractivity.Table:          useractivity.ValidColumn,
 		usercareer.Table:            usercareer.ValidColumn,
@@ -285,6 +287,7 @@ func IsConstraintError(err error) bool {
 type selector struct {
 	label string
 	flds  *[]string
+	fns   []AggregateFunc
 	scan  func(context.Context, any) error
 }
 

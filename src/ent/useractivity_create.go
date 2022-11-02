@@ -241,43 +241,23 @@ func (uac *UserActivityCreate) createSpec() (*UserActivity, *sqlgraph.CreateSpec
 	)
 	_spec.OnConflict = uac.conflict
 	if value, ok := uac.mutation.CreateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: useractivity.FieldCreateTime,
-		})
+		_spec.SetField(useractivity.FieldCreateTime, field.TypeTime, value)
 		_node.CreateTime = value
 	}
 	if value, ok := uac.mutation.UpdateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: useractivity.FieldUpdateTime,
-		})
+		_spec.SetField(useractivity.FieldUpdateTime, field.TypeTime, value)
 		_node.UpdateTime = value
 	}
 	if value, ok := uac.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: useractivity.FieldName,
-		})
+		_spec.SetField(useractivity.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := uac.mutation.URL(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: useractivity.FieldURL,
-		})
+		_spec.SetField(useractivity.FieldURL, field.TypeString, value)
 		_node.URL = &value
 	}
 	if value, ok := uac.mutation.Icon(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: useractivity.FieldIcon,
-		})
+		_spec.SetField(useractivity.FieldIcon, field.TypeString, value)
 		_node.Icon = &value
 	}
 	if nodes := uac.mutation.UserIDs(); len(nodes) > 0 {

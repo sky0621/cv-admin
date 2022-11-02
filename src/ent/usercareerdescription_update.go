@@ -148,11 +148,7 @@ func (ucdu *UserCareerDescriptionUpdate) sqlSave(ctx context.Context) (n int, er
 		}
 	}
 	if value, ok := ucdu.mutation.Description(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usercareerdescription.FieldDescription,
-		})
+		_spec.SetField(usercareerdescription.FieldDescription, field.TypeString, value)
 	}
 	if ucdu.mutation.CareerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -358,11 +354,7 @@ func (ucduo *UserCareerDescriptionUpdateOne) sqlSave(ctx context.Context) (_node
 		}
 	}
 	if value, ok := ucduo.mutation.Description(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usercareerdescription.FieldDescription,
-		})
+		_spec.SetField(usercareerdescription.FieldDescription, field.TypeString, value)
 	}
 	if ucduo.mutation.CareerCleared() {
 		edge := &sqlgraph.EdgeSpec{

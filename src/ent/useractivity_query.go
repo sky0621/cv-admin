@@ -332,6 +332,11 @@ func (uaq *UserActivityQuery) Select(fields ...string) *UserActivitySelect {
 	return selbuild
 }
 
+// Aggregate returns a UserActivitySelect configured with the given aggregations.
+func (uaq *UserActivityQuery) Aggregate(fns ...AggregateFunc) *UserActivitySelect {
+	return uaq.Select().Aggregate(fns...)
+}
+
 func (uaq *UserActivityQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range uaq.fields {
 		if !useractivity.ValidColumn(f) {
@@ -572,8 +577,6 @@ func (uagb *UserActivityGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range uagb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(uagb.fields)+len(uagb.fns))
 		for _, f := range uagb.fields {
@@ -593,6 +596,12 @@ type UserActivitySelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (uas *UserActivitySelect) Aggregate(fns ...AggregateFunc) *UserActivitySelect {
+	uas.fns = append(uas.fns, fns...)
+	return uas
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (uas *UserActivitySelect) Scan(ctx context.Context, v any) error {
 	if err := uas.prepareQuery(ctx); err != nil {
@@ -603,6 +612,16 @@ func (uas *UserActivitySelect) Scan(ctx context.Context, v any) error {
 }
 
 func (uas *UserActivitySelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(uas.fns))
+	for _, fn := range uas.fns {
+		aggregation = append(aggregation, fn(uas.sql))
+	}
+	switch n := len(*uas.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		uas.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		uas.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := uas.sql.Query()
 	if err := uas.driver.Query(ctx, query, args, rows); err != nil {

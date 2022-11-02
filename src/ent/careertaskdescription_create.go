@@ -155,11 +155,7 @@ func (ctdc *CareerTaskDescriptionCreate) createSpec() (*CareerTaskDescription, *
 	)
 	_spec.OnConflict = ctdc.conflict
 	if value, ok := ctdc.mutation.Description(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careertaskdescription.FieldDescription,
-		})
+		_spec.SetField(careertaskdescription.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
 	if nodes := ctdc.mutation.CareerTaskIDs(); len(nodes) > 0 {

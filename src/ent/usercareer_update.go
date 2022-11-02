@@ -311,38 +311,19 @@ func (ucu *UserCareerUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := ucu.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: usercareer.FieldUpdateTime,
-		})
+		_spec.SetField(usercareer.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := ucu.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usercareer.FieldName,
-		})
+		_spec.SetField(usercareer.FieldName, field.TypeString, value)
 	}
 	if value, ok := ucu.mutation.From(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usercareer.FieldFrom,
-		})
+		_spec.SetField(usercareer.FieldFrom, field.TypeString, value)
 	}
 	if value, ok := ucu.mutation.To(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usercareer.FieldTo,
-		})
+		_spec.SetField(usercareer.FieldTo, field.TypeString, value)
 	}
 	if ucu.mutation.ToCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: usercareer.FieldTo,
-		})
+		_spec.ClearField(usercareer.FieldTo, field.TypeString)
 	}
 	if ucu.mutation.CareerGroupCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -869,38 +850,19 @@ func (ucuo *UserCareerUpdateOne) sqlSave(ctx context.Context) (_node *UserCareer
 		}
 	}
 	if value, ok := ucuo.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: usercareer.FieldUpdateTime,
-		})
+		_spec.SetField(usercareer.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := ucuo.mutation.Name(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usercareer.FieldName,
-		})
+		_spec.SetField(usercareer.FieldName, field.TypeString, value)
 	}
 	if value, ok := ucuo.mutation.From(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usercareer.FieldFrom,
-		})
+		_spec.SetField(usercareer.FieldFrom, field.TypeString, value)
 	}
 	if value, ok := ucuo.mutation.To(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usercareer.FieldTo,
-		})
+		_spec.SetField(usercareer.FieldTo, field.TypeString, value)
 	}
 	if ucuo.mutation.ToCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: usercareer.FieldTo,
-		})
+		_spec.ClearField(usercareer.FieldTo, field.TypeString)
 	}
 	if ucuo.mutation.CareerGroupCleared() {
 		edge := &sqlgraph.EdgeSpec{

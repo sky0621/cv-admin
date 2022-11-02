@@ -369,6 +369,11 @@ func (unq *UserNoteQuery) Select(fields ...string) *UserNoteSelect {
 	return selbuild
 }
 
+// Aggregate returns a UserNoteSelect configured with the given aggregations.
+func (unq *UserNoteQuery) Aggregate(fns ...AggregateFunc) *UserNoteSelect {
+	return unq.Select().Aggregate(fns...)
+}
+
 func (unq *UserNoteQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range unq.fields {
 		if !usernote.ValidColumn(f) {
@@ -648,8 +653,6 @@ func (ungb *UserNoteGroupBy) sqlQuery() *sql.Selector {
 	for _, fn := range ungb.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	// If no columns were selected in a custom aggregation function, the default
-	// selection is the fields used for "group-by", and the aggregation functions.
 	if len(selector.SelectedColumns()) == 0 {
 		columns := make([]string, 0, len(ungb.fields)+len(ungb.fns))
 		for _, f := range ungb.fields {
@@ -669,6 +672,12 @@ type UserNoteSelect struct {
 	sql *sql.Selector
 }
 
+// Aggregate adds the given aggregation functions to the selector query.
+func (uns *UserNoteSelect) Aggregate(fns ...AggregateFunc) *UserNoteSelect {
+	uns.fns = append(uns.fns, fns...)
+	return uns
+}
+
 // Scan applies the selector query and scans the result into the given value.
 func (uns *UserNoteSelect) Scan(ctx context.Context, v any) error {
 	if err := uns.prepareQuery(ctx); err != nil {
@@ -679,6 +688,16 @@ func (uns *UserNoteSelect) Scan(ctx context.Context, v any) error {
 }
 
 func (uns *UserNoteSelect) sqlScan(ctx context.Context, v any) error {
+	aggregation := make([]string, 0, len(uns.fns))
+	for _, fn := range uns.fns {
+		aggregation = append(aggregation, fn(uns.sql))
+	}
+	switch n := len(*uns.selector.flds); {
+	case n == 0 && len(aggregation) > 0:
+		uns.sql.Select(aggregation...)
+	case n != 0 && len(aggregation) > 0:
+		uns.sql.AppendSelect(aggregation...)
+	}
 	rows := &sql.Rows{}
 	query, args := uns.sql.Query()
 	if err := uns.driver.Query(ctx, query, args, rows); err != nil {

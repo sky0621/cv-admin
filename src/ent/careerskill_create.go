@@ -241,43 +241,23 @@ func (csc *CareerSkillCreate) createSpec() (*CareerSkill, *sqlgraph.CreateSpec) 
 	)
 	_spec.OnConflict = csc.conflict
 	if value, ok := csc.mutation.CreateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: careerskill.FieldCreateTime,
-		})
+		_spec.SetField(careerskill.FieldCreateTime, field.TypeTime, value)
 		_node.CreateTime = value
 	}
 	if value, ok := csc.mutation.UpdateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: careerskill.FieldUpdateTime,
-		})
+		_spec.SetField(careerskill.FieldUpdateTime, field.TypeTime, value)
 		_node.UpdateTime = value
 	}
 	if value, ok := csc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careerskill.FieldName,
-		})
+		_spec.SetField(careerskill.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := csc.mutation.URL(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careerskill.FieldURL,
-		})
+		_spec.SetField(careerskill.FieldURL, field.TypeString, value)
 		_node.URL = &value
 	}
 	if value, ok := csc.mutation.Version(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: careerskill.FieldVersion,
-		})
+		_spec.SetField(careerskill.FieldVersion, field.TypeString, value)
 		_node.Version = &value
 	}
 	if nodes := csc.mutation.CareerSkillGroupIDs(); len(nodes) > 0 {

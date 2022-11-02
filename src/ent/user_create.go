@@ -389,91 +389,47 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	)
 	_spec.OnConflict = uc.conflict
 	if value, ok := uc.mutation.CreateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: user.FieldCreateTime,
-		})
+		_spec.SetField(user.FieldCreateTime, field.TypeTime, value)
 		_node.CreateTime = value
 	}
 	if value, ok := uc.mutation.UpdateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: user.FieldUpdateTime,
-		})
+		_spec.SetField(user.FieldUpdateTime, field.TypeTime, value)
 		_node.UpdateTime = value
 	}
 	if value, ok := uc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldName,
-		})
+		_spec.SetField(user.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := uc.mutation.Nickname(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldNickname,
-		})
+		_spec.SetField(user.FieldNickname, field.TypeString, value)
 		_node.Nickname = &value
 	}
 	if value, ok := uc.mutation.AvatarURL(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldAvatarURL,
-		})
+		_spec.SetField(user.FieldAvatarURL, field.TypeString, value)
 		_node.AvatarURL = &value
 	}
 	if value, ok := uc.mutation.BirthdayYear(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: user.FieldBirthdayYear,
-		})
+		_spec.SetField(user.FieldBirthdayYear, field.TypeInt, value)
 		_node.BirthdayYear = value
 	}
 	if value, ok := uc.mutation.BirthdayMonth(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: user.FieldBirthdayMonth,
-		})
+		_spec.SetField(user.FieldBirthdayMonth, field.TypeInt, value)
 		_node.BirthdayMonth = value
 	}
 	if value, ok := uc.mutation.BirthdayDay(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeInt,
-			Value:  value,
-			Column: user.FieldBirthdayDay,
-		})
+		_spec.SetField(user.FieldBirthdayDay, field.TypeInt, value)
 		_node.BirthdayDay = value
 	}
 	if value, ok := uc.mutation.Job(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldJob,
-		})
+		_spec.SetField(user.FieldJob, field.TypeString, value)
 		_node.Job = &value
 	}
 	if value, ok := uc.mutation.BelongTo(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldBelongTo,
-		})
+		_spec.SetField(user.FieldBelongTo, field.TypeString, value)
 		_node.BelongTo = &value
 	}
 	if value, ok := uc.mutation.Pr(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: user.FieldPr,
-		})
+		_spec.SetField(user.FieldPr, field.TypeString, value)
 		_node.Pr = &value
 	}
 	if nodes := uc.mutation.ActivitiesIDs(); len(nodes) > 0 {

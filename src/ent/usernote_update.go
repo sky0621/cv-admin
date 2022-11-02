@@ -226,31 +226,16 @@ func (unu *UserNoteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 	}
 	if value, ok := unu.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: usernote.FieldUpdateTime,
-		})
+		_spec.SetField(usernote.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := unu.mutation.Label(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usernote.FieldLabel,
-		})
+		_spec.SetField(usernote.FieldLabel, field.TypeString, value)
 	}
 	if value, ok := unu.mutation.Memo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usernote.FieldMemo,
-		})
+		_spec.SetField(usernote.FieldMemo, field.TypeString, value)
 	}
 	if unu.mutation.MemoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: usernote.FieldMemo,
-		})
+		_spec.ClearField(usernote.FieldMemo, field.TypeString)
 	}
 	if unu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -586,31 +571,16 @@ func (unuo *UserNoteUpdateOne) sqlSave(ctx context.Context) (_node *UserNote, er
 		}
 	}
 	if value, ok := unuo.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: usernote.FieldUpdateTime,
-		})
+		_spec.SetField(usernote.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := unuo.mutation.Label(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usernote.FieldLabel,
-		})
+		_spec.SetField(usernote.FieldLabel, field.TypeString, value)
 	}
 	if value, ok := unuo.mutation.Memo(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usernote.FieldMemo,
-		})
+		_spec.SetField(usernote.FieldMemo, field.TypeString, value)
 	}
 	if unuo.mutation.MemoCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: usernote.FieldMemo,
-		})
+		_spec.ClearField(usernote.FieldMemo, field.TypeString)
 	}
 	if unuo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

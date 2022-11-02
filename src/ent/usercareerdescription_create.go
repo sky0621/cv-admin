@@ -155,11 +155,7 @@ func (ucdc *UserCareerDescriptionCreate) createSpec() (*UserCareerDescription, *
 	)
 	_spec.OnConflict = ucdc.conflict
 	if value, ok := ucdc.mutation.Description(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usercareerdescription.FieldDescription,
-		})
+		_spec.SetField(usercareerdescription.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
 	if nodes := ucdc.mutation.CareerIDs(); len(nodes) > 0 {

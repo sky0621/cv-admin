@@ -10,6 +10,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/careertask"
 	"github.com/sky0621/cv-admin/src/ent/careertaskdescription"
 	"github.com/sky0621/cv-admin/src/ent/schema"
+	"github.com/sky0621/cv-admin/src/ent/skill"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
@@ -151,6 +152,43 @@ func init() {
 			return nil
 		}
 	}()
+	skillMixin := schema.Skill{}.Mixin()
+	skillMixinFields0 := skillMixin[0].Fields()
+	_ = skillMixinFields0
+	skillFields := schema.Skill{}.Fields()
+	_ = skillFields
+	// skillDescCreateTime is the schema descriptor for create_time field.
+	skillDescCreateTime := skillMixinFields0[0].Descriptor()
+	// skill.DefaultCreateTime holds the default value on creation for the create_time field.
+	skill.DefaultCreateTime = skillDescCreateTime.Default.(func() time.Time)
+	// skillDescUpdateTime is the schema descriptor for update_time field.
+	skillDescUpdateTime := skillMixinFields0[1].Descriptor()
+	// skill.DefaultUpdateTime holds the default value on creation for the update_time field.
+	skill.DefaultUpdateTime = skillDescUpdateTime.Default.(func() time.Time)
+	// skill.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	skill.UpdateDefaultUpdateTime = skillDescUpdateTime.UpdateDefault.(func() time.Time)
+	// skillDescName is the schema descriptor for name field.
+	skillDescName := skillFields[0].Descriptor()
+	// skill.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	skill.NameValidator = func() func(string) error {
+		validators := skillDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// skillDescURL is the schema descriptor for url field.
+	skillDescURL := skillFields[1].Descriptor()
+	// skill.URLValidator is a validator for the "url" field. It is called by the builders before save.
+	skill.URLValidator = skillDescURL.Validators[0].(func(string) error)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0

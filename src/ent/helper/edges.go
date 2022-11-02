@@ -49,3 +49,11 @@ func PickupUserNoteIDs(notes []*ent.UserNote) []int {
 	}
 	return results
 }
+
+func PickupSkillName(skills []*ent.Skill) []string {
+	results := make([]string, len(skills))
+	for _, s := range skills {
+		results = append(results, s.Name)
+	}
+	return results
+}

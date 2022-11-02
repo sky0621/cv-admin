@@ -279,59 +279,31 @@ func (uqc *UserQualificationCreate) createSpec() (*UserQualification, *sqlgraph.
 	)
 	_spec.OnConflict = uqc.conflict
 	if value, ok := uqc.mutation.CreateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: userqualification.FieldCreateTime,
-		})
+		_spec.SetField(userqualification.FieldCreateTime, field.TypeTime, value)
 		_node.CreateTime = value
 	}
 	if value, ok := uqc.mutation.UpdateTime(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: userqualification.FieldUpdateTime,
-		})
+		_spec.SetField(userqualification.FieldUpdateTime, field.TypeTime, value)
 		_node.UpdateTime = value
 	}
 	if value, ok := uqc.mutation.Name(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldName,
-		})
+		_spec.SetField(userqualification.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
 	if value, ok := uqc.mutation.Organization(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldOrganization,
-		})
+		_spec.SetField(userqualification.FieldOrganization, field.TypeString, value)
 		_node.Organization = &value
 	}
 	if value, ok := uqc.mutation.URL(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldURL,
-		})
+		_spec.SetField(userqualification.FieldURL, field.TypeString, value)
 		_node.URL = &value
 	}
 	if value, ok := uqc.mutation.GotDate(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldGotDate,
-		})
+		_spec.SetField(userqualification.FieldGotDate, field.TypeString, value)
 		_node.GotDate = &value
 	}
 	if value, ok := uqc.mutation.Memo(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: userqualification.FieldMemo,
-		})
+		_spec.SetField(userqualification.FieldMemo, field.TypeString, value)
 		_node.Memo = &value
 	}
 	if nodes := uqc.mutation.UserIDs(); len(nodes) > 0 {

@@ -164,18 +164,10 @@ func (uniu *UserNoteItemUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 	}
 	if value, ok := uniu.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: usernoteitem.FieldUpdateTime,
-		})
+		_spec.SetField(usernoteitem.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := uniu.mutation.Text(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usernoteitem.FieldText,
-		})
+		_spec.SetField(usernoteitem.FieldText, field.TypeString, value)
 	}
 	if uniu.mutation.NoteCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -396,18 +388,10 @@ func (uniuo *UserNoteItemUpdateOne) sqlSave(ctx context.Context) (_node *UserNot
 		}
 	}
 	if value, ok := uniuo.mutation.UpdateTime(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: usernoteitem.FieldUpdateTime,
-		})
+		_spec.SetField(usernoteitem.FieldUpdateTime, field.TypeTime, value)
 	}
 	if value, ok := uniuo.mutation.Text(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: usernoteitem.FieldText,
-		})
+		_spec.SetField(usernoteitem.FieldText, field.TypeString, value)
 	}
 	if uniuo.mutation.NoteCleared() {
 		edge := &sqlgraph.EdgeSpec{
