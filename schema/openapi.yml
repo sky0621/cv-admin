@@ -15,10 +15,10 @@ servers:
         default: "8080"
 
 tags:
-  - name: "users"
-    description: "ユーザーに対するCRUD"
   - name: "skills"
     description: "スキルに対するCRUD"
+  - name: "users"
+    description: "ユーザーに対するCRUD"
 
 security: []
 

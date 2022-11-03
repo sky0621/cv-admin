@@ -9,3 +9,10 @@ func ToEntSkillCreate(ua Skill, c *ent.SkillCreate) *ent.SkillCreate {
 		SetName(*ua.Name).
 		SetNillableURL(ua.Url)
 }
+
+func ToSwaggerSkill(entSkill *ent.Skill) Skill {
+	return Skill{
+		Name: &entSkill.Name,
+		Url:  entSkill.URL,
+	}
+}
