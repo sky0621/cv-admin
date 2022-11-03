@@ -15,6 +15,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/careertask"
 	"github.com/sky0621/cv-admin/src/ent/careertaskdescription"
 	"github.com/sky0621/cv-admin/src/ent/skill"
+	"github.com/sky0621/cv-admin/src/ent/skilltag"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
@@ -44,6 +45,8 @@ type Client struct {
 	CareerTaskDescription *CareerTaskDescriptionClient
 	// Skill is the client for interacting with the Skill builders.
 	Skill *SkillClient
+	// SkillTag is the client for interacting with the SkillTag builders.
+	SkillTag *SkillTagClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserActivity is the client for interacting with the UserActivity builders.
@@ -78,6 +81,7 @@ func (c *Client) init() {
 	c.CareerTask = NewCareerTaskClient(c.config)
 	c.CareerTaskDescription = NewCareerTaskDescriptionClient(c.config)
 	c.Skill = NewSkillClient(c.config)
+	c.SkillTag = NewSkillTagClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserActivity = NewUserActivityClient(c.config)
 	c.UserCareer = NewUserCareerClient(c.config)
@@ -124,6 +128,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		CareerTask:            NewCareerTaskClient(cfg),
 		CareerTaskDescription: NewCareerTaskDescriptionClient(cfg),
 		Skill:                 NewSkillClient(cfg),
+		SkillTag:              NewSkillTagClient(cfg),
 		User:                  NewUserClient(cfg),
 		UserActivity:          NewUserActivityClient(cfg),
 		UserCareer:            NewUserCareerClient(cfg),
@@ -156,6 +161,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		CareerTask:            NewCareerTaskClient(cfg),
 		CareerTaskDescription: NewCareerTaskDescriptionClient(cfg),
 		Skill:                 NewSkillClient(cfg),
+		SkillTag:              NewSkillTagClient(cfg),
 		User:                  NewUserClient(cfg),
 		UserActivity:          NewUserActivityClient(cfg),
 		UserCareer:            NewUserCareerClient(cfg),
@@ -197,6 +203,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.CareerTask.Use(hooks...)
 	c.CareerTaskDescription.Use(hooks...)
 	c.Skill.Use(hooks...)
+	c.SkillTag.Use(hooks...)
 	c.User.Use(hooks...)
 	c.UserActivity.Use(hooks...)
 	c.UserCareer.Use(hooks...)
@@ -751,6 +758,96 @@ func (c *SkillClient) GetX(ctx context.Context, id int) *Skill {
 // Hooks returns the client hooks.
 func (c *SkillClient) Hooks() []Hook {
 	return c.hooks.Skill
+}
+
+// SkillTagClient is a client for the SkillTag schema.
+type SkillTagClient struct {
+	config
+}
+
+// NewSkillTagClient returns a client for the SkillTag from the given config.
+func NewSkillTagClient(c config) *SkillTagClient {
+	return &SkillTagClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `skilltag.Hooks(f(g(h())))`.
+func (c *SkillTagClient) Use(hooks ...Hook) {
+	c.hooks.SkillTag = append(c.hooks.SkillTag, hooks...)
+}
+
+// Create returns a builder for creating a SkillTag entity.
+func (c *SkillTagClient) Create() *SkillTagCreate {
+	mutation := newSkillTagMutation(c.config, OpCreate)
+	return &SkillTagCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SkillTag entities.
+func (c *SkillTagClient) CreateBulk(builders ...*SkillTagCreate) *SkillTagCreateBulk {
+	return &SkillTagCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SkillTag.
+func (c *SkillTagClient) Update() *SkillTagUpdate {
+	mutation := newSkillTagMutation(c.config, OpUpdate)
+	return &SkillTagUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SkillTagClient) UpdateOne(st *SkillTag) *SkillTagUpdateOne {
+	mutation := newSkillTagMutation(c.config, OpUpdateOne, withSkillTag(st))
+	return &SkillTagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SkillTagClient) UpdateOneID(id int) *SkillTagUpdateOne {
+	mutation := newSkillTagMutation(c.config, OpUpdateOne, withSkillTagID(id))
+	return &SkillTagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SkillTag.
+func (c *SkillTagClient) Delete() *SkillTagDelete {
+	mutation := newSkillTagMutation(c.config, OpDelete)
+	return &SkillTagDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SkillTagClient) DeleteOne(st *SkillTag) *SkillTagDeleteOne {
+	return c.DeleteOneID(st.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SkillTagClient) DeleteOneID(id int) *SkillTagDeleteOne {
+	builder := c.Delete().Where(skilltag.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SkillTagDeleteOne{builder}
+}
+
+// Query returns a query builder for SkillTag.
+func (c *SkillTagClient) Query() *SkillTagQuery {
+	return &SkillTagQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a SkillTag entity by its id.
+func (c *SkillTagClient) Get(ctx context.Context, id int) (*SkillTag, error) {
+	return c.Query().Where(skilltag.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SkillTagClient) GetX(ctx context.Context, id int) *SkillTag {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SkillTagClient) Hooks() []Hook {
+	return c.hooks.SkillTag
 }
 
 // UserClient is a client for the User schema.

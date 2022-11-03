@@ -396,6 +396,8 @@ components:
           $ref: "#/components/schemas/SkillKey"
         url:
           $ref: "#/components/schemas/Url"
+        tagKey:
+          $ref: "#/components/schemas/SkillTagKey"
     UserId:
       type: integer
       format: int
@@ -531,6 +533,10 @@ components:
       type: string
       description: "スキルキー"
       example: "golang"
+    SkillTagKey:
+      type: string
+      description: "スキルタグキー"
+      example: "aws"
     SkillVersion:
       type: string
       description: "スキルバージョン"

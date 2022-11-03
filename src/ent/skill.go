@@ -26,6 +26,8 @@ type Skill struct {
 	Key string `json:"key,omitempty"`
 	// URL holds the value of the "url" field.
 	URL *string `json:"url,omitempty"`
+	// TagKey holds the value of the "tag_key" field.
+	TagKey *string `json:"tag_key,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -35,7 +37,7 @@ func (*Skill) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case skill.FieldID:
 			values[i] = new(sql.NullInt64)
-		case skill.FieldName, skill.FieldKey, skill.FieldURL:
+		case skill.FieldName, skill.FieldKey, skill.FieldURL, skill.FieldTagKey:
 			values[i] = new(sql.NullString)
 		case skill.FieldCreateTime, skill.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -91,6 +93,13 @@ func (s *Skill) assignValues(columns []string, values []any) error {
 				s.URL = new(string)
 				*s.URL = value.String
 			}
+		case skill.FieldTagKey:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field tag_key", values[i])
+			} else if value.Valid {
+				s.TagKey = new(string)
+				*s.TagKey = value.String
+			}
 		}
 	}
 	return nil
@@ -133,6 +142,11 @@ func (s *Skill) String() string {
 	builder.WriteString(", ")
 	if v := s.URL; v != nil {
 		builder.WriteString("url=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := s.TagKey; v != nil {
+		builder.WriteString("tag_key=")
 		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')

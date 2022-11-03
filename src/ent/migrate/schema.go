@@ -101,15 +101,28 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
-		{Name: "name", Type: field.TypeString},
-		{Name: "key", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "key", Type: field.TypeString, Unique: true},
 		{Name: "url", Type: field.TypeString, Nullable: true},
+		{Name: "tag_key", Type: field.TypeString, Unique: true, Nullable: true},
 	}
 	// SkillsTable holds the schema information for the "skills" table.
 	SkillsTable = &schema.Table{
 		Name:       "skills",
 		Columns:    SkillsColumns,
 		PrimaryKey: []*schema.Column{SkillsColumns[0]},
+	}
+	// SkillTagsColumns holds the columns for the "skill_tags" table.
+	SkillTagsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "key", Type: field.TypeString, Unique: true},
+	}
+	// SkillTagsTable holds the schema information for the "skill_tags" table.
+	SkillTagsTable = &schema.Table{
+		Name:       "skill_tags",
+		Columns:    SkillTagsColumns,
+		PrimaryKey: []*schema.Column{SkillTagsColumns[0]},
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
@@ -300,6 +313,7 @@ var (
 		CareerTasksTable,
 		CareerTaskDescriptionsTable,
 		SkillsTable,
+		SkillTagsTable,
 		UsersTable,
 		UserActivitiesTable,
 		UserCareersTable,

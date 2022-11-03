@@ -1,13 +1,13 @@
 package rest
 
 import (
-	"github.com/sky0621/cv-admin/src/ent"
-	"github.com/sky0621/golang-utils/slice"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 
+	"github.com/sky0621/cv-admin/src/ent"
 	"github.com/sky0621/cv-admin/src/ent/helper"
+	"github.com/sky0621/golang-utils/slice"
 )
 
 // PostSkills スキル新規登録
@@ -97,11 +97,11 @@ func (s *ServerImpl) PostSkillrecords(ctx echo.Context) error {
 }
 
 func (s *ServerImpl) GetSkills(ctx echo.Context) error {
-	//TODO implement me
+	// FIXME: implement me
 	panic("implement me")
 }
 
 func (s *ServerImpl) GetSkillsBySkillId(ctx echo.Context, bySkillId SkillId) error {
-	//TODO implement me
+	// FIXME: implement me
 	panic("implement me")
 }

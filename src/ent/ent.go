@@ -15,6 +15,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/careertask"
 	"github.com/sky0621/cv-admin/src/ent/careertaskdescription"
 	"github.com/sky0621/cv-admin/src/ent/skill"
+	"github.com/sky0621/cv-admin/src/ent/skilltag"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
@@ -48,6 +49,7 @@ func columnChecker(table string) func(string) error {
 		careertask.Table:            careertask.ValidColumn,
 		careertaskdescription.Table: careertaskdescription.ValidColumn,
 		skill.Table:                 skill.ValidColumn,
+		skilltag.Table:              skilltag.ValidColumn,
 		user.Table:                  user.ValidColumn,
 		useractivity.Table:          useractivity.ValidColumn,
 		usercareer.Table:            usercareer.ValidColumn,

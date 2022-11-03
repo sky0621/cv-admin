@@ -66,6 +66,26 @@ func (su *SkillUpdate) ClearURL() *SkillUpdate {
 	return su
 }
 
+// SetTagKey sets the "tag_key" field.
+func (su *SkillUpdate) SetTagKey(s string) *SkillUpdate {
+	su.mutation.SetTagKey(s)
+	return su
+}
+
+// SetNillableTagKey sets the "tag_key" field if the given value is not nil.
+func (su *SkillUpdate) SetNillableTagKey(s *string) *SkillUpdate {
+	if s != nil {
+		su.SetTagKey(*s)
+	}
+	return su
+}
+
+// ClearTagKey clears the value of the "tag_key" field.
+func (su *SkillUpdate) ClearTagKey() *SkillUpdate {
+	su.mutation.ClearTagKey()
+	return su
+}
+
 // Mutation returns the SkillMutation object of the builder.
 func (su *SkillUpdate) Mutation() *SkillMutation {
 	return su.mutation
@@ -157,6 +177,11 @@ func (su *SkillUpdate) check() error {
 			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Skill.url": %w`, err)}
 		}
 	}
+	if v, ok := su.mutation.TagKey(); ok {
+		if err := skill.TagKeyValidator(v); err != nil {
+			return &ValidationError{Name: "tag_key", err: fmt.Errorf(`ent: validator failed for field "Skill.tag_key": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -192,6 +217,12 @@ func (su *SkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if su.mutation.URLCleared() {
 		_spec.ClearField(skill.FieldURL, field.TypeString)
+	}
+	if value, ok := su.mutation.TagKey(); ok {
+		_spec.SetField(skill.FieldTagKey, field.TypeString, value)
+	}
+	if su.mutation.TagKeyCleared() {
+		_spec.ClearField(skill.FieldTagKey, field.TypeString)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -247,6 +278,26 @@ func (suo *SkillUpdateOne) SetNillableURL(s *string) *SkillUpdateOne {
 // ClearURL clears the value of the "url" field.
 func (suo *SkillUpdateOne) ClearURL() *SkillUpdateOne {
 	suo.mutation.ClearURL()
+	return suo
+}
+
+// SetTagKey sets the "tag_key" field.
+func (suo *SkillUpdateOne) SetTagKey(s string) *SkillUpdateOne {
+	suo.mutation.SetTagKey(s)
+	return suo
+}
+
+// SetNillableTagKey sets the "tag_key" field if the given value is not nil.
+func (suo *SkillUpdateOne) SetNillableTagKey(s *string) *SkillUpdateOne {
+	if s != nil {
+		suo.SetTagKey(*s)
+	}
+	return suo
+}
+
+// ClearTagKey clears the value of the "tag_key" field.
+func (suo *SkillUpdateOne) ClearTagKey() *SkillUpdateOne {
+	suo.mutation.ClearTagKey()
 	return suo
 }
 
@@ -354,6 +405,11 @@ func (suo *SkillUpdateOne) check() error {
 			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Skill.url": %w`, err)}
 		}
 	}
+	if v, ok := suo.mutation.TagKey(); ok {
+		if err := skill.TagKeyValidator(v); err != nil {
+			return &ValidationError{Name: "tag_key", err: fmt.Errorf(`ent: validator failed for field "Skill.tag_key": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -406,6 +462,12 @@ func (suo *SkillUpdateOne) sqlSave(ctx context.Context) (_node *Skill, err error
 	}
 	if suo.mutation.URLCleared() {
 		_spec.ClearField(skill.FieldURL, field.TypeString)
+	}
+	if value, ok := suo.mutation.TagKey(); ok {
+		_spec.SetField(skill.FieldTagKey, field.TypeString, value)
+	}
+	if suo.mutation.TagKeyCleared() {
+		_spec.ClearField(skill.FieldTagKey, field.TypeString)
 	}
 	_node = &Skill{config: suo.config}
 	_spec.Assign = _node.assignValues

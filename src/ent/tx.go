@@ -22,6 +22,8 @@ type Tx struct {
 	CareerTaskDescription *CareerTaskDescriptionClient
 	// Skill is the client for interacting with the Skill builders.
 	Skill *SkillClient
+	// SkillTag is the client for interacting with the SkillTag builders.
+	SkillTag *SkillTagClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserActivity is the client for interacting with the UserActivity builders.
@@ -174,6 +176,7 @@ func (tx *Tx) init() {
 	tx.CareerTask = NewCareerTaskClient(tx.config)
 	tx.CareerTaskDescription = NewCareerTaskDescriptionClient(tx.config)
 	tx.Skill = NewSkillClient(tx.config)
+	tx.SkillTag = NewSkillTagClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserActivity = NewUserActivityClient(tx.config)
 	tx.UserCareer = NewUserCareerClient(tx.config)

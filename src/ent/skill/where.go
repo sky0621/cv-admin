@@ -115,6 +115,13 @@ func URL(v string) predicate.Skill {
 	})
 }
 
+// TagKey applies equality check predicate on the "tag_key" field. It's identical to TagKeyEQ.
+func TagKey(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTagKey), v))
+	})
+}
+
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.Skill {
 	return predicate.Skill(func(s *sql.Selector) {
@@ -551,6 +558,119 @@ func URLEqualFold(v string) predicate.Skill {
 func URLContainsFold(v string) predicate.Skill {
 	return predicate.Skill(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldURL), v))
+	})
+}
+
+// TagKeyEQ applies the EQ predicate on the "tag_key" field.
+func TagKeyEQ(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTagKey), v))
+	})
+}
+
+// TagKeyNEQ applies the NEQ predicate on the "tag_key" field.
+func TagKeyNEQ(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTagKey), v))
+	})
+}
+
+// TagKeyIn applies the In predicate on the "tag_key" field.
+func TagKeyIn(vs ...string) predicate.Skill {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldTagKey), v...))
+	})
+}
+
+// TagKeyNotIn applies the NotIn predicate on the "tag_key" field.
+func TagKeyNotIn(vs ...string) predicate.Skill {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldTagKey), v...))
+	})
+}
+
+// TagKeyGT applies the GT predicate on the "tag_key" field.
+func TagKeyGT(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTagKey), v))
+	})
+}
+
+// TagKeyGTE applies the GTE predicate on the "tag_key" field.
+func TagKeyGTE(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTagKey), v))
+	})
+}
+
+// TagKeyLT applies the LT predicate on the "tag_key" field.
+func TagKeyLT(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTagKey), v))
+	})
+}
+
+// TagKeyLTE applies the LTE predicate on the "tag_key" field.
+func TagKeyLTE(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTagKey), v))
+	})
+}
+
+// TagKeyContains applies the Contains predicate on the "tag_key" field.
+func TagKeyContains(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldTagKey), v))
+	})
+}
+
+// TagKeyHasPrefix applies the HasPrefix predicate on the "tag_key" field.
+func TagKeyHasPrefix(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldTagKey), v))
+	})
+}
+
+// TagKeyHasSuffix applies the HasSuffix predicate on the "tag_key" field.
+func TagKeyHasSuffix(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldTagKey), v))
+	})
+}
+
+// TagKeyIsNil applies the IsNil predicate on the "tag_key" field.
+func TagKeyIsNil() predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldTagKey)))
+	})
+}
+
+// TagKeyNotNil applies the NotNil predicate on the "tag_key" field.
+func TagKeyNotNil() predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldTagKey)))
+	})
+}
+
+// TagKeyEqualFold applies the EqualFold predicate on the "tag_key" field.
+func TagKeyEqualFold(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldTagKey), v))
+	})
+}
+
+// TagKeyContainsFold applies the ContainsFold predicate on the "tag_key" field.
+func TagKeyContainsFold(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldTagKey), v))
 	})
 }
 

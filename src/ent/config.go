@@ -29,6 +29,7 @@ type hooks struct {
 	CareerTask            []ent.Hook
 	CareerTaskDescription []ent.Hook
 	Skill                 []ent.Hook
+	SkillTag              []ent.Hook
 	User                  []ent.Hook
 	UserActivity          []ent.Hook
 	UserCareer            []ent.Hook

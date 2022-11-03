@@ -21,6 +21,8 @@ const (
 	FieldKey = "key"
 	// FieldURL holds the string denoting the url field in the database.
 	FieldURL = "url"
+	// FieldTagKey holds the string denoting the tag_key field in the database.
+	FieldTagKey = "tag_key"
 	// Table holds the table name of the skill in the database.
 	Table = "skills"
 )
@@ -33,6 +35,7 @@ var Columns = []string{
 	FieldName,
 	FieldKey,
 	FieldURL,
+	FieldTagKey,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -58,4 +61,6 @@ var (
 	KeyValidator func(string) error
 	// URLValidator is a validator for the "url" field. It is called by the builders before save.
 	URLValidator func(string) error
+	// TagKeyValidator is a validator for the "tag_key" field. It is called by the builders before save.
+	TagKeyValidator func(string) error
 )

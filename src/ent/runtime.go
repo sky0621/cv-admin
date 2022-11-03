@@ -11,6 +11,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/careertaskdescription"
 	"github.com/sky0621/cv-admin/src/ent/schema"
 	"github.com/sky0621/cv-admin/src/ent/skill"
+	"github.com/sky0621/cv-admin/src/ent/skilltag"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
@@ -207,6 +208,48 @@ func init() {
 	skillDescURL := skillFields[2].Descriptor()
 	// skill.URLValidator is a validator for the "url" field. It is called by the builders before save.
 	skill.URLValidator = skillDescURL.Validators[0].(func(string) error)
+	// skillDescTagKey is the schema descriptor for tag_key field.
+	skillDescTagKey := skillFields[3].Descriptor()
+	// skill.TagKeyValidator is a validator for the "tag_key" field. It is called by the builders before save.
+	skill.TagKeyValidator = skillDescTagKey.Validators[0].(func(string) error)
+	skilltagFields := schema.SkillTag{}.Fields()
+	_ = skilltagFields
+	// skilltagDescName is the schema descriptor for name field.
+	skilltagDescName := skilltagFields[0].Descriptor()
+	// skilltag.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	skilltag.NameValidator = func() func(string) error {
+		validators := skilltagDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// skilltagDescKey is the schema descriptor for key field.
+	skilltagDescKey := skilltagFields[1].Descriptor()
+	// skilltag.KeyValidator is a validator for the "key" field. It is called by the builders before save.
+	skilltag.KeyValidator = func() func(string) error {
+		validators := skilltagDescKey.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(key string) error {
+			for _, fn := range fns {
+				if err := fn(key); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0

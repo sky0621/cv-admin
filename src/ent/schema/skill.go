@@ -13,9 +13,10 @@ type Skill struct {
 // Fields of the Skill.
 func (Skill) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name").NotEmpty().Validate(maxRuneCount(100)),
-		field.String("key").NotEmpty().Validate(maxRuneCount(40)),
+		field.String("name").NotEmpty().Validate(maxRuneCount(100)).Unique(),
+		field.String("key").NotEmpty().Validate(maxRuneCount(40)).Unique(),
 		field.String("url").Validate(rangeRuneCount(1, 4096)).Optional().Nillable(),
+		field.String("tag_key").Validate(maxRuneCount(40)).Optional().Nillable().Unique(),
 	}
 }
 

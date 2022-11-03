@@ -8,14 +8,16 @@ func ToEntSkillCreate(s Skill, c *ent.SkillCreate) *ent.SkillCreate {
 	return c.
 		SetName(*s.Name).
 		SetKey(*s.Key).
-		SetNillableURL(s.Url)
+		SetNillableURL(s.Url).
+		SetNillableTagKey(s.TagKey)
 }
 
 func ToSwaggerSkill(entSkill *ent.Skill) Skill {
 	return Skill{
-		Name: &entSkill.Name,
-		Key:  &entSkill.Key,
-		Url:  entSkill.URL,
+		Name:   &entSkill.Name,
+		Key:    &entSkill.Key,
+		Url:    entSkill.URL,
+		TagKey: entSkill.TagKey,
 	}
 }
 
