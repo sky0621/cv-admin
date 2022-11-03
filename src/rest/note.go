@@ -24,7 +24,6 @@ func (s *ServerImpl) GetUsersByUserIdNotes(ctx echo.Context, byUserId UserId) er
 }
 
 // PostUsersByUserIdNotes 注釈新規登録
-// 注釈新規登録
 // (POST /users/{byUserId}/notes)
 func (s *ServerImpl) PostUsersByUserIdNotes(ctx echo.Context, byUserId UserId) error {
 	var userNote UserNote

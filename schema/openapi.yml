@@ -39,6 +39,44 @@ paths:
           $ref: "#/components/responses/201-Created-Skill"
         "400":
           $ref: "#/components/responses/400-BadRequest"
+    get:
+      summary: "全スキル取得"
+      description: "全スキルを取得する。"
+      tags: ["skills"]
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-SkillRecords"
+
+  "/skillrecords":
+    post:
+      summary: "スキル一括登録"
+      description: "スキルを一括登録する。"
+      tags: ["skills"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/Skill"
+      responses:
+        "201":
+          $ref: "#/components/responses/201-Created-SkillRecords"
+        "400":
+          $ref: "#/components/responses/400-BadRequest"
+
+  "/skills/{bySkillId}":
+    parameters:
+      - $ref: "#/components/parameters/skillId"
+    get:
+      summary: "指定スキル取得"
+      description: "指定スキルを取得する。"
+      tags: ["skills"]
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-Skill"
+
   "/users":
     post:
       summary: "ユーザーアカウント登録"
@@ -657,7 +695,7 @@ components:
     ErrorMessage:
       type: string
       description: "エラーメッセージ"
-      example: "xxxx"
+      example: "too long"
       minLength: 1
       maxLength: 80
     ClientError:
@@ -672,6 +710,12 @@ components:
           $ref: "#/components/schemas/ErrorMessage"
 
   parameters:
+    skillId:
+      name: "bySkillId"
+      in: "path"
+      required: true
+      schema:
+        $ref: "#/components/schemas/SkillId"
     userId:
       name: "byUserId"
       in: "path"
@@ -693,17 +737,39 @@ components:
 
   responses:
     201-Created-Skill:
-      description: "Created: 指定スキルの属性を返却する。"
+      description: "Created: 作成したスキルを返却する。"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Skill"
+    201-Created-SkillRecords:
+      description: "Created: 作成した全スキルを返却する。"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Skill"
     201-Created-UserAttribute:
       description: "Created: 指定ユーザーの属性を返却する。"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/UserAttribute"
+    200-OK-Skill:
+      description: "OK: 指定スキルを返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Skill"
+    200-OK-SkillRecords:
+      description: "OK: 全スキルを返却する。"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Skill"
     200-OK-UserAttribute:
       description: "OK: 指定ユーザーの属性を返却する。"
       content:

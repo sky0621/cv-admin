@@ -16,3 +16,11 @@ func ToSwaggerSkill(entSkill *ent.Skill) Skill {
 		Url:  entSkill.URL,
 	}
 }
+
+func ToSwaggerSkills(entSkills []*ent.Skill) []Skill {
+	var skills []Skill
+	for _, entQualification := range entSkills {
+		skills = append(skills, ToSwaggerSkill(entQualification))
+	}
+	return skills
+}
