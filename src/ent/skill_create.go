@@ -56,6 +56,12 @@ func (sc *SkillCreate) SetName(s string) *SkillCreate {
 	return sc
 }
 
+// SetKey sets the "key" field.
+func (sc *SkillCreate) SetKey(s string) *SkillCreate {
+	sc.mutation.SetKey(s)
+	return sc
+}
+
 // SetURL sets the "url" field.
 func (sc *SkillCreate) SetURL(s string) *SkillCreate {
 	sc.mutation.SetURL(s)
@@ -173,6 +179,14 @@ func (sc *SkillCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Skill.name": %w`, err)}
 		}
 	}
+	if _, ok := sc.mutation.Key(); !ok {
+		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "Skill.key"`)}
+	}
+	if v, ok := sc.mutation.Key(); ok {
+		if err := skill.KeyValidator(v); err != nil {
+			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "Skill.key": %w`, err)}
+		}
+	}
 	if v, ok := sc.mutation.URL(); ok {
 		if err := skill.URLValidator(v); err != nil {
 			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Skill.url": %w`, err)}
@@ -217,6 +231,10 @@ func (sc *SkillCreate) createSpec() (*Skill, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.Name(); ok {
 		_spec.SetField(skill.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := sc.mutation.Key(); ok {
+		_spec.SetField(skill.FieldKey, field.TypeString, value)
+		_node.Key = value
 	}
 	if value, ok := sc.mutation.URL(); ok {
 		_spec.SetField(skill.FieldURL, field.TypeString, value)
@@ -295,6 +313,18 @@ func (u *SkillUpsert) SetName(v string) *SkillUpsert {
 // UpdateName sets the "name" field to the value that was provided on create.
 func (u *SkillUpsert) UpdateName() *SkillUpsert {
 	u.SetExcluded(skill.FieldName)
+	return u
+}
+
+// SetKey sets the "key" field.
+func (u *SkillUpsert) SetKey(v string) *SkillUpsert {
+	u.Set(skill.FieldKey, v)
+	return u
+}
+
+// UpdateKey sets the "key" field to the value that was provided on create.
+func (u *SkillUpsert) UpdateKey() *SkillUpsert {
+	u.SetExcluded(skill.FieldKey)
 	return u
 }
 
@@ -386,6 +416,20 @@ func (u *SkillUpsertOne) SetName(v string) *SkillUpsertOne {
 func (u *SkillUpsertOne) UpdateName() *SkillUpsertOne {
 	return u.Update(func(s *SkillUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetKey sets the "key" field.
+func (u *SkillUpsertOne) SetKey(v string) *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetKey(v)
+	})
+}
+
+// UpdateKey sets the "key" field to the value that was provided on create.
+func (u *SkillUpsertOne) UpdateKey() *SkillUpsertOne {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateKey()
 	})
 }
 
@@ -642,6 +686,20 @@ func (u *SkillUpsertBulk) SetName(v string) *SkillUpsertBulk {
 func (u *SkillUpsertBulk) UpdateName() *SkillUpsertBulk {
 	return u.Update(func(s *SkillUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetKey sets the "key" field.
+func (u *SkillUpsertBulk) SetKey(v string) *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.SetKey(v)
+	})
+}
+
+// UpdateKey sets the "key" field to the value that was provided on create.
+func (u *SkillUpsertBulk) UpdateKey() *SkillUpsertBulk {
+	return u.Update(func(s *SkillUpsert) {
+		s.UpdateKey()
 	})
 }
 

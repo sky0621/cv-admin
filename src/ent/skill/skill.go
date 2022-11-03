@@ -17,6 +17,8 @@ const (
 	FieldUpdateTime = "update_time"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldKey holds the string denoting the key field in the database.
+	FieldKey = "key"
 	// FieldURL holds the string denoting the url field in the database.
 	FieldURL = "url"
 	// Table holds the table name of the skill in the database.
@@ -29,6 +31,7 @@ var Columns = []string{
 	FieldCreateTime,
 	FieldUpdateTime,
 	FieldName,
+	FieldKey,
 	FieldURL,
 }
 
@@ -51,6 +54,8 @@ var (
 	UpdateDefaultUpdateTime func() time.Time
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
+	// KeyValidator is a validator for the "key" field. It is called by the builders before save.
+	KeyValidator func(string) error
 	// URLValidator is a validator for the "url" field. It is called by the builders before save.
 	URLValidator func(string) error
 )

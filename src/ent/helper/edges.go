@@ -57,3 +57,11 @@ func PickupSkillName(skills []*ent.Skill) []string {
 	}
 	return results
 }
+
+func PickupSkillKey(skills []*ent.Skill) []string {
+	results := make([]string, len(skills))
+	for _, s := range skills {
+		results = append(results, s.Key)
+	}
+	return results
+}

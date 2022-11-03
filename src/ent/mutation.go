@@ -2215,6 +2215,7 @@ type SkillMutation struct {
 	create_time   *time.Time
 	update_time   *time.Time
 	name          *string
+	key           *string
 	url           *string
 	clearedFields map[string]struct{}
 	done          bool
@@ -2428,6 +2429,42 @@ func (m *SkillMutation) ResetName() {
 	m.name = nil
 }
 
+// SetKey sets the "key" field.
+func (m *SkillMutation) SetKey(s string) {
+	m.key = &s
+}
+
+// Key returns the value of the "key" field in the mutation.
+func (m *SkillMutation) Key() (r string, exists bool) {
+	v := m.key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKey returns the old "key" field's value of the Skill entity.
+// If the Skill object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SkillMutation) OldKey(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKey: %w", err)
+	}
+	return oldValue.Key, nil
+}
+
+// ResetKey resets all changes to the "key" field.
+func (m *SkillMutation) ResetKey() {
+	m.key = nil
+}
+
 // SetURL sets the "url" field.
 func (m *SkillMutation) SetURL(s string) {
 	m.url = &s
@@ -2496,7 +2533,7 @@ func (m *SkillMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SkillMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.create_time != nil {
 		fields = append(fields, skill.FieldCreateTime)
 	}
@@ -2505,6 +2542,9 @@ func (m *SkillMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, skill.FieldName)
+	}
+	if m.key != nil {
+		fields = append(fields, skill.FieldKey)
 	}
 	if m.url != nil {
 		fields = append(fields, skill.FieldURL)
@@ -2523,6 +2563,8 @@ func (m *SkillMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdateTime()
 	case skill.FieldName:
 		return m.Name()
+	case skill.FieldKey:
+		return m.Key()
 	case skill.FieldURL:
 		return m.URL()
 	}
@@ -2540,6 +2582,8 @@ func (m *SkillMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldUpdateTime(ctx)
 	case skill.FieldName:
 		return m.OldName(ctx)
+	case skill.FieldKey:
+		return m.OldKey(ctx)
 	case skill.FieldURL:
 		return m.OldURL(ctx)
 	}
@@ -2571,6 +2615,13 @@ func (m *SkillMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case skill.FieldKey:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKey(v)
 		return nil
 	case skill.FieldURL:
 		v, ok := value.(string)
@@ -2645,6 +2696,9 @@ func (m *SkillMutation) ResetField(name string) error {
 		return nil
 	case skill.FieldName:
 		m.ResetName()
+		return nil
+	case skill.FieldKey:
+		m.ResetKey()
 		return nil
 	case skill.FieldURL:
 		m.ResetURL()

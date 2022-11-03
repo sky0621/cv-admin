@@ -185,8 +185,26 @@ func init() {
 			return nil
 		}
 	}()
+	// skillDescKey is the schema descriptor for key field.
+	skillDescKey := skillFields[1].Descriptor()
+	// skill.KeyValidator is a validator for the "key" field. It is called by the builders before save.
+	skill.KeyValidator = func() func(string) error {
+		validators := skillDescKey.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(key string) error {
+			for _, fn := range fns {
+				if err := fn(key); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// skillDescURL is the schema descriptor for url field.
-	skillDescURL := skillFields[1].Descriptor()
+	skillDescURL := skillFields[2].Descriptor()
 	// skill.URLValidator is a validator for the "url" field. It is called by the builders before save.
 	skill.URLValidator = skillDescURL.Validators[0].(func(string) error)
 	userMixin := schema.User{}.Mixin()

@@ -2,6 +2,7 @@ package rest
 
 import (
 	"github.com/sky0621/cv-admin/src/ent"
+	"github.com/sky0621/golang-utils/slice"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -28,10 +29,11 @@ func (s *ServerImpl) PostSkills(ctx echo.Context) error {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	for _, s := range helper.PickupSkillName(entSkills) {
-		if s == *skill.Name {
-			return sendClientError(ctx, http.StatusBadRequest, "already registered under the same name")
-		}
+	if slice.Contains(helper.PickupSkillName(entSkills), *skill.Name) {
+		return sendClientError(ctx, http.StatusBadRequest, "already registered under the same name")
+	}
+	if slice.Contains(helper.PickupSkillKey(entSkills), *skill.Key) {
+		return sendClientError(ctx, http.StatusBadRequest, "already registered under the same key")
 	}
 
 	entSkill, err := ToEntSkillCreate(skill, s.dbClient.Skill.Create()).Save(rCtx)
@@ -66,10 +68,11 @@ func (s *ServerImpl) PostSkillrecords(ctx echo.Context) error {
 
 	// TODO: やり方考える。
 	for _, skill := range skills {
-		for _, s := range helper.PickupSkillName(entSkills) {
-			if s == *skill.Name {
-				return sendClientError(ctx, http.StatusBadRequest, "already registered under the same name")
-			}
+		if slice.Contains(helper.PickupSkillName(entSkills), *skill.Name) {
+			return sendClientError(ctx, http.StatusBadRequest, "already registered under the same name")
+		}
+		if slice.Contains(helper.PickupSkillKey(entSkills), *skill.Key) {
+			return sendClientError(ctx, http.StatusBadRequest, "already registered under the same key")
 		}
 	}
 

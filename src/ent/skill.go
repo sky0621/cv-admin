@@ -22,6 +22,8 @@ type Skill struct {
 	UpdateTime time.Time `json:"update_time,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// Key holds the value of the "key" field.
+	Key string `json:"key,omitempty"`
 	// URL holds the value of the "url" field.
 	URL *string `json:"url,omitempty"`
 }
@@ -33,7 +35,7 @@ func (*Skill) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case skill.FieldID:
 			values[i] = new(sql.NullInt64)
-		case skill.FieldName, skill.FieldURL:
+		case skill.FieldName, skill.FieldKey, skill.FieldURL:
 			values[i] = new(sql.NullString)
 		case skill.FieldCreateTime, skill.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
@@ -75,6 +77,12 @@ func (s *Skill) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				s.Name = value.String
+			}
+		case skill.FieldKey:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field key", values[i])
+			} else if value.Valid {
+				s.Key = value.String
 			}
 		case skill.FieldURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -119,6 +127,9 @@ func (s *Skill) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(s.Name)
+	builder.WriteString(", ")
+	builder.WriteString("key=")
+	builder.WriteString(s.Key)
 	builder.WriteString(", ")
 	if v := s.URL; v != nil {
 		builder.WriteString("url=")

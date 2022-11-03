@@ -101,6 +101,13 @@ func Name(v string) predicate.Skill {
 	})
 }
 
+// Key applies equality check predicate on the "key" field. It's identical to KeyEQ.
+func Key(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldKey), v))
+	})
+}
+
 // URL applies equality check predicate on the "url" field. It's identical to URLEQ.
 func URL(v string) predicate.Skill {
 	return predicate.Skill(func(s *sql.Selector) {
@@ -332,6 +339,105 @@ func NameEqualFold(v string) predicate.Skill {
 func NameContainsFold(v string) predicate.Skill {
 	return predicate.Skill(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldName), v))
+	})
+}
+
+// KeyEQ applies the EQ predicate on the "key" field.
+func KeyEQ(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldKey), v))
+	})
+}
+
+// KeyNEQ applies the NEQ predicate on the "key" field.
+func KeyNEQ(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldKey), v))
+	})
+}
+
+// KeyIn applies the In predicate on the "key" field.
+func KeyIn(vs ...string) predicate.Skill {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldKey), v...))
+	})
+}
+
+// KeyNotIn applies the NotIn predicate on the "key" field.
+func KeyNotIn(vs ...string) predicate.Skill {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldKey), v...))
+	})
+}
+
+// KeyGT applies the GT predicate on the "key" field.
+func KeyGT(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldKey), v))
+	})
+}
+
+// KeyGTE applies the GTE predicate on the "key" field.
+func KeyGTE(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldKey), v))
+	})
+}
+
+// KeyLT applies the LT predicate on the "key" field.
+func KeyLT(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldKey), v))
+	})
+}
+
+// KeyLTE applies the LTE predicate on the "key" field.
+func KeyLTE(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldKey), v))
+	})
+}
+
+// KeyContains applies the Contains predicate on the "key" field.
+func KeyContains(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldKey), v))
+	})
+}
+
+// KeyHasPrefix applies the HasPrefix predicate on the "key" field.
+func KeyHasPrefix(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldKey), v))
+	})
+}
+
+// KeyHasSuffix applies the HasSuffix predicate on the "key" field.
+func KeyHasSuffix(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldKey), v))
+	})
+}
+
+// KeyEqualFold applies the EqualFold predicate on the "key" field.
+func KeyEqualFold(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldKey), v))
+	})
+}
+
+// KeyContainsFold applies the ContainsFold predicate on the "key" field.
+func KeyContainsFold(v string) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldKey), v))
 	})
 }
 

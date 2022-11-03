@@ -102,6 +102,7 @@ var (
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString},
+		{Name: "key", Type: field.TypeString},
 		{Name: "url", Type: field.TypeString, Nullable: true},
 	}
 	// SkillsTable holds the schema information for the "skills" table.
