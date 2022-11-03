@@ -23,6 +23,30 @@ tags:
 security: []
 
 paths:
+  "/skilltags":
+    post:
+      summary: "スキルタグ登録"
+      description: "スキルタグを登録する。"
+      tags: ["skills"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SkillTag"
+      responses:
+        "201":
+          $ref: "#/components/responses/201-Created-SkillTag"
+        "400":
+          $ref: "#/components/responses/400-BadRequest"
+    get:
+      summary: "全スキルタグ取得"
+      description: "全スキルタグを取得する。"
+      tags: ["skills"]
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-SkillTagRecords"
+
   "/skills":
     post:
       summary: "スキル登録"
@@ -379,11 +403,26 @@ paths:
 
 components:
   schemas:
+    SkillTagId:
+      type: integer
+      format: int
+      description: "スキルタグを一意に識別するキー"
+      example: 1
     SkillId:
       type: integer
       format: int
       description: "スキルを一意に識別するキー"
       example: 1
+    SkillTag:
+      type: object
+      description: "１スキルタグの属性"
+      properties:
+        id:
+          $ref: "#/components/schemas/SkillTagId"
+        name:
+          $ref: "#/components/schemas/SkillTagName"
+        key:
+          $ref: "#/components/schemas/SkillTagKey"
     Skill:
       type: object
       description: "１スキルの属性"
@@ -525,6 +564,10 @@ components:
         type: string
         description: "タスク説明１文"
         example: "・分析APIのベース開発"
+    SkillTagName:
+      type: string
+      description: "スキルタグ名"
+      example: "AWS"
     SkillName:
       type: string
       description: "スキル名"
@@ -748,6 +791,12 @@ components:
         $ref: "#/components/schemas/CareerGroupId"
 
   responses:
+    201-Created-SkillTag:
+      description: "Created: 作成したスキルタグを返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SkillTag"
     201-Created-Skill:
       description: "Created: 作成したスキルを返却する。"
       content:
@@ -774,6 +823,14 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Skill"
+    200-OK-SkillTagRecords:
+      description: "OK: 全スキルタグを返却する。"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/SkillTag"
     200-OK-SkillRecords:
       description: "OK: 全スキルを返却する。"
       content:

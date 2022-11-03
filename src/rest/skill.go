@@ -10,6 +10,16 @@ import (
 	"github.com/sky0621/golang-utils/slice"
 )
 
+func (s *ServerImpl) GetSkilltags(ctx echo.Context) error {
+	// FIXME: implement me
+	panic("implement me")
+}
+
+func (s *ServerImpl) PostSkilltags(ctx echo.Context) error {
+	// FIXME: implement me
+	panic("implement me")
+}
+
 // PostSkills スキル新規登録
 // (POST /skills)
 func (s *ServerImpl) PostSkills(ctx echo.Context) error {
@@ -76,11 +86,11 @@ func (s *ServerImpl) PostSkillrecords(ctx echo.Context) error {
 		}
 	}
 
-	var createdEntSkills []*ent.Skill
+	createdEntSkills := make([]*ent.Skill, len(skills))
 	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
-		var entSkillCreates []*ent.SkillCreate
-		for _, skill := range skills {
-			entSkillCreates = append(entSkillCreates, ToEntSkillCreate(skill, tx.Skill.Create()))
+		entSkillCreates := make([]*ent.SkillCreate, len(skills))
+		for i, skill := range skills {
+			entSkillCreates[i] = ToEntSkillCreate(skill, tx.Skill.Create())
 		}
 
 		createdEntSkills, err = tx.Skill.CreateBulk(entSkillCreates...).Save(rCtx)
