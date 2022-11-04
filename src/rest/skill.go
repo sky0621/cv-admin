@@ -102,9 +102,15 @@ func (s *ServerImpl) PostSkillrecords(ctx echo.Context) error {
 	return ctx.JSON(http.StatusCreated, ToSwaggerSkills(createdEntSkills))
 }
 
+// GetSkills 全スキル取得
+// (GET /skills)
 func (s *ServerImpl) GetSkills(ctx echo.Context) error {
-	// FIXME: implement me
-	panic("implement me")
+	entSkills, err := s.dbClient.Skill.Query().All(ctx.Request().Context())
+	if err != nil {
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, ToSwaggerSkills(entSkills))
 }
 
 func (s *ServerImpl) GetSkillsBySkillId(ctx echo.Context, bySkillId SkillId) error {
