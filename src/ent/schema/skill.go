@@ -16,7 +16,7 @@ func (Skill) Fields() []ent.Field {
 		field.String("name").NotEmpty().Validate(maxRuneCount(100)).Unique(),
 		field.String("key").NotEmpty().Validate(maxRuneCount(40)).Unique(),
 		field.String("url").Validate(rangeRuneCount(1, 4096)).Optional().Nillable(),
-		field.String("tag_key").Validate(maxRuneCount(40)).Optional().Nillable().Unique(),
+		field.String("tag_key").Validate(maxRuneCount(40)).Optional().Nillable(),
 	}
 }
 

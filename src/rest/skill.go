@@ -1,13 +1,11 @@
 package rest
 
 import (
-	"net/http"
-
 	"github.com/labstack/echo/v4"
-
 	"github.com/sky0621/cv-admin/src/ent"
 	"github.com/sky0621/cv-admin/src/ent/helper"
 	"github.com/sky0621/golang-utils/slice"
+	"net/http"
 )
 
 func (s *ServerImpl) GetSkilltags(ctx echo.Context) error {
@@ -86,18 +84,16 @@ func (s *ServerImpl) PostSkillrecords(ctx echo.Context) error {
 		}
 	}
 
-	createdEntSkills := make([]*ent.Skill, len(skills))
+	var createdEntSkills []*ent.Skill
 	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
-		entSkillCreates := make([]*ent.SkillCreate, len(skills))
-		for i, skill := range skills {
-			entSkillCreates[i] = ToEntSkillCreate(skill, tx.Skill.Create())
+		var entSkillCreates []*ent.SkillCreate
+		for _, skill := range skills {
+			entSkillCreates = append(entSkillCreates, ToEntSkillCreate(skill, s.dbClient.Skill.Create()))
 		}
-
-		createdEntSkills, err = tx.Skill.CreateBulk(entSkillCreates...).Save(rCtx)
+		createdEntSkills, err = s.dbClient.Skill.CreateBulk(entSkillCreates...).Save(rCtx)
 		if err != nil {
 			return err
 		}
-
 		return nil
 	}); err != nil {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())

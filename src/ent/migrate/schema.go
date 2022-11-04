@@ -104,7 +104,7 @@ var (
 		{Name: "name", Type: field.TypeString, Unique: true},
 		{Name: "key", Type: field.TypeString, Unique: true},
 		{Name: "url", Type: field.TypeString, Nullable: true},
-		{Name: "tag_key", Type: field.TypeString, Unique: true, Nullable: true},
+		{Name: "tag_key", Type: field.TypeString, Nullable: true},
 	}
 	// SkillsTable holds the schema information for the "skills" table.
 	SkillsTable = &schema.Table{
