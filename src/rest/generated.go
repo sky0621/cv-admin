@@ -486,13 +486,13 @@ type ServerInterface interface {
 	// スキル登録
 	// (POST /skills)
 	PostSkills(ctx echo.Context) error
-	// 指定スキル取得
+	// 【未実装】指定スキル取得
 	// (GET /skills/{bySkillId})
 	GetSkillsBySkillId(ctx echo.Context, bySkillId SkillId) error
-	// 全スキルタグ取得
+	// 【未実装】全スキルタグ取得
 	// (GET /skilltags)
 	GetSkilltags(ctx echo.Context) error
-	// スキルタグ登録
+	// 【未実装】スキルタグ登録
 	// (POST /skilltags)
 	PostSkilltags(ctx echo.Context) error
 	// ユーザーアカウント登録
@@ -1048,23 +1048,23 @@ var swaggerSpec = []string{
 	"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",
-	"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",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
