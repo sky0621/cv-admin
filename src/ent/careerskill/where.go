@@ -95,20 +95,6 @@ func UpdateTime(v time.Time) predicate.CareerSkill {
 	})
 }
 
-// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
-func Name(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
-}
-
-// URL applies equality check predicate on the "url" field. It's identical to URLEQ.
-func URL(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldURL), v))
-	})
-}
-
 // Version applies equality check predicate on the "version" field. It's identical to VersionEQ.
 func Version(v string) predicate.CareerSkill {
 	return predicate.CareerSkill(func(s *sql.Selector) {
@@ -244,218 +230,6 @@ func UpdateTimeLTE(v time.Time) predicate.CareerSkill {
 	})
 }
 
-// NameEQ applies the EQ predicate on the "name" field.
-func NameEQ(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldName), v))
-	})
-}
-
-// NameNEQ applies the NEQ predicate on the "name" field.
-func NameNEQ(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldName), v))
-	})
-}
-
-// NameIn applies the In predicate on the "name" field.
-func NameIn(vs ...string) predicate.CareerSkill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldName), v...))
-	})
-}
-
-// NameNotIn applies the NotIn predicate on the "name" field.
-func NameNotIn(vs ...string) predicate.CareerSkill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldName), v...))
-	})
-}
-
-// NameGT applies the GT predicate on the "name" field.
-func NameGT(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldName), v))
-	})
-}
-
-// NameGTE applies the GTE predicate on the "name" field.
-func NameGTE(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldName), v))
-	})
-}
-
-// NameLT applies the LT predicate on the "name" field.
-func NameLT(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldName), v))
-	})
-}
-
-// NameLTE applies the LTE predicate on the "name" field.
-func NameLTE(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldName), v))
-	})
-}
-
-// NameContains applies the Contains predicate on the "name" field.
-func NameContains(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldName), v))
-	})
-}
-
-// NameHasPrefix applies the HasPrefix predicate on the "name" field.
-func NameHasPrefix(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldName), v))
-	})
-}
-
-// NameHasSuffix applies the HasSuffix predicate on the "name" field.
-func NameHasSuffix(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldName), v))
-	})
-}
-
-// NameEqualFold applies the EqualFold predicate on the "name" field.
-func NameEqualFold(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldName), v))
-	})
-}
-
-// NameContainsFold applies the ContainsFold predicate on the "name" field.
-func NameContainsFold(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldName), v))
-	})
-}
-
-// URLEQ applies the EQ predicate on the "url" field.
-func URLEQ(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldURL), v))
-	})
-}
-
-// URLNEQ applies the NEQ predicate on the "url" field.
-func URLNEQ(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldURL), v))
-	})
-}
-
-// URLIn applies the In predicate on the "url" field.
-func URLIn(vs ...string) predicate.CareerSkill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldURL), v...))
-	})
-}
-
-// URLNotIn applies the NotIn predicate on the "url" field.
-func URLNotIn(vs ...string) predicate.CareerSkill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldURL), v...))
-	})
-}
-
-// URLGT applies the GT predicate on the "url" field.
-func URLGT(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldURL), v))
-	})
-}
-
-// URLGTE applies the GTE predicate on the "url" field.
-func URLGTE(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldURL), v))
-	})
-}
-
-// URLLT applies the LT predicate on the "url" field.
-func URLLT(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldURL), v))
-	})
-}
-
-// URLLTE applies the LTE predicate on the "url" field.
-func URLLTE(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldURL), v))
-	})
-}
-
-// URLContains applies the Contains predicate on the "url" field.
-func URLContains(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldURL), v))
-	})
-}
-
-// URLHasPrefix applies the HasPrefix predicate on the "url" field.
-func URLHasPrefix(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldURL), v))
-	})
-}
-
-// URLHasSuffix applies the HasSuffix predicate on the "url" field.
-func URLHasSuffix(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldURL), v))
-	})
-}
-
-// URLIsNil applies the IsNil predicate on the "url" field.
-func URLIsNil() predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldURL)))
-	})
-}
-
-// URLNotNil applies the NotNil predicate on the "url" field.
-func URLNotNil() predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldURL)))
-	})
-}
-
-// URLEqualFold applies the EqualFold predicate on the "url" field.
-func URLEqualFold(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldURL), v))
-	})
-}
-
-// URLContainsFold applies the ContainsFold predicate on the "url" field.
-func URLContainsFold(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldURL), v))
-	})
-}
-
 // VersionEQ applies the EQ predicate on the "version" field.
 func VersionEQ(v string) predicate.CareerSkill {
 	return predicate.CareerSkill(func(s *sql.Selector) {
@@ -588,6 +362,34 @@ func HasCareerSkillGroupWith(preds ...predicate.CareerSkillGroup) predicate.Care
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(CareerSkillGroupInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, CareerSkillGroupTable, CareerSkillGroupColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSkill applies the HasEdge predicate on the "skill" edge.
+func HasSkill() predicate.CareerSkill {
+	return predicate.CareerSkill(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SkillTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, SkillTable, SkillColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSkillWith applies the HasEdge predicate on the "skill" edge with a given conditions (other predicates).
+func HasSkillWith(preds ...predicate.Skill) predicate.CareerSkill {
+	return predicate.CareerSkill(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SkillInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, SkillTable, SkillColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

@@ -63,11 +63,21 @@ func ToSwaggerUserCareerDescriptions(entUserCareerDescriptions []*ent.UserCareer
 }
 
 func ToSwaggerCareerSkill(entCareer *ent.CareerSkill) CareerSkill {
-	return CareerSkill{
-		Name:    &entCareer.Name,
-		Url:     entCareer.URL,
+	cs := CareerSkill{
 		Version: entCareer.Version,
 	}
+	entSkill := entCareer.Edges.Skill
+	if entSkill == nil {
+		return cs
+	}
+	cs.Skill = &Skill{
+		Id:     &entSkill.ID,
+		Name:   &entSkill.Name,
+		Key:    &entSkill.Key,
+		Url:    entSkill.URL,
+		TagKey: entSkill.TagKey,
+	}
+	return cs
 }
 
 func ToSwaggerCareerSkillGroup(entCareerSkillGroup *ent.CareerSkillGroup) *CareerSkillGroup {
@@ -213,10 +223,9 @@ func ToEntCareerSkillGroupCreate(u CareerSkillGroup, userCareerID int, c *ent.Ca
 		SetLabel(*u.Label)
 }
 
-func ToEntCareerSkillCreate(u CareerSkill, careerSkillGroupID int, c *ent.CareerSkillCreate) *ent.CareerSkillCreate {
+func ToEntCareerSkillCreate(u CareerSkill, careerSkillGroupID, skillID int, c *ent.CareerSkillCreate) *ent.CareerSkillCreate {
 	return c.
 		SetCareerSkillGroupID(careerSkillGroupID).
-		SetName(*u.Name).
-		SetNillableURL(u.Url).
+		SetSkillID(skillID).
 		SetNillableVersion(u.Version)
 }

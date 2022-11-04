@@ -23,8 +23,17 @@ const (
 	FieldURL = "url"
 	// FieldTagKey holds the string denoting the tag_key field in the database.
 	FieldTagKey = "tag_key"
+	// EdgeCareerSkills holds the string denoting the careerskills edge name in mutations.
+	EdgeCareerSkills = "careerSkills"
 	// Table holds the table name of the skill in the database.
 	Table = "skills"
+	// CareerSkillsTable is the table that holds the careerSkills relation/edge.
+	CareerSkillsTable = "career_skills"
+	// CareerSkillsInverseTable is the table name for the CareerSkill entity.
+	// It exists in this package in order to avoid circular dependency with the "careerskill" package.
+	CareerSkillsInverseTable = "career_skills"
+	// CareerSkillsColumn is the table column denoting the careerSkills relation/edge.
+	CareerSkillsColumn = "skill_id"
 )
 
 // Columns holds all SQL columns for skill fields.

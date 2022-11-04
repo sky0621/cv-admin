@@ -13,6 +13,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/careerskill"
 	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
+	"github.com/sky0621/cv-admin/src/ent/skill"
 )
 
 // CareerSkillQuery is the builder for querying CareerSkill entities.
@@ -25,6 +26,7 @@ type CareerSkillQuery struct {
 	fields               []string
 	predicates           []predicate.CareerSkill
 	withCareerSkillGroup *CareerSkillGroupQuery
+	withSkill            *SkillQuery
 	withFKs              bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -77,6 +79,28 @@ func (csq *CareerSkillQuery) QueryCareerSkillGroup() *CareerSkillGroupQuery {
 			sqlgraph.From(careerskill.Table, careerskill.FieldID, selector),
 			sqlgraph.To(careerskillgroup.Table, careerskillgroup.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, careerskill.CareerSkillGroupTable, careerskill.CareerSkillGroupColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(csq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySkill chains the current query on the "skill" edge.
+func (csq *CareerSkillQuery) QuerySkill() *SkillQuery {
+	query := &SkillQuery{config: csq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := csq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := csq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(careerskill.Table, careerskill.FieldID, selector),
+			sqlgraph.To(skill.Table, skill.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, careerskill.SkillTable, careerskill.SkillColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(csq.driver.Dialect(), step)
 		return fromU, nil
@@ -266,6 +290,7 @@ func (csq *CareerSkillQuery) Clone() *CareerSkillQuery {
 		order:                append([]OrderFunc{}, csq.order...),
 		predicates:           append([]predicate.CareerSkill{}, csq.predicates...),
 		withCareerSkillGroup: csq.withCareerSkillGroup.Clone(),
+		withSkill:            csq.withSkill.Clone(),
 		// clone intermediate query.
 		sql:    csq.sql.Clone(),
 		path:   csq.path,
@@ -281,6 +306,17 @@ func (csq *CareerSkillQuery) WithCareerSkillGroup(opts ...func(*CareerSkillGroup
 		opt(query)
 	}
 	csq.withCareerSkillGroup = query
+	return csq
+}
+
+// WithSkill tells the query-builder to eager-load the nodes that are connected to
+// the "skill" edge. The optional arguments are used to configure the query builder of the edge.
+func (csq *CareerSkillQuery) WithSkill(opts ...func(*SkillQuery)) *CareerSkillQuery {
+	query := &SkillQuery{config: csq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	csq.withSkill = query
 	return csq
 }
 
@@ -358,11 +394,12 @@ func (csq *CareerSkillQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]
 		nodes       = []*CareerSkill{}
 		withFKs     = csq.withFKs
 		_spec       = csq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			csq.withCareerSkillGroup != nil,
+			csq.withSkill != nil,
 		}
 	)
-	if csq.withCareerSkillGroup != nil {
+	if csq.withCareerSkillGroup != nil || csq.withSkill != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -392,6 +429,12 @@ func (csq *CareerSkillQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]
 			return nil, err
 		}
 	}
+	if query := csq.withSkill; query != nil {
+		if err := csq.loadSkill(ctx, query, nodes, nil,
+			func(n *CareerSkill, e *Skill) { n.Edges.Skill = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
@@ -417,6 +460,35 @@ func (csq *CareerSkillQuery) loadCareerSkillGroup(ctx context.Context, query *Ca
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "career_skill_group_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (csq *CareerSkillQuery) loadSkill(ctx context.Context, query *SkillQuery, nodes []*CareerSkill, init func(*CareerSkill), assign func(*CareerSkill, *Skill)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*CareerSkill)
+	for i := range nodes {
+		if nodes[i].skill_id == nil {
+			continue
+		}
+		fk := *nodes[i].skill_id
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(skill.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "skill_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/careerskill"
 	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
+	"github.com/sky0621/cv-admin/src/ent/skill"
 )
 
 // CareerSkill is the model entity for the CareerSkill schema.
@@ -21,25 +22,24 @@ type CareerSkill struct {
 	CreateTime time.Time `json:"create_time,omitempty"`
 	// UpdateTime holds the value of the "update_time" field.
 	UpdateTime time.Time `json:"update_time,omitempty"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
-	// URL holds the value of the "url" field.
-	URL *string `json:"url,omitempty"`
 	// Version holds the value of the "version" field.
 	Version *string `json:"version,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CareerSkillQuery when eager-loading is set.
 	Edges                 CareerSkillEdges `json:"edges"`
 	career_skill_group_id *int
+	skill_id              *int
 }
 
 // CareerSkillEdges holds the relations/edges for other nodes in the graph.
 type CareerSkillEdges struct {
 	// CareerSkillGroup holds the value of the careerSkillGroup edge.
 	CareerSkillGroup *CareerSkillGroup `json:"careerSkillGroup,omitempty"`
+	// Skill holds the value of the skill edge.
+	Skill *Skill `json:"skill,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // CareerSkillGroupOrErr returns the CareerSkillGroup value or an error if the edge
@@ -55,6 +55,19 @@ func (e CareerSkillEdges) CareerSkillGroupOrErr() (*CareerSkillGroup, error) {
 	return nil, &NotLoadedError{edge: "careerSkillGroup"}
 }
 
+// SkillOrErr returns the Skill value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CareerSkillEdges) SkillOrErr() (*Skill, error) {
+	if e.loadedTypes[1] {
+		if e.Skill == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: skill.Label}
+		}
+		return e.Skill, nil
+	}
+	return nil, &NotLoadedError{edge: "skill"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*CareerSkill) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -62,11 +75,13 @@ func (*CareerSkill) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case careerskill.FieldID:
 			values[i] = new(sql.NullInt64)
-		case careerskill.FieldName, careerskill.FieldURL, careerskill.FieldVersion:
+		case careerskill.FieldVersion:
 			values[i] = new(sql.NullString)
 		case careerskill.FieldCreateTime, careerskill.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
 		case careerskill.ForeignKeys[0]: // career_skill_group_id
+			values[i] = new(sql.NullInt64)
+		case careerskill.ForeignKeys[1]: // skill_id
 			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type CareerSkill", columns[i])
@@ -101,19 +116,6 @@ func (cs *CareerSkill) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				cs.UpdateTime = value.Time
 			}
-		case careerskill.FieldName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
-			} else if value.Valid {
-				cs.Name = value.String
-			}
-		case careerskill.FieldURL:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field url", values[i])
-			} else if value.Valid {
-				cs.URL = new(string)
-				*cs.URL = value.String
-			}
 		case careerskill.FieldVersion:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field version", values[i])
@@ -128,6 +130,13 @@ func (cs *CareerSkill) assignValues(columns []string, values []any) error {
 				cs.career_skill_group_id = new(int)
 				*cs.career_skill_group_id = int(value.Int64)
 			}
+		case careerskill.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field skill_id", value)
+			} else if value.Valid {
+				cs.skill_id = new(int)
+				*cs.skill_id = int(value.Int64)
+			}
 		}
 	}
 	return nil
@@ -136,6 +145,11 @@ func (cs *CareerSkill) assignValues(columns []string, values []any) error {
 // QueryCareerSkillGroup queries the "careerSkillGroup" edge of the CareerSkill entity.
 func (cs *CareerSkill) QueryCareerSkillGroup() *CareerSkillGroupQuery {
 	return (&CareerSkillClient{config: cs.config}).QueryCareerSkillGroup(cs)
+}
+
+// QuerySkill queries the "skill" edge of the CareerSkill entity.
+func (cs *CareerSkill) QuerySkill() *SkillQuery {
+	return (&CareerSkillClient{config: cs.config}).QuerySkill(cs)
 }
 
 // Update returns a builder for updating this CareerSkill.
@@ -166,14 +180,6 @@ func (cs *CareerSkill) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("update_time=")
 	builder.WriteString(cs.UpdateTime.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("name=")
-	builder.WriteString(cs.Name)
-	builder.WriteString(", ")
-	if v := cs.URL; v != nil {
-		builder.WriteString("url=")
-		builder.WriteString(*v)
-	}
 	builder.WriteString(", ")
 	if v := cs.Version; v != nil {
 		builder.WriteString("version=")

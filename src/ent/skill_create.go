@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sky0621/cv-admin/src/ent/careerskill"
 	"github.com/sky0621/cv-admin/src/ent/skill"
 )
 
@@ -88,6 +89,21 @@ func (sc *SkillCreate) SetNillableTagKey(s *string) *SkillCreate {
 		sc.SetTagKey(*s)
 	}
 	return sc
+}
+
+// AddCareerSkillIDs adds the "careerSkills" edge to the CareerSkill entity by IDs.
+func (sc *SkillCreate) AddCareerSkillIDs(ids ...int) *SkillCreate {
+	sc.mutation.AddCareerSkillIDs(ids...)
+	return sc
+}
+
+// AddCareerSkills adds the "careerSkills" edges to the CareerSkill entity.
+func (sc *SkillCreate) AddCareerSkills(c ...*CareerSkill) *SkillCreate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return sc.AddCareerSkillIDs(ids...)
 }
 
 // Mutation returns the SkillMutation object of the builder.
@@ -262,6 +278,25 @@ func (sc *SkillCreate) createSpec() (*Skill, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.TagKey(); ok {
 		_spec.SetField(skill.FieldTagKey, field.TypeString, value)
 		_node.TagKey = &value
+	}
+	if nodes := sc.mutation.CareerSkillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skill.CareerSkillsTable,
+			Columns: []string{skill.CareerSkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

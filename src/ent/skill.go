@@ -28,6 +28,27 @@ type Skill struct {
 	URL *string `json:"url,omitempty"`
 	// TagKey holds the value of the "tag_key" field.
 	TagKey *string `json:"tag_key,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the SkillQuery when eager-loading is set.
+	Edges SkillEdges `json:"edges"`
+}
+
+// SkillEdges holds the relations/edges for other nodes in the graph.
+type SkillEdges struct {
+	// CareerSkills holds the value of the careerSkills edge.
+	CareerSkills []*CareerSkill `json:"careerSkills,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// CareerSkillsOrErr returns the CareerSkills value or an error if the edge
+// was not loaded in eager-loading.
+func (e SkillEdges) CareerSkillsOrErr() ([]*CareerSkill, error) {
+	if e.loadedTypes[0] {
+		return e.CareerSkills, nil
+	}
+	return nil, &NotLoadedError{edge: "careerSkills"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -103,6 +124,11 @@ func (s *Skill) assignValues(columns []string, values []any) error {
 		}
 	}
 	return nil
+}
+
+// QueryCareerSkills queries the "careerSkills" edge of the Skill entity.
+func (s *Skill) QueryCareerSkills() *CareerSkillQuery {
+	return (&SkillClient{config: s.config}).QueryCareerSkills(s)
 }
 
 // Update returns a builder for updating this Skill.

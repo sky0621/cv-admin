@@ -16,8 +16,6 @@ type CareerSkill struct {
 // Fields of the CareerSkill.
 func (CareerSkill) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name").NotEmpty().Validate(maxRuneCount(100)),
-		field.String("url").Validate(rangeRuneCount(1, 4096)).Optional().Nillable(),
 		field.String("version").Validate(rangeRuneCount(1, 40)).Optional().Nillable(),
 	}
 }
@@ -32,5 +30,6 @@ func (CareerSkill) Mixin() []ent.Mixin {
 func (CareerSkill) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From(careerSkillGroupEdgeName, CareerSkillGroup.Type).Ref(careerSkillsRef).Unique().Required(),
+		edge.From(skillEdgeName, Skill.Type).Ref(careerSkillsRef).Unique().Required(),
 	}
 }

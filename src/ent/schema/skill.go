@@ -2,8 +2,11 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 )
+
+const skillEdgeName = "skill"
 
 // Skill holds the schema definition for the Skill entity.
 type Skill struct {
@@ -23,5 +26,12 @@ func (Skill) Fields() []ent.Field {
 func (Skill) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		TimeMixin{},
+	}
+}
+
+// Edges of the Skill.
+func (Skill) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.To(careerSkillsRef, CareerSkill.Type).StorageKey(edge.Column("skill_id")),
 	}
 }

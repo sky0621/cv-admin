@@ -661,10 +661,8 @@ components:
       type: object
       description: "１キャリアのスキル"
       properties:
-        name:
-          $ref: "#/components/schemas/SkillName"
-        url:
-          $ref: "#/components/schemas/Url"
+        skill:
+          $ref: "#/components/schemas/Skill"
         version:
           $ref: "#/components/schemas/SkillVersion"
     CareerGroupId:

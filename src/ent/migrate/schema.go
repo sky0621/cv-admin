@@ -13,10 +13,9 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
-		{Name: "name", Type: field.TypeString},
-		{Name: "url", Type: field.TypeString, Nullable: true},
 		{Name: "version", Type: field.TypeString, Nullable: true},
 		{Name: "career_skill_group_id", Type: field.TypeInt},
+		{Name: "skill_id", Type: field.TypeInt},
 	}
 	// CareerSkillsTable holds the schema information for the "career_skills" table.
 	CareerSkillsTable = &schema.Table{
@@ -26,8 +25,14 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "career_skills_career_skill_groups_careerSkills",
-				Columns:    []*schema.Column{CareerSkillsColumns[6]},
+				Columns:    []*schema.Column{CareerSkillsColumns[4]},
 				RefColumns: []*schema.Column{CareerSkillGroupsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "career_skills_skills_careerSkills",
+				Columns:    []*schema.Column{CareerSkillsColumns[5]},
+				RefColumns: []*schema.Column{SkillsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
@@ -327,6 +332,7 @@ var (
 
 func init() {
 	CareerSkillsTable.ForeignKeys[0].RefTable = CareerSkillGroupsTable
+	CareerSkillsTable.ForeignKeys[1].RefTable = SkillsTable
 	CareerSkillGroupsTable.ForeignKeys[0].RefTable = UserCareersTable
 	CareerTasksTable.ForeignKeys[0].RefTable = UserCareersTable
 	CareerTaskDescriptionsTable.ForeignKeys[0].RefTable = CareerTasksTable

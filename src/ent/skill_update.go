@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sky0621/cv-admin/src/ent/careerskill"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 	"github.com/sky0621/cv-admin/src/ent/skill"
 )
@@ -86,9 +87,45 @@ func (su *SkillUpdate) ClearTagKey() *SkillUpdate {
 	return su
 }
 
+// AddCareerSkillIDs adds the "careerSkills" edge to the CareerSkill entity by IDs.
+func (su *SkillUpdate) AddCareerSkillIDs(ids ...int) *SkillUpdate {
+	su.mutation.AddCareerSkillIDs(ids...)
+	return su
+}
+
+// AddCareerSkills adds the "careerSkills" edges to the CareerSkill entity.
+func (su *SkillUpdate) AddCareerSkills(c ...*CareerSkill) *SkillUpdate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return su.AddCareerSkillIDs(ids...)
+}
+
 // Mutation returns the SkillMutation object of the builder.
 func (su *SkillUpdate) Mutation() *SkillMutation {
 	return su.mutation
+}
+
+// ClearCareerSkills clears all "careerSkills" edges to the CareerSkill entity.
+func (su *SkillUpdate) ClearCareerSkills() *SkillUpdate {
+	su.mutation.ClearCareerSkills()
+	return su
+}
+
+// RemoveCareerSkillIDs removes the "careerSkills" edge to CareerSkill entities by IDs.
+func (su *SkillUpdate) RemoveCareerSkillIDs(ids ...int) *SkillUpdate {
+	su.mutation.RemoveCareerSkillIDs(ids...)
+	return su
+}
+
+// RemoveCareerSkills removes "careerSkills" edges to CareerSkill entities.
+func (su *SkillUpdate) RemoveCareerSkills(c ...*CareerSkill) *SkillUpdate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return su.RemoveCareerSkillIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -224,6 +261,60 @@ func (su *SkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if su.mutation.TagKeyCleared() {
 		_spec.ClearField(skill.FieldTagKey, field.TypeString)
 	}
+	if su.mutation.CareerSkillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skill.CareerSkillsTable,
+			Columns: []string{skill.CareerSkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskill.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RemovedCareerSkillsIDs(); len(nodes) > 0 && !su.mutation.CareerSkillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skill.CareerSkillsTable,
+			Columns: []string{skill.CareerSkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.CareerSkillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skill.CareerSkillsTable,
+			Columns: []string{skill.CareerSkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{skill.Label}
@@ -301,9 +392,45 @@ func (suo *SkillUpdateOne) ClearTagKey() *SkillUpdateOne {
 	return suo
 }
 
+// AddCareerSkillIDs adds the "careerSkills" edge to the CareerSkill entity by IDs.
+func (suo *SkillUpdateOne) AddCareerSkillIDs(ids ...int) *SkillUpdateOne {
+	suo.mutation.AddCareerSkillIDs(ids...)
+	return suo
+}
+
+// AddCareerSkills adds the "careerSkills" edges to the CareerSkill entity.
+func (suo *SkillUpdateOne) AddCareerSkills(c ...*CareerSkill) *SkillUpdateOne {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return suo.AddCareerSkillIDs(ids...)
+}
+
 // Mutation returns the SkillMutation object of the builder.
 func (suo *SkillUpdateOne) Mutation() *SkillMutation {
 	return suo.mutation
+}
+
+// ClearCareerSkills clears all "careerSkills" edges to the CareerSkill entity.
+func (suo *SkillUpdateOne) ClearCareerSkills() *SkillUpdateOne {
+	suo.mutation.ClearCareerSkills()
+	return suo
+}
+
+// RemoveCareerSkillIDs removes the "careerSkills" edge to CareerSkill entities by IDs.
+func (suo *SkillUpdateOne) RemoveCareerSkillIDs(ids ...int) *SkillUpdateOne {
+	suo.mutation.RemoveCareerSkillIDs(ids...)
+	return suo
+}
+
+// RemoveCareerSkills removes "careerSkills" edges to CareerSkill entities.
+func (suo *SkillUpdateOne) RemoveCareerSkills(c ...*CareerSkill) *SkillUpdateOne {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return suo.RemoveCareerSkillIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -468,6 +595,60 @@ func (suo *SkillUpdateOne) sqlSave(ctx context.Context) (_node *Skill, err error
 	}
 	if suo.mutation.TagKeyCleared() {
 		_spec.ClearField(skill.FieldTagKey, field.TypeString)
+	}
+	if suo.mutation.CareerSkillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skill.CareerSkillsTable,
+			Columns: []string{skill.CareerSkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskill.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RemovedCareerSkillsIDs(); len(nodes) > 0 && !suo.mutation.CareerSkillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skill.CareerSkillsTable,
+			Columns: []string{skill.CareerSkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.CareerSkillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skill.CareerSkillsTable,
+			Columns: []string{skill.CareerSkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: careerskill.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Skill{config: suo.config}
 	_spec.Assign = _node.assignValues

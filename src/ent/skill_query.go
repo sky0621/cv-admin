@@ -4,12 +4,14 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sky0621/cv-admin/src/ent/careerskill"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 	"github.com/sky0621/cv-admin/src/ent/skill"
 )
@@ -17,12 +19,13 @@ import (
 // SkillQuery is the builder for querying Skill entities.
 type SkillQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
-	order      []OrderFunc
-	fields     []string
-	predicates []predicate.Skill
+	limit            *int
+	offset           *int
+	unique           *bool
+	order            []OrderFunc
+	fields           []string
+	predicates       []predicate.Skill
+	withCareerSkills *CareerSkillQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -57,6 +60,28 @@ func (sq *SkillQuery) Unique(unique bool) *SkillQuery {
 func (sq *SkillQuery) Order(o ...OrderFunc) *SkillQuery {
 	sq.order = append(sq.order, o...)
 	return sq
+}
+
+// QueryCareerSkills chains the current query on the "careerSkills" edge.
+func (sq *SkillQuery) QueryCareerSkills() *CareerSkillQuery {
+	query := &CareerSkillQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(skill.Table, skill.FieldID, selector),
+			sqlgraph.To(careerskill.Table, careerskill.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, skill.CareerSkillsTable, skill.CareerSkillsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Skill entity from the query.
@@ -235,16 +260,28 @@ func (sq *SkillQuery) Clone() *SkillQuery {
 		return nil
 	}
 	return &SkillQuery{
-		config:     sq.config,
-		limit:      sq.limit,
-		offset:     sq.offset,
-		order:      append([]OrderFunc{}, sq.order...),
-		predicates: append([]predicate.Skill{}, sq.predicates...),
+		config:           sq.config,
+		limit:            sq.limit,
+		offset:           sq.offset,
+		order:            append([]OrderFunc{}, sq.order...),
+		predicates:       append([]predicate.Skill{}, sq.predicates...),
+		withCareerSkills: sq.withCareerSkills.Clone(),
 		// clone intermediate query.
 		sql:    sq.sql.Clone(),
 		path:   sq.path,
 		unique: sq.unique,
 	}
+}
+
+// WithCareerSkills tells the query-builder to eager-load the nodes that are connected to
+// the "careerSkills" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SkillQuery) WithCareerSkills(opts ...func(*CareerSkillQuery)) *SkillQuery {
+	query := &CareerSkillQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withCareerSkills = query
+	return sq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -318,8 +355,11 @@ func (sq *SkillQuery) prepareQuery(ctx context.Context) error {
 
 func (sq *SkillQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Skill, error) {
 	var (
-		nodes = []*Skill{}
-		_spec = sq.querySpec()
+		nodes       = []*Skill{}
+		_spec       = sq.querySpec()
+		loadedTypes = [1]bool{
+			sq.withCareerSkills != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Skill).scanValues(nil, columns)
@@ -327,6 +367,7 @@ func (sq *SkillQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Skill,
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Skill{config: sq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -338,7 +379,46 @@ func (sq *SkillQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Skill,
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := sq.withCareerSkills; query != nil {
+		if err := sq.loadCareerSkills(ctx, query, nodes,
+			func(n *Skill) { n.Edges.CareerSkills = []*CareerSkill{} },
+			func(n *Skill, e *CareerSkill) { n.Edges.CareerSkills = append(n.Edges.CareerSkills, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (sq *SkillQuery) loadCareerSkills(ctx context.Context, query *CareerSkillQuery, nodes []*Skill, init func(*Skill), assign func(*Skill, *CareerSkill)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Skill)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.CareerSkill(func(s *sql.Selector) {
+		s.Where(sql.InValues(skill.CareerSkillsColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.skill_id
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "skill_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "skill_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (sq *SkillQuery) sqlCount(ctx context.Context) (int, error) {

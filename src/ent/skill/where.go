@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 )
 
@@ -671,6 +672,34 @@ func TagKeyEqualFold(v string) predicate.Skill {
 func TagKeyContainsFold(v string) predicate.Skill {
 	return predicate.Skill(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldTagKey), v))
+	})
+}
+
+// HasCareerSkills applies the HasEdge predicate on the "careerSkills" edge.
+func HasCareerSkills() predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CareerSkillsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareerSkillsTable, CareerSkillsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCareerSkillsWith applies the HasEdge predicate on the "careerSkills" edge with a given conditions (other predicates).
+func HasCareerSkillsWith(preds ...predicate.CareerSkill) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(CareerSkillsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CareerSkillsTable, CareerSkillsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

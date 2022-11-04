@@ -71,6 +71,41 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get skills",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/skills",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"skills"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -368,7 +403,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"label\": \"EdTech系企業にて就労\",\n    \"careers\": [\n        {\n            \"name\": \"プログラミング教育システム開発・保守\",\n            \"description\": [\"学習塾生向けテキストプログラミング教育システムの新規リリース及び保守・運用。\"],\n            \"from\":  { \"year\": 2022, \"month\": 1 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Frontend(SPA)\",\n                    \"skills\": [\n                        { \"name\": \"TypeScript\", \"url\": \"https://www.typescriptlang.org/\", \"version\": \"v4.8\" },\n                        { \"name\": \"React\", \"url\": \"https://ja.reactjs.org/\", \"version\": \"v18.2\" },\n                        { \"name\": \"React Router\", \"url\": \"https://reactrouter.com/en/main\", \"version\": \"v6.4\" },\n                        { \"name\": \"React Hooks\", \"url\": \"https://ja.reactjs.org/docs/hooks-intro.html\" },\n                        { \"name\": \"Redux\", \"url\": \"https://redux.js.org/\", \"version\": \"v8\" },\n                        { \"name\": \"Redux Toolkit\", \"url\": \"https://redux-toolkit.js.org/\" },\n                        { \"name\": \"React Hook Form\", \"url\": \"https://react-hook-form.com/\", \"version\": \"v7\" },\n                        { \"name\": \"CSS Modules\", \"url\": \"https://github.com/css-modules/css-modules\" },\n                        { \"name\": \"Prettier\", \"url\": \"https://prettier.io/\", \"version\": \"v2.7\" },\n                        { \"name\": \"Jest\", \"url\": \"https://jestjs.io/ja/\", \"version\": \"v27.5\" },\n                        { \"name\": \"scaffdog\", \"url\": \"https://scaff.dog/\", \"version\": \"v2\" },\n                        { \"name\": \"Yarn\", \"url\": \"https://yarnpkg.com/\", \"version\": \"v1.22\" }\n                    ]\n                },\n                {\n                    \"label\": \"Backend\",\n                    \"skills\": [\n                        { \"name\": \"Golang\", \"url\": \"https://go.dev/\", \"version\": \"v1.18\" },\n                        { \"name\": \"chi\", \"url\": \"https://go-chi.io/#/\", \"version\": \"v5\" },\n                        { \"name\": \"wire\", \"url\": \"https://github.com/google/wire\" },\n                        { \"name\": \"ent\", \"url\": \"https://entgo.io/ja/\" },\n                        { \"name\": \"go-swagger\", \"url\": \"https://goswagger.io/\" },\n                        { \"name\": \"goverter\", \"url\": \"https://github.com/jmattheis/goverter\" },\n                        { \"name\": \"sqldef\", \"url\": \"https://sqldef.github.io/\" }\n                    ]\n                },\n                {\n                    \"label\": \"Infra(AWS)\",\n                    \"skills\": [\n                        { \"name\": \"EC2\" },\n                        { \"name\": \"ECS\" },\n                        { \"name\": \"Fargate\" },\n                        { \"name\": \"S3\" },\n                        { \"name\": \"RDS(MySQL/Aurora)\" },\n                        { \"name\": \"CloudFront\" },\n                        { \"name\": \"CodeBuild\" }\n                    ]\n                },\n                {\n                    \"label\": \"Others\",\n                    \"skills\": [\n                        { \"name\": \"docker\", \"url\": \"https://www.docker.com/\" },\n                        { \"name\": \"docker-compose\", \"url\": \"https://docs.docker.jp/compose/toc.html\" },\n                        { \"name\": \"Apiary\", \"url\": \"https://apiary.io/\" },\n                        { \"name\": \"SendGrid\", \"url\": \"https://www.twilio.com/ja/sendgrid/email-api\" },\n                        { \"name\": \"Sentry\", \"url\": \"https://sentry.io/welcome/\" },\n                        { \"name\": \"Clean Architecture\" },\n                        { \"name\": \"Jenkins\", \"url\": \"https://www.jenkins.io/\" },\n                        { \"name\": \"Wrike\", \"url\": \"https://www.wrike.com/ja/\" },\n                        { \"name\": \"Confluence\", \"url\": \"https://www.atlassian.com/ja\" },\n                        { \"name\": \"GitHub\", \"url\": \"https://github.co.jp/\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                { \"name\": \"バックエンド\", \"description\": [\"保守を担当\"] },\n                { \"name\": \"フロントエンド\", \"description\": [\"開発を担当\"] }\n            ]\n        }\n    ]\n}",
+							"raw": "{\n    \"label\": \"EdTech系企業にて就労\",\n    \"careers\": [\n        {\n            \"name\": \"プログラミング教育システム開発・保守\",\n            \"description\": [\"学習塾生向けテキストプログラミング教育システムの新規リリース及び保守・運用。\"],\n            \"from\":  { \"year\": 2022, \"month\": 1 },\n            \"skillGroups\": [\n                {\n                    \"label\": \"Frontend(SPA)\",\n                    \"skills\": [\n                        { \"skill\": { \"key\": \"typescript\" }, \"version\": \"v4.8\" },\n                        { \"skill\": { \"key\": \"react\" }, \"version\": \"v18.2\" },\n                        { \"skill\": { \"key\": \"reactrouter\" }, \"version\": \"v6.4\" }\n                    ]\n                }\n            ],\n            \"tasks\": [\n                { \"name\": \"バックエンド\", \"description\": [\"保守を担当\"] },\n                { \"name\": \"フロントエンド\", \"description\": [\"開発を担当\"] }\n            ]\n        }\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"

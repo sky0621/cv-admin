@@ -41,30 +41,8 @@ func init() {
 	careerskill.DefaultUpdateTime = careerskillDescUpdateTime.Default.(func() time.Time)
 	// careerskill.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
 	careerskill.UpdateDefaultUpdateTime = careerskillDescUpdateTime.UpdateDefault.(func() time.Time)
-	// careerskillDescName is the schema descriptor for name field.
-	careerskillDescName := careerskillFields[0].Descriptor()
-	// careerskill.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	careerskill.NameValidator = func() func(string) error {
-		validators := careerskillDescName.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(name string) error {
-			for _, fn := range fns {
-				if err := fn(name); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
-	// careerskillDescURL is the schema descriptor for url field.
-	careerskillDescURL := careerskillFields[1].Descriptor()
-	// careerskill.URLValidator is a validator for the "url" field. It is called by the builders before save.
-	careerskill.URLValidator = careerskillDescURL.Validators[0].(func(string) error)
 	// careerskillDescVersion is the schema descriptor for version field.
-	careerskillDescVersion := careerskillFields[2].Descriptor()
+	careerskillDescVersion := careerskillFields[0].Descriptor()
 	// careerskill.VersionValidator is a validator for the "version" field. It is called by the builders before save.
 	careerskill.VersionValidator = careerskillDescVersion.Validators[0].(func(string) error)
 	careerskillgroupMixin := schema.CareerSkillGroup{}.Mixin()
