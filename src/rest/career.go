@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	pkgerrors "github.com/pkg/errors"
 
 	"github.com/sky0621/cv-admin/src/ent"
 	"github.com/sky0621/cv-admin/src/ent/helper"
@@ -151,7 +152,7 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 						for _, skill := range *skillGroup.Skills {
 							entSkill, err := tx.Skill.Query().Where(eskill.Key(*skill.Skill.Key)).Only(rCtx)
 							if err != nil {
-								return err
+								return pkgerrors.WithMessagef(err, "Key: %v", *skill.Skill.Key)
 							}
 							if entSkill == nil {
 								return errors.New("no skill")
