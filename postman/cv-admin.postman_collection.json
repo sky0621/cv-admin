@@ -9,6 +9,265 @@
 			"name": "skills",
 			"item": [
 				{
+					"name": "create skilltag: プログラミング言語",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"プログラミング言語\", \"key\": \"language\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/skilltags",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"skilltags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create skilltag: Webアプリケーションフレームワーク",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Webアプリケーションフレームワーク\", \"key\": \"webframework\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/skilltags",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"skilltags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create skilltag: フロントエンドフレームワーク",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"フロントエンドフレームワーク\", \"key\": \"frontendframework\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/skilltags",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"skilltags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create skilltag: Web API",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Web API\", \"key\": \"webapi\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/skilltags",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"skilltags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create skilltag: クラウド",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"クラウド\", \"key\": \"cloud\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/skilltags",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"skilltags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create skilltag: データベース",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"データベース\", \"key\": \"database\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/skilltags",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"skilltags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create skilltag: OS",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"OS\", \"key\": \"os\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/skilltags",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"skilltags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get skilltags",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/skilltags",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"skilltags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create skill",
 					"request": {
 						"method": "POST",

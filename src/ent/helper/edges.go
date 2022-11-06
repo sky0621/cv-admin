@@ -50,6 +50,22 @@ func PickupUserNoteIDs(notes []*ent.UserNote) []int {
 	return results
 }
 
+func PickupSkillTagName(skillTags []*ent.SkillTag) []string {
+	results := make([]string, len(skillTags))
+	for _, s := range skillTags {
+		results = append(results, s.Name)
+	}
+	return results
+}
+
+func PickupSkillTagKey(skillTags []*ent.SkillTag) []string {
+	results := make([]string, len(skillTags))
+	for _, s := range skillTags {
+		results = append(results, s.Key)
+	}
+	return results
+}
+
 func PickupSkillName(skills []*ent.Skill) []string {
 	results := make([]string, len(skills))
 	for _, s := range skills {

@@ -4,13 +4,33 @@ import "github.com/sky0621/cv-admin/src/ent"
 
 // TODO: goverter での置き換えを試す。
 
+func ToEntSkillTagCreate(s SkillTag, c *ent.SkillTagCreate) *ent.SkillTagCreate {
+	return c.
+		SetName(*s.Name).
+		SetKey(*s.Key)
+}
+
+func ToSwaggerSkillTag(entSkillTag *ent.SkillTag) SkillTag {
+	return SkillTag{
+		Name: &entSkillTag.Name,
+		Key:  &entSkillTag.Key,
+	}
+}
+
+func ToSwaggerSkillTags(entSkillTags []*ent.SkillTag) []SkillTag {
+	var skillTags []SkillTag
+	for _, entSkillTag := range entSkillTags {
+		skillTags = append(skillTags, ToSwaggerSkillTag(entSkillTag))
+	}
+	return skillTags
+}
+
 func ToEntSkillCreate(s Skill, c *ent.SkillCreate) *ent.SkillCreate {
-	res := c.
+	return c.
 		SetName(*s.Name).
 		SetKey(*s.Key).
 		SetNillableURL(s.Url).
 		SetNillableTagKey(s.TagKey)
-	return res
 }
 
 func ToSwaggerSkill(entSkill *ent.Skill) Skill {

@@ -25,7 +25,7 @@ security: []
 paths:
   "/skilltags":
     post:
-      summary: "【未実装】スキルタグ登録"
+      summary: "スキルタグ登録"
       description: "スキルタグを登録する。"
       tags: ["skills"]
       requestBody:
@@ -40,7 +40,7 @@ paths:
         "400":
           $ref: "#/components/responses/400-BadRequest"
     get:
-      summary: "【未実装】全スキルタグ取得"
+      summary: "全スキルタグ取得"
       description: "全スキルタグを取得する。"
       tags: ["skills"]
       responses:
@@ -398,6 +398,19 @@ paths:
           $ref: "#/components/responses/200-OK-UserNoteItems"
         "400":
           $ref: "#/components/responses/400-BadRequest"
+        "404":
+          $ref: "#/components/responses/404-NotFound"
+
+  "/users/{byUserId}/skills":
+    parameters:
+      - $ref: "#/components/parameters/userId"
+    get:
+      summary: "スキル群取得"
+      description: "指定ユーザーのスキル群を取得する。"
+      tags: ["users"]
+      responses:
+        "200":
+          $ref: "#/components/responses/200-OK-UserNotes"
         "404":
           $ref: "#/components/responses/404-NotFound"
 
