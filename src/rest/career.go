@@ -148,6 +148,7 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 					 * スキルグループ配下のスキル群の登録
 					 */
 					if skillGroup.Skills != nil {
+						var keys []string
 						var careerSkillCreates []*ent.CareerSkillCreate
 						for _, skill := range *skillGroup.Skills {
 							entSkill, err := tx.Skill.Query().Where(eskill.Key(*skill.Skill.Key)).Only(rCtx)
@@ -158,10 +159,20 @@ func (s *ServerImpl) PostUsersByUserIdCareergroups(ctx echo.Context, byUserId Us
 								return errors.New("no skill")
 							}
 							careerSkillCreates = append(careerSkillCreates, ToEntCareerSkillCreate(skill, entCareerSkillGroup.ID, entSkill.ID, tx.CareerSkill.Create()))
+
+							keys = append(keys, *skill.Skill.Key)
 						}
 						careerSkills, err := tx.CareerSkill.CreateBulk(careerSkillCreates...).Save(rCtx)
 						if err != nil {
 							return err
+						}
+
+						for i, careerSkill := range careerSkills {
+							skill, err := tx.Skill.Query().Where(eskill.Key(keys[i])).Only(rCtx)
+							if err != nil {
+								return err
+							}
+							careerSkill.Edges.Skill = skill
 						}
 
 						entCareerSkillGroup.Edges.CareerSkills = careerSkills
