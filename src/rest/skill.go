@@ -4,6 +4,9 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/sky0621/cv-admin/src/ent"
 	"github.com/sky0621/cv-admin/src/ent/helper"
+	"github.com/sky0621/cv-admin/src/ent/skill"
+	"github.com/sky0621/cv-admin/src/ent/user"
+	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 	"github.com/sky0621/golang-utils/slice"
 	"net/http"
 )
@@ -153,7 +156,53 @@ func (s *ServerImpl) GetSkillsBySkillId(ctx echo.Context, bySkillId SkillId) err
 	panic("implement me")
 }
 
+// GetUsersByUserIdSkills スキル群取得
+// (GET /users/{byUserId}/skills)
 func (s *ServerImpl) GetUsersByUserIdSkills(ctx echo.Context, byUserId UserId) error {
-	//TODO implement me
-	panic("implement me")
+	rCtx := ctx.Request().Context()
+	entSkillTags, err := s.dbClient.SkillTag.Query().All(rCtx)
+	if err != nil {
+		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+	}
+
+	var userSkillTags []UserSkillTag
+	for _, entSkillTag := range entSkillTags {
+		entSkills, err := s.dbClient.Skill.Query().Where(skill.TagKey(entSkillTag.Key)).WithCareerSkills(func(q *ent.CareerSkillQuery) {
+			q.WithCareerSkillGroup(func(q *ent.CareerSkillGroupQuery) {
+				q.WithCareer(func(q *ent.UserCareerQuery) {
+					q.WithCareerGroup(func(q *ent.UserCareerGroupQuery) {
+						q.Where(usercareergroup.HasUserWith(user.ID(byUserId)))
+					})
+				})
+			})
+		}).All(rCtx)
+		if err != nil {
+			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		}
+
+		var userSkills []UserSkill
+		for _, entSkill := range entSkills {
+			var versions []UserSkillVersion
+			for _, entCareerSkill := range entSkill.Edges.CareerSkills {
+				versions = append(versions, UserSkillVersion{
+					Version: entCareerSkill.Version,
+					From:    ToSwaggerUserCareerPeriodFrom(entCareerSkill.Edges.CareerSkillGroup.Edges.Career.From),
+					To:      ToSwaggerUserCareerPeriodTo(entCareerSkill.Edges.CareerSkillGroup.Edges.Career.To),
+				})
+			}
+			userSkills = append(userSkills, UserSkill{
+				Name:     &entSkill.Name,
+				Key:      &entSkill.Key,
+				Versions: &versions,
+			})
+		}
+
+		userSkillTags = append(userSkillTags, UserSkillTag{
+			TagName: &entSkillTag.Name,
+			TagKey:  &entSkillTag.Key,
+			Skills:  &userSkills,
+		})
+	}
+
+	return ctx.JSON(http.StatusOK, userSkillTags)
 }

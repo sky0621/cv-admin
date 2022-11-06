@@ -561,14 +561,6 @@ components:
           $ref: "#/components/schemas/Year"
         month:
           $ref: "#/components/schemas/Month"
-    CareerPeriod:
-      type: object
-      description: "キャリア期間年月"
-      properties:
-        from:
-          $ref: "#/components/schemas/CareerPeriodFrom"
-        to:
-          $ref: "#/components/schemas/CareerPeriodTo"
     CareerGroupLabel:
       type: string
       description: "キャリアグループラベル"
@@ -772,10 +764,10 @@ components:
       properties:
         version:
           $ref: "#/components/schemas/SkillVersion"
-        careerPeriods:
-          type: array
-          items:
-            $ref: "#/components/schemas/CareerPeriod"
+        from:
+          $ref: "#/components/schemas/CareerPeriodFrom"
+        to:
+          $ref: "#/components/schemas/CareerPeriodTo"
     UserSkill:
       type: object
       description: "１ユーザーのスキルを使用Version・使用期間別に保持したもの"
