@@ -216,8 +216,8 @@ func (s *ServerImpl) PutUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx echo
 	return ctx.String(http.StatusOK, "")
 }
 
-// CareerPeriod キャリアの開始・終了年月を束ねるためのマーカーインタフェース
-type CareerPeriod interface {
+// CareerPeriodIf キャリアの開始・終了年月を束ねるためのマーカーインタフェース
+type CareerPeriodIf interface {
 	Set(year, month *int)
 }
 

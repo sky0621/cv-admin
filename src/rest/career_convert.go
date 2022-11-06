@@ -10,7 +10,7 @@ import (
 
 // TODO: goverter での置き換えを試す。
 
-func toSwaggerUserCareerPeriod(entCareerPeriod string, careerPeriod CareerPeriod) CareerPeriod {
+func toSwaggerUserCareerPeriod(entCareerPeriod string, careerPeriod CareerPeriodIf) CareerPeriodIf {
 	if len(entCareerPeriod) != 6 {
 		return nil
 	}

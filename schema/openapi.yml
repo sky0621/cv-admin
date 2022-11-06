@@ -410,7 +410,7 @@ paths:
       tags: ["users"]
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-UserNotes"
+          $ref: "#/components/responses/200-OK-UserSkills"
         "404":
           $ref: "#/components/responses/404-NotFound"
 
@@ -561,6 +561,14 @@ components:
           $ref: "#/components/schemas/Year"
         month:
           $ref: "#/components/schemas/Month"
+    CareerPeriod:
+      type: object
+      description: "キャリア期間年月"
+      properties:
+        from:
+          $ref: "#/components/schemas/CareerPeriodFrom"
+        to:
+          $ref: "#/components/schemas/CareerPeriodTo"
     CareerGroupLabel:
       type: string
       description: "キャリアグループラベル"
@@ -758,6 +766,40 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/UserNoteItem"
+    UserSkillVersion:
+      type: object
+      description: "１ユーザーのスキルVersionを使用期間別に保持したもの"
+      properties:
+        version:
+          $ref: "#/components/schemas/SkillVersion"
+        careerPeriods:
+          type: array
+          items:
+            $ref: "#/components/schemas/CareerPeriod"
+    UserSkill:
+      type: object
+      description: "１ユーザーのスキルを使用Version・使用期間別に保持したもの"
+      properties:
+        name:
+          $ref: "#/components/schemas/SkillName"
+        key:
+          $ref: "#/components/schemas/SkillKey"
+        versions:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserSkillVersion"
+    UserSkillTag:
+      type: object
+      description: "１ユーザーのスキルタグ及び配下のスキル群を使用Version・使用期間別に保持したもの"
+      properties:
+        tagName:
+          $ref: "#/components/schemas/SkillTagName"
+        tagKey:
+          $ref: "#/components/schemas/SkillTagKey"
+        skills:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserSkill"
     ErrorMessage:
       type: string
       description: "エラーメッセージ"
@@ -922,6 +964,14 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/UserNote"
+    200-OK-UserSkills:
+      description: "OK: 指定ユーザーのスキル群を返却する。"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/UserSkillTag"
     400-BadRequest:
       description: "Bad Request: 属性に誤りがある。"
       content:
