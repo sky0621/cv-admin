@@ -17,6 +17,43 @@ var requestFQDN = "http://localhost:8080"
 
 var targetUserID = "26"
 
+var outputDir = "/tmp/outputjson"
+
+func exportJSON(cli *http.Client, urlPath, outputFileName string) bool {
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", requestFQDN, urlPath), nil)
+	if err != nil {
+		fmt.Printf("[%s][NewRequest] %v\n", urlPath, err)
+		return false
+	}
+
+	res, err := cli.Do(req)
+	if err != nil {
+		fmt.Printf("[%s][Do] %v\n", urlPath, err)
+		return false
+	}
+
+	resBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		fmt.Printf("[%s][ReadAll] %v\n", urlPath, err)
+		return false
+	}
+
+	attribute, err := os.Create(fmt.Sprintf("%s/%s.json", outputDir, outputFileName))
+	if err != nil {
+		fmt.Printf("[%s][Create json] %v\n", urlPath, err)
+		return false
+	}
+	defer attribute.Close()
+
+	_, err = io.WriteString(attribute, string(resBody))
+	if err != nil {
+		fmt.Printf("[%s][Write json] %v\n", urlPath, err)
+		return false
+	}
+
+	return true
+}
+
 // exportCmd represents the export command
 var exportCmd = &cobra.Command{
 	Use:   "export",
@@ -29,28 +66,30 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cli := http.DefaultClient
-		/*
-		 * user attribute
-		 */
-		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/users/%s/attribute", requestFQDN, targetUserID), nil)
-		if err != nil {
-			fmt.Printf("[user attribute][NewRequest] %v\n", err)
+
+		if !exportJSON(cli, fmt.Sprintf("users/%s/attribute", targetUserID), "attribute") {
 			os.Exit(1)
 		}
 
-		res, err := cli.Do(req)
-		if err != nil {
-			fmt.Printf("[user attribute][Do] %v\n", err)
+		if !exportJSON(cli, fmt.Sprintf("users/%s/activities", targetUserID), "activities") {
 			os.Exit(1)
 		}
 
-		resBody, err := io.ReadAll(res.Body)
-		if err != nil {
-			fmt.Printf("[user attribute][ReadAll] %v\n", err)
+		if !exportJSON(cli, fmt.Sprintf("users/%s/qualifications", targetUserID), "qualifications") {
 			os.Exit(1)
 		}
 
-		fmt.Printf("%s\n", resBody)
+		if !exportJSON(cli, fmt.Sprintf("users/%s/careergroups", targetUserID), "careergroups") {
+			os.Exit(1)
+		}
+
+		if !exportJSON(cli, fmt.Sprintf("users/%s/notes", targetUserID), "notes") {
+			os.Exit(1)
+		}
+
+		if !exportJSON(cli, fmt.Sprintf("users/%s/skills", targetUserID), "skills") {
+			os.Exit(1)
+		}
 	},
 }
 
