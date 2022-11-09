@@ -8,9 +8,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
+	"github.com/spf13/cobra"
+
 	"github.com/sky0621/cv-admin/src/driver"
 	"github.com/sky0621/cv-admin/src/rest"
-	"github.com/spf13/cobra"
 )
 
 // serverCmd represents the server command

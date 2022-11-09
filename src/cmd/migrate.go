@@ -6,9 +6,9 @@ package cmd
 import (
 	"log"
 
-	"github.com/sky0621/cv-admin/src/driver"
-
 	"github.com/spf13/cobra"
+
+	"github.com/sky0621/cv-admin/src/driver"
 )
 
 // migrateCmd represents the migrate command

@@ -4,12 +4,15 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 
 	"github.com/spf13/cobra"
+
+	"github.com/sky0621/cv-admin/src/rest"
 )
 
 // 厳密にはプロトコル＋FQDNだけど。
@@ -17,9 +20,9 @@ var requestFQDN = "http://localhost:8080"
 
 var targetUserID = "26"
 
-var outputDir = "/tmp/outputjson"
+var exportDir string
 
-func exportJSON(cli *http.Client, urlPath, outputFileName string) bool {
+func exportJSON[T any](cli *http.Client, urlPath, outputFileName string, str T) bool {
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", requestFQDN, urlPath), nil)
 	if err != nil {
 		fmt.Printf("[%s][NewRequest] %v\n", urlPath, err)
@@ -38,14 +41,26 @@ func exportJSON(cli *http.Client, urlPath, outputFileName string) bool {
 		return false
 	}
 
-	attribute, err := os.Create(fmt.Sprintf("%s/%s.json", outputDir, outputFileName))
+	err = json.Unmarshal(resBody, str)
+	if err != nil {
+		fmt.Printf("[%s][Unmarshal] %v\n", urlPath, err)
+		return false
+	}
+
+	jsonBytes, err := json.MarshalIndent(str, "", "  ")
+	if err != nil {
+		fmt.Printf("[%s][MarshalIndent] %v\n", urlPath, err)
+		return false
+	}
+
+	jsonFile, err := os.Create(fmt.Sprintf("%s/%s.json", exportDir, outputFileName))
 	if err != nil {
 		fmt.Printf("[%s][Create json] %v\n", urlPath, err)
 		return false
 	}
-	defer attribute.Close()
+	defer jsonFile.Close()
 
-	_, err = io.WriteString(attribute, string(resBody))
+	_, err = io.WriteString(jsonFile, string(jsonBytes))
 	if err != nil {
 		fmt.Printf("[%s][Write json] %v\n", urlPath, err)
 		return false
@@ -67,27 +82,27 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cli := http.DefaultClient
 
-		if !exportJSON(cli, fmt.Sprintf("users/%s/attribute", targetUserID), "attribute") {
+		if !exportJSON(cli, fmt.Sprintf("users/%s/attribute", targetUserID), "attribute", &rest.UserAttribute{}) {
 			os.Exit(1)
 		}
 
-		if !exportJSON(cli, fmt.Sprintf("users/%s/activities", targetUserID), "activities") {
+		if !exportJSON(cli, fmt.Sprintf("users/%s/activities", targetUserID), "activities", &[]*rest.UserActivity{}) {
 			os.Exit(1)
 		}
 
-		if !exportJSON(cli, fmt.Sprintf("users/%s/qualifications", targetUserID), "qualifications") {
+		if !exportJSON(cli, fmt.Sprintf("users/%s/qualifications", targetUserID), "qualifications", &[]*rest.UserQualification{}) {
 			os.Exit(1)
 		}
 
-		if !exportJSON(cli, fmt.Sprintf("users/%s/careergroups", targetUserID), "careergroups") {
+		if !exportJSON(cli, fmt.Sprintf("users/%s/careergroups", targetUserID), "careergroups", &[]*rest.UserCareerGroup{}) {
 			os.Exit(1)
 		}
 
-		if !exportJSON(cli, fmt.Sprintf("users/%s/notes", targetUserID), "notes") {
+		if !exportJSON(cli, fmt.Sprintf("users/%s/notes", targetUserID), "notes", &[]*rest.UserNote{}) {
 			os.Exit(1)
 		}
 
-		if !exportJSON(cli, fmt.Sprintf("users/%s/skills", targetUserID), "skills") {
+		if !exportJSON(cli, fmt.Sprintf("users/%s/skills", targetUserID), "skills", &[]*rest.UserSkillTag{}) {
 			os.Exit(1)
 		}
 	},
@@ -101,6 +116,7 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// exportCmd.PersistentFlags().String("foo", "", "A help for foo")
+	exportCmd.PersistentFlags().StringVarP(&exportDir, "dir", "d", "/tmp", "export directory")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
