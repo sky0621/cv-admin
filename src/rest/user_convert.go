@@ -108,7 +108,7 @@ func ToSwaggerUserQualification(entQualification *ent.UserQualification) UserQua
 	var qualification UserQualification
 	qualification.Name = &entQualification.Name
 	qualification.Organization = entQualification.Organization
-	qualification.Url = entQualification.Organization
+	qualification.Url = entQualification.URL
 	qualification.GotDate = ToSwaggerUserQualificationGotDate(entQualification.GotDate)
 	qualification.Memo = entQualification.Memo
 	return qualification
