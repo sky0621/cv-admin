@@ -18,7 +18,7 @@ import (
 // 厳密にはプロトコル＋FQDNだけど。
 var requestFQDN = "http://localhost:8080"
 
-var targetUserID = "26"
+var targetUserID = "27"
 
 var exportDir string
 
