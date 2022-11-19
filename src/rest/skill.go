@@ -193,6 +193,7 @@ func (s *ServerImpl) GetUsersByUserIdSkills(ctx echo.Context, byUserId UserId) e
 			userSkills = append(userSkills, UserSkill{
 				Name:     &entSkill.Name,
 				Key:      &entSkill.Key,
+				Url:      entSkill.URL,
 				Versions: &versions,
 			})
 		}

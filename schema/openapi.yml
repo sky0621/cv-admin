@@ -776,6 +776,8 @@ components:
           $ref: "#/components/schemas/SkillName"
         key:
           $ref: "#/components/schemas/SkillKey"
+        url:
+          $ref: "#/components/schemas/Url"
         versions:
           type: array
           items:
