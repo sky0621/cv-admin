@@ -108,6 +108,7 @@ cobra-cli init
 #### add command
 
 ```
+cd src
 cobra-cli add server
 ```
 

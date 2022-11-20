@@ -22,32 +22,41 @@ var targetUserID int
 
 var exportDir string
 
-func exportJSON[T any](cli *http.Client, urlPath, outputFileName string, str T) bool {
+func requestUserInfo[T any](cli *http.Client, urlPath string, str T) (T, error) {
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/%s", requestFQDN, urlPath), nil)
 	if err != nil {
 		fmt.Printf("[%s][NewRequest] %v\n", urlPath, err)
-		return false
+		return str, err
 	}
 
 	res, err := cli.Do(req)
 	if err != nil {
 		fmt.Printf("[%s][Do] %v\n", urlPath, err)
-		return false
+		return str, err
 	}
 
 	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		fmt.Printf("[%s][ReadAll] %v\n", urlPath, err)
-		return false
+		return str, err
 	}
 
 	err = json.Unmarshal(resBody, str)
 	if err != nil {
 		fmt.Printf("[%s][Unmarshal] %v\n", urlPath, err)
+		return str, err
+	}
+
+	return str, nil
+}
+
+func exportJSON[T any](cli *http.Client, urlPath, outputFileName string, str T) bool {
+	str2, err := requestUserInfo(cli, urlPath, str)
+	if err != nil {
 		return false
 	}
 
-	jsonBytes, err := json.MarshalIndent(str, "", "  ")
+	jsonBytes, err := json.MarshalIndent(str2, "", "  ")
 	if err != nil {
 		fmt.Printf("[%s][MarshalIndent] %v\n", urlPath, err)
 		return false
