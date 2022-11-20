@@ -18,7 +18,7 @@ import (
 // 厳密にはプロトコル＋FQDNだけど。
 var requestFQDN = "http://localhost:8080"
 
-var targetUserID = "28"
+var targetUserID int
 
 var exportDir string
 
@@ -82,27 +82,27 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cli := http.DefaultClient
 
-		if !exportJSON(cli, fmt.Sprintf("users/%s/attribute", targetUserID), "attribute", &rest.UserAttribute{}) {
+		if !exportJSON(cli, fmt.Sprintf("users/%d/attribute", targetUserID), "attribute", &rest.UserAttribute{}) {
 			os.Exit(1)
 		}
 
-		if !exportJSON(cli, fmt.Sprintf("users/%s/activities", targetUserID), "activities", &[]*rest.UserActivity{}) {
+		if !exportJSON(cli, fmt.Sprintf("users/%d/activities", targetUserID), "activities", &[]*rest.UserActivity{}) {
 			os.Exit(1)
 		}
 
-		if !exportJSON(cli, fmt.Sprintf("users/%s/qualifications", targetUserID), "qualifications", &[]*rest.UserQualification{}) {
+		if !exportJSON(cli, fmt.Sprintf("users/%d/qualifications", targetUserID), "qualifications", &[]*rest.UserQualification{}) {
 			os.Exit(1)
 		}
 
-		if !exportJSON(cli, fmt.Sprintf("users/%s/careergroups", targetUserID), "careergroups", &[]*rest.UserCareerGroup{}) {
+		if !exportJSON(cli, fmt.Sprintf("users/%d/careergroups", targetUserID), "careergroups", &[]*rest.UserCareerGroup{}) {
 			os.Exit(1)
 		}
 
-		if !exportJSON(cli, fmt.Sprintf("users/%s/notes", targetUserID), "notes", &[]*rest.UserNote{}) {
+		if !exportJSON(cli, fmt.Sprintf("users/%d/notes", targetUserID), "notes", &[]*rest.UserNote{}) {
 			os.Exit(1)
 		}
 
-		if !exportJSON(cli, fmt.Sprintf("users/%s/skills", targetUserID), "skills", &[]*rest.UserSkillTag{}) {
+		if !exportJSON(cli, fmt.Sprintf("users/%d/skills", targetUserID), "skills", &[]*rest.UserSkillTag{}) {
 			os.Exit(1)
 		}
 	},
@@ -116,6 +116,7 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// exportCmd.PersistentFlags().String("foo", "", "A help for foo")
+	exportCmd.PersistentFlags().IntVarP(&targetUserID, "userid", "u", 29, "target user id")
 	exportCmd.PersistentFlags().StringVarP(&exportDir, "dir", "d", "/tmp", "export directory")
 
 	// Cobra supports local flags which will only run when this command
