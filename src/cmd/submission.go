@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/sky0621/cv-admin/src/rest"
 	"github.com/xuri/excelize/v2"
+	"gopkg.in/ini.v1"
 	"net/http"
 	"os"
 
@@ -24,6 +25,18 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		/*
+		 * INIから個人情報を読み込み
+		 */
+		cfg, err := ini.Load(".private.ini")
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+
+		/*
+		 * SQLiteからキャリア情報を読み込み（API経由）
+		 */
 		cli := http.DefaultClient
 
 		attribute, err := requestUserInfo(cli, fmt.Sprintf("users/%d/attribute", targetUserID), &rest.UserAttribute{})
@@ -31,13 +44,19 @@ to quickly create a Cobra application.`,
 			os.Exit(1)
 		}
 
+		/*
+		 * Excelに書き込み
+		 */
 		const sheetName = "キャリアシート"
 
 		f := excelize.NewFile()
 		f.SetSheetName("Sheet1", sheetName)
 
 		f.SetCellValue(sheetName, "B2", "氏名")
-		f.SetCellValue(sheetName, "C2", *attribute.Nickname)
+		f.SetCellValue(sheetName, "C2", cfg.Section("").Key("name").String())
+
+		f.SetCellValue(sheetName, "B3", "ハンドルネーム")
+		f.SetCellValue(sheetName, "C3", *attribute.Nickname)
 
 		if err := f.SaveAs("gen/career_sheet.xlsx"); err != nil {
 			fmt.Println(err)
