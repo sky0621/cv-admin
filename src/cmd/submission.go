@@ -5,13 +5,15 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/sky0621/cv-admin/src/rest"
-	"github.com/xuri/excelize/v2"
 	"gopkg.in/ini.v1"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/xuri/excelize/v2"
+
+	"github.com/sky0621/cv-admin/src/rest"
 )
 
 // submissionCmd represents the submission command
@@ -52,13 +54,33 @@ to quickly create a Cobra application.`,
 		f := excelize.NewFile()
 		f.SetSheetName("Sheet1", sheetName)
 
-		f.SetCellValue(sheetName, "B2", "氏名")
-		f.SetCellValue(sheetName, "C2", cfg.Section("").Key("name").String())
+		set := func(position string, val interface{}) {
+			if err := f.SetCellValue(sheetName, position, val); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
 
-		f.SetCellValue(sheetName, "B3", "ハンドルネーム")
-		f.SetCellValue(sheetName, "C3", *attribute.Nickname)
+		set("B2", "スキルシート")
 
-		if err := f.SaveAs("gen/career_sheet.xlsx"); err != nil {
+		set("B4", fmt.Sprintf("最終更新日：%v", time.Now().Format("2006-01-02")))
+
+		set("B5", "フリガナ")
+		set("C5", cfg.Section("").Key("kana").String())
+
+		set("B6", "名前")
+		set("C6", cfg.Section("").Key("name").String())
+
+		set("D5", "ニックネーム")
+		set("D6", *attribute.Nickname)
+
+		set("E5", "年齢")
+		birthYear := *attribute.Birthday.Year
+		birthMonth := *attribute.Birthday.Month
+		birthDay := *attribute.Birthday.Day
+		set("E6", age(birthYear, birthMonth, birthDay, time.Now()))
+
+		if err := f.SaveAs("career_sheet.xlsx"); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
@@ -78,4 +100,18 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// submissionCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func age(birthYear, birthMonth, birthDay int, now time.Time) int {
+	age := now.Year() - birthYear
+
+	if int(now.Month()) > birthMonth {
+		return age
+	}
+
+	if int(now.Month()) == birthMonth && now.Day() >= birthDay {
+		return age
+	}
+
+	return age - 1
 }
