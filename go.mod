@@ -5,7 +5,7 @@ go 1.19
 require (
 	entgo.io/ent v0.11.4
 	github.com/deepmap/oapi-codegen v1.12.3
-	github.com/getkin/kin-openapi v0.108.0
+	github.com/getkin/kin-openapi v0.109.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/labstack/echo/v4 v4.9.1
 	github.com/mattn/go-sqlite3 v1.14.16
