@@ -49,10 +49,12 @@ to quickly create a Cobra application.`,
 		/*
 		 * Excelに書き込み
 		 */
-		const sheetName = "キャリアシート"
+		const sheetName = "スキルシート"
+		const worksheetSize = 9 // A4 210 x 297 mm
 
 		f := excelize.NewFile()
 		f.SetSheetName("Sheet1", sheetName)
+		f.SetPageLayout(sheetName, excelize.PageLayoutPaperSize(worksheetSize))
 
 		set := func(position string, val interface{}) {
 			if err := f.SetCellValue(sheetName, position, val); err != nil {
@@ -61,26 +63,40 @@ to quickly create a Cobra application.`,
 			}
 		}
 
-		set("B2", "スキルシート")
+		merge := func(from, to string) {
+			if err := f.MergeCell(sheetName, from, to); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
 
-		set("B4", fmt.Sprintf("最終更新日：%v", time.Now().Format("2006-01-02")))
+		set("A1", "スキルシート")
+		merge("A1", "F1")
 
-		set("B5", "フリガナ")
-		set("C5", cfg.Section("").Key("kana").String())
+		set("A2", fmt.Sprintf("最終更新日：%v", time.Now().Format("2006-01-02")))
+		merge("A2", "F2")
 
-		set("B6", "名前")
-		set("C6", cfg.Section("").Key("name").String())
+		set("A3", "フリガナ")
+		set("B3", cfg.Section("").Key("kana").String())
 
-		set("D5", "ニックネーム")
-		set("D6", *attribute.Nickname)
+		set("A4", "名前")
+		set("B4", cfg.Section("").Key("name").String())
 
-		set("E5", "年齢")
+		set("C3", "ニックネーム")
+		set("C4", *attribute.Nickname)
+
+		set("D3", "年齢")
 		birthYear := *attribute.Birthday.Year
 		birthMonth := *attribute.Birthday.Month
 		birthDay := *attribute.Birthday.Day
-		set("E6", age(birthYear, birthMonth, birthDay, time.Now()))
+		set("D4", age(birthYear, birthMonth, birthDay, time.Now()))
 
-		if err := f.SaveAs("career_sheet.xlsx"); err != nil {
+		set("E3", "メールアドレス")
+		set("E4", cfg.Section("").Key("mail").String())
+
+		set("F3", "Gravatar")
+
+		if err := f.SaveAs("skill_sheet.xlsx"); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
