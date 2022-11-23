@@ -70,31 +70,81 @@ to quickly create a Cobra application.`,
 			}
 		}
 
-		set("A1", "スキルシート")
-		merge("A1", "F1")
+		height := func(row int, h float64) {
+			if err := f.SetRowHeight(sheetName, row, h); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
 
+		width := func(start, end string, w float64) {
+			if err := f.SetColWidth(sheetName, start, end, w); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
+
+		text := func(cell string, settings []excelize.RichTextRun) {
+			if err := f.SetCellRichText(sheetName, cell, settings); err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+		}
+
+		width("A", "A", 10)
+		width("B", "B", 20)
+		width("C", "C", 15)
+		width("D", "D", 5)
+		width("E", "E", 40)
+		width("F", "F", 10)
+
+		/*
+		 * １行目
+		 */
+		height(1, 40)
+		merge("A1", "F1")
+		text("A1", []excelize.RichTextRun{
+			{
+				Text: "スキルシート",
+				Font: &excelize.Font{
+					Size: 12,
+					Bold: true,
+				},
+			},
+		})
+
+		/*
+		 * ２行目
+		 */
+		height(2, 30)
 		set("A2", fmt.Sprintf("最終更新日：%v", time.Now().Format("2006-01-02")))
 		merge("A2", "F2")
 
+		/*
+		 * ３行目
+		 */
+		height(3, 30)
 		set("A3", "フリガナ")
 		set("B3", cfg.Section("").Key("kana").String())
+		set("C3", "ニックネーム")
+		set("D3", "年齢")
+		set("E3", "メールアドレス")
+		set("F3", "Gravatar")
 
+		/*
+		 * ４行目
+		 */
+		height(4, 50)
 		set("A4", "名前")
 		set("B4", cfg.Section("").Key("name").String())
-
-		set("C3", "ニックネーム")
 		set("C4", *attribute.Nickname)
 
-		set("D3", "年齢")
 		birthYear := *attribute.Birthday.Year
 		birthMonth := *attribute.Birthday.Month
 		birthDay := *attribute.Birthday.Day
 		set("D4", age(birthYear, birthMonth, birthDay, time.Now()))
 
-		set("E3", "メールアドレス")
 		set("E4", cfg.Section("").Key("mail").String())
-
-		set("F3", "Gravatar")
 
 		if err := f.SaveAs("skill_sheet.xlsx"); err != nil {
 			fmt.Println(err)
