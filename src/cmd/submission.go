@@ -6,7 +6,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/sky0621/cv-admin/src/submission"
-	"gopkg.in/ini.v1"
 	"net/http"
 	"os"
 	"time"
@@ -31,13 +30,7 @@ to quickly create a Cobra application.`,
 		/* **********************************************************
 		 * INIから個人情報を読み込み
 		 */
-		cfg, err := ini.Load(submission.IniFileName)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-
-		const noSection = ""
+		cfg := submission.NewConfig()
 
 		/* **********************************************************
 		 * SQLiteからキャリア情報を読み込み（API経由）
@@ -54,7 +47,7 @@ to quickly create a Cobra application.`,
 		 */
 		w := submission.NewExcelizeWrapper(
 			submission.SheetName("スキルシート"),
-			submission.SheetPassword(cfg.Section(noSection).Key(submission.Password).String()),
+			submission.SheetPassword(submission.GetConfigValue(cfg, submission.Password)),
 			submission.PaperSize(9), // A4 210 x 297 mm
 		)
 
@@ -109,12 +102,13 @@ to quickly create a Cobra application.`,
 		 */
 		w.Height(3, 25)
 		w.Set("A3", "フリガナ")
-		w.Set("B3", cfg.Section("").Key("kana").String())
+		w.Set("B3", submission.GetConfigValue(cfg, submission.Kana))
 		w.Set("C3", "ニックネーム")
 		w.Set("D3", "年齢")
 		w.Set("E3", "メールアドレス")
 		w.Set("F3", "Gravatar")
 		w.CellStyle("A3", "F3", w.LeftStyleID())
+		w.Merge("F4", "F6")
 
 		/*
 		 * ４行目
@@ -137,8 +131,26 @@ to quickly create a Cobra application.`,
 		birthDay := *attribute.Birthday.Day
 		w.Set("D4", age(birthYear, birthMonth, birthDay, time.Now()))
 
-		w.Set("E4", cfg.Section("").Key("mail").String())
+		w.Set("E4", submission.GetConfigValue(cfg, submission.Mail))
 		w.CellStyle("A4", "F4", w.LeftStyleID())
+
+		/*
+		 * 5行目
+		 */
+		w.Height(3, 25)
+		w.Set("A5", "居住地")
+		w.Set("B5", submission.GetConfigValue(cfg, submission.CityOfResidence))
+		w.Set("C5", "最寄り駅")
+		w.Set("D5", submission.GetConfigValue(cfg, submission.NearestStation))
+		w.Merge("D5", "E5")
+
+		/*
+		 * 6行目
+		 */
+		w.Height(3, 25)
+		w.Set("A6", "最終学歴")
+		w.Set("B6", submission.GetConfigValue(cfg, submission.EducationalBackground))
+		w.Merge("B6", "E6")
 
 		w.SaveAs("skill_sheet.xlsx")
 	},
