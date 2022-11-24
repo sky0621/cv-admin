@@ -28,16 +28,18 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		/*
+		/* **********************************************************
 		 * INIから個人情報を読み込み
 		 */
-		cfg, err := ini.Load(".private.ini")
+		cfg, err := ini.Load(submission.IniFileName)
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
-		/*
+		const noSection = ""
+
+		/* **********************************************************
 		 * SQLiteからキャリア情報を読み込み（API経由）
 		 */
 		cli := http.DefaultClient
@@ -47,17 +49,28 @@ to quickly create a Cobra application.`,
 			os.Exit(1)
 		}
 
-		/*
+		/* **********************************************************
 		 * Excelに書き込み
 		 */
-		const worksheetSize = 9 // A4 210 x 297 mm
-		w := submission.NewExcelizeWrapper("スキルシート", worksheetSize)
+		w := submission.NewExcelizeWrapper(
+			submission.SheetName("スキルシート"),
+			submission.SheetPassword(cfg.Section(noSection).Key(submission.Password).String()),
+			submission.PaperSize(9), // A4 210 x 297 mm
+		)
 
+		/*
+		 * 全セルに対する設定
+		 */
+		// FIXME:
+
+		/*
+		 * 列ごとの設定
+		 */
 		w.Width("A", "A", 10)
-		w.Width("B", "B", 20)
+		w.Width("B", "B", 25)
 		w.Width("C", "C", 15)
 		w.Width("D", "D", 5)
-		w.Width("E", "E", 40)
+		w.Width("E", "E", 35)
 		w.Width("F", "F", 10)
 
 		/*
@@ -101,6 +114,7 @@ to quickly create a Cobra application.`,
 		w.Set("D3", "年齢")
 		w.Set("E3", "メールアドレス")
 		w.Set("F3", "Gravatar")
+		w.CellStyle("A3", "F3", w.LeftStyleID())
 
 		/*
 		 * ４行目
@@ -111,7 +125,7 @@ to quickly create a Cobra application.`,
 			{
 				Text: cfg.Section("").Key("name").String(),
 				Font: &excelize.Font{
-					Size: 14,
+					Size: 18,
 					Bold: true,
 				},
 			},
@@ -124,6 +138,7 @@ to quickly create a Cobra application.`,
 		w.Set("D4", age(birthYear, birthMonth, birthDay, time.Now()))
 
 		w.Set("E4", cfg.Section("").Key("mail").String())
+		w.CellStyle("A4", "F4", w.LeftStyleID())
 
 		w.SaveAs("skill_sheet.xlsx")
 	},
