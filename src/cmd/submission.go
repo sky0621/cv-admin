@@ -10,10 +10,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/spf13/cobra"
-	"github.com/xuri/excelize/v2"
-
 	"github.com/sky0621/cv-admin/src/rest"
+	"github.com/spf13/cobra"
 )
 
 // submissionCmd represents the submission command
@@ -70,32 +68,23 @@ to quickly create a Cobra application.`,
 		 * １行目
 		 */
 		w.Height(1, 30)
+		w.Set("A1", "スキルシート")
 		w.Merge("A1", "F1")
-		w.Text("A1", []excelize.RichTextRun{
-			{
-				Text: "スキルシート",
-				Font: &excelize.Font{
-					Size: 16,
-					Bold: true,
-				},
-			},
-		})
-		w.CellStyle("A1", "A1", w.CenterStyleID())
+		w.CellStyle("A1", "A1", submission.NewStyle(
+			submission.Alignment(submission.VhCenterAlignment),
+			submission.Font(submission.SheetTitleFont),
+		))
 
 		/*
 		 * ２行目
 		 */
 		w.Height(2, 20)
+		w.Set("A2", fmt.Sprintf("最終更新日：%v", time.Now().Format("2006-01-02")))
 		w.Merge("A2", "F2")
-		w.Text("A2", []excelize.RichTextRun{
-			{
-				Text: fmt.Sprintf("最終更新日：%v", time.Now().Format("2006-01-02")),
-				Font: &excelize.Font{
-					Size: 9,
-				},
-			},
-		})
-		w.CellStyle("A2", "A2", w.RightStyleID())
+		w.CellStyle("A2", "A2", submission.NewStyle(
+			submission.Alignment(submission.HRightAlignment),
+			submission.Font(submission.LastUpdatedFont),
+		))
 
 		/*
 		 * ３行目
@@ -107,7 +96,10 @@ to quickly create a Cobra application.`,
 		w.Set("D3", "年齢")
 		w.Set("E3", "メールアドレス")
 		w.Set("F3", "Gravatar")
-		w.CellStyle("A3", "F3", w.LeftStyleID())
+		w.CellStyle("A3", "F3", submission.NewStyle(
+			submission.Alignment(submission.HLeftAlignment),
+			submission.Borders(submission.Border),
+		))
 		w.Merge("F4", "F6")
 
 		/*
@@ -115,29 +107,41 @@ to quickly create a Cobra application.`,
 		 */
 		w.Height(4, 45)
 		w.Set("A4", "名前")
-		w.Text("B4", []excelize.RichTextRun{
-			{
-				Text: cfg.Section("").Key("name").String(),
-				Font: &excelize.Font{
-					Size: 18,
-					Bold: true,
-				},
-			},
-		})
+		w.CellStyle("A4", "A4", submission.NewStyle(
+			submission.Alignment(submission.HLeftAlignment),
+			submission.Borders(submission.Border),
+		))
+		w.Set("B4", cfg.Section("").Key("name").String())
+		w.CellStyle("B4", "B4", submission.NewStyle(
+			submission.Alignment(submission.HLeftAlignment),
+			submission.Borders(submission.Border),
+			submission.Font(submission.NameFont),
+		))
 		w.Set("C4", *attribute.Nickname)
+		w.CellStyle("C4", "C4", submission.NewStyle(
+			submission.Alignment(submission.HLeftAlignment),
+			submission.Borders(submission.Border),
+		))
 
 		birthYear := *attribute.Birthday.Year
 		birthMonth := *attribute.Birthday.Month
 		birthDay := *attribute.Birthday.Day
 		w.Set("D4", age(birthYear, birthMonth, birthDay, time.Now()))
+		w.CellStyle("D4", "D4", submission.NewStyle(
+			submission.Alignment(submission.HLeftAlignment),
+			submission.Borders(submission.Border),
+		))
 
 		w.Set("E4", submission.GetConfigValue(cfg, submission.Mail))
-		w.CellStyle("A4", "F4", w.LeftStyleID())
+		w.CellStyle("E4", "E4", submission.NewStyle(
+			submission.Alignment(submission.HLeftAlignment),
+			submission.Borders(submission.Border),
+		))
 
 		/*
 		 * 5行目
 		 */
-		w.Height(3, 25)
+		w.Height(5, 25)
 		w.Set("A5", "居住地")
 		w.Set("B5", submission.GetConfigValue(cfg, submission.CityOfResidence))
 		w.Set("C5", "最寄り駅")
@@ -147,7 +151,7 @@ to quickly create a Cobra application.`,
 		/*
 		 * 6行目
 		 */
-		w.Height(3, 25)
+		w.Height(6, 25)
 		w.Set("A6", "最終学歴")
 		w.Set("B6", submission.GetConfigValue(cfg, submission.EducationalBackground))
 		w.Merge("B6", "E6")

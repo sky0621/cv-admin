@@ -6,10 +6,6 @@ import (
 
 // TODO: １シートのみ使うことを前提としている。複数シート使う場合は再検討。
 
-type ExcelizeWrapperOptions struct {
-	SheetName string
-}
-
 type ExcelizeWrapperOption func(file *excelize.File)
 
 func SheetName(n string) ExcelizeWrapperOption {
@@ -50,10 +46,7 @@ type Wrapper interface {
 	Height(row int, h float64)
 	Width(start, end string, wd float64)
 	Text(cell string, settings []excelize.RichTextRun)
-	CenterStyleID() int
-	RightStyleID() int
-	LeftStyleID() int
-	CellStyle(start, end string, styleID int)
+	CellStyle(start, end string, style *excelize.Style)
 
 	SaveAs(name string)
 }
@@ -96,43 +89,16 @@ func (w *wrapper) Text(cell string, settings []excelize.RichTextRun) {
 	}
 }
 
-var vhCenterAlignment = &excelize.Alignment{
-	Vertical:   "center",
-	Horizontal: "center",
-}
-
-var hRightAlignment = &excelize.Alignment{
-	Vertical:   "center",
-	Horizontal: "right",
-}
-
-var hLeftAlignment = &excelize.Alignment{
-	Vertical:   "center",
-	Horizontal: "left",
-}
-
-func (w *wrapper) getStyleID(a *excelize.Alignment) int {
-	styleID, err := w.f.NewStyle(&excelize.Style{Alignment: a})
+func (w *wrapper) style(s *excelize.Style) int {
+	styleID, err := w.f.NewStyle(s)
 	if err != nil {
 		panic(err)
 	}
 	return styleID
 }
 
-func (w *wrapper) CenterStyleID() int {
-	return w.getStyleID(vhCenterAlignment)
-}
-
-func (w *wrapper) RightStyleID() int {
-	return w.getStyleID(hRightAlignment)
-}
-
-func (w *wrapper) LeftStyleID() int {
-	return w.getStyleID(hLeftAlignment)
-}
-
-func (w *wrapper) CellStyle(start, end string, styleID int) {
-	if err := w.f.SetCellStyle(getDefaultSheetName(w.f), start, end, styleID); err != nil {
+func (w *wrapper) CellStyle(start, end string, style *excelize.Style) {
+	if err := w.f.SetCellStyle(getDefaultSheetName(w.f), start, end, w.style(style)); err != nil {
 		panic(err)
 	}
 }
