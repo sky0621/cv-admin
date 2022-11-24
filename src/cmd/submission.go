@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/sky0621/cv-admin/src/submission"
 	"gopkg.in/ini.v1"
 	"net/http"
 	"os"
@@ -49,107 +50,82 @@ to quickly create a Cobra application.`,
 		/*
 		 * Excelに書き込み
 		 */
-		const sheetName = "スキルシート"
 		const worksheetSize = 9 // A4 210 x 297 mm
+		w := submission.NewExcelizeWrapper("スキルシート", worksheetSize)
 
-		f := excelize.NewFile()
-		f.SetSheetName("Sheet1", sheetName)
-		f.SetPageLayout(sheetName, excelize.PageLayoutPaperSize(worksheetSize))
-
-		set := func(position string, val interface{}) {
-			if err := f.SetCellValue(sheetName, position, val); err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-		}
-
-		merge := func(from, to string) {
-			if err := f.MergeCell(sheetName, from, to); err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-		}
-
-		height := func(row int, h float64) {
-			if err := f.SetRowHeight(sheetName, row, h); err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-		}
-
-		width := func(start, end string, w float64) {
-			if err := f.SetColWidth(sheetName, start, end, w); err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-		}
-
-		text := func(cell string, settings []excelize.RichTextRun) {
-			if err := f.SetCellRichText(sheetName, cell, settings); err != nil {
-				fmt.Println(err)
-				os.Exit(1)
-			}
-		}
-
-		width("A", "A", 10)
-		width("B", "B", 20)
-		width("C", "C", 15)
-		width("D", "D", 5)
-		width("E", "E", 40)
-		width("F", "F", 10)
+		w.Width("A", "A", 10)
+		w.Width("B", "B", 20)
+		w.Width("C", "C", 15)
+		w.Width("D", "D", 5)
+		w.Width("E", "E", 40)
+		w.Width("F", "F", 10)
 
 		/*
 		 * １行目
 		 */
-		height(1, 40)
-		merge("A1", "F1")
-		text("A1", []excelize.RichTextRun{
+		w.Height(1, 30)
+		w.Merge("A1", "F1")
+		w.Text("A1", []excelize.RichTextRun{
 			{
 				Text: "スキルシート",
 				Font: &excelize.Font{
-					Size: 12,
+					Size: 16,
 					Bold: true,
 				},
 			},
 		})
+		w.CellStyle("A1", "A1", w.CenterStyleID())
 
 		/*
 		 * ２行目
 		 */
-		height(2, 30)
-		set("A2", fmt.Sprintf("最終更新日：%v", time.Now().Format("2006-01-02")))
-		merge("A2", "F2")
+		w.Height(2, 20)
+		w.Merge("A2", "F2")
+		w.Text("A2", []excelize.RichTextRun{
+			{
+				Text: fmt.Sprintf("最終更新日：%v", time.Now().Format("2006-01-02")),
+				Font: &excelize.Font{
+					Size: 9,
+				},
+			},
+		})
+		w.CellStyle("A2", "A2", w.RightStyleID())
 
 		/*
 		 * ３行目
 		 */
-		height(3, 30)
-		set("A3", "フリガナ")
-		set("B3", cfg.Section("").Key("kana").String())
-		set("C3", "ニックネーム")
-		set("D3", "年齢")
-		set("E3", "メールアドレス")
-		set("F3", "Gravatar")
+		w.Height(3, 25)
+		w.Set("A3", "フリガナ")
+		w.Set("B3", cfg.Section("").Key("kana").String())
+		w.Set("C3", "ニックネーム")
+		w.Set("D3", "年齢")
+		w.Set("E3", "メールアドレス")
+		w.Set("F3", "Gravatar")
 
 		/*
 		 * ４行目
 		 */
-		height(4, 50)
-		set("A4", "名前")
-		set("B4", cfg.Section("").Key("name").String())
-		set("C4", *attribute.Nickname)
+		w.Height(4, 45)
+		w.Set("A4", "名前")
+		w.Text("B4", []excelize.RichTextRun{
+			{
+				Text: cfg.Section("").Key("name").String(),
+				Font: &excelize.Font{
+					Size: 14,
+					Bold: true,
+				},
+			},
+		})
+		w.Set("C4", *attribute.Nickname)
 
 		birthYear := *attribute.Birthday.Year
 		birthMonth := *attribute.Birthday.Month
 		birthDay := *attribute.Birthday.Day
-		set("D4", age(birthYear, birthMonth, birthDay, time.Now()))
+		w.Set("D4", age(birthYear, birthMonth, birthDay, time.Now()))
 
-		set("E4", cfg.Section("").Key("mail").String())
+		w.Set("E4", cfg.Section("").Key("mail").String())
 
-		if err := f.SaveAs("skill_sheet.xlsx"); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		w.SaveAs("skill_sheet.xlsx")
 	},
 }
 
