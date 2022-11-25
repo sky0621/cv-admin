@@ -50,19 +50,14 @@ to quickly create a Cobra application.`,
 		)
 
 		/*
-		 * 全セルに対する設定
-		 */
-		// FIXME:
-
-		/*
 		 * 列ごとの設定
 		 */
-		w.Width("A", "A", 10)
-		w.Width("B", "B", 25)
-		w.Width("C", "C", 15)
-		w.Width("D", "D", 5)
-		w.Width("E", "E", 35)
-		w.Width("F", "F", 10)
+		w.Width("A", "A", 15)
+		w.Width("B", "B", 30)
+		w.Width("C", "C", 20)
+		w.Width("D", "D", 10)
+		w.Width("E", "E", 40)
+		w.Width("F", "F", 15)
 
 		/*
 		 * １行目
@@ -72,6 +67,7 @@ to quickly create a Cobra application.`,
 		w.Merge("A1", "F1")
 		w.CellStyle("A1", "A1", submission.NewStyle(
 			submission.Alignment(submission.VhCenterAlignment),
+			submission.Borders(submission.Border),
 			submission.Font(submission.SheetTitleFont),
 		))
 
@@ -91,15 +87,17 @@ to quickly create a Cobra application.`,
 		 */
 		w.Height(3, 25)
 		w.Set("A3", "フリガナ")
+		w.HeaderCellStyle("A3", "A3")
 		w.Set("B3", submission.GetConfigValue(cfg, submission.Kana))
+		w.CellStyle("B3", "B3", submission.NewStyle(
+			submission.Alignment(submission.HLeftAlignment),
+			submission.Borders(submission.Border),
+		))
 		w.Set("C3", "ニックネーム")
 		w.Set("D3", "年齢")
 		w.Set("E3", "メールアドレス")
 		w.Set("F3", "Gravatar")
-		w.CellStyle("A3", "F3", submission.NewStyle(
-			submission.Alignment(submission.HLeftAlignment),
-			submission.Borders(submission.Border),
-		))
+		w.HeaderCellStyle("B3", "F3")
 		w.Merge("F4", "F6")
 
 		/*
@@ -107,10 +105,7 @@ to quickly create a Cobra application.`,
 		 */
 		w.Height(4, 45)
 		w.Set("A4", "名前")
-		w.CellStyle("A4", "A4", submission.NewStyle(
-			submission.Alignment(submission.HLeftAlignment),
-			submission.Borders(submission.Border),
-		))
+		w.HeaderCellStyle("A4", "A4")
 		w.Set("B4", cfg.Section("").Key("name").String())
 		w.CellStyle("B4", "B4", submission.NewStyle(
 			submission.Alignment(submission.HLeftAlignment),
@@ -143,9 +138,19 @@ to quickly create a Cobra application.`,
 		 */
 		w.Height(5, 25)
 		w.Set("A5", "居住地")
+		w.HeaderCellStyle("A5", "A5")
 		w.Set("B5", submission.GetConfigValue(cfg, submission.CityOfResidence))
+		w.CellStyle("B5", "B5", submission.NewStyle(
+			submission.Alignment(submission.HLeftAlignment),
+			submission.Borders(submission.Border),
+		))
 		w.Set("C5", "最寄り駅")
+		w.HeaderCellStyle("C5", "C5")
 		w.Set("D5", submission.GetConfigValue(cfg, submission.NearestStation))
+		w.CellStyle("D5", "D5", submission.NewStyle(
+			submission.Alignment(submission.HLeftAlignment),
+			submission.Borders(submission.Border),
+		))
 		w.Merge("D5", "E5")
 
 		/*
@@ -153,7 +158,12 @@ to quickly create a Cobra application.`,
 		 */
 		w.Height(6, 25)
 		w.Set("A6", "最終学歴")
+		w.HeaderCellStyle("A6", "A6")
 		w.Set("B6", submission.GetConfigValue(cfg, submission.EducationalBackground))
+		w.CellStyle("B6", "B6", submission.NewStyle(
+			submission.Alignment(submission.HLeftAlignment),
+			submission.Borders(submission.Border),
+		))
 		w.Merge("B6", "E6")
 
 		w.SaveAs("skill_sheet.xlsx")

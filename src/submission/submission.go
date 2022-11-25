@@ -47,6 +47,7 @@ type Wrapper interface {
 	Width(start, end string, wd float64)
 	Text(cell string, settings []excelize.RichTextRun)
 	CellStyle(start, end string, style *excelize.Style)
+	HeaderCellStyle(start, end string)
 
 	SaveAs(name string)
 }
@@ -101,6 +102,15 @@ func (w *wrapper) CellStyle(start, end string, style *excelize.Style) {
 	if err := w.f.SetCellStyle(getDefaultSheetName(w.f), start, end, w.style(style)); err != nil {
 		panic(err)
 	}
+}
+
+func (w *wrapper) HeaderCellStyle(start, end string) {
+	s := NewStyle(
+		Alignment(HLeftAlignment),
+		Borders(Border),
+		Fill(HeaderFill),
+	)
+	w.CellStyle(start, end, s)
 }
 
 func (w *wrapper) SaveAs(name string) {

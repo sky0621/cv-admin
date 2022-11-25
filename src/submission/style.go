@@ -3,8 +3,11 @@ package submission
 import "github.com/xuri/excelize/v2"
 
 const (
+	headerColor = "9FE2BF"
+)
+const (
 	borderStyleDot  = 3
-	borderBaseColor = "6495ED"
+	borderBaseColor = headerColor
 )
 
 var Border = []excelize.Border{
@@ -27,6 +30,7 @@ var HRightAlignment = &excelize.Alignment{
 var HLeftAlignment = &excelize.Alignment{
 	Vertical:   "center",
 	Horizontal: "left",
+	Indent:     1,
 }
 
 var SheetTitleFont = &excelize.Font{
@@ -41,6 +45,12 @@ var LastUpdatedFont = &excelize.Font{
 var NameFont = &excelize.Font{
 	Size: 18,
 	Bold: true,
+}
+
+var HeaderFill = excelize.Fill{
+	Type:    "pattern",
+	Color:   []string{headerColor},
+	Pattern: 1,
 }
 
 type ExcelizeStyleOption func(style *excelize.Style)
