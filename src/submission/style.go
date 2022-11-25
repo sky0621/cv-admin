@@ -9,7 +9,7 @@ const (
 const (
 	headerColor     = "9FE2BF"
 	borderBaseColor = headerColor
-	borderStyleDot  = 3
+	borderStyleDot  = 5
 )
 
 var Border = []excelize.Border{

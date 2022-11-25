@@ -46,8 +46,11 @@ type Wrapper interface {
 	Height(row int, h float64)
 	Width(start, end string, wd float64)
 	Text(cell string, settings []excelize.RichTextRun)
-	CellStyle(start, end string, style *excelize.Style)
-	HeaderCellStyle(start, end string)
+	CellStyle(cell string, style *excelize.Style)
+	CellRangeStyle(start, end string, style *excelize.Style)
+	HeaderCellStyle(cell string)
+	HeaderCellRangeStyle(start, end string)
+	CellExternalHyperLink(cell, url string)
 
 	SaveAs(name string)
 }
@@ -98,19 +101,41 @@ func (w *wrapper) style(s *excelize.Style) int {
 	return styleID
 }
 
-func (w *wrapper) CellStyle(start, end string, style *excelize.Style) {
+func (w *wrapper) CellStyle(cell string, style *excelize.Style) {
+	if err := w.f.SetCellStyle(getDefaultSheetName(w.f), cell, cell, w.style(style)); err != nil {
+		panic(err)
+	}
+}
+func (w *wrapper) CellRangeStyle(start, end string, style *excelize.Style) {
 	if err := w.f.SetCellStyle(getDefaultSheetName(w.f), start, end, w.style(style)); err != nil {
 		panic(err)
 	}
 }
 
-func (w *wrapper) HeaderCellStyle(start, end string) {
+func (w *wrapper) HeaderCellStyle(cell string) {
 	s := NewStyle(
 		Alignment(HLeftAlignment),
 		Borders(Border),
 		Fill(HeaderFill),
 	)
-	w.CellStyle(start, end, s)
+	w.CellStyle(cell, s)
+}
+
+func (w *wrapper) HeaderCellRangeStyle(start, end string) {
+	s := NewStyle(
+		Alignment(HLeftAlignment),
+		Borders(Border),
+		Fill(HeaderFill),
+	)
+	w.CellRangeStyle(start, end, s)
+}
+
+func (w *wrapper) CellExternalHyperLink(cell, url string) {
+	if err := w.f.SetCellHyperLink(getDefaultSheetName(w.f), cell, url, "External", excelize.HyperlinkOpts{
+		Display: &url,
+	}); err != nil {
+		panic(err)
+	}
 }
 
 func (w *wrapper) SaveAs(name string) {

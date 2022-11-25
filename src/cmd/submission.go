@@ -5,7 +5,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/sky0621/cv-admin/src/submission"
+	s "github.com/sky0621/cv-admin/src/submission"
 	"net/http"
 	"os"
 	"time"
@@ -28,7 +28,7 @@ to quickly create a Cobra application.`,
 		/* **********************************************************
 		 * INIから個人情報を読み込み
 		 */
-		cfg := submission.NewConfig()
+		cfg := s.NewConfig()
 
 		/* **********************************************************
 		 * SQLiteからキャリア情報を読み込み（API経由）
@@ -40,13 +40,18 @@ to quickly create a Cobra application.`,
 			os.Exit(1)
 		}
 
+		qualifications, err := requestUserInfo(cli, fmt.Sprintf("users/%d/qualifications", targetUserID), &[]rest.UserQualification{})
+		if err != nil {
+			os.Exit(1)
+		}
+
 		/* **********************************************************
 		 * Excelに書き込み
 		 */
-		w := submission.NewExcelizeWrapper(
-			submission.SheetName("スキルシート"),
-			submission.SheetPassword(submission.GetConfigValue(cfg, submission.Password)),
-			submission.PaperSize(9), // A4 210 x 297 mm
+		w := s.NewExcelizeWrapper(
+			s.SheetName("スキルシート"),
+			s.SheetPassword(s.GetConfigValue(cfg, s.Password)),
+			s.PaperSize(9), // A4 210 x 297 mm
 		)
 
 		/*
@@ -68,10 +73,10 @@ to quickly create a Cobra application.`,
 			w.Height(1, 30)
 			w.Set("A1", "スキルシート")
 			w.Merge("A1", "F1")
-			w.CellStyle("A1", "A1", submission.NewStyle(
-				submission.Alignment(submission.VhCenterAlignment),
-				submission.Borders(submission.Border),
-				submission.Font(submission.SheetTitleFont),
+			w.CellStyle("A1", s.NewStyle(
+				s.Alignment(s.VhCenterAlignment),
+				s.Borders(s.Border),
+				s.Font(s.SheetTitleFont),
 			))
 		}
 
@@ -82,9 +87,9 @@ to quickly create a Cobra application.`,
 			w.Height(2, 20)
 			w.Set("A2", fmt.Sprintf("最終更新日：%v", time.Now().Format("2006-01-02")))
 			w.Merge("A2", "F2")
-			w.CellStyle("A2", "A2", submission.NewStyle(
-				submission.Alignment(submission.HRightAlignment),
-				submission.Font(submission.LastUpdatedFont),
+			w.CellStyle("A2", s.NewStyle(
+				s.Alignment(s.HRightAlignment),
+				s.Font(s.LastUpdatedFont),
 			))
 		}
 
@@ -92,19 +97,19 @@ to quickly create a Cobra application.`,
 		 * ３行目
 		 */
 		{
-			w.Height(3, submission.RowBaseHeight)
+			w.Height(3, s.RowBaseHeight)
 			w.Set("A3", "フリガナ")
-			w.HeaderCellStyle("A3", "A3")
-			w.Set("B3", submission.GetConfigValue(cfg, submission.Kana))
-			w.CellStyle("B3", "B3", submission.NewStyle(
-				submission.Alignment(submission.HLeftAlignment),
-				submission.Borders(submission.Border),
+			w.HeaderCellStyle("A3")
+			w.Set("B3", s.GetConfigValue(cfg, s.Kana))
+			w.CellStyle("B3", s.NewStyle(
+				s.Alignment(s.HLeftAlignment),
+				s.Borders(s.Border),
 			))
 			w.Set("C3", "ニックネーム")
 			w.Set("D3", "年齢")
 			w.Set("E3", "メールアドレス")
 			w.Set("F3", "Gravatar")
-			w.HeaderCellStyle("C3", "F3")
+			w.HeaderCellRangeStyle("C3", "F3")
 			w.Merge("F4", "F6")
 		}
 
@@ -114,32 +119,40 @@ to quickly create a Cobra application.`,
 		{
 			w.Height(4, 45)
 			w.Set("A4", "名前")
-			w.HeaderCellStyle("A4", "A4")
+			w.HeaderCellStyle("A4")
 			w.Set("B4", cfg.Section("").Key("name").String())
-			w.CellStyle("B4", "B4", submission.NewStyle(
-				submission.Alignment(submission.HLeftAlignment),
-				submission.Borders(submission.Border),
-				submission.Font(submission.NameFont),
+			w.CellStyle("B4", s.NewStyle(
+				s.Alignment(s.HLeftAlignment),
+				s.Borders(s.Border),
+				s.Font(s.NameFont),
 			))
+
+			// ニックネーム
 			w.Set("C4", *attribute.Nickname)
-			w.CellStyle("C4", "C4", submission.NewStyle(
-				submission.Alignment(submission.HLeftAlignment),
-				submission.Borders(submission.Border),
+			w.CellStyle("C4", s.NewStyle(
+				s.Alignment(s.HLeftAlignment),
+				s.Borders(s.Border),
 			))
 
-			birthYear := *attribute.Birthday.Year
-			birthMonth := *attribute.Birthday.Month
-			birthDay := *attribute.Birthday.Day
-			w.Set("D4", age(birthYear, birthMonth, birthDay, time.Now()))
-			w.CellStyle("D4", "D4", submission.NewStyle(
-				submission.Alignment(submission.HLeftAlignment),
-				submission.Borders(submission.Border),
+			// 年齢
+			bDay := *attribute.Birthday
+			w.Set("D4", age(*bDay.Year, *bDay.Month, *bDay.Day, time.Now()))
+			w.CellStyle("D4", s.NewStyle(
+				s.Alignment(s.HLeftAlignment),
+				s.Borders(s.Border),
 			))
 
-			w.Set("E4", submission.GetConfigValue(cfg, submission.Mail))
-			w.CellStyle("E4", "E4", submission.NewStyle(
-				submission.Alignment(submission.HLeftAlignment),
-				submission.Borders(submission.Border),
+			// メールアドレス
+			w.Set("E4", s.GetConfigValue(cfg, s.Mail))
+			w.CellStyle("E4", s.NewStyle(
+				s.Alignment(s.HLeftAlignment),
+				s.Borders(s.Border),
+			))
+
+			// Gravatar
+			w.CellStyle("F4", s.NewStyle(
+				s.Alignment(s.HLeftAlignment),
+				s.Borders(s.Border),
 			))
 		}
 
@@ -147,20 +160,20 @@ to quickly create a Cobra application.`,
 		 * 5行目
 		 */
 		{
-			w.Height(5, submission.RowBaseHeight)
+			w.Height(5, s.RowBaseHeight)
 			w.Set("A5", "居住地")
-			w.HeaderCellStyle("A5", "A5")
-			w.Set("B5", submission.GetConfigValue(cfg, submission.CityOfResidence))
-			w.CellStyle("B5", "B5", submission.NewStyle(
-				submission.Alignment(submission.HLeftAlignment),
-				submission.Borders(submission.Border),
+			w.HeaderCellStyle("A5")
+			w.Set("B5", s.GetConfigValue(cfg, s.CityOfResidence))
+			w.CellStyle("B5", s.NewStyle(
+				s.Alignment(s.HLeftAlignment),
+				s.Borders(s.Border),
 			))
 			w.Set("C5", "最寄り駅")
-			w.HeaderCellStyle("C5", "C5")
-			w.Set("D5", submission.GetConfigValue(cfg, submission.NearestStation))
-			w.CellStyle("D5", "D5", submission.NewStyle(
-				submission.Alignment(submission.HLeftAlignment),
-				submission.Borders(submission.Border),
+			w.HeaderCellStyle("C5")
+			w.Set("D5", s.GetConfigValue(cfg, s.NearestStation))
+			w.CellStyle("D5", s.NewStyle(
+				s.Alignment(s.HLeftAlignment),
+				s.Borders(s.Border),
 			))
 			w.Merge("D5", "E5")
 		}
@@ -169,39 +182,72 @@ to quickly create a Cobra application.`,
 		 * 6行目
 		 */
 		{
-			w.Height(6, submission.RowBaseHeight)
+			w.Height(6, s.RowBaseHeight)
 			w.Set("A6", "最終学歴")
-			w.HeaderCellStyle("A6", "A6")
-			w.Set("B6", submission.GetConfigValue(cfg, submission.EducationalBackground))
-			w.CellStyle("B6", "B6", submission.NewStyle(
-				submission.Alignment(submission.HLeftAlignment),
-				submission.Borders(submission.Border),
+			w.HeaderCellStyle("A6")
+			w.Set("B6", s.GetConfigValue(cfg, s.EducationalBackground))
+			w.CellStyle("B6", s.NewStyle(
+				s.Alignment(s.HLeftAlignment),
+				s.Borders(s.Border),
 			))
 			w.Merge("B6", "E6")
-		}
-
-		/*
-		 * 7行目
-		 */
-		{
-			w.Height(8, submission.RowBaseHeight)
-			w.Set("A8", "資格")
-			w.Merge("A8", "B8")
-			w.Set("C8", "取得年月日")
-			w.Set("D8", "URL")
-			w.Merge("D8", "F8")
-			w.HeaderCellStyle("A8", "F8")
 		}
 
 		/*
 		 * 8行目
 		 */
 		{
-			w.Height(9, submission.RowBaseHeight)
-			w.Merge("A9", "B9")
+			w.Height(8, s.RowBaseHeight)
+			w.Set("A8", "資格")
+			w.Merge("A8", "B8")
+			w.Set("C8", "取得年月日")
+			w.Set("D8", "URL")
+			w.Merge("D8", "F8")
+			w.HeaderCellRangeStyle("A8", "F8")
+		}
 
-			w.Merge("D9", "F9")
+		/*
+		 * 9行目〜
+		 * 資格情報の件数分
+		 */
+		{
+			rowNo := 9
+			for idx, q := range *qualifications {
+				rowNo += idx
+				w.Height(rowNo, s.RowBaseHeight)
 
+				// 資格
+				w.Set(s.Cell("A", rowNo), s.QualificationName(q.Organization, q.Name))
+				w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
+					s.Alignment(s.HLeftAlignment),
+					s.Borders(s.Border),
+				))
+				w.Merge(s.Cell("A", rowNo), s.Cell("B", rowNo))
+
+				// 取得年月日
+				w.Set(s.Cell("C", rowNo), s.QualificationGotDate(q.GotDate))
+				w.CellStyle(s.Cell("C", rowNo), s.NewStyle(
+					s.Alignment(s.HLeftAlignment),
+					s.Borders(s.Border),
+				))
+
+				// URL
+				w.Set(s.Cell("D", rowNo), s.QualificationURL(q.Url))
+				w.CellExternalHyperLink(s.Cell("D", rowNo), s.QualificationURL(q.Url))
+				w.CellStyle(s.Cell("D", rowNo), s.NewStyle(
+					s.Alignment(s.HLeftAlignment),
+					s.Borders(s.Border),
+				))
+
+				w.Merge(s.Cell("D", rowNo), s.Cell("F", rowNo))
+			}
+		}
+
+		/*
+		 * アウトプット
+		 */
+		{
+			// FIXME:
 		}
 
 		w.SaveAs("skill_sheet.xlsx")
@@ -220,7 +266,7 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// submissionCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// sCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
 func age(birthYear, birthMonth, birthDay int, now time.Time) int {
