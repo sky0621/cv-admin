@@ -52,119 +52,157 @@ to quickly create a Cobra application.`,
 		/*
 		 * 列ごとの設定
 		 */
-		w.Width("A", "A", 15)
-		w.Width("B", "B", 30)
-		w.Width("C", "C", 20)
-		w.Width("D", "D", 10)
-		w.Width("E", "E", 40)
-		w.Width("F", "F", 15)
+		{
+			w.Width("A", "A", 15)
+			w.Width("B", "B", 30)
+			w.Width("C", "C", 20)
+			w.Width("D", "D", 10)
+			w.Width("E", "E", 40)
+			w.Width("F", "F", 15)
+		}
 
 		/*
 		 * １行目
 		 */
-		w.Height(1, 30)
-		w.Set("A1", "スキルシート")
-		w.Merge("A1", "F1")
-		w.CellStyle("A1", "A1", submission.NewStyle(
-			submission.Alignment(submission.VhCenterAlignment),
-			submission.Borders(submission.Border),
-			submission.Font(submission.SheetTitleFont),
-		))
+		{
+			w.Height(1, 30)
+			w.Set("A1", "スキルシート")
+			w.Merge("A1", "F1")
+			w.CellStyle("A1", "A1", submission.NewStyle(
+				submission.Alignment(submission.VhCenterAlignment),
+				submission.Borders(submission.Border),
+				submission.Font(submission.SheetTitleFont),
+			))
+		}
 
 		/*
 		 * ２行目
 		 */
-		w.Height(2, 20)
-		w.Set("A2", fmt.Sprintf("最終更新日：%v", time.Now().Format("2006-01-02")))
-		w.Merge("A2", "F2")
-		w.CellStyle("A2", "A2", submission.NewStyle(
-			submission.Alignment(submission.HRightAlignment),
-			submission.Font(submission.LastUpdatedFont),
-		))
+		{
+			w.Height(2, 20)
+			w.Set("A2", fmt.Sprintf("最終更新日：%v", time.Now().Format("2006-01-02")))
+			w.Merge("A2", "F2")
+			w.CellStyle("A2", "A2", submission.NewStyle(
+				submission.Alignment(submission.HRightAlignment),
+				submission.Font(submission.LastUpdatedFont),
+			))
+		}
 
 		/*
 		 * ３行目
 		 */
-		w.Height(3, 25)
-		w.Set("A3", "フリガナ")
-		w.HeaderCellStyle("A3", "A3")
-		w.Set("B3", submission.GetConfigValue(cfg, submission.Kana))
-		w.CellStyle("B3", "B3", submission.NewStyle(
-			submission.Alignment(submission.HLeftAlignment),
-			submission.Borders(submission.Border),
-		))
-		w.Set("C3", "ニックネーム")
-		w.Set("D3", "年齢")
-		w.Set("E3", "メールアドレス")
-		w.Set("F3", "Gravatar")
-		w.HeaderCellStyle("B3", "F3")
-		w.Merge("F4", "F6")
+		{
+			w.Height(3, submission.RowBaseHeight)
+			w.Set("A3", "フリガナ")
+			w.HeaderCellStyle("A3", "A3")
+			w.Set("B3", submission.GetConfigValue(cfg, submission.Kana))
+			w.CellStyle("B3", "B3", submission.NewStyle(
+				submission.Alignment(submission.HLeftAlignment),
+				submission.Borders(submission.Border),
+			))
+			w.Set("C3", "ニックネーム")
+			w.Set("D3", "年齢")
+			w.Set("E3", "メールアドレス")
+			w.Set("F3", "Gravatar")
+			w.HeaderCellStyle("C3", "F3")
+			w.Merge("F4", "F6")
+		}
 
 		/*
 		 * ４行目
 		 */
-		w.Height(4, 45)
-		w.Set("A4", "名前")
-		w.HeaderCellStyle("A4", "A4")
-		w.Set("B4", cfg.Section("").Key("name").String())
-		w.CellStyle("B4", "B4", submission.NewStyle(
-			submission.Alignment(submission.HLeftAlignment),
-			submission.Borders(submission.Border),
-			submission.Font(submission.NameFont),
-		))
-		w.Set("C4", *attribute.Nickname)
-		w.CellStyle("C4", "C4", submission.NewStyle(
-			submission.Alignment(submission.HLeftAlignment),
-			submission.Borders(submission.Border),
-		))
+		{
+			w.Height(4, 45)
+			w.Set("A4", "名前")
+			w.HeaderCellStyle("A4", "A4")
+			w.Set("B4", cfg.Section("").Key("name").String())
+			w.CellStyle("B4", "B4", submission.NewStyle(
+				submission.Alignment(submission.HLeftAlignment),
+				submission.Borders(submission.Border),
+				submission.Font(submission.NameFont),
+			))
+			w.Set("C4", *attribute.Nickname)
+			w.CellStyle("C4", "C4", submission.NewStyle(
+				submission.Alignment(submission.HLeftAlignment),
+				submission.Borders(submission.Border),
+			))
 
-		birthYear := *attribute.Birthday.Year
-		birthMonth := *attribute.Birthday.Month
-		birthDay := *attribute.Birthday.Day
-		w.Set("D4", age(birthYear, birthMonth, birthDay, time.Now()))
-		w.CellStyle("D4", "D4", submission.NewStyle(
-			submission.Alignment(submission.HLeftAlignment),
-			submission.Borders(submission.Border),
-		))
+			birthYear := *attribute.Birthday.Year
+			birthMonth := *attribute.Birthday.Month
+			birthDay := *attribute.Birthday.Day
+			w.Set("D4", age(birthYear, birthMonth, birthDay, time.Now()))
+			w.CellStyle("D4", "D4", submission.NewStyle(
+				submission.Alignment(submission.HLeftAlignment),
+				submission.Borders(submission.Border),
+			))
 
-		w.Set("E4", submission.GetConfigValue(cfg, submission.Mail))
-		w.CellStyle("E4", "E4", submission.NewStyle(
-			submission.Alignment(submission.HLeftAlignment),
-			submission.Borders(submission.Border),
-		))
+			w.Set("E4", submission.GetConfigValue(cfg, submission.Mail))
+			w.CellStyle("E4", "E4", submission.NewStyle(
+				submission.Alignment(submission.HLeftAlignment),
+				submission.Borders(submission.Border),
+			))
+		}
 
 		/*
 		 * 5行目
 		 */
-		w.Height(5, 25)
-		w.Set("A5", "居住地")
-		w.HeaderCellStyle("A5", "A5")
-		w.Set("B5", submission.GetConfigValue(cfg, submission.CityOfResidence))
-		w.CellStyle("B5", "B5", submission.NewStyle(
-			submission.Alignment(submission.HLeftAlignment),
-			submission.Borders(submission.Border),
-		))
-		w.Set("C5", "最寄り駅")
-		w.HeaderCellStyle("C5", "C5")
-		w.Set("D5", submission.GetConfigValue(cfg, submission.NearestStation))
-		w.CellStyle("D5", "D5", submission.NewStyle(
-			submission.Alignment(submission.HLeftAlignment),
-			submission.Borders(submission.Border),
-		))
-		w.Merge("D5", "E5")
+		{
+			w.Height(5, submission.RowBaseHeight)
+			w.Set("A5", "居住地")
+			w.HeaderCellStyle("A5", "A5")
+			w.Set("B5", submission.GetConfigValue(cfg, submission.CityOfResidence))
+			w.CellStyle("B5", "B5", submission.NewStyle(
+				submission.Alignment(submission.HLeftAlignment),
+				submission.Borders(submission.Border),
+			))
+			w.Set("C5", "最寄り駅")
+			w.HeaderCellStyle("C5", "C5")
+			w.Set("D5", submission.GetConfigValue(cfg, submission.NearestStation))
+			w.CellStyle("D5", "D5", submission.NewStyle(
+				submission.Alignment(submission.HLeftAlignment),
+				submission.Borders(submission.Border),
+			))
+			w.Merge("D5", "E5")
+		}
 
 		/*
 		 * 6行目
 		 */
-		w.Height(6, 25)
-		w.Set("A6", "最終学歴")
-		w.HeaderCellStyle("A6", "A6")
-		w.Set("B6", submission.GetConfigValue(cfg, submission.EducationalBackground))
-		w.CellStyle("B6", "B6", submission.NewStyle(
-			submission.Alignment(submission.HLeftAlignment),
-			submission.Borders(submission.Border),
-		))
-		w.Merge("B6", "E6")
+		{
+			w.Height(6, submission.RowBaseHeight)
+			w.Set("A6", "最終学歴")
+			w.HeaderCellStyle("A6", "A6")
+			w.Set("B6", submission.GetConfigValue(cfg, submission.EducationalBackground))
+			w.CellStyle("B6", "B6", submission.NewStyle(
+				submission.Alignment(submission.HLeftAlignment),
+				submission.Borders(submission.Border),
+			))
+			w.Merge("B6", "E6")
+		}
+
+		/*
+		 * 7行目
+		 */
+		{
+			w.Height(8, submission.RowBaseHeight)
+			w.Set("A8", "資格")
+			w.Merge("A8", "B8")
+			w.Set("C8", "取得年月日")
+			w.Set("D8", "URL")
+			w.Merge("D8", "F8")
+			w.HeaderCellStyle("A8", "F8")
+		}
+
+		/*
+		 * 8行目
+		 */
+		{
+			w.Height(9, submission.RowBaseHeight)
+			w.Merge("A9", "B9")
+
+			w.Merge("D9", "F9")
+
+		}
 
 		w.SaveAs("skill_sheet.xlsx")
 	},

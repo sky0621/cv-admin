@@ -3,11 +3,13 @@ package submission
 import "github.com/xuri/excelize/v2"
 
 const (
-	headerColor = "9FE2BF"
+	RowBaseHeight float64 = 25.0
 )
+
 const (
-	borderStyleDot  = 3
+	headerColor     = "9FE2BF"
 	borderBaseColor = headerColor
+	borderStyleDot  = 3
 )
 
 var Border = []excelize.Border{
