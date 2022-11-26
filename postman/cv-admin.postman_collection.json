@@ -749,7 +749,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\n    {\n        \"name\": \"Qiita\",\n        \"url\": \"https://qiita.com/sky0621\",\n        \"icon\": \"pi pi-globe\"\n    },\n    {\n        \"name\": \"GitHub\",\n        \"url\": \"https://github.com/sky0621/\",\n        \"icon\": \"pi pi-github\"\n    },\n    {\n        \"name\": \"当サイト構築ソース\",\n        \"url\": \"https://github.com/sky0621/cv\",\n        \"icon\": \"pi pi-globe\"\n    }\n]",
+							"raw": "[\n    {\n        \"name\": \"Qiita\",\n        \"url\": \"https://qiita.com/sky0621\",\n        \"icon\": \"pi pi-globe\"\n    },\n    {\n        \"name\": \"GitHub\",\n        \"url\": \"https://github.com/sky0621/\",\n        \"icon\": \"pi pi-github\"\n    },\n    {\n        \"name\": \"スキルシート(Web版)構築ソース\",\n        \"url\": \"https://github.com/sky0621/cv\",\n        \"icon\": \"pi pi-globe\"\n    }\n]",
 							"options": {
 								"raw": {
 									"language": "json"
