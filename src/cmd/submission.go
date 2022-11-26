@@ -55,7 +55,8 @@ to quickly create a Cobra application.`,
 		 */
 		w := s.NewExcelizeWrapper(
 			s.SheetName("スキルシート"),
-			s.SheetPassword(s.GetConfigValue(cfg, s.Password)),
+			// MEMO: パスワードロックしても別シート作ってコピペはできるので（誤操作を防ぎたいわけではないので）意味なし。。
+			// s.SheetPassword(s.GetConfigValue(cfg, s.Password)),
 			s.PaperSize(9), // A4 210 x 297 mm
 		)
 
@@ -313,6 +314,26 @@ to quickly create a Cobra application.`,
 
 			w.Merge(s.Cell("D", rowNo), s.Cell("F", rowNo))
 
+		}
+
+		/*
+		 * PR
+		 */
+		{
+			rowNo += 2
+			w.Height(rowNo, s.RowBaseHeight)
+			w.Set(s.Cell("A", rowNo), "PR")
+			w.Merge(s.Cell("A", rowNo), s.Cell("F", rowNo))
+			w.HeaderCellRangeStyle(s.Cell("A", rowNo), s.Cell("F", rowNo))
+
+			rowNo += 1
+			w.Height(rowNo, s.RowMaxHeight) // TODO: PR行数に応じて（高さが収まらない場合があるので）セルを分ける対応が必要
+			w.Set(s.Cell("A", rowNo), *attribute.Pr)
+			w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
+				s.Alignment(s.HLeftAlignment),
+				s.Borders(s.Border),
+			))
+			w.Merge(s.Cell("A", rowNo), s.Cell("F", rowNo))
 		}
 
 		w.SaveAs("skill_sheet.xlsx")
