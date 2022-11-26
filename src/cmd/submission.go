@@ -6,6 +6,10 @@ package cmd
 import (
 	"fmt"
 	s "github.com/sky0621/cv-admin/src/submission"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
+	"io"
 	"net/http"
 	"os"
 	"time"
@@ -13,6 +17,28 @@ import (
 	"github.com/sky0621/cv-admin/src/rest"
 	"github.com/spf13/cobra"
 )
+
+func requestAvatarImage(cli *http.Client, url string) ([]byte, error) {
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		fmt.Printf("[%s][NewRequest] %v\n", url, err)
+		return nil, err
+	}
+
+	res, err := cli.Do(req)
+	if err != nil {
+		fmt.Printf("[%s][Do] %v\n", url, err)
+		return nil, err
+	}
+
+	resBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		fmt.Printf("[%s][ReadAll] %v\n", url, err)
+		return nil, err
+	}
+
+	return resBody, nil
+}
 
 // submissionCmd represents the submission command
 var submissionCmd = &cobra.Command{
@@ -38,6 +64,14 @@ to quickly create a Cobra application.`,
 		attribute, err := requestUserInfo(cli, fmt.Sprintf("users/%d/attribute", targetUserID), &rest.UserAttribute{})
 		if err != nil {
 			os.Exit(1)
+		}
+
+		var avatarImgBytes []byte
+		if attribute != nil {
+			avatarImgBytes, err = requestAvatarImage(cli, *attribute.AvatarUrl)
+			if err != nil {
+				os.Exit(1)
+			}
 		}
 
 		qualifications, err := requestUserInfo(cli, fmt.Sprintf("users/%d/qualifications", targetUserID), &[]rest.UserQualification{})
@@ -161,8 +195,11 @@ to quickly create a Cobra application.`,
 			))
 
 			// Gravatar
+			if avatarImgBytes != nil {
+				w.AddPictureFromBytes("F4", "avatar", ".png", avatarImgBytes)
+			}
 			w.CellStyle("F4", s.NewStyle(
-				s.Alignment(s.HLeftAlignment),
+				s.Alignment(s.VhCenterAlignment),
 				s.Borders(s.Border),
 			))
 		}

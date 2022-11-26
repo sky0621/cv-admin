@@ -51,6 +51,8 @@ type Wrapper interface {
 	HeaderCellStyle(cell string)
 	HeaderCellRangeStyle(start, end string)
 	CellExternalHyperLink(cell, url string)
+	AddPicture(cell, path string)
+	AddPictureFromBytes(cell, name, extension string, file []byte)
 
 	SaveAs(name string)
 }
@@ -138,6 +140,17 @@ func (w *wrapper) CellExternalHyperLink(cell, url string) {
 	}
 }
 
+func (w *wrapper) AddPicture(cell, path string) {
+	if err := w.f.AddPicture(getDefaultSheetName(w.f), cell, path, ""); err != nil {
+		panic(err)
+	}
+}
+
+func (w *wrapper) AddPictureFromBytes(cell, name, extension string, file []byte) {
+	if err := w.f.AddPictureFromBytes(getDefaultSheetName(w.f), cell, "", name, extension, file); err != nil {
+		panic(err)
+	}
+}
 func (w *wrapper) SaveAs(name string) {
 	if err := w.f.SaveAs(name); err != nil {
 		panic(err)
