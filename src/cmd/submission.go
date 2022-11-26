@@ -404,6 +404,9 @@ to quickly create a Cobra application.`,
 		{
 			if skillTags != nil {
 				for _, t := range *skillTags {
+					/*
+					 * スキルカテゴリ
+					 */
 					rowNo += 1
 					w.Height(rowNo, s.RowBaseHeight)
 
@@ -413,6 +416,13 @@ to quickly create a Cobra application.`,
 						s.Borders(s.Border),
 					))
 					w.Merge(s.Cell("A", rowNo), s.Cell("F", rowNo))
+
+					if t.Skills != nil {
+						for _, s := range *t.Skills {
+							// FIXME:
+							fmt.Println(*s.Name)
+						}
+					}
 				}
 			}
 		}
