@@ -16,6 +16,7 @@ const (
 	EducationalBackground = "educationalBackground"
 	CityOfResidence       = "cityOfResidence"
 	NearestStation        = "nearestStation"
+	CvWeb                 = "cvWeb"
 )
 
 func NewConfig() *ini.File {

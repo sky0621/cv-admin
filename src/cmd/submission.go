@@ -215,11 +215,11 @@ to quickly create a Cobra application.`,
 		 * 9行目〜
 		 * 資格情報の件数分
 		 */
-		rowNo := 9
+		rowNo := 8
 		{
 			if qualifications != nil {
-				for idx, q := range *qualifications {
-					rowNo += idx
+				for _, q := range *qualifications {
+					rowNo += 1
 					w.Height(rowNo, s.RowBaseHeight)
 
 					// 資格
@@ -251,7 +251,7 @@ to quickly create a Cobra application.`,
 		}
 
 		/*
-		 * アウトプット（ラベル）
+		 * アウトプットラベル
 		 */
 		rowNo += 2
 		{
@@ -266,11 +266,10 @@ to quickly create a Cobra application.`,
 		/*
 		 * アウトプット
 		 */
-		rowNo += 1
 		{
 			if activities != nil {
-				for idx, a := range *activities {
-					rowNo += idx
+				for _, a := range *activities {
+					rowNo += 1
 					w.Height(rowNo, s.RowBaseHeight)
 
 					// アウトプット
@@ -292,6 +291,28 @@ to quickly create a Cobra application.`,
 					w.Merge(s.Cell("D", rowNo), s.Cell("F", rowNo))
 				}
 			}
+			// from .private.ini
+			rowNo += 1
+			w.Height(rowNo, s.RowBaseHeight)
+
+			// アウトプット
+			w.Set(s.Cell("A", rowNo), "スキルシート(Web版)")
+			w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
+				s.Alignment(s.HLeftAlignment),
+				s.Borders(s.Border),
+			))
+			w.Merge(s.Cell("A", rowNo), s.Cell("C", rowNo))
+
+			// URL
+			w.Set(s.Cell("D", rowNo), s.GetConfigValue(cfg, s.CvWeb))
+			w.CellExternalHyperLink(s.Cell("D", rowNo), s.GetConfigValue(cfg, s.CvWeb))
+			w.CellStyle(s.Cell("D", rowNo), s.NewStyle(
+				s.Alignment(s.HLeftAlignment),
+				s.Borders(s.Border),
+			))
+
+			w.Merge(s.Cell("D", rowNo), s.Cell("F", rowNo))
+
 		}
 
 		w.SaveAs("skill_sheet.xlsx")
