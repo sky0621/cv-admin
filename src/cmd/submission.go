@@ -50,6 +50,11 @@ to quickly create a Cobra application.`,
 			os.Exit(1)
 		}
 
+		skillTags, err := requestUserInfo(cli, fmt.Sprintf("users/%d/skills", targetUserID), &[]rest.UserSkillTag{})
+		if err != nil {
+			os.Exit(1)
+		}
+
 		/* **********************************************************
 		 * Excelに書き込み
 		 */
@@ -292,7 +297,12 @@ to quickly create a Cobra application.`,
 					w.Merge(s.Cell("D", rowNo), s.Cell("F", rowNo))
 				}
 			}
-			// from .private.ini
+		}
+
+		/*
+		 * アウトプット（from .private.ini）
+		 */
+		{
 			rowNo += 1
 			w.Height(rowNo, s.RowBaseHeight)
 
@@ -313,11 +323,10 @@ to quickly create a Cobra application.`,
 			))
 
 			w.Merge(s.Cell("D", rowNo), s.Cell("F", rowNo))
-
 		}
 
 		/*
-		 * PR
+		 * PRラベル
 		 */
 		{
 			rowNo += 2
@@ -325,7 +334,12 @@ to quickly create a Cobra application.`,
 			w.Set(s.Cell("A", rowNo), "PR")
 			w.Merge(s.Cell("A", rowNo), s.Cell("F", rowNo))
 			w.HeaderCellRangeStyle(s.Cell("A", rowNo), s.Cell("F", rowNo))
+		}
 
+		/*
+		 * PR
+		 */
+		{
 			rowNo += 1
 			w.Height(rowNo, s.RowMaxHeight) // TODO: PR行数に応じて（高さが収まらない場合があるので）セルを分ける対応が必要
 			w.Set(s.Cell("A", rowNo), *attribute.Pr)
@@ -334,6 +348,36 @@ to quickly create a Cobra application.`,
 				s.Borders(s.Border),
 			))
 			w.Merge(s.Cell("A", rowNo), s.Cell("F", rowNo))
+		}
+
+		/*
+		 * スキルラベル
+		 */
+		{
+			rowNo += 2
+			w.Height(rowNo, s.RowBaseHeight)
+			w.Set(s.Cell("A", rowNo), "スキル")
+			w.Merge(s.Cell("A", rowNo), s.Cell("F", rowNo))
+			w.HeaderCellRangeStyle(s.Cell("A", rowNo), s.Cell("F", rowNo))
+		}
+
+		/*
+		 * スキル
+		 */
+		{
+			if skillTags != nil {
+				for _, t := range *skillTags {
+					rowNo += 1
+					w.Height(rowNo, s.RowBaseHeight)
+
+					w.Set(s.Cell("A", rowNo), *t.TagName)
+					w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
+						s.Alignment(s.HLeftAlignment),
+						s.Borders(s.Border),
+					))
+					w.Merge(s.Cell("A", rowNo), s.Cell("F", rowNo))
+				}
+			}
 		}
 
 		w.SaveAs("skill_sheet.xlsx")
