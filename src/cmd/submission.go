@@ -45,6 +45,11 @@ to quickly create a Cobra application.`,
 			os.Exit(1)
 		}
 
+		activities, err := requestUserInfo(cli, fmt.Sprintf("users/%d/activities", targetUserID), &[]rest.UserActivity{})
+		if err != nil {
+			os.Exit(1)
+		}
+
 		/* **********************************************************
 		 * Excelに書き込み
 		 */
@@ -210,44 +215,83 @@ to quickly create a Cobra application.`,
 		 * 9行目〜
 		 * 資格情報の件数分
 		 */
+		rowNo := 9
 		{
-			rowNo := 9
-			for idx, q := range *qualifications {
-				rowNo += idx
-				w.Height(rowNo, s.RowBaseHeight)
+			if qualifications != nil {
+				for idx, q := range *qualifications {
+					rowNo += idx
+					w.Height(rowNo, s.RowBaseHeight)
 
-				// 資格
-				w.Set(s.Cell("A", rowNo), s.QualificationName(q.Organization, q.Name))
-				w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
-					s.Alignment(s.HLeftAlignment),
-					s.Borders(s.Border),
-				))
-				w.Merge(s.Cell("A", rowNo), s.Cell("B", rowNo))
+					// 資格
+					w.Set(s.Cell("A", rowNo), s.QualificationName(q.Organization, q.Name))
+					w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
+						s.Alignment(s.HLeftAlignment),
+						s.Borders(s.Border),
+					))
+					w.Merge(s.Cell("A", rowNo), s.Cell("B", rowNo))
 
-				// 取得年月日
-				w.Set(s.Cell("C", rowNo), s.QualificationGotDate(q.GotDate))
-				w.CellStyle(s.Cell("C", rowNo), s.NewStyle(
-					s.Alignment(s.HLeftAlignment),
-					s.Borders(s.Border),
-				))
+					// 取得年月日
+					w.Set(s.Cell("C", rowNo), s.QualificationGotDate(q.GotDate))
+					w.CellStyle(s.Cell("C", rowNo), s.NewStyle(
+						s.Alignment(s.HLeftAlignment),
+						s.Borders(s.Border),
+					))
 
-				// URL
-				w.Set(s.Cell("D", rowNo), s.QualificationURL(q.Url))
-				w.CellExternalHyperLink(s.Cell("D", rowNo), s.QualificationURL(q.Url))
-				w.CellStyle(s.Cell("D", rowNo), s.NewStyle(
-					s.Alignment(s.HLeftAlignment),
-					s.Borders(s.Border),
-				))
+					// URL
+					w.Set(s.Cell("D", rowNo), s.URL(q.Url))
+					w.CellExternalHyperLink(s.Cell("D", rowNo), s.URL(q.Url))
+					w.CellStyle(s.Cell("D", rowNo), s.NewStyle(
+						s.Alignment(s.HLeftAlignment),
+						s.Borders(s.Border),
+					))
 
-				w.Merge(s.Cell("D", rowNo), s.Cell("F", rowNo))
+					w.Merge(s.Cell("D", rowNo), s.Cell("F", rowNo))
+				}
 			}
+		}
+
+		/*
+		 * アウトプット（ラベル）
+		 */
+		rowNo += 2
+		{
+			w.Height(rowNo, s.RowBaseHeight)
+			w.Set(s.Cell("A", rowNo), "アウトプット")
+			w.Merge(s.Cell("A", rowNo), s.Cell("C", rowNo))
+			w.Set(s.Cell("D", rowNo), "URL")
+			w.Merge(s.Cell("D", rowNo), s.Cell("F", rowNo))
+			w.HeaderCellRangeStyle(s.Cell("A", rowNo), s.Cell("F", rowNo))
 		}
 
 		/*
 		 * アウトプット
 		 */
+		rowNo += 1
 		{
-			// FIXME:
+			if activities != nil {
+				for idx, a := range *activities {
+					rowNo += idx
+					w.Height(rowNo, s.RowBaseHeight)
+
+					// アウトプット
+					w.Set(s.Cell("A", rowNo), *a.Name)
+					w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
+						s.Alignment(s.HLeftAlignment),
+						s.Borders(s.Border),
+					))
+					w.Merge(s.Cell("A", rowNo), s.Cell("C", rowNo))
+
+					// URL
+					w.Set(s.Cell("D", rowNo), s.URL(a.Url))
+					w.CellExternalHyperLink(s.Cell("D", rowNo), s.URL(a.Url))
+					w.CellStyle(s.Cell("D", rowNo), s.NewStyle(
+						s.Alignment(s.HLeftAlignment),
+						s.Borders(s.Border),
+					))
+
+					w.Merge(s.Cell("D", rowNo), s.Cell("F", rowNo))
+				}
+			}
 		}
 
 		w.SaveAs("skill_sheet.xlsx")

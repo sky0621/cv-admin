@@ -27,7 +27,7 @@ func QualificationGotDate(d *rest.QualificationGotDate) string {
 	return d.Format("2006-01-02")
 }
 
-func QualificationURL(u *rest.Url) string {
+func URL(u *rest.Url) string {
 	if u == nil {
 		return "-"
 	}
