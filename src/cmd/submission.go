@@ -103,12 +103,7 @@ to quickly create a Cobra application.`,
 		 * 列ごとの設定
 		 */
 		{
-			w.Width("A", "A", 15)
-			w.Width("B", "B", 30)
-			w.Width("C", "C", 20)
-			w.Width("D", "D", 10)
-			w.Width("E", "E", 40)
-			w.Width("F", "F", 15)
+			w.Width("A", "Z", 5)
 		}
 
 		/*
@@ -117,7 +112,7 @@ to quickly create a Cobra application.`,
 		{
 			w.Height(1, 30)
 			w.Set("A1", "スキルシート")
-			w.Merge("A1", "F1")
+			w.Merge("A1", "Z1")
 			w.CellStyle("A1", s.NewStyle(
 				s.Alignment(s.VhCenterAlignment),
 				s.Borders(s.Border),
@@ -131,7 +126,7 @@ to quickly create a Cobra application.`,
 		{
 			w.Height(2, 20)
 			w.Set("A2", fmt.Sprintf("最終更新日：%v", time.Now().Format("2006-01-02")))
-			w.Merge("A2", "F2")
+			w.Merge("A2", "Z2")
 			w.CellStyle("A2", s.NewStyle(
 				s.Alignment(s.HRightAlignment),
 				s.Font(s.LastUpdatedFont),
@@ -143,19 +138,36 @@ to quickly create a Cobra application.`,
 		 */
 		{
 			w.Height(3, s.RowBaseHeight)
+
 			w.Set("A3", "フリガナ")
 			w.HeaderCellStyle("A3")
-			w.Set("B3", s.GetConfigValue(cfg, s.Kana))
-			w.CellStyle("B3", s.NewStyle(
+			w.Merge("A3", "C3")
+
+			w.Set("D3", s.GetConfigValue(cfg, s.Kana))
+			w.CellStyle("D3", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.Border),
 			))
-			w.Set("C3", "ニックネーム")
-			w.Set("D3", "年齢")
-			w.Set("E3", "メールアドレス")
-			w.Set("F3", "Gravatar")
-			w.HeaderCellRangeStyle("C3", "F3")
-			w.Merge("F4", "F6")
+			w.Merge("D3", "I3")
+
+			w.Set("J3", "ニックネーム")
+			w.Merge("J3", "M3")
+
+			w.Set("N3", "年齢")
+			w.Merge("N3", "O3")
+
+			w.Set("P3", "メールアドレス")
+			w.Merge("P3", "W3")
+
+			w.Set("X3", "Gravatar")
+			w.Merge("X3", "Z3")
+
+			w.HeaderCellRangeStyle("J3", "Z3")
+
+			w.Merge("X4", "Z4")
+			w.Merge("X5", "Z5")
+			w.Merge("X6", "Z6")
+			w.Merge("X4", "X6")
 		}
 
 		/*
@@ -165,40 +177,46 @@ to quickly create a Cobra application.`,
 			w.Height(4, 45)
 			w.Set("A4", "名前")
 			w.HeaderCellStyle("A4")
-			w.Set("B4", cfg.Section("").Key("name").String())
-			w.CellStyle("B4", s.NewStyle(
+			w.Merge("A4", "C4")
+
+			w.Set("D4", cfg.Section("").Key("name").String())
+			w.CellStyle("D4", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.Border),
 				s.Font(s.NameFont),
 			))
+			w.Merge("D4", "I4")
 
 			// ニックネーム
-			w.Set("C4", *attribute.Nickname)
-			w.CellStyle("C4", s.NewStyle(
+			w.Set("J4", *attribute.Nickname)
+			w.CellStyle("J4", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.Border),
 			))
+			w.Merge("J4", "M4")
 
 			// 年齢
 			bDay := *attribute.Birthday
-			w.Set("D4", age(*bDay.Year, *bDay.Month, *bDay.Day, time.Now()))
-			w.CellStyle("D4", s.NewStyle(
+			w.Set("N4", age(*bDay.Year, *bDay.Month, *bDay.Day, time.Now()))
+			w.CellStyle("N4", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.Border),
 			))
+			w.Merge("N4", "O4")
 
 			// メールアドレス
-			w.Set("E4", s.GetConfigValue(cfg, s.Mail))
-			w.CellStyle("E4", s.NewStyle(
+			w.Set("P4", s.GetConfigValue(cfg, s.Mail))
+			w.CellStyle("P4", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.Border),
 			))
+			w.Merge("P4", "W4")
 
 			// Gravatar
 			if avatarImgBytes != nil {
-				w.AddPictureFromBytes("F4", "avatar", ".png", avatarImgBytes)
+				w.AddPictureFromBytes("X4", "avatar", ".png", avatarImgBytes)
 			}
-			w.CellStyle("F4", s.NewStyle(
+			w.CellStyle("X4", s.NewStyle(
 				s.Alignment(s.VhCenterAlignment),
 				s.Borders(s.Border),
 			))
@@ -211,19 +229,25 @@ to quickly create a Cobra application.`,
 			w.Height(5, s.RowBaseHeight)
 			w.Set("A5", "居住地")
 			w.HeaderCellStyle("A5")
-			w.Set("B5", s.GetConfigValue(cfg, s.CityOfResidence))
-			w.CellStyle("B5", s.NewStyle(
-				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.Border),
-			))
-			w.Set("C5", "最寄り駅")
-			w.HeaderCellStyle("C5")
-			w.Set("D5", s.GetConfigValue(cfg, s.NearestStation))
+			w.Merge("A5", "C5")
+
+			w.Set("D5", s.GetConfigValue(cfg, s.CityOfResidence))
 			w.CellStyle("D5", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.Border),
 			))
-			w.Merge("D5", "E5")
+			w.Merge("D5", "I5")
+
+			w.Set("J5", "最寄り駅")
+			w.HeaderCellStyle("J5")
+			w.Merge("J5", "M5")
+
+			w.Set("N5", s.GetConfigValue(cfg, s.NearestStation))
+			w.CellStyle("N5", s.NewStyle(
+				s.Alignment(s.HLeftAlignment),
+				s.Borders(s.Border),
+			))
+			w.Merge("N5", "W5")
 		}
 
 		/*
@@ -233,12 +257,14 @@ to quickly create a Cobra application.`,
 			w.Height(6, s.RowBaseHeight)
 			w.Set("A6", "最終学歴")
 			w.HeaderCellStyle("A6")
-			w.Set("B6", s.GetConfigValue(cfg, s.EducationalBackground))
-			w.CellStyle("B6", s.NewStyle(
+			w.Merge("A6", "C6")
+
+			w.Set("D6", s.GetConfigValue(cfg, s.EducationalBackground))
+			w.CellStyle("D6", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.Border),
 			))
-			w.Merge("B6", "E6")
+			w.Merge("D6", "W6")
 		}
 
 		/*
@@ -247,11 +273,15 @@ to quickly create a Cobra application.`,
 		{
 			w.Height(8, s.RowBaseHeight)
 			w.Set("A8", "資格")
-			w.Merge("A8", "B8")
-			w.Set("C8", "取得年月日")
-			w.Set("D8", "URL")
-			w.Merge("D8", "F8")
-			w.HeaderCellRangeStyle("A8", "F8")
+			w.Merge("A8", "I8")
+
+			w.Set("J8", "取得年月日")
+			w.Merge("J8", "M8")
+
+			w.Set("N8", "URL")
+			w.Merge("N8", "Z8")
+
+			w.HeaderCellRangeStyle("A8", "Z8")
 		}
 
 		/*
@@ -271,24 +301,24 @@ to quickly create a Cobra application.`,
 						s.Alignment(s.HLeftAlignment),
 						s.Borders(s.Border),
 					))
-					w.Merge(s.Cell("A", rowNo), s.Cell("B", rowNo))
+					w.Merge(s.Cell("A", rowNo), s.Cell("I", rowNo))
 
 					// 取得年月日
-					w.Set(s.Cell("C", rowNo), s.QualificationGotDate(q.GotDate))
-					w.CellStyle(s.Cell("C", rowNo), s.NewStyle(
+					w.Set(s.Cell("J", rowNo), s.QualificationGotDate(q.GotDate))
+					w.CellStyle(s.Cell("J", rowNo), s.NewStyle(
 						s.Alignment(s.HLeftAlignment),
 						s.Borders(s.Border),
 					))
+					w.Merge(s.Cell("J", rowNo), s.Cell("M", rowNo))
 
 					// URL
-					w.Set(s.Cell("D", rowNo), s.URL(q.Url))
-					w.CellExternalHyperLink(s.Cell("D", rowNo), s.URL(q.Url))
-					w.CellStyle(s.Cell("D", rowNo), s.NewStyle(
+					w.Set(s.Cell("N", rowNo), s.URL(q.Url))
+					w.CellExternalHyperLink(s.Cell("N", rowNo), s.URL(q.Url))
+					w.CellStyle(s.Cell("N", rowNo), s.NewStyle(
 						s.Alignment(s.HLeftAlignment),
 						s.Borders(s.Border),
 					))
-
-					w.Merge(s.Cell("D", rowNo), s.Cell("F", rowNo))
+					w.Merge(s.Cell("N", rowNo), s.Cell("Z", rowNo))
 				}
 			}
 		}
@@ -299,11 +329,14 @@ to quickly create a Cobra application.`,
 		rowNo += 2
 		{
 			w.Height(rowNo, s.RowBaseHeight)
+
 			w.Set(s.Cell("A", rowNo), "アウトプット")
-			w.Merge(s.Cell("A", rowNo), s.Cell("C", rowNo))
-			w.Set(s.Cell("D", rowNo), "URL")
-			w.Merge(s.Cell("D", rowNo), s.Cell("F", rowNo))
-			w.HeaderCellRangeStyle(s.Cell("A", rowNo), s.Cell("F", rowNo))
+			w.Merge(s.Cell("A", rowNo), s.Cell("I", rowNo))
+
+			w.Set(s.Cell("J", rowNo), "URL")
+			w.Merge(s.Cell("J", rowNo), s.Cell("Z", rowNo))
+
+			w.HeaderCellRangeStyle(s.Cell("A", rowNo), s.Cell("Z", rowNo))
 		}
 
 		/*
@@ -321,17 +354,16 @@ to quickly create a Cobra application.`,
 						s.Alignment(s.HLeftAlignment),
 						s.Borders(s.Border),
 					))
-					w.Merge(s.Cell("A", rowNo), s.Cell("C", rowNo))
+					w.Merge(s.Cell("A", rowNo), s.Cell("I", rowNo))
 
 					// URL
-					w.Set(s.Cell("D", rowNo), s.URL(a.Url))
-					w.CellExternalHyperLink(s.Cell("D", rowNo), s.URL(a.Url))
-					w.CellStyle(s.Cell("D", rowNo), s.NewStyle(
+					w.Set(s.Cell("J", rowNo), s.URL(a.Url))
+					w.CellExternalHyperLink(s.Cell("J", rowNo), s.URL(a.Url))
+					w.CellStyle(s.Cell("J", rowNo), s.NewStyle(
 						s.Alignment(s.HLeftAlignment),
 						s.Borders(s.Border),
 					))
-
-					w.Merge(s.Cell("D", rowNo), s.Cell("F", rowNo))
+					w.Merge(s.Cell("J", rowNo), s.Cell("Z", rowNo))
 				}
 			}
 		}
@@ -349,17 +381,16 @@ to quickly create a Cobra application.`,
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.Border),
 			))
-			w.Merge(s.Cell("A", rowNo), s.Cell("C", rowNo))
+			w.Merge(s.Cell("A", rowNo), s.Cell("I", rowNo))
 
 			// URL
-			w.Set(s.Cell("D", rowNo), s.GetConfigValue(cfg, s.CvWeb))
-			w.CellExternalHyperLink(s.Cell("D", rowNo), s.GetConfigValue(cfg, s.CvWeb))
-			w.CellStyle(s.Cell("D", rowNo), s.NewStyle(
+			w.Set(s.Cell("J", rowNo), s.GetConfigValue(cfg, s.CvWeb))
+			w.CellExternalHyperLink(s.Cell("J", rowNo), s.GetConfigValue(cfg, s.CvWeb))
+			w.CellStyle(s.Cell("J", rowNo), s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.Border),
 			))
-
-			w.Merge(s.Cell("D", rowNo), s.Cell("F", rowNo))
+			w.Merge(s.Cell("J", rowNo), s.Cell("Z", rowNo))
 		}
 
 		/*
@@ -369,8 +400,8 @@ to quickly create a Cobra application.`,
 			rowNo += 2
 			w.Height(rowNo, s.RowBaseHeight)
 			w.Set(s.Cell("A", rowNo), "PR")
-			w.Merge(s.Cell("A", rowNo), s.Cell("F", rowNo))
-			w.HeaderCellRangeStyle(s.Cell("A", rowNo), s.Cell("F", rowNo))
+			w.Merge(s.Cell("A", rowNo), s.Cell("Z", rowNo))
+			w.HeaderCellRangeStyle(s.Cell("A", rowNo), s.Cell("Z", rowNo))
 		}
 
 		/*
@@ -384,7 +415,7 @@ to quickly create a Cobra application.`,
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.Border),
 			))
-			w.Merge(s.Cell("A", rowNo), s.Cell("F", rowNo))
+			w.Merge(s.Cell("A", rowNo), s.Cell("Z", rowNo))
 		}
 
 		/*
@@ -394,8 +425,8 @@ to quickly create a Cobra application.`,
 			rowNo += 2
 			w.Height(rowNo, s.RowBaseHeight)
 			w.Set(s.Cell("A", rowNo), "スキル")
-			w.Merge(s.Cell("A", rowNo), s.Cell("F", rowNo))
-			w.HeaderCellRangeStyle(s.Cell("A", rowNo), s.Cell("F", rowNo))
+			w.Merge(s.Cell("A", rowNo), s.Cell("Z", rowNo))
+			w.HeaderCellRangeStyle(s.Cell("A", rowNo), s.Cell("Z", rowNo))
 		}
 
 		/*
@@ -415,7 +446,7 @@ to quickly create a Cobra application.`,
 						s.Alignment(s.HLeftAlignment),
 						s.Borders(s.Border),
 					))
-					w.Merge(s.Cell("A", rowNo), s.Cell("F", rowNo))
+					w.Merge(s.Cell("A", rowNo), s.Cell("Z", rowNo))
 
 					if t.Skills != nil {
 						for _, s := range *t.Skills {
