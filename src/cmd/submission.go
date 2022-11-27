@@ -90,6 +90,11 @@ to quickly create a Cobra application.`,
 			os.Exit(1)
 		}
 
+		careerGroups, err := requestUserInfo(cli, fmt.Sprintf("users/%d/careergroups", targetUserID), &[]rest.UserCareerGroup{})
+		if err != nil {
+			os.Exit(1)
+		}
+
 		/* **********************************************************
 		 * Excelに書き込み
 		 */
@@ -205,7 +210,7 @@ to quickly create a Cobra application.`,
 
 			// 年齢
 			bDay := *attribute.Birthday
-			w.Set("N4", age(*bDay.Year, *bDay.Month, *bDay.Day, time.Now()))
+			w.Set("N4", s.Age(*bDay.Year, *bDay.Month, *bDay.Day, time.Now()))
 			w.CellStyle("N4", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.FullBorder),
@@ -507,9 +512,9 @@ to quickly create a Cobra application.`,
 									if v.From == nil || v.To == nil {
 										continue
 									}
-									dms += diffMonths(*v.From.Year, *v.From.Month, *v.To.Year, *v.To.Month)
+									dms += s.DiffMonths(*v.From.Year, *v.From.Month, *v.To.Year, *v.To.Month)
 								}
-								skillsBuf.WriteString(mergeMonths(dms))
+								skillsBuf.WriteString(s.MergeMonths(dms))
 								skillsBuf.WriteString("）")
 							}
 						}
@@ -523,6 +528,93 @@ to quickly create a Cobra application.`,
 
 					// 枠線「右」が機能していないための措置
 					w.CellStyle(s.Cell("AA", rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+				}
+			}
+		}
+
+		/*
+		 * キャリアラベル
+		 */
+		{
+			rowNo += 2
+			w.Height(rowNo, s.RowBaseHeight)
+
+			w.Set(s.Cell("A", rowNo), "キャリア")
+			w.Merge(s.Cell("A", rowNo), s.Cell("Z", rowNo))
+			w.HeaderCellRangeStyle(s.Cell("A", rowNo), s.Cell("Z", rowNo))
+
+			// 枠線「右」が機能していないための措置
+			w.CellStyle(s.Cell("AA", rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+		}
+
+		/*
+		 * キャリア
+		 */
+		{
+			if careerGroups != nil {
+				for idx, cg := range *careerGroups {
+					/*
+					 * キャリアグループラベル
+					 */
+					rowNo += 1
+					w.Height(rowNo, s.RowBaseHeight*2.0)
+
+					w.Set(s.Cell("A", rowNo), fmt.Sprintf("(%d) %s", idx+1, *cg.Label))
+					w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
+						s.Alignment(s.HLeftAlignment),
+						s.Fill(s.CareerGroupLabelFill),
+						s.Font(s.CareerGroupLabelFont),
+					))
+					w.Merge(s.Cell("A", rowNo), s.Cell("P", rowNo))
+
+					w.Set(s.Cell("Q", rowNo), "期間：")
+					w.CellStyle(s.Cell("Q", rowNo), s.NewStyle(
+						s.Alignment(s.HLeftAlignment),
+						s.Fill(s.CareerGroupLabelFill),
+					))
+					w.Merge(s.Cell("Q", rowNo), s.Cell("R", rowNo))
+
+					w.Set(s.Cell("S", rowNo), s.CareerGroupPeriod(cg))
+					w.CellStyle(s.Cell("S", rowNo), s.NewStyle(
+						s.Alignment(s.HLeftAlignment),
+						s.Fill(s.CareerGroupLabelFill),
+					))
+					w.Merge(s.Cell("S", rowNo), s.Cell("Z", rowNo))
+
+					// 枠線「右」が機能していないための措置
+					w.CellStyle(s.Cell("AA", rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+
+					/*
+					 * キャリア群
+					 */
+					if cg.Careers != nil {
+						for idx2, c := range *cg.Careers {
+							rowNo += 1
+							w.Height(rowNo, s.RowBaseHeight*2.0)
+
+							w.Set(s.Cell("A", rowNo), fmt.Sprintf("(%d - %d) %s", idx+1, idx2+1, *c.Name))
+							w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
+								s.Alignment(s.HLeftAlignmentSubIndent),
+								s.Borders(s.FullBorder),
+								s.Font(s.CareerNameFont),
+							))
+							w.Merge(s.Cell("A", rowNo), s.Cell("P", rowNo))
+
+							w.Set(s.Cell("Q", rowNo), "期間：")
+							w.HeaderCellRangeStyle(s.Cell("Q", rowNo), s.Cell("R", rowNo))
+							w.Merge(s.Cell("Q", rowNo), s.Cell("R", rowNo))
+
+							w.Set(s.Cell("S", rowNo), s.CareerPeriod(c))
+							w.CellStyle(s.Cell("S", rowNo), s.NewStyle(
+								s.Alignment(s.HLeftAlignmentSubIndent),
+								s.Borders(s.FullBorder),
+							))
+							w.Merge(s.Cell("S", rowNo), s.Cell("Z", rowNo))
+
+							// 枠線「右」が機能していないための措置
+							w.CellStyle(s.Cell("AA", rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+						}
+					}
 				}
 			}
 		}
@@ -544,47 +636,4 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// sCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
-
-func age(birthYear, birthMonth, birthDay int, now time.Time) int {
-	age := now.Year() - birthYear
-
-	if int(now.Month()) > birthMonth {
-		return age
-	}
-
-	if int(now.Month()) == birthMonth && now.Day() >= birthDay {
-		return age
-	}
-
-	return age - 1
-}
-
-func diffMonths(fromYear, fromMonth, toYear, toMonth int) int {
-	if fromYear == toYear {
-		return toMonth - fromMonth + 1
-	}
-
-	diffMonth := 12 - fromMonth + 1 + toMonth
-
-	diffYear := toYear - fromYear
-	if diffYear == 1 {
-		return diffMonth
-	}
-
-	return (diffYear-1)*12 + diffMonth
-}
-
-func mergeMonths(dms int) string {
-	if dms < 12 {
-		return fmt.Sprintf("%dヶ月", dms)
-	}
-
-	year := dms / 12
-	remain := dms % 12
-	if remain == 0 {
-		return fmt.Sprintf("%d年", year)
-	}
-
-	return fmt.Sprintf("%d年%dヶ月", year, remain)
 }

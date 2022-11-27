@@ -46,10 +46,20 @@ APIサーバーにアクセスして取得したデータソースをJSON形式�
 
 ※APIサーバーが起動していることが前提。
 
-※今は、エクスポート対象となる「ユーザーID」が [ソースに直書き](src/cmd/export.go) という、いただけない作り。
+```
+go run src/main.go export --userid 【ユーザーIDを指定】 --dir 【出力先パスを指定】
+```
+
+### submission
+
+APIサーバーにアクセスして取得したデータソースをExcel形式でエクスポートする。
+
+※紙媒体ないしExcelファイルでの提出を求められた時用。
+
+※APIサーバーが起動していることが前提。
 
 ```
-go run src/main.go export --dir ここに出力先パスを指定！
+go run src/main.go submission --userid 【ユーザーIDを指定】
 ```
 
 ## env

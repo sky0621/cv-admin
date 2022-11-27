@@ -1,4 +1,4 @@
-package cmd
+package submission
 
 import (
 	"fmt"
@@ -29,7 +29,7 @@ func TestAge(t *testing.T) {
 	}
 	for idx, tt := range tests {
 		t.Run(fmt.Sprintf("[No.%d] %s", idx+1, tt.name), func(t *testing.T) {
-			actual := age(1978, 6, 2, tt.now)
+			actual := Age(1978, 6, 2, tt.now)
 			if actual != tt.expected {
 				t.Errorf("actual: %d, expected: %d", actual, tt.expected)
 			}
@@ -63,7 +63,7 @@ func TestDiffMonths(t *testing.T) {
 	}
 	for idx, tt := range tests {
 		t.Run(fmt.Sprintf("[No.%d] %s", idx+1, tt.name), func(t *testing.T) {
-			actual := diffMonths(tt.fromYear, tt.fromMonth, tt.toYear, tt.toMonth)
+			actual := DiffMonths(tt.fromYear, tt.fromMonth, tt.toYear, tt.toMonth)
 			if actual != tt.expected {
 				t.Errorf("actual: %d, expected: %d", actual, tt.expected)
 			}
@@ -88,7 +88,7 @@ func TestMergeMonths(t *testing.T) {
 	}
 	for idx, tt := range tests {
 		t.Run(fmt.Sprintf("[No.%d] %s", idx+1, tt.name), func(t *testing.T) {
-			actual := mergeMonths(tt.dms)
+			actual := MergeMonths(tt.dms)
 			if actual != tt.expected {
 				t.Errorf("actual: %s, expected: %s", actual, tt.expected)
 			}

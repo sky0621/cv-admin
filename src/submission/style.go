@@ -8,9 +8,10 @@ const (
 )
 
 const (
-	headerColor     = "9FE2BF"
-	borderBaseColor = headerColor
-	borderBaseStyle = 5
+	headerColor           = "9FE2BF"
+	borderBaseColor       = headerColor
+	borderBaseStyle       = 5
+	careerGroupLabelColor = "F0FFF0"
 )
 
 var FullBorder = []excelize.Border{
@@ -42,9 +43,24 @@ var NameFont = &excelize.Font{
 	Bold: true,
 }
 
+var CareerGroupLabelFont = &excelize.Font{
+	Size: 16,
+	Bold: true,
+}
+
+var CareerNameFont = &excelize.Font{
+	Size: 14,
+}
+
 var HeaderFill = excelize.Fill{
 	Type:    "pattern",
 	Color:   []string{headerColor},
+	Pattern: 1,
+}
+
+var CareerGroupLabelFill = excelize.Fill{
+	Type:    "pattern",
+	Color:   []string{careerGroupLabelColor},
 	Pattern: 1,
 }
 
