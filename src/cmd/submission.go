@@ -483,7 +483,7 @@ to quickly create a Cobra application.`,
 					 * スキルカテゴリ
 					 */
 					rowNo += 1
-					w.Height(rowNo, 100.0)
+					w.Height(rowNo, 140.0)
 
 					w.Set(s.Cell("A", rowNo), *t.TagName)
 					w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
@@ -499,6 +499,19 @@ to quickly create a Cobra application.`,
 								skillsBuf.WriteString(", ")
 							}
 							skillsBuf.WriteString(*sk.Name)
+
+							if sk.Versions != nil {
+								skillsBuf.WriteString("（経験：")
+								var dms int
+								for _, v := range *sk.Versions {
+									if v.From == nil || v.To == nil {
+										continue
+									}
+									dms += diffMonths(*v.From.Year, *v.From.Month, *v.To.Year, *v.To.Month)
+								}
+								skillsBuf.WriteString(mergeMonths(dms))
+								skillsBuf.WriteString("）")
+							}
 						}
 						w.Set(s.Cell("H", rowNo), skillsBuf.String())
 						w.CellStyle(s.Cell("H", rowNo), s.NewStyle(
@@ -545,4 +558,28 @@ func age(birthYear, birthMonth, birthDay int, now time.Time) int {
 	}
 
 	return age - 1
+}
+
+func diffMonths(fromYear, fromMonth, toYear, toMonth int) int {
+	if fromYear == toYear {
+		return toMonth - fromMonth + 1
+	}
+
+	diffMonth := 12 - fromMonth + 1 + toMonth
+
+	diffYear := toYear - fromYear
+	if diffYear == 1 {
+		return diffMonth
+	}
+
+	return (diffYear-1)*12 + diffMonth
+}
+
+func mergeMonths(dms int) string {
+	if dms < 12 {
+		return fmt.Sprintf("%dヶ月", dms)
+	}
+
+	// FIXME:
+	return ""
 }
