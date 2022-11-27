@@ -106,6 +106,7 @@ to quickly create a Cobra application.`,
 		 */
 		{
 			w.Width("A", "Z", 5)
+			w.Width("AA", "AA", 0.5)
 		}
 
 		/*
@@ -454,6 +455,8 @@ to quickly create a Cobra application.`,
 
 			// 枠線「右」が機能していないための措置
 			w.CellStyle(s.Cell("AA", rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+
+			w.InsertPageBreak(s.Cell("AB", rowNo+1))
 		}
 
 		/*
@@ -480,7 +483,7 @@ to quickly create a Cobra application.`,
 					 * スキルカテゴリ
 					 */
 					rowNo += 1
-					w.Height(rowNo, s.RowBaseHeight)
+					w.Height(rowNo, 100.0)
 
 					w.Set(s.Cell("A", rowNo), *t.TagName)
 					w.CellStyle(s.Cell("A", rowNo), s.NewStyle(

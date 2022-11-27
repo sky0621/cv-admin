@@ -28,22 +28,6 @@ var BottomBorder = []excelize.Border{
 	{Type: "bottom", Color: borderBaseColor, Style: borderBaseStyle},
 }
 
-var VhCenterAlignment = &excelize.Alignment{
-	Vertical:   "center",
-	Horizontal: "center",
-}
-
-var HRightAlignment = &excelize.Alignment{
-	Vertical:   "center",
-	Horizontal: "right",
-}
-
-var HLeftAlignment = &excelize.Alignment{
-	Vertical:   "center",
-	Horizontal: "left",
-	Indent:     1,
-}
-
 var SheetTitleFont = &excelize.Font{
 	Size: 16,
 	Bold: true,

@@ -61,6 +61,7 @@ type Wrapper interface {
 	CellExternalHyperLink(cell, url string)
 	AddPicture(cell, path string)
 	AddPictureFromBytes(cell, name, extension string, file []byte)
+	InsertPageBreak(cell string)
 
 	SaveAs(name string)
 }
@@ -159,6 +160,13 @@ func (w *wrapper) AddPictureFromBytes(cell, name, extension string, file []byte)
 		panic(err)
 	}
 }
+
+func (w *wrapper) InsertPageBreak(cell string) {
+	if err := w.f.InsertPageBreak(getDefaultSheetName(w.f), cell); err != nil {
+		panic(err)
+	}
+}
+
 func (w *wrapper) SaveAs(name string) {
 	if err := w.f.SaveAs(name); err != nil {
 		panic(err)
