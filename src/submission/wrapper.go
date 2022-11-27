@@ -32,6 +32,14 @@ func SheetPassword(p string) ExcelizeWrapperOption {
 	}
 }
 
+func SheetView() ExcelizeWrapperOption {
+	return func(f *excelize.File) {
+		if err := f.SetSheetViewOptions(getDefaultSheetName(f), 0, excelize.ShowGridLines(false)); err != nil {
+			panic(err)
+		}
+	}
+}
+
 func NewExcelizeWrapper(options ...ExcelizeWrapperOption) Wrapper {
 	f := excelize.NewFile()
 	for _, option := range options {
@@ -117,7 +125,7 @@ func (w *wrapper) CellRangeStyle(start, end string, style *excelize.Style) {
 func (w *wrapper) HeaderCellStyle(cell string) {
 	s := NewStyle(
 		Alignment(HLeftAlignment),
-		Borders(Border),
+		Borders(FullBorder),
 		Fill(HeaderFill),
 	)
 	w.CellStyle(cell, s)
@@ -126,7 +134,7 @@ func (w *wrapper) HeaderCellStyle(cell string) {
 func (w *wrapper) HeaderCellRangeStyle(start, end string) {
 	s := NewStyle(
 		Alignment(HLeftAlignment),
-		Borders(Border),
+		Borders(FullBorder),
 		Fill(HeaderFill),
 	)
 	w.CellRangeStyle(start, end, s)

@@ -12,6 +12,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/sky0621/cv-admin/src/rest"
@@ -97,6 +98,7 @@ to quickly create a Cobra application.`,
 			// MEMO: パスワードロックしても別シート作ってコピペはできるので（誤操作を防ぎたいわけではないので）意味なし。。
 			// s.SheetPassword(s.GetConfigValue(cfg, s.Password)),
 			s.PaperSize(9), // A4 210 x 297 mm
+			s.SheetView(),
 		)
 
 		/*
@@ -115,9 +117,11 @@ to quickly create a Cobra application.`,
 			w.Merge("A1", "Z1")
 			w.CellStyle("A1", s.NewStyle(
 				s.Alignment(s.VhCenterAlignment),
-				s.Borders(s.Border),
+				s.Borders(s.FullBorder),
 				s.Font(s.SheetTitleFont),
 			))
+			// 枠線「右」が機能していないための措置
+			w.CellStyle("AA1", s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -146,7 +150,7 @@ to quickly create a Cobra application.`,
 			w.Set("D3", s.GetConfigValue(cfg, s.Kana))
 			w.CellStyle("D3", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.Border),
+				s.Borders(s.FullBorder),
 			))
 			w.Merge("D3", "I3")
 
@@ -168,6 +172,9 @@ to quickly create a Cobra application.`,
 			w.Merge("X5", "Z5")
 			w.Merge("X6", "Z6")
 			w.Merge("X4", "X6")
+
+			// 枠線「右」が機能していないための措置
+			w.CellStyle("AA3", s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -182,7 +189,7 @@ to quickly create a Cobra application.`,
 			w.Set("D4", cfg.Section("").Key("name").String())
 			w.CellStyle("D4", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.Border),
+				s.Borders(s.FullBorder),
 				s.Font(s.NameFont),
 			))
 			w.Merge("D4", "I4")
@@ -191,7 +198,7 @@ to quickly create a Cobra application.`,
 			w.Set("J4", *attribute.Nickname)
 			w.CellStyle("J4", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.Border),
+				s.Borders(s.FullBorder),
 			))
 			w.Merge("J4", "M4")
 
@@ -200,7 +207,7 @@ to quickly create a Cobra application.`,
 			w.Set("N4", age(*bDay.Year, *bDay.Month, *bDay.Day, time.Now()))
 			w.CellStyle("N4", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.Border),
+				s.Borders(s.FullBorder),
 			))
 			w.Merge("N4", "O4")
 
@@ -208,7 +215,7 @@ to quickly create a Cobra application.`,
 			w.Set("P4", s.GetConfigValue(cfg, s.Mail))
 			w.CellStyle("P4", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.Border),
+				s.Borders(s.FullBorder),
 			))
 			w.Merge("P4", "W4")
 
@@ -218,8 +225,11 @@ to quickly create a Cobra application.`,
 			}
 			w.CellStyle("X4", s.NewStyle(
 				s.Alignment(s.VhCenterAlignment),
-				s.Borders(s.Border),
+				s.Borders(s.FullBorder),
 			))
+
+			// 枠線「右」が機能していないための措置
+			w.CellStyle("AA4", s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -234,7 +244,7 @@ to quickly create a Cobra application.`,
 			w.Set("D5", s.GetConfigValue(cfg, s.CityOfResidence))
 			w.CellStyle("D5", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.Border),
+				s.Borders(s.FullBorder),
 			))
 			w.Merge("D5", "I5")
 
@@ -245,9 +255,12 @@ to quickly create a Cobra application.`,
 			w.Set("N5", s.GetConfigValue(cfg, s.NearestStation))
 			w.CellStyle("N5", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.Border),
+				s.Borders(s.FullBorder),
 			))
 			w.Merge("N5", "W5")
+
+			// 枠線「右」が機能していないための措置
+			w.CellStyle("AA5", s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -262,9 +275,13 @@ to quickly create a Cobra application.`,
 			w.Set("D6", s.GetConfigValue(cfg, s.EducationalBackground))
 			w.CellStyle("D6", s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.Border),
+				s.Borders(s.FullBorder),
 			))
 			w.Merge("D6", "W6")
+
+			// 枠線「右」「下」が機能していないための措置
+			w.CellStyle("X6", s.NewStyle(s.Borders(s.BottomBorder)))
+			w.CellStyle("AA6", s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -282,6 +299,9 @@ to quickly create a Cobra application.`,
 			w.Merge("N8", "Z8")
 
 			w.HeaderCellRangeStyle("A8", "Z8")
+
+			// 枠線「右」が機能していないための措置
+			w.CellStyle("AA8", s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -299,7 +319,7 @@ to quickly create a Cobra application.`,
 					w.Set(s.Cell("A", rowNo), s.QualificationName(q.Organization, q.Name))
 					w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
 						s.Alignment(s.HLeftAlignment),
-						s.Borders(s.Border),
+						s.Borders(s.FullBorder),
 					))
 					w.Merge(s.Cell("A", rowNo), s.Cell("I", rowNo))
 
@@ -307,7 +327,7 @@ to quickly create a Cobra application.`,
 					w.Set(s.Cell("J", rowNo), s.QualificationGotDate(q.GotDate))
 					w.CellStyle(s.Cell("J", rowNo), s.NewStyle(
 						s.Alignment(s.HLeftAlignment),
-						s.Borders(s.Border),
+						s.Borders(s.FullBorder),
 					))
 					w.Merge(s.Cell("J", rowNo), s.Cell("M", rowNo))
 
@@ -316,9 +336,12 @@ to quickly create a Cobra application.`,
 					w.CellExternalHyperLink(s.Cell("N", rowNo), s.URL(q.Url))
 					w.CellStyle(s.Cell("N", rowNo), s.NewStyle(
 						s.Alignment(s.HLeftAlignment),
-						s.Borders(s.Border),
+						s.Borders(s.FullBorder),
 					))
 					w.Merge(s.Cell("N", rowNo), s.Cell("Z", rowNo))
+
+					// 枠線「右」が機能していないための措置
+					w.CellStyle(s.Cell("AA", rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 				}
 			}
 		}
@@ -337,6 +360,9 @@ to quickly create a Cobra application.`,
 			w.Merge(s.Cell("J", rowNo), s.Cell("Z", rowNo))
 
 			w.HeaderCellRangeStyle(s.Cell("A", rowNo), s.Cell("Z", rowNo))
+
+			// 枠線「右」が機能していないための措置
+			w.CellStyle(s.Cell("AA", rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -352,7 +378,7 @@ to quickly create a Cobra application.`,
 					w.Set(s.Cell("A", rowNo), *a.Name)
 					w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
 						s.Alignment(s.HLeftAlignment),
-						s.Borders(s.Border),
+						s.Borders(s.FullBorder),
 					))
 					w.Merge(s.Cell("A", rowNo), s.Cell("I", rowNo))
 
@@ -361,9 +387,12 @@ to quickly create a Cobra application.`,
 					w.CellExternalHyperLink(s.Cell("J", rowNo), s.URL(a.Url))
 					w.CellStyle(s.Cell("J", rowNo), s.NewStyle(
 						s.Alignment(s.HLeftAlignment),
-						s.Borders(s.Border),
+						s.Borders(s.FullBorder),
 					))
 					w.Merge(s.Cell("J", rowNo), s.Cell("Z", rowNo))
+
+					// 枠線「右」が機能していないための措置
+					w.CellStyle(s.Cell("AA", rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 				}
 			}
 		}
@@ -379,7 +408,7 @@ to quickly create a Cobra application.`,
 			w.Set(s.Cell("A", rowNo), "スキルシート(Web版)")
 			w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.Border),
+				s.Borders(s.FullBorder),
 			))
 			w.Merge(s.Cell("A", rowNo), s.Cell("I", rowNo))
 
@@ -388,9 +417,12 @@ to quickly create a Cobra application.`,
 			w.CellExternalHyperLink(s.Cell("J", rowNo), s.GetConfigValue(cfg, s.CvWeb))
 			w.CellStyle(s.Cell("J", rowNo), s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.Border),
+				s.Borders(s.FullBorder),
 			))
 			w.Merge(s.Cell("J", rowNo), s.Cell("Z", rowNo))
+
+			// 枠線「右」が機能していないための措置
+			w.CellStyle(s.Cell("AA", rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -402,6 +434,9 @@ to quickly create a Cobra application.`,
 			w.Set(s.Cell("A", rowNo), "PR")
 			w.Merge(s.Cell("A", rowNo), s.Cell("Z", rowNo))
 			w.HeaderCellRangeStyle(s.Cell("A", rowNo), s.Cell("Z", rowNo))
+
+			// 枠線「右」が機能していないための措置
+			w.CellStyle(s.Cell("AA", rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -413,9 +448,12 @@ to quickly create a Cobra application.`,
 			w.Set(s.Cell("A", rowNo), *attribute.Pr)
 			w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.Border),
+				s.Borders(s.FullBorder),
 			))
 			w.Merge(s.Cell("A", rowNo), s.Cell("Z", rowNo))
+
+			// 枠線「右」が機能していないための措置
+			w.CellStyle(s.Cell("AA", rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -427,6 +465,9 @@ to quickly create a Cobra application.`,
 			w.Set(s.Cell("A", rowNo), "スキル")
 			w.Merge(s.Cell("A", rowNo), s.Cell("Z", rowNo))
 			w.HeaderCellRangeStyle(s.Cell("A", rowNo), s.Cell("Z", rowNo))
+
+			// 枠線「右」が機能していないための措置
+			w.CellStyle(s.Cell("AA", rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -444,16 +485,28 @@ to quickly create a Cobra application.`,
 					w.Set(s.Cell("A", rowNo), *t.TagName)
 					w.CellStyle(s.Cell("A", rowNo), s.NewStyle(
 						s.Alignment(s.HLeftAlignment),
-						s.Borders(s.Border),
+						s.Borders(s.FullBorder),
 					))
-					w.Merge(s.Cell("A", rowNo), s.Cell("Z", rowNo))
+					w.Merge(s.Cell("A", rowNo), s.Cell("G", rowNo))
 
 					if t.Skills != nil {
-						for _, s := range *t.Skills {
-							// FIXME:
-							fmt.Println(*s.Name)
+						skillsBuf := strings.Builder{}
+						for idx, sk := range *t.Skills {
+							if idx != 0 {
+								skillsBuf.WriteString(", ")
+							}
+							skillsBuf.WriteString(*sk.Name)
 						}
+						w.Set(s.Cell("H", rowNo), skillsBuf.String())
+						w.CellStyle(s.Cell("H", rowNo), s.NewStyle(
+							s.Alignment(s.HLeftAlignment),
+							s.Borders(s.FullBorder),
+						))
 					}
+					w.Merge(s.Cell("H", rowNo), s.Cell("Z", rowNo))
+
+					// 枠線「右」が機能していないための措置
+					w.CellStyle(s.Cell("AA", rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 				}
 			}
 		}

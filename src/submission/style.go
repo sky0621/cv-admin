@@ -10,14 +10,22 @@ const (
 const (
 	headerColor     = "9FE2BF"
 	borderBaseColor = headerColor
-	borderStyleDot  = 5
+	borderBaseStyle = 5
 )
 
-var Border = []excelize.Border{
-	{Type: "left", Color: borderBaseColor, Style: borderStyleDot},
-	{Type: "top", Color: borderBaseColor, Style: borderStyleDot},
-	{Type: "right", Color: borderBaseColor, Style: borderStyleDot},
-	{Type: "bottom", Color: borderBaseColor, Style: borderStyleDot},
+var FullBorder = []excelize.Border{
+	{Type: "left", Color: borderBaseColor, Style: borderBaseStyle},
+	{Type: "top", Color: borderBaseColor, Style: borderBaseStyle},
+	{Type: "right", Color: borderBaseColor, Style: borderBaseStyle},
+	{Type: "bottom", Color: borderBaseColor, Style: borderBaseStyle},
+}
+
+var LeftBorder = []excelize.Border{
+	{Type: "left", Color: borderBaseColor, Style: borderBaseStyle},
+}
+
+var BottomBorder = []excelize.Border{
+	{Type: "bottom", Color: borderBaseColor, Style: borderBaseStyle},
 }
 
 var VhCenterAlignment = &excelize.Alignment{
