@@ -70,3 +70,28 @@ func TestDiffMonths(t *testing.T) {
 		})
 	}
 }
+func TestMergeMonths(t *testing.T) {
+	tests := []struct {
+		name     string
+		dms      int
+		expected string
+	}{
+		{name: "a", dms: 0, expected: "0ヶ月"},
+		{name: "b", dms: 1, expected: "1ヶ月"},
+		{name: "c", dms: 2, expected: "2ヶ月"},
+		{name: "c", dms: 11, expected: "11ヶ月"},
+		{name: "d", dms: 12, expected: "1年"},
+		{name: "e", dms: 13, expected: "1年1ヶ月"},
+		{name: "f", dms: 23, expected: "1年11ヶ月"},
+		{name: "g", dms: 24, expected: "2年"},
+		{name: "h", dms: 25, expected: "2年1ヶ月"},
+	}
+	for idx, tt := range tests {
+		t.Run(fmt.Sprintf("[No.%d] %s", idx+1, tt.name), func(t *testing.T) {
+			actual := mergeMonths(tt.dms)
+			if actual != tt.expected {
+				t.Errorf("actual: %s, expected: %s", actual, tt.expected)
+			}
+		})
+	}
+}

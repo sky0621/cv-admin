@@ -580,6 +580,11 @@ func mergeMonths(dms int) string {
 		return fmt.Sprintf("%dヶ月", dms)
 	}
 
-	// FIXME:
-	return ""
+	year := dms / 12
+	remain := dms % 12
+	if remain == 0 {
+		return fmt.Sprintf("%d年", year)
+	}
+
+	return fmt.Sprintf("%d年%dヶ月", year, remain)
 }
