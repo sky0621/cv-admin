@@ -99,7 +99,7 @@ to quickly create a Cobra application.`,
 		 * Excelに書き込み
 		 */
 		w := s.NewExcelizeWrapper(
-			s.SheetName("スキルシート"),
+			s.SheetName(s.SkillSheetTitle),
 			// MEMO: パスワードロックしても別シート作ってコピペはできるので（誤操作を防ぎたいわけではないので）意味なし。。
 			// s.SheetPassword(s.GetConfigValue(cfg, s.Password)),
 			s.PaperSize(9), // A4 210 x 297 mm
@@ -110,211 +110,267 @@ to quickly create a Cobra application.`,
 		 * 列ごとの設定
 		 */
 		{
-			w.Width("A", "Z", 5)
-			w.Width("AA", "AA", 0.5)
+			w.Width(s.StartCol, s.EndCol, 5)
+			w.Width(s.SuppleCol, s.SuppleCol, 0.5)
 		}
 
 		/*
-		 * １行目
+		 * タイトル
 		 */
 		{
-			w.Height(1, 30)
-			w.Set("A1", "スキルシート")
-			w.Merge("A1", "Z1")
-			w.CellStyle("A1", s.NewStyle(
+			w.Height(s.TitleRow, 40)
+
+			titleCell := s.Cell(s.StartCol, s.TitleRow)
+			w.Set(titleCell, s.SkillSheetTitle)
+			w.CellStyle(titleCell, s.NewStyle(
 				s.Alignment(s.VhCenterAlignment),
 				s.Borders(s.FullBorder),
 				s.Font(s.SheetTitleFont),
 			))
+			w.Merge(titleCell, s.Cell(s.EndCol, s.TitleRow))
+
 			// 枠線「右」が機能していないための措置
-			w.CellStyle("AA1", s.NewStyle(s.Borders(s.LeftBorder)))
+			w.CellStyle(s.Cell(s.SuppleCol, s.TitleRow), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
-		 * ２行目
+		 * 最終更新日
 		 */
 		{
-			w.Height(2, 20)
-			w.Set("A2", fmt.Sprintf("最終更新日：%v", time.Now().Format("2006-01-02")))
-			w.Merge("A2", "Z2")
-			w.CellStyle("A2", s.NewStyle(
+			w.Height(s.LastUpdatedRow, 20)
+
+			lastUpdatedCell := s.Cell(s.StartCol, s.LastUpdatedRow)
+			w.Set(lastUpdatedCell, fmt.Sprintf("最終更新日：%v", time.Now().Format("2006-01-02")))
+			w.CellStyle(lastUpdatedCell, s.NewStyle(
 				s.Alignment(s.HRightAlignment),
 				s.Font(s.LastUpdatedFont),
 			))
+			w.Merge(lastUpdatedCell, s.Cell(s.EndCol, s.LastUpdatedRow))
 		}
 
 		/*
-		 * ３行目
+		 * 自動生成文言
 		 */
 		{
-			w.Height(3, s.RowBaseHeight)
+			w.Height(s.SkillSheetNoteRow, 20)
 
-			w.Set("A3", "フリガナ")
-			w.HeaderCellStyle("A3")
-			w.Merge("A3", "C3")
+			skillSheetNoteCell := s.Cell(s.StartCol, s.SkillSheetNoteRow)
+			w.Set(skillSheetNoteCell, "当スキルシートは以下の機能にて自動生成")
+			w.CellStyle(skillSheetNoteCell, s.NewStyle(
+				s.Alignment(s.HRightAlignment),
+				s.Font(s.LastUpdatedFont),
+			))
+			w.Merge(skillSheetNoteCell, s.Cell(s.EndCol, s.SkillSheetNoteRow))
+		}
 
-			w.Set("D3", s.GetConfigValue(cfg, s.Kana))
-			w.CellStyle("D3", s.NewStyle(
+		/*
+		 * 自動生成プログラムURL
+		 */
+		{
+			w.Height(s.SkillSheetNoteRow2, 20)
+
+			skillSheetNoteCell2 := s.Cell(s.StartCol, s.SkillSheetNoteRow2)
+			w.Set(skillSheetNoteCell2, s.GetConfigValue(cfg, s.CvAdmin))
+			w.CellStyle(skillSheetNoteCell2, s.NewStyle(
+				s.Alignment(s.HRightAlignment),
+				s.Font(s.LastUpdatedFont),
+			))
+			w.Merge(skillSheetNoteCell2, s.Cell(s.EndCol, s.SkillSheetNoteRow2))
+		}
+
+		/*
+		 * 基礎属性１
+		 */
+		{
+			w.Height(s.BasicAttributeRow, s.RowBaseHeight)
+
+			kanaLabelCell := s.Cell(s.StartCol, s.BasicAttributeRow)
+			w.Set(kanaLabelCell, "フリガナ")
+			w.HeaderCellStyle(kanaLabelCell)
+			w.Merge(kanaLabelCell, s.Cell("C", s.BasicAttributeRow))
+
+			kanaCell := s.Cell("D", s.BasicAttributeRow)
+			w.Set(kanaCell, s.GetConfigValue(cfg, s.Kana))
+			w.CellStyle(kanaCell, s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.FullBorder),
 			))
-			w.Merge("D3", "I3")
+			w.Merge(kanaCell, s.Cell("I", s.BasicAttributeRow))
 
-			w.Set("J3", "ニックネーム")
-			w.Merge("J3", "M3")
+			nicknameLabelCell := s.Cell("J", s.BasicAttributeRow)
+			w.Set(nicknameLabelCell, "ニックネーム")
+			w.Merge(nicknameLabelCell, s.Cell("M", s.BasicAttributeRow))
 
-			w.Set("N3", "年齢")
-			w.Merge("N3", "O3")
+			ageLabelCell := s.Cell("N", s.BasicAttributeRow)
+			w.Set(ageLabelCell, "年齢")
+			w.Merge(ageLabelCell, s.Cell("O", s.BasicAttributeRow))
 
-			w.Set("P3", "メールアドレス")
-			w.Merge("P3", "W3")
+			mailLabelCell := s.Cell("P", s.BasicAttributeRow)
+			w.Set(mailLabelCell, "メールアドレス")
+			w.Merge(mailLabelCell, s.Cell("W", s.BasicAttributeRow))
 
-			w.Set("X3", "Gravatar")
-			w.Merge("X3", "Z3")
+			gravatarLabelCell := s.Cell("X", s.BasicAttributeRow)
+			w.Set(gravatarLabelCell, "Gravatar")
+			w.Merge(gravatarLabelCell, s.Cell(s.EndCol, s.BasicAttributeRow))
 
-			w.HeaderCellRangeStyle("J3", "Z3")
-
-			w.Merge("X4", "Z4")
-			w.Merge("X5", "Z5")
-			w.Merge("X6", "Z6")
-			w.Merge("X4", "X6")
+			w.HeaderCellRangeStyle(nicknameLabelCell, s.Cell(s.EndCol, s.BasicAttributeRow))
 
 			// 枠線「右」が機能していないための措置
-			w.CellStyle("AA3", s.NewStyle(s.Borders(s.LeftBorder)))
+			w.CellStyle(s.Cell(s.SuppleCol, s.BasicAttributeRow), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
-		 * ４行目
+		 * 基礎属性２
 		 */
 		{
-			w.Height(4, 45)
-			w.Set("A4", "名前")
-			w.HeaderCellStyle("A4")
-			w.Merge("A4", "C4")
+			w.Height(s.BasicAttributeRow2, s.RowBaseHeight*2)
 
-			w.Set("D4", cfg.Section("").Key("name").String())
-			w.CellStyle("D4", s.NewStyle(
+			nameLabelCell := s.Cell(s.StartCol, s.BasicAttributeRow2)
+			w.Set(nameLabelCell, "名前")
+			w.HeaderCellStyle(nameLabelCell)
+			w.Merge(nameLabelCell, s.Cell("C", s.BasicAttributeRow2))
+
+			nameCell := s.Cell("D", s.BasicAttributeRow2)
+			w.Set(nameCell, s.GetConfigValue(cfg, s.Name))
+			w.CellStyle(nameCell, s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.FullBorder),
 				s.Font(s.NameFont),
 			))
-			w.Merge("D4", "I4")
+			w.Merge(nameCell, s.Cell("I", s.BasicAttributeRow2))
 
-			// ニックネーム
-			w.Set("J4", *attribute.Nickname)
-			w.CellStyle("J4", s.NewStyle(
+			nicknameCell := s.Cell("J", s.BasicAttributeRow2)
+			w.Set(nicknameCell, *attribute.Nickname)
+			w.CellStyle(nicknameCell, s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.FullBorder),
 			))
-			w.Merge("J4", "M4")
+			w.Merge(nicknameCell, s.Cell("M", s.BasicAttributeRow2))
 
-			// 年齢
+			ageCell := s.Cell("N", s.BasicAttributeRow2)
 			bDay := *attribute.Birthday
-			w.Set("N4", s.Age(*bDay.Year, *bDay.Month, *bDay.Day, time.Now()))
-			w.CellStyle("N4", s.NewStyle(
+			w.Set(ageCell, s.Age(*bDay.Year, *bDay.Month, *bDay.Day, time.Now()))
+			w.CellStyle(ageCell, s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.FullBorder),
 			))
-			w.Merge("N4", "O4")
+			w.Merge(ageCell, s.Cell("O", s.BasicAttributeRow2))
 
-			// メールアドレス
-			w.Set("P4", s.GetConfigValue(cfg, s.Mail))
-			w.CellStyle("P4", s.NewStyle(
+			mailCell := s.Cell("P", s.BasicAttributeRow2)
+			w.Set(mailCell, s.GetConfigValue(cfg, s.Mail))
+			w.CellStyle(mailCell, s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.FullBorder),
 			))
-			w.Merge("P4", "W4")
+			w.Merge(mailCell, s.Cell("W", s.BasicAttributeRow2))
 
-			// Gravatar
+			gravatarCell := s.Cell("X", s.BasicAttributeRow2)
 			if avatarImgBytes != nil {
-				w.AddPictureFromBytes("X4", "avatar", ".png", avatarImgBytes)
+				w.AddPictureFromBytes(gravatarCell, "avatar", ".png", avatarImgBytes)
 			}
-			w.CellStyle("X4", s.NewStyle(
+			w.CellStyle(gravatarCell, s.NewStyle(
 				s.Alignment(s.VhCenterAlignment),
 				s.Borders(s.FullBorder),
 			))
 
+			w.Merge(gravatarCell, s.Cell(s.EndCol, s.BasicAttributeRow2))
+			w.Merge(s.Cell("X", s.BasicAttributeRow3), s.Cell(s.EndCol, s.BasicAttributeRow3))
+			w.Merge(s.Cell("X", s.BasicAttributeRow4), s.Cell(s.EndCol, s.BasicAttributeRow4))
+
+			w.Merge(gravatarCell, s.Cell("X", s.BasicAttributeRow4))
+
 			// 枠線「右」が機能していないための措置
-			w.CellStyle("AA4", s.NewStyle(s.Borders(s.LeftBorder)))
+			w.CellStyle(s.Cell(s.SuppleCol, s.BasicAttributeRow2), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
-		 * 5行目
+		 * 基礎属性３
 		 */
 		{
-			w.Height(5, s.RowBaseHeight)
-			w.Set("A5", "居住地")
-			w.HeaderCellStyle("A5")
-			w.Merge("A5", "C5")
+			w.Height(s.BasicAttributeRow3, s.RowBaseHeight)
 
-			w.Set("D5", s.GetConfigValue(cfg, s.CityOfResidence))
-			w.CellStyle("D5", s.NewStyle(
+			residenceLabelCell := s.Cell(s.StartCol, s.BasicAttributeRow3)
+			w.Set(residenceLabelCell, "居住地")
+			w.HeaderCellStyle(residenceLabelCell)
+			w.Merge(residenceLabelCell, s.Cell("C", s.BasicAttributeRow3))
+
+			residenceCell := s.Cell("D", s.BasicAttributeRow3)
+			w.Set(residenceCell, s.GetConfigValue(cfg, s.CityOfResidence))
+			w.CellStyle(residenceCell, s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.FullBorder),
 			))
-			w.Merge("D5", "I5")
+			w.Merge(residenceCell, s.Cell("I", s.BasicAttributeRow3))
 
-			w.Set("J5", "最寄り駅")
-			w.HeaderCellStyle("J5")
-			w.Merge("J5", "M5")
+			nearStLabelCell := s.Cell("J", s.BasicAttributeRow3)
+			w.Set(nearStLabelCell, "最寄り駅")
+			w.HeaderCellStyle(nearStLabelCell)
+			w.Merge(nearStLabelCell, s.Cell("M", s.BasicAttributeRow3))
 
-			w.Set("N5", s.GetConfigValue(cfg, s.NearestStation))
-			w.CellStyle("N5", s.NewStyle(
+			nearStCell := s.Cell("N", s.BasicAttributeRow3)
+			w.Set(nearStCell, s.GetConfigValue(cfg, s.NearestStation))
+			w.CellStyle(nearStCell, s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.FullBorder),
 			))
-			w.Merge("N5", "W5")
+			w.Merge(nearStCell, s.Cell("W", s.BasicAttributeRow3))
 
 			// 枠線「右」が機能していないための措置
-			w.CellStyle("AA5", s.NewStyle(s.Borders(s.LeftBorder)))
+			w.CellStyle(s.Cell(s.SuppleCol, s.BasicAttributeRow3), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
-		 * 6行目
+		 * 基礎属性４
 		 */
 		{
-			w.Height(6, s.RowBaseHeight)
-			w.Set("A6", "最終学歴")
-			w.HeaderCellStyle("A6")
-			w.Merge("A6", "C6")
+			w.Height(s.BasicAttributeRow4, s.RowBaseHeight)
 
-			w.Set("D6", s.GetConfigValue(cfg, s.EducationalBackground))
-			w.CellStyle("D6", s.NewStyle(
+			eduBgLabelCell := s.Cell(s.StartCol, s.BasicAttributeRow4)
+			w.Set(eduBgLabelCell, "最終学歴")
+			w.HeaderCellStyle(eduBgLabelCell)
+			w.Merge(eduBgLabelCell, s.Cell("C", s.BasicAttributeRow4))
+
+			eduBgCell := s.Cell("D", s.BasicAttributeRow4)
+			w.Set(eduBgCell, s.GetConfigValue(cfg, s.EducationalBackground))
+			w.CellStyle(eduBgCell, s.NewStyle(
 				s.Alignment(s.HLeftAlignment),
 				s.Borders(s.FullBorder),
 			))
-			w.Merge("D6", "W6")
+			w.Merge(eduBgCell, s.Cell("W", s.BasicAttributeRow4))
 
 			// 枠線「右」「下」が機能していないための措置
-			w.CellStyle("X6", s.NewStyle(s.Borders(s.BottomBorder)))
-			w.CellStyle("AA6", s.NewStyle(s.Borders(s.LeftBorder)))
+			w.CellStyle(s.Cell("X", s.BasicAttributeRow4), s.NewStyle(s.Borders(s.BottomBorder)))
+			w.CellStyle(s.Cell(s.SuppleCol, s.BasicAttributeRow4), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
-		 * 8行目
+		 * 資格情報ラベル
 		 */
 		{
-			w.Height(8, s.RowBaseHeight)
-			w.Set("A8", "資格")
-			w.Merge("A8", "I8")
+			w.Height(s.QualificationRow, s.RowBaseHeight)
 
-			w.Set("J8", "取得年月日")
-			w.Merge("J8", "M8")
+			qualificationLabelCell := s.Cell(s.StartCol, s.QualificationRow)
+			w.Set(qualificationLabelCell, "資格")
+			w.Merge(qualificationLabelCell, s.Cell("I", s.QualificationRow))
 
-			w.Set("N8", "URL")
-			w.Merge("N8", "Z8")
+			qualificationGotDateLabelCell := s.Cell("J", s.QualificationRow)
+			w.Set(qualificationGotDateLabelCell, "取得年月日")
+			w.Merge(qualificationGotDateLabelCell, s.Cell("M", s.QualificationRow))
 
-			w.HeaderCellRangeStyle("A8", "Z8")
+			qualificationURLLabelCell := s.Cell("N", s.QualificationRow)
+			w.Set(qualificationURLLabelCell, "URL")
+			w.Merge(qualificationURLLabelCell, s.Cell(s.EndCol, s.QualificationRow))
+
+			w.HeaderCellRangeStyle(qualificationLabelCell, s.Cell(s.EndCol, s.QualificationRow))
 
 			// 枠線「右」が機能していないための措置
-			w.CellStyle("AA8", s.NewStyle(s.Borders(s.LeftBorder)))
+			w.CellStyle(s.Cell(s.SuppleCol, s.QualificationRow), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
-		 * 9行目〜
-		 * 資格情報の件数分
+		 * 資格情報
 		 */
-		rowNo := 8
+		rowNo := s.QualificationRow
 		{
 			if qualifications != nil {
 				for _, q := range *qualifications {

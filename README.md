@@ -62,6 +62,20 @@ APIサーバーにアクセスして取得したデータソースをExcel形式
 go run src/main.go submission --userid 【ユーザーIDを指定】
 ```
 
+※未コミットの「`.private.ini`」ファイル（以下のような内容）をプロジェクトルート直下に置く。
+
+```
+password = xxxxxxxxxx
+kana = ヤマダ　タロウ
+name = 山田　太郎
+mail = hogehoge@example.com
+educationalBackground = 20XX年3月　○○大学□□学部　卒業
+cityOfResidence = ○○県□□市
+nearestStation = JR東日本　○○駅
+cvWeb = https://sky0621.github.io/cv/
+cvAdmin = https://github.com/sky0621/cv-admin#submission
+```
+
 ## env
 
 ### OS

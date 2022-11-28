@@ -17,6 +17,7 @@ const (
 	CityOfResidence       = "cityOfResidence"
 	NearestStation        = "nearestStation"
 	CvWeb                 = "cvWeb"
+	CvAdmin               = "cvAdmin"
 )
 
 func NewConfig() *ini.File {

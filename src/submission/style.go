@@ -30,7 +30,7 @@ var BottomBorder = []excelize.Border{
 }
 
 var SheetTitleFont = &excelize.Font{
-	Size: 16,
+	Size: 20,
 	Bold: true,
 }
 
