@@ -78,7 +78,19 @@ cvAdmin = https://github.com/sky0621/cv-admin#submission
 
 #### Excelサンプル
 
-[スキルシート](sample/skill_sheet.xlsx)
+sample/skill_sheet.xlsx
+
+![s1](pics/skillsheet01.png)
+![s1](pics/skillsheet02.png)
+![s1](pics/skillsheet03.png)
+![s1](pics/skillsheet04.png)
+![s1](pics/skillsheet05.png)
+
+　　　　　　　　　　　　　　・
+
+　　　　　　　　　　　　　　・
+
+　　　　　　　　　　　　　　・
 
 ## env
 
