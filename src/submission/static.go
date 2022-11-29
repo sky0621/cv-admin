@@ -7,6 +7,12 @@ const (
 	EndCol    = "Z"
 	SuppleCol = "AA"
 
+	BaseColWidth   = 5
+	SuppleColWidth = 0.5
+
+	// "A" ~ "Z"
+	ViewAreaColNum = 26
+
 	TitleRow = 1
 
 	LastUpdatedRow     = 2

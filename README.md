@@ -76,6 +76,10 @@ cvWeb = https://sky0621.github.io/cv/
 cvAdmin = https://github.com/sky0621/cv-admin#submission
 ```
 
+#### Excelサンプル
+
+![スキルシート](sample/skill_sheet.xlsx)
+
 ## env
 
 ### OS

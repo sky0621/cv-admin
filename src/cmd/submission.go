@@ -5,18 +5,19 @@ package cmd
 
 import (
 	"fmt"
-	s "github.com/sky0621/cv-admin/src/submission"
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
-	"github.com/sky0621/cv-admin/src/rest"
 	"github.com/spf13/cobra"
+
+	"github.com/sky0621/cv-admin/src/rest"
+	s "github.com/sky0621/cv-admin/src/submission"
+	util "github.com/sky0621/golang-utils/string"
 )
 
 func requestAvatarImage(cli *http.Client, url string) ([]byte, error) {
@@ -110,8 +111,8 @@ to quickly create a Cobra application.`,
 		 * 列ごとの設定
 		 */
 		{
-			w.Width(s.StartCol, s.EndCol, 5)
-			w.Width(s.SuppleCol, s.SuppleCol, 0.5)
+			w.Width(s.StartCol, s.EndCol, s.BaseColWidth)
+			w.Width(s.SuppleCol, s.SuppleCol, s.SuppleColWidth)
 		}
 
 		/*
@@ -573,15 +574,15 @@ to quickly create a Cobra application.`,
 
 					skillCell := ""
 					if t.Skills != nil {
-						skillsBuf := strings.Builder{}
+						builder := util.NewBuilder()
 						for idx, sk := range *t.Skills {
 							if idx != 0 {
-								skillsBuf.WriteString(", ")
+								builder.Append(", ")
 							}
-							skillsBuf.WriteString(*sk.Name)
+							builder.Append(*sk.Name)
 
 							if sk.Versions != nil {
-								skillsBuf.WriteString("（経験：")
+								builder.Append("（経験：")
 								var dms int
 								for _, v := range *sk.Versions {
 									if v.From == nil || v.To == nil {
@@ -589,12 +590,12 @@ to quickly create a Cobra application.`,
 									}
 									dms += s.DiffMonths(*v.From.Year, *v.From.Month, *v.To.Year, *v.To.Month)
 								}
-								skillsBuf.WriteString(s.MergeMonths(dms))
-								skillsBuf.WriteString("）")
+								builder.Append(s.MergeMonths(dms))
+								builder.Append("）")
 							}
 						}
 						skillCell = s.Cell("H", rowNo)
-						w.Set(skillCell, skillsBuf.String())
+						w.Set(skillCell, builder.ToString())
 						w.CellStyle(skillCell, s.NewStyle(
 							s.Alignment(s.HLeftAlignment),
 							s.Borders(s.FullBorder),
@@ -731,7 +732,7 @@ to quickly create a Cobra application.`,
 								w.Height(rowNo, s.RowBaseHeight)
 
 								taskLabelCell := s.Cell(s.StartCol, rowNo)
-								w.Set(taskLabelCell, "タスク")
+								w.Set(taskLabelCell, "担当タスク・役割")
 								w.CellStyle(taskLabelCell, s.NewStyle(
 									s.Alignment(s.HLeftAlignmentIndent3),
 									s.Borders(s.SideBorder),
@@ -778,6 +779,88 @@ to quickly create a Cobra application.`,
 									}
 								}
 							}
+
+							/*
+							 * スキル
+							 */
+							if c.SkillGroups != nil {
+								rowNo += 1
+								w.Height(rowNo, s.RowBaseHeight)
+
+								skillLabelCell := s.Cell(s.StartCol, rowNo)
+								w.Set(skillLabelCell, "使用技術")
+								w.CellStyle(skillLabelCell, s.NewStyle(
+									s.Alignment(s.HLeftAlignmentIndent3),
+									s.Borders(s.SideBorder),
+									s.Font(s.BoldFont),
+								))
+								w.Merge(skillLabelCell, s.Cell(s.EndCol, rowNo))
+
+								// 枠線「右」が機能していないための措置
+								w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+
+								for _, skillGroup := range *c.SkillGroups {
+									if skillGroup.Label != nil && *skillGroup.Label != "-" {
+										rowNo += 1
+										w.Height(rowNo, s.RowBaseHeight)
+
+										sgLabelCell := s.Cell(s.StartCol, rowNo)
+										w.Set(sgLabelCell, fmt.Sprintf("【%s】", *skillGroup.Label))
+										w.CellStyle(sgLabelCell, s.NewStyle(
+											s.Alignment(s.HLeftAlignmentIndent3),
+											s.Borders(s.SideBorder),
+										))
+										w.Merge(sgLabelCell, s.Cell(s.EndCol, rowNo))
+
+										// 枠線「右」が機能していないための措置
+										w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+
+										if skillGroup.Skills != nil {
+											builder := util.NewBuilder()
+											for idx, skill := range *skillGroup.Skills {
+												if idx != 0 {
+													builder.Append(", ")
+												}
+												builder.Append(s.SkillWithVersion(skill))
+											}
+											if builder.HasError() {
+												fmt.Println(builder.ErrorMsg())
+												os.Exit(1)
+											}
+
+											rowNo += 1
+											w.Height(rowNo, s.CalcHeight(builder.ToString()))
+
+											skillNameCell := s.Cell(s.StartCol, rowNo)
+											w.Set(skillNameCell, builder.ToString())
+											w.CellStyle(skillNameCell, s.NewStyle(
+												s.Alignment(s.HLeftAlignmentIndent4),
+												s.Borders(s.SideBorder),
+											))
+											w.Merge(skillNameCell, s.Cell(s.EndCol, rowNo))
+
+											// 枠線「右」が機能していないための措置
+											w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+										}
+									}
+								}
+							}
+
+							/*
+							 * 空行
+							 */
+							rowNo += 1
+							w.Height(rowNo, s.RowBaseHeight)
+
+							spaceCell := s.Cell(s.StartCol, rowNo)
+							w.Set(spaceCell, "")
+							w.CellStyle(spaceCell, s.NewStyle(
+								s.Borders(s.SideBorder),
+							))
+							w.Merge(spaceCell, s.Cell(s.EndCol, rowNo))
+
+							// 枠線「右」が機能していないための措置
+							w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 						}
 					}
 				}

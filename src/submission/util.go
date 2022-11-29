@@ -132,3 +132,21 @@ func MergeMonths(dms int) string {
 
 	return fmt.Sprintf("%d年%dヶ月", year, remain)
 }
+
+// TODO: ２行を超える場合も対応！
+func SkillWithVersion(careerSkill rest.CareerSkill) string {
+	if careerSkill.Skill == nil {
+		return "-"
+	}
+	if careerSkill.Version == nil {
+		return *careerSkill.Skill.Name
+	}
+	return fmt.Sprintf("%s(%s)", *careerSkill.Skill.Name, *careerSkill.Version)
+}
+
+func CalcHeight(str string) float64 {
+	if len(str) > BaseColWidth*(ViewAreaColNum-1) {
+		return RowBaseHeight * 1.5
+	}
+	return RowBaseHeight
+}
