@@ -15,7 +15,9 @@ const (
 var VhCenterAlignment = NewAlignment(Horizontal(HCenter), Vertical(VCenter), WrapText(true), Indent(1))
 var HRightAlignment = NewAlignment(Horizontal(HRight), Vertical(VCenter), WrapText(true), Indent(1))
 var HLeftAlignment = NewAlignment(Horizontal(HLeft), Vertical(VCenter), WrapText(true), Indent(1))
-var HLeftAlignmentSubIndent = NewAlignment(Horizontal(HLeft), Vertical(VCenter), WrapText(true), Indent(2))
+var HLeftAlignmentIndent2 = NewAlignment(Horizontal(HLeft), Vertical(VCenter), WrapText(true), Indent(2))
+var HLeftAlignmentIndent3 = NewAlignment(Horizontal(HLeft), Vertical(VCenter), WrapText(true), Indent(3))
+var HLeftAlignmentIndent4 = NewAlignment(Horizontal(HLeft), Vertical(VCenter), WrapText(true), Indent(4))
 
 func Horizontal(s string) AlignmentOption {
 	return func(a *excelize.Alignment) {

@@ -29,6 +29,15 @@ var BottomBorder = []excelize.Border{
 	{Type: "bottom", Color: borderBaseColor, Style: borderBaseStyle},
 }
 
+var SideBorder = []excelize.Border{
+	{Type: "left", Color: borderBaseColor, Style: borderBaseStyle},
+	{Type: "right", Color: borderBaseColor, Style: borderBaseStyle},
+}
+
+var BoldFont = &excelize.Font{
+	Bold: true,
+}
+
 var SheetTitleFont = &excelize.Font{
 	Size: 20,
 	Bold: true,

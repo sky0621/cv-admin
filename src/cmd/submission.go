@@ -634,7 +634,7 @@ to quickly create a Cobra application.`,
 					 * キャリアグループラベル
 					 */
 					rowNo += 1
-					w.Height(rowNo, s.RowBaseHeight*2.0)
+					w.Height(rowNo, s.RowBaseHeight*1.8)
 
 					careerGroupLabelCell := s.Cell(s.StartCol, rowNo)
 					w.Set(careerGroupLabelCell, fmt.Sprintf("(%d) %s", idx+1, *cg.Label))
@@ -669,13 +669,16 @@ to quickly create a Cobra application.`,
 					 */
 					if cg.Careers != nil {
 						for idx2, c := range *cg.Careers {
+							/*
+							 * キャリアタイトル
+							 */
 							rowNo += 1
-							w.Height(rowNo, s.RowBaseHeight*2.0)
+							w.Height(rowNo, s.RowBaseHeight*1.5)
 
 							careerNameCell := s.Cell(s.StartCol, rowNo)
 							w.Set(careerNameCell, fmt.Sprintf("(%d - %d) %s", idx+1, idx2+1, *c.Name))
 							w.CellStyle(careerNameCell, s.NewStyle(
-								s.Alignment(s.HLeftAlignmentSubIndent),
+								s.Alignment(s.HLeftAlignmentIndent2),
 								s.Borders(s.FullBorder),
 								s.Font(s.CareerNameFont),
 							))
@@ -689,13 +692,92 @@ to quickly create a Cobra application.`,
 							careerPeriodCell := s.Cell("S", rowNo)
 							w.Set(careerPeriodCell, s.CareerPeriod(c))
 							w.CellStyle(careerPeriodCell, s.NewStyle(
-								s.Alignment(s.HLeftAlignmentSubIndent),
+								s.Alignment(s.HLeftAlignmentIndent2),
 								s.Borders(s.FullBorder),
 							))
 							w.Merge(careerPeriodCell, s.Cell(s.EndCol, rowNo))
 
 							// 枠線「右」が機能していないための措置
 							w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+
+							/*
+							 * 説明
+							 */
+							if c.Description != nil {
+								for _, desc := range *c.Description {
+									if desc != "-" {
+										rowNo += 1
+										w.Height(rowNo, s.RowBaseHeight*1.5)
+
+										careerDescCell := s.Cell(s.StartCol, rowNo)
+										w.Set(careerDescCell, desc)
+										w.CellStyle(careerDescCell, s.NewStyle(
+											s.Alignment(s.HLeftAlignmentIndent3),
+											s.Borders(s.SideBorder),
+										))
+										w.Merge(careerDescCell, s.Cell(s.EndCol, rowNo))
+
+										// 枠線「右」が機能していないための措置
+										w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+									}
+								}
+							}
+
+							/*
+							 * タスク
+							 */
+							if c.Tasks != nil {
+								rowNo += 1
+								w.Height(rowNo, s.RowBaseHeight)
+
+								taskLabelCell := s.Cell(s.StartCol, rowNo)
+								w.Set(taskLabelCell, "タスク")
+								w.CellStyle(taskLabelCell, s.NewStyle(
+									s.Alignment(s.HLeftAlignmentIndent3),
+									s.Borders(s.SideBorder),
+									s.Font(s.BoldFont),
+								))
+								w.Merge(taskLabelCell, s.Cell(s.EndCol, rowNo))
+
+								// 枠線「右」が機能していないための措置
+								w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+
+								for _, task := range *c.Tasks {
+									if task.Name != nil && *task.Name != "-" {
+										rowNo += 1
+										w.Height(rowNo, s.RowBaseHeight)
+
+										taskNameCell := s.Cell(s.StartCol, rowNo)
+										w.Set(taskNameCell, fmt.Sprintf("【%s】", *task.Name))
+										w.CellStyle(taskNameCell, s.NewStyle(
+											s.Alignment(s.HLeftAlignmentIndent3),
+											s.Borders(s.SideBorder),
+										))
+										w.Merge(taskNameCell, s.Cell(s.EndCol, rowNo))
+
+										// 枠線「右」が機能していないための措置
+										w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+									}
+
+									if task.Description != nil {
+										for _, desc := range *task.Description {
+											rowNo += 1
+											w.Height(rowNo, s.RowBaseHeight)
+
+											taskNameCell := s.Cell(s.StartCol, rowNo)
+											w.Set(taskNameCell, desc)
+											w.CellStyle(taskNameCell, s.NewStyle(
+												s.Alignment(s.HLeftAlignmentIndent4),
+												s.Borders(s.SideBorder),
+											))
+											w.Merge(taskNameCell, s.Cell(s.EndCol, rowNo))
+
+											// 枠線「右」が機能していないための措置
+											w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+										}
+									}
+								}
+							}
 						}
 					}
 				}
