@@ -5,7 +5,7 @@ go 1.19
 require (
 	entgo.io/ent v0.11.4
 	github.com/deepmap/oapi-codegen v1.12.4
-	github.com/getkin/kin-openapi v0.111.0
+	github.com/getkin/kin-openapi v0.113.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/labstack/echo/v4 v4.9.1
 	github.com/mattn/go-sqlite3 v1.14.16
@@ -40,6 +40,7 @@ require (
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
+	github.com/perimeterx/marshmallow v1.1.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.3 // indirect
