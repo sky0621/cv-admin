@@ -59,12 +59,12 @@ func (s *ServerImpl) GetSkilltags(ctx echo.Context) error {
 // PostSkills スキル新規登録
 // (POST /skills)
 func (s *ServerImpl) PostSkills(ctx echo.Context) error {
-	var skill Skill
-	if err := ctx.Bind(&skill); err != nil {
+	var skill_ Skill
+	if err := ctx.Bind(&skill_); err != nil {
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}
 
-	if err := skill.Validate(); err != nil {
+	if err := skill_.Validate(); err != nil {
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
 	}
 
@@ -75,14 +75,14 @@ func (s *ServerImpl) PostSkills(ctx echo.Context) error {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
 
-	if slice.Contains(helper.PickupSkillName(entSkills), *skill.Name) {
+	if slice.Contains(helper.PickupSkillName(entSkills), *skill_.Name) {
 		return sendClientError(ctx, http.StatusBadRequest, "already registered under the same name")
 	}
-	if slice.Contains(helper.PickupSkillKey(entSkills), *skill.Key) {
+	if slice.Contains(helper.PickupSkillKey(entSkills), *skill_.Key) {
 		return sendClientError(ctx, http.StatusBadRequest, "already registered under the same key")
 	}
 
-	entSkill, err := ToEntSkillCreate(skill, s.dbClient.Skill.Create()).Save(rCtx)
+	entSkill, err := ToEntSkillCreate(skill_, s.dbClient.Skill.Create()).Save(rCtx)
 	if err != nil {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
@@ -99,8 +99,8 @@ func (s *ServerImpl) PostSkillrecords(ctx echo.Context) error {
 	}
 
 	// TODO: やり方考える。
-	for _, skill := range skills {
-		if err := skill.Validate(); err != nil {
+	for _, skill_ := range skills {
+		if err := skill_.Validate(); err != nil {
 			return sendClientError(ctx, http.StatusBadRequest, err.Error())
 		}
 	}
@@ -113,11 +113,11 @@ func (s *ServerImpl) PostSkillrecords(ctx echo.Context) error {
 	}
 
 	// TODO: やり方考える。
-	for _, skill := range skills {
-		if slice.Contains(helper.PickupSkillName(entSkills), *skill.Name) {
+	for _, skill_ := range skills {
+		if slice.Contains(helper.PickupSkillName(entSkills), *skill_.Name) {
 			return sendClientError(ctx, http.StatusBadRequest, "already registered under the same name")
 		}
-		if slice.Contains(helper.PickupSkillKey(entSkills), *skill.Key) {
+		if slice.Contains(helper.PickupSkillKey(entSkills), *skill_.Key) {
 			return sendClientError(ctx, http.StatusBadRequest, "already registered under the same key")
 		}
 	}
@@ -125,8 +125,8 @@ func (s *ServerImpl) PostSkillrecords(ctx echo.Context) error {
 	var createdEntSkills []*ent.Skill
 	if err := helper.WithTransaction(rCtx, s.dbClient, func(tx *ent.Tx) error {
 		var entSkillCreates []*ent.SkillCreate
-		for _, skill := range skills {
-			entSkillCreates = append(entSkillCreates, ToEntSkillCreate(skill, s.dbClient.Skill.Create()))
+		for _, skill_ := range skills {
+			entSkillCreates = append(entSkillCreates, ToEntSkillCreate(skill_, s.dbClient.Skill.Create()))
 		}
 		createdEntSkills, err = s.dbClient.Skill.CreateBulk(entSkillCreates...).Save(rCtx)
 		if err != nil {
