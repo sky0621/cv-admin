@@ -13,7 +13,7 @@ require (
 	github.com/sky0621/golang-utils v0.0.2
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.2
-	github.com/xuri/excelize/v2 v2.6.1
+	github.com/xuri/excelize/v2 v2.7.0
 	gopkg.in/ini.v1 v1.67.0
 )
 
