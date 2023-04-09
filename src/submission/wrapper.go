@@ -16,13 +16,15 @@ func SheetName(n string) ExcelizeWrapperOption {
 
 func PaperSize(s int) ExcelizeWrapperOption {
 	return func(f *excelize.File) {
-		f.SetPageLayout(getDefaultSheetName(f), excelize.PageLayoutPaperSize(s))
+		f.SetPageLayout(getDefaultSheetName(f), &excelize.PageLayoutOptions{
+			Size: &s,
+		})
 	}
 }
 
 func SheetPassword(p string) ExcelizeWrapperOption {
 	return func(f *excelize.File) {
-		if err := f.ProtectSheet(getDefaultSheetName(f), &excelize.FormatSheetProtection{
+		if err := f.ProtectSheet(getDefaultSheetName(f), &excelize.SheetProtectionOptions{
 			AlgorithmName: "SHA-512",
 			Password:      p,
 			EditScenarios: false,
@@ -34,7 +36,12 @@ func SheetPassword(p string) ExcelizeWrapperOption {
 
 func SheetView() ExcelizeWrapperOption {
 	return func(f *excelize.File) {
-		if err := f.SetSheetViewOptions(getDefaultSheetName(f), 0, excelize.ShowGridLines(false)); err != nil {
+		if err := f.SetSheetView(getDefaultSheetName(f), 0, &excelize.ViewOptions{
+			ShowGridLines: func() *bool {
+				b := false
+				return &b
+			}(),
+		}); err != nil {
 			panic(err)
 		}
 	}
@@ -150,13 +157,13 @@ func (w *wrapper) CellExternalHyperLink(cell, url string) {
 }
 
 func (w *wrapper) AddPicture(cell, path string) {
-	if err := w.f.AddPicture(getDefaultSheetName(w.f), cell, path, ""); err != nil {
+	if err := w.f.AddPicture(getDefaultSheetName(w.f), cell, path, nil); err != nil {
 		panic(err)
 	}
 }
 
 func (w *wrapper) AddPictureFromBytes(cell, name, extension string, file []byte) {
-	if err := w.f.AddPictureFromBytes(getDefaultSheetName(w.f), cell, "", name, extension, file); err != nil {
+	if err := w.f.AddPictureFromBytes(getDefaultSheetName(w.f), cell, name, extension, file, nil); err != nil {
 		panic(err)
 	}
 }
