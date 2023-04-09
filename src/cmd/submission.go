@@ -519,9 +519,6 @@ to quickly create a Cobra application.`,
 			w.Set(prLabelCell, "PR")
 			w.Merge(prLabelCell, s.Cell(s.EndCol, rowNo))
 			w.HeaderCellRangeStyle(prLabelCell, s.Cell(s.EndCol, rowNo))
-
-			// 枠線「右」が機能していないための措置
-			w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -533,14 +530,8 @@ to quickly create a Cobra application.`,
 
 			prCell := s.Cell(s.StartCol, rowNo)
 			w.Set(prCell, *attribute.Pr)
-			w.CellStyle(prCell, s.NewStyle(
-				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.FullBorder),
-			))
 			w.Merge(prCell, s.Cell(s.EndCol, rowNo))
-
-			// 枠線「右」が機能していないための措置
-			w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+			w.ValueCellRangeStyle(prCell, s.Cell(s.EndCol, rowNo))
 
 			w.InsertPageBreak(s.Cell("AB", rowNo+1))
 		}
@@ -556,9 +547,6 @@ to quickly create a Cobra application.`,
 			w.Set(skillLabelCell, "スキル")
 			w.Merge(skillLabelCell, s.Cell(s.EndCol, rowNo))
 			w.HeaderCellRangeStyle(skillLabelCell, s.Cell(s.EndCol, rowNo))
-
-			// 枠線「右」が機能していないための措置
-			w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -575,11 +563,8 @@ to quickly create a Cobra application.`,
 
 					tagNameCell := s.Cell(s.StartCol, rowNo)
 					w.Set(tagNameCell, *t.TagName)
-					w.CellStyle(tagNameCell, s.NewStyle(
-						s.Alignment(s.HLeftAlignment),
-						s.Borders(s.FullBorder),
-					))
 					w.Merge(tagNameCell, s.Cell("G", rowNo))
+					w.ValueCellRangeStyle(tagNameCell, s.Cell("G", rowNo))
 
 					skillCell := ""
 					if t.Skills != nil {
@@ -611,9 +596,7 @@ to quickly create a Cobra application.`,
 						))
 					}
 					w.Merge(skillCell, s.Cell(s.EndCol, rowNo))
-
-					// 枠線「右」が機能していないための措置
-					w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+					w.ValueCellRangeStyle(skillCell, s.Cell(s.EndCol, rowNo))
 				}
 			}
 		}
@@ -629,9 +612,6 @@ to quickly create a Cobra application.`,
 			w.Set(careerLabelCell, "キャリア")
 			w.Merge(careerLabelCell, s.Cell(s.EndCol, rowNo))
 			w.HeaderCellRangeStyle(careerLabelCell, s.Cell(s.EndCol, rowNo))
-
-			// 枠線「右」が機能していないための措置
-			w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -640,75 +620,87 @@ to quickly create a Cobra application.`,
 		{
 			if careerGroups != nil {
 				for idx, cg := range *careerGroups {
-					/*
-					 * キャリアグループラベル
-					 */
 					rowNo += 1
 					w.Height(rowNo, s.RowBaseHeight*1.8)
 
+					/*
+					 * 「キャリアグループタイトル」
+					 */
 					careerGroupLabelCell := s.Cell(s.StartCol, rowNo)
 					w.Set(careerGroupLabelCell, fmt.Sprintf("(%d) %s", idx+1, *cg.Label))
-					w.CellStyle(careerGroupLabelCell, s.NewStyle(
+					w.Merge(careerGroupLabelCell, s.Cell("P", rowNo))
+					w.CellRangeStyle(careerGroupLabelCell, s.Cell("P", rowNo), s.NewStyle(
 						s.Alignment(s.HLeftAlignment),
+						s.Borders(s.LeftTopBottomBorder),
 						s.Fill(s.CareerGroupLabelFill),
 						s.Font(s.CareerGroupLabelFont),
 					))
-					w.Merge(careerGroupLabelCell, s.Cell("P", rowNo))
 
+					/*
+					 * 「キャリアグループ期間」ラベル
+					 */
 					careerGroupPeriodLabelCell := s.Cell("Q", rowNo)
 					w.Set(careerGroupPeriodLabelCell, "期間：")
-					w.CellStyle(careerGroupPeriodLabelCell, s.NewStyle(
+					w.Merge(careerGroupPeriodLabelCell, s.Cell("R", rowNo))
+					w.CellRangeStyle(careerGroupPeriodLabelCell, s.Cell("R", rowNo), s.NewStyle(
 						s.Alignment(s.HLeftAlignment),
+						s.Borders(s.TopBottomBorder),
 						s.Fill(s.CareerGroupLabelFill),
 					))
-					w.Merge(careerGroupPeriodLabelCell, s.Cell("R", rowNo))
 
+					/*
+					 * 「キャリアグループ期間」
+					 */
 					careerGroupPeriodCell := s.Cell("S", rowNo)
 					w.Set(careerGroupPeriodCell, s.CareerGroupPeriod(cg))
-					w.CellStyle(careerGroupPeriodCell, s.NewStyle(
+					w.Merge(careerGroupPeriodCell, s.Cell(s.EndCol, rowNo))
+					w.CellRangeStyle(careerGroupPeriodCell, s.Cell(s.EndCol, rowNo), s.NewStyle(
 						s.Alignment(s.HLeftAlignment),
+						s.Borders(s.RightTopBottomBorder),
 						s.Fill(s.CareerGroupLabelFill),
 					))
-					w.Merge(careerGroupPeriodCell, s.Cell(s.EndCol, rowNo))
-
-					// 枠線「右」が機能していないための措置
-					w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 
 					/*
 					 * キャリア群
 					 */
 					if cg.Careers != nil {
 						for idx2, c := range *cg.Careers {
-							/*
-							 * キャリアタイトル
-							 */
 							rowNo += 1
 							w.Height(rowNo, s.RowBaseHeight*1.5)
 
+							/*
+							 * 「キャリアタイトル」
+							 */
 							careerNameCell := s.Cell(s.StartCol, rowNo)
 							w.Set(careerNameCell, fmt.Sprintf("(%d - %d) %s", idx+1, idx2+1, *c.Name))
-							w.CellStyle(careerNameCell, s.NewStyle(
+							w.Merge(careerNameCell, s.Cell("P", rowNo))
+							w.CellRangeStyle(careerNameCell, s.Cell("P", rowNo), s.NewStyle(
 								s.Alignment(s.HLeftAlignmentIndent2),
-								s.Borders(s.FullBorder),
+								s.Borders(s.LeftTopBottomBorder),
 								s.Font(s.CareerNameFont),
 							))
-							w.Merge(careerNameCell, s.Cell("P", rowNo))
 
+							/*
+							 * 「キャリア期間」ラベル
+							 */
 							careerPeriodLabelCell := s.Cell("Q", rowNo)
 							w.Set(careerPeriodLabelCell, "期間：")
-							w.HeaderCellRangeStyle(careerPeriodLabelCell, s.Cell("R", rowNo))
 							w.Merge(careerPeriodLabelCell, s.Cell("R", rowNo))
+							w.CellRangeStyle(careerPeriodLabelCell, s.Cell("R", rowNo), s.NewStyle(
+								s.Alignment(s.HLeftAlignment),
+								s.Borders(s.TopBottomBorder),
+							))
 
+							/*
+							 * 「キャリア期間」
+							 */
 							careerPeriodCell := s.Cell("S", rowNo)
 							w.Set(careerPeriodCell, s.CareerPeriod(c))
-							w.CellStyle(careerPeriodCell, s.NewStyle(
-								s.Alignment(s.HLeftAlignmentIndent2),
-								s.Borders(s.FullBorder),
-							))
 							w.Merge(careerPeriodCell, s.Cell(s.EndCol, rowNo))
-
-							// 枠線「右」が機能していないための措置
-							w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
+							w.CellRangeStyle(careerPeriodCell, s.Cell(s.EndCol, rowNo), s.NewStyle(
+								s.Alignment(s.HLeftAlignment),
+								s.Borders(s.RightTopBottomBorder),
+							))
 
 							/*
 							 * 説明
@@ -721,14 +713,11 @@ to quickly create a Cobra application.`,
 
 										careerDescCell := s.Cell(s.StartCol, rowNo)
 										w.Set(careerDescCell, desc)
-										w.CellStyle(careerDescCell, s.NewStyle(
+										w.Merge(careerDescCell, s.Cell(s.EndCol, rowNo))
+										w.CellRangeStyle(careerDescCell, s.Cell(s.EndCol, rowNo), s.NewStyle(
 											s.Alignment(s.HLeftAlignmentIndent3),
 											s.Borders(s.SideBorder),
 										))
-										w.Merge(careerDescCell, s.Cell(s.EndCol, rowNo))
-
-										// 枠線「右」が機能していないための措置
-										w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 									}
 								}
 							}
@@ -742,15 +731,12 @@ to quickly create a Cobra application.`,
 
 								taskLabelCell := s.Cell(s.StartCol, rowNo)
 								w.Set(taskLabelCell, "担当タスク・役割")
-								w.CellStyle(taskLabelCell, s.NewStyle(
+								w.Merge(taskLabelCell, s.Cell(s.EndCol, rowNo))
+								w.CellRangeStyle(taskLabelCell, s.Cell(s.EndCol, rowNo), s.NewStyle(
 									s.Alignment(s.HLeftAlignmentIndent3),
 									s.Borders(s.SideBorder),
 									s.Font(s.BoldFont),
 								))
-								w.Merge(taskLabelCell, s.Cell(s.EndCol, rowNo))
-
-								// 枠線「右」が機能していないための措置
-								w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 
 								for _, task := range *c.Tasks {
 									if task.Name != nil && *task.Name != "-" {
@@ -759,14 +745,11 @@ to quickly create a Cobra application.`,
 
 										taskNameCell := s.Cell(s.StartCol, rowNo)
 										w.Set(taskNameCell, fmt.Sprintf("【%s】", *task.Name))
-										w.CellStyle(taskNameCell, s.NewStyle(
+										w.Merge(taskNameCell, s.Cell(s.EndCol, rowNo))
+										w.CellRangeStyle(taskNameCell, s.Cell(s.EndCol, rowNo), s.NewStyle(
 											s.Alignment(s.HLeftAlignmentIndent3),
 											s.Borders(s.SideBorder),
 										))
-										w.Merge(taskNameCell, s.Cell(s.EndCol, rowNo))
-
-										// 枠線「右」が機能していないための措置
-										w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 									}
 
 									if task.Description != nil {
@@ -776,14 +759,11 @@ to quickly create a Cobra application.`,
 
 											taskNameCell := s.Cell(s.StartCol, rowNo)
 											w.Set(taskNameCell, desc)
-											w.CellStyle(taskNameCell, s.NewStyle(
+											w.Merge(taskNameCell, s.Cell(s.EndCol, rowNo))
+											w.CellRangeStyle(taskNameCell, s.Cell(s.EndCol, rowNo), s.NewStyle(
 												s.Alignment(s.HLeftAlignmentIndent4),
 												s.Borders(s.SideBorder),
 											))
-											w.Merge(taskNameCell, s.Cell(s.EndCol, rowNo))
-
-											// 枠線「右」が機能していないための措置
-											w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 										}
 									}
 								}
@@ -798,15 +778,12 @@ to quickly create a Cobra application.`,
 
 								skillLabelCell := s.Cell(s.StartCol, rowNo)
 								w.Set(skillLabelCell, "使用技術")
-								w.CellStyle(skillLabelCell, s.NewStyle(
+								w.Merge(skillLabelCell, s.Cell(s.EndCol, rowNo))
+								w.CellRangeStyle(skillLabelCell, s.Cell(s.EndCol, rowNo), s.NewStyle(
 									s.Alignment(s.HLeftAlignmentIndent3),
 									s.Borders(s.SideBorder),
 									s.Font(s.BoldFont),
 								))
-								w.Merge(skillLabelCell, s.Cell(s.EndCol, rowNo))
-
-								// 枠線「右」が機能していないための措置
-								w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 
 								for _, skillGroup := range *c.SkillGroups {
 									if skillGroup.Label != nil && *skillGroup.Label != "-" {
@@ -815,14 +792,11 @@ to quickly create a Cobra application.`,
 
 										sgLabelCell := s.Cell(s.StartCol, rowNo)
 										w.Set(sgLabelCell, fmt.Sprintf("【%s】", *skillGroup.Label))
-										w.CellStyle(sgLabelCell, s.NewStyle(
+										w.Merge(sgLabelCell, s.Cell(s.EndCol, rowNo))
+										w.CellRangeStyle(sgLabelCell, s.Cell(s.EndCol, rowNo), s.NewStyle(
 											s.Alignment(s.HLeftAlignmentIndent3),
 											s.Borders(s.SideBorder),
 										))
-										w.Merge(sgLabelCell, s.Cell(s.EndCol, rowNo))
-
-										// 枠線「右」が機能していないための措置
-										w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 
 										if skillGroup.Skills != nil {
 											builder := util.NewBuilder()
@@ -842,14 +816,11 @@ to quickly create a Cobra application.`,
 
 											skillNameCell := s.Cell(s.StartCol, rowNo)
 											w.Set(skillNameCell, builder.ToString())
-											w.CellStyle(skillNameCell, s.NewStyle(
+											w.Merge(skillNameCell, s.Cell(s.EndCol, rowNo))
+											w.CellRangeStyle(skillNameCell, s.Cell(s.EndCol, rowNo), s.NewStyle(
 												s.Alignment(s.HLeftAlignmentIndent4),
 												s.Borders(s.SideBorder),
 											))
-											w.Merge(skillNameCell, s.Cell(s.EndCol, rowNo))
-
-											// 枠線「右」が機能していないための措置
-											w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 										}
 									}
 								}
@@ -863,13 +834,10 @@ to quickly create a Cobra application.`,
 
 							spaceCell := s.Cell(s.StartCol, rowNo)
 							w.Set(spaceCell, "")
-							w.CellStyle(spaceCell, s.NewStyle(
+							w.Merge(spaceCell, s.Cell(s.EndCol, rowNo))
+							w.CellRangeStyle(spaceCell, s.Cell(s.EndCol, rowNo), s.NewStyle(
 								s.Borders(s.SideBorder),
 							))
-							w.Merge(spaceCell, s.Cell(s.EndCol, rowNo))
-
-							// 枠線「右」が機能していないための措置
-							w.CellStyle(s.Cell(s.SuppleCol, rowNo), s.NewStyle(s.Borders(s.LeftBorder)))
 						}
 					}
 				}

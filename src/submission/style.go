@@ -21,11 +21,6 @@ var FullBorder = []excelize.Border{
 	{Type: "bottom", Color: borderBaseColor, Style: borderBaseStyle},
 }
 
-var TopBottomBorder = []excelize.Border{
-	{Type: "top", Color: borderBaseColor, Style: borderBaseStyle},
-	{Type: "bottom", Color: borderBaseColor, Style: borderBaseStyle},
-}
-
 var LeftBorder = []excelize.Border{
 	{Type: "left", Color: borderBaseColor, Style: borderBaseStyle},
 }
@@ -37,6 +32,23 @@ var BottomBorder = []excelize.Border{
 var SideBorder = []excelize.Border{
 	{Type: "left", Color: borderBaseColor, Style: borderBaseStyle},
 	{Type: "right", Color: borderBaseColor, Style: borderBaseStyle},
+}
+
+var TopBottomBorder = []excelize.Border{
+	{Type: "top", Color: borderBaseColor, Style: borderBaseStyle},
+	{Type: "bottom", Color: borderBaseColor, Style: borderBaseStyle},
+}
+
+var LeftTopBottomBorder = []excelize.Border{
+	{Type: "left", Color: borderBaseColor, Style: borderBaseStyle},
+	{Type: "top", Color: borderBaseColor, Style: borderBaseStyle},
+	{Type: "bottom", Color: borderBaseColor, Style: borderBaseStyle},
+}
+
+var RightTopBottomBorder = []excelize.Border{
+	{Type: "right", Color: borderBaseColor, Style: borderBaseStyle},
+	{Type: "top", Color: borderBaseColor, Style: borderBaseStyle},
+	{Type: "bottom", Color: borderBaseColor, Style: borderBaseStyle},
 }
 
 var BoldFont = &excelize.Font{
