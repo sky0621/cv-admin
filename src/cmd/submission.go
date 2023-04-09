@@ -123,20 +123,12 @@ to quickly create a Cobra application.`,
 
 			titleCell := s.Cell(s.StartCol, s.TitleRow)
 			w.Set(titleCell, s.SkillSheetTitle)
-			w.CellStyle(titleCell, s.NewStyle(
+			w.Merge(titleCell, s.Cell(s.EndCol, s.TitleRow))
+			w.CellRangeStyle(titleCell, s.Cell(s.EndCol, s.TitleRow), s.NewStyle(
 				s.Alignment(s.VhCenterAlignment),
 				s.Borders(s.FullBorder),
 				s.Font(s.SheetTitleFont),
 			))
-			w.Merge(titleCell, s.Cell(s.EndCol, s.TitleRow))
-
-			// for top, bottom border
-			forTitleRowBorderCols := []string{"B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
-			for _, col := range forTitleRowBorderCols {
-				w.CellStyle(s.Cell(col, s.TitleRow), s.NewStyle(s.Borders(s.FullBorder)))
-			}
-			// 枠線「右」が機能していないための措置
-			w.CellStyle(s.Cell(s.SuppleCol, s.TitleRow), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
 
 		/*
@@ -192,39 +184,53 @@ to quickly create a Cobra application.`,
 		{
 			w.Height(s.BasicAttributeRow, s.RowBaseHeight)
 
+			/*
+			 * 「フリガナ」ラベル
+			 */
 			kanaLabelCell := s.Cell(s.StartCol, s.BasicAttributeRow)
 			w.Set(kanaLabelCell, "フリガナ")
-			w.HeaderCellStyle(kanaLabelCell)
 			w.Merge(kanaLabelCell, s.Cell("C", s.BasicAttributeRow))
+			w.HeaderCellRangeStyle(kanaLabelCell, s.Cell("C", s.BasicAttributeRow))
 
+			/*
+			 * 「フリガナ」
+			 */
 			kanaCell := s.Cell("D", s.BasicAttributeRow)
 			w.Set(kanaCell, s.GetConfigValue(cfg, s.Kana))
-			w.CellStyle(kanaCell, s.NewStyle(
-				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.FullBorder),
-			))
 			w.Merge(kanaCell, s.Cell("I", s.BasicAttributeRow))
+			w.ValueCellRangeStyle(kanaCell, s.Cell("I", s.BasicAttributeRow))
 
+			/*
+			 * 「ニックネーム」ラベル
+			 */
 			nicknameLabelCell := s.Cell("J", s.BasicAttributeRow)
 			w.Set(nicknameLabelCell, "ニックネーム")
 			w.Merge(nicknameLabelCell, s.Cell("M", s.BasicAttributeRow))
+			w.HeaderCellRangeStyle(nicknameLabelCell, s.Cell("M", s.BasicAttributeRow))
 
+			/*
+			 * 「年齢」ラベル
+			 */
 			ageLabelCell := s.Cell("N", s.BasicAttributeRow)
 			w.Set(ageLabelCell, "年齢")
 			w.Merge(ageLabelCell, s.Cell("O", s.BasicAttributeRow))
+			w.HeaderCellRangeStyle(ageLabelCell, s.Cell("O", s.BasicAttributeRow))
 
+			/*
+			 * 「メールアドレス」ラベル
+			 */
 			mailLabelCell := s.Cell("P", s.BasicAttributeRow)
 			w.Set(mailLabelCell, "メールアドレス")
 			w.Merge(mailLabelCell, s.Cell("W", s.BasicAttributeRow))
+			w.HeaderCellRangeStyle(mailLabelCell, s.Cell("W", s.BasicAttributeRow))
 
+			/*
+			 * 「Gravatar」ラベル
+			 */
 			gravatarLabelCell := s.Cell("X", s.BasicAttributeRow)
 			w.Set(gravatarLabelCell, "Gravatar")
 			w.Merge(gravatarLabelCell, s.Cell(s.EndCol, s.BasicAttributeRow))
-
-			w.HeaderCellRangeStyle(nicknameLabelCell, s.Cell(s.EndCol, s.BasicAttributeRow))
-
-			// 枠線「右」が機能していないための措置
-			w.CellStyle(s.Cell(s.SuppleCol, s.BasicAttributeRow), s.NewStyle(s.Borders(s.LeftBorder)))
+			w.HeaderCellRangeStyle(gravatarLabelCell, s.Cell(s.EndCol, s.BasicAttributeRow))
 		}
 
 		/*
@@ -233,62 +239,64 @@ to quickly create a Cobra application.`,
 		{
 			w.Height(s.BasicAttributeRow2, s.RowBaseHeight*2)
 
+			/*
+			 *「名前」ラベル
+			 */
 			nameLabelCell := s.Cell(s.StartCol, s.BasicAttributeRow2)
 			w.Set(nameLabelCell, "名前")
-			w.HeaderCellStyle(nameLabelCell)
 			w.Merge(nameLabelCell, s.Cell("C", s.BasicAttributeRow2))
+			w.HeaderCellRangeStyle(nameLabelCell, s.Cell("C", s.BasicAttributeRow2))
 
+			/*
+			 * 「名前」
+			 */
 			nameCell := s.Cell("D", s.BasicAttributeRow2)
 			w.Set(nameCell, s.GetConfigValue(cfg, s.Name))
-			w.CellStyle(nameCell, s.NewStyle(
-				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.FullBorder),
-				s.Font(s.NameFont),
-			))
 			w.Merge(nameCell, s.Cell("I", s.BasicAttributeRow2))
+			w.ValueCellRangeStyle(nameCell, s.Cell("I", s.BasicAttributeRow2))
 
+			/*
+			 * 「ニックネーム」
+			 */
 			nicknameCell := s.Cell("J", s.BasicAttributeRow2)
 			w.Set(nicknameCell, *attribute.Nickname)
-			w.CellStyle(nicknameCell, s.NewStyle(
-				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.FullBorder),
-			))
 			w.Merge(nicknameCell, s.Cell("M", s.BasicAttributeRow2))
+			w.ValueCellRangeStyle(nicknameCell, s.Cell("M", s.BasicAttributeRow2))
 
+			/*
+			 * 「年齢」
+			 */
 			ageCell := s.Cell("N", s.BasicAttributeRow2)
 			bDay := *attribute.Birthday
 			w.Set(ageCell, s.Age(*bDay.Year, *bDay.Month, *bDay.Day, time.Now()))
-			w.CellStyle(ageCell, s.NewStyle(
-				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.FullBorder),
-			))
 			w.Merge(ageCell, s.Cell("O", s.BasicAttributeRow2))
+			w.ValueCellRangeStyle(ageCell, s.Cell("O", s.BasicAttributeRow2))
 
+			/*
+			 * 「メールアドレス」
+			 */
 			mailCell := s.Cell("P", s.BasicAttributeRow2)
 			w.Set(mailCell, s.GetConfigValue(cfg, s.Mail))
-			w.CellStyle(mailCell, s.NewStyle(
-				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.FullBorder),
-			))
 			w.Merge(mailCell, s.Cell("W", s.BasicAttributeRow2))
+			w.ValueCellRangeStyle(mailCell, s.Cell("W", s.BasicAttributeRow2))
 
+			/*
+			 * 「Gravatar」
+			 */
 			gravatarCell := s.Cell("X", s.BasicAttributeRow2)
 			if avatarImgBytes != nil {
 				w.AddPictureFromBytes(gravatarCell, "avatar", ".png", avatarImgBytes)
 			}
-			w.CellStyle(gravatarCell, s.NewStyle(
-				s.Alignment(s.VhCenterAlignment),
-				s.Borders(s.FullBorder),
-			))
 
 			w.Merge(gravatarCell, s.Cell(s.EndCol, s.BasicAttributeRow2))
 			w.Merge(s.Cell("X", s.BasicAttributeRow3), s.Cell(s.EndCol, s.BasicAttributeRow3))
 			w.Merge(s.Cell("X", s.BasicAttributeRow4), s.Cell(s.EndCol, s.BasicAttributeRow4))
 
 			w.Merge(gravatarCell, s.Cell("X", s.BasicAttributeRow4))
-
-			// 枠線「右」が機能していないための措置
-			w.CellStyle(s.Cell(s.SuppleCol, s.BasicAttributeRow2), s.NewStyle(s.Borders(s.LeftBorder)))
+			w.CellRangeStyle(gravatarCell, s.Cell(s.EndCol, s.BasicAttributeRow2), s.NewStyle(
+				s.Alignment(s.VhCenterAlignment),
+				s.Borders(s.FullBorder),
+			))
 		}
 
 		/*

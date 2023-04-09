@@ -56,7 +56,7 @@ func NewExcelizeWrapper(options ...ExcelizeWrapperOption) Wrapper {
 }
 
 type Wrapper interface {
-	Set(position string, val interface{})
+	Set(position string, val any)
 	Merge(from, to string)
 	Height(row int, h float64)
 	Width(start, end string, wd float64)
@@ -65,6 +65,7 @@ type Wrapper interface {
 	CellRangeStyle(start, end string, style *excelize.Style)
 	HeaderCellStyle(cell string)
 	HeaderCellRangeStyle(start, end string)
+	ValueCellRangeStyle(start, end string)
 	CellExternalHyperLink(cell, url string)
 	AddPicture(cell, path string)
 	AddPictureFromBytes(cell, name, extension string, file []byte)
@@ -144,6 +145,14 @@ func (w *wrapper) HeaderCellRangeStyle(start, end string) {
 		Alignment(HLeftAlignment),
 		Borders(FullBorder),
 		Fill(HeaderFill),
+	)
+	w.CellRangeStyle(start, end, s)
+}
+
+func (w *wrapper) ValueCellRangeStyle(start, end string) {
+	s := NewStyle(
+		Alignment(HLeftAlignment),
+		Borders(FullBorder),
 	)
 	w.CellRangeStyle(start, end, s)
 }
