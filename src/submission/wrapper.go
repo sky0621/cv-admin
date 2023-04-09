@@ -172,7 +172,9 @@ func (w *wrapper) AddPicture(cell, path string) {
 }
 
 func (w *wrapper) AddPictureFromBytes(cell, name, extension string, file []byte) {
-	if err := w.f.AddPictureFromBytes(getDefaultSheetName(w.f), cell, name, extension, file, nil); err != nil {
+	if err := w.f.AddPictureFromBytes(getDefaultSheetName(w.f), cell, name, extension, file, &excelize.GraphicOptions{
+		OffsetX: 16, OffsetY: 16,
+	}); err != nil {
 		panic(err)
 	}
 }
