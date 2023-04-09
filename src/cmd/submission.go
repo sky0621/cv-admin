@@ -293,7 +293,7 @@ to quickly create a Cobra application.`,
 			w.Merge(s.Cell("X", s.BasicAttributeRow4), s.Cell(s.EndCol, s.BasicAttributeRow4))
 
 			w.Merge(gravatarCell, s.Cell("X", s.BasicAttributeRow4))
-			w.CellRangeStyle(gravatarCell, s.Cell(s.EndCol, s.BasicAttributeRow2), s.NewStyle(
+			w.CellRangeStyle(gravatarCell, s.Cell(s.EndCol, s.BasicAttributeRow4), s.NewStyle(
 				s.Alignment(s.VhCenterAlignment),
 				s.Borders(s.FullBorder),
 			))
@@ -305,34 +305,37 @@ to quickly create a Cobra application.`,
 		{
 			w.Height(s.BasicAttributeRow3, s.RowBaseHeight)
 
+			/*
+			 * 「居住地」ラベル
+			 */
 			residenceLabelCell := s.Cell(s.StartCol, s.BasicAttributeRow3)
 			w.Set(residenceLabelCell, "居住地")
-			w.HeaderCellStyle(residenceLabelCell)
 			w.Merge(residenceLabelCell, s.Cell("C", s.BasicAttributeRow3))
+			w.HeaderCellRangeStyle(residenceLabelCell, s.Cell("C", s.BasicAttributeRow3))
 
+			/*
+			 * 「居住地」
+			 */
 			residenceCell := s.Cell("D", s.BasicAttributeRow3)
 			w.Set(residenceCell, s.GetConfigValue(cfg, s.CityOfResidence))
-			w.CellStyle(residenceCell, s.NewStyle(
-				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.FullBorder),
-			))
 			w.Merge(residenceCell, s.Cell("I", s.BasicAttributeRow3))
+			w.ValueCellRangeStyle(residenceCell, s.Cell("I", s.BasicAttributeRow3))
 
+			/*
+			 * 「最寄り駅」ラベル
+			 */
 			nearStLabelCell := s.Cell("J", s.BasicAttributeRow3)
 			w.Set(nearStLabelCell, "最寄り駅")
-			w.HeaderCellStyle(nearStLabelCell)
 			w.Merge(nearStLabelCell, s.Cell("M", s.BasicAttributeRow3))
+			w.HeaderCellRangeStyle(nearStLabelCell, s.Cell("M", s.BasicAttributeRow3))
 
+			/*
+			 * 「最寄り駅」
+			 */
 			nearStCell := s.Cell("N", s.BasicAttributeRow3)
 			w.Set(nearStCell, s.GetConfigValue(cfg, s.NearestStation))
-			w.CellStyle(nearStCell, s.NewStyle(
-				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.FullBorder),
-			))
 			w.Merge(nearStCell, s.Cell("W", s.BasicAttributeRow3))
-
-			// 枠線「右」が機能していないための措置
-			w.CellStyle(s.Cell(s.SuppleCol, s.BasicAttributeRow3), s.NewStyle(s.Borders(s.LeftBorder)))
+			w.ValueCellRangeStyle(nearStCell, s.Cell("W", s.BasicAttributeRow3))
 		}
 
 		/*
@@ -341,22 +344,21 @@ to quickly create a Cobra application.`,
 		{
 			w.Height(s.BasicAttributeRow4, s.RowBaseHeight)
 
+			/*
+			 * 「最終学歴」ラベル
+			 */
 			eduBgLabelCell := s.Cell(s.StartCol, s.BasicAttributeRow4)
 			w.Set(eduBgLabelCell, "最終学歴")
-			w.HeaderCellStyle(eduBgLabelCell)
 			w.Merge(eduBgLabelCell, s.Cell("C", s.BasicAttributeRow4))
+			w.HeaderCellRangeStyle(eduBgLabelCell, s.Cell("C", s.BasicAttributeRow4))
 
+			/*
+			 * 「最終学歴」
+			 */
 			eduBgCell := s.Cell("D", s.BasicAttributeRow4)
 			w.Set(eduBgCell, s.GetConfigValue(cfg, s.EducationalBackground))
-			w.CellStyle(eduBgCell, s.NewStyle(
-				s.Alignment(s.HLeftAlignment),
-				s.Borders(s.FullBorder),
-			))
 			w.Merge(eduBgCell, s.Cell("W", s.BasicAttributeRow4))
-
-			// 枠線「右」「下」が機能していないための措置
-			w.CellStyle(s.Cell("X", s.BasicAttributeRow4), s.NewStyle(s.Borders(s.BottomBorder)))
-			w.CellStyle(s.Cell(s.SuppleCol, s.BasicAttributeRow4), s.NewStyle(s.Borders(s.LeftBorder)))
+			w.ValueCellRangeStyle(eduBgCell, s.Cell("W", s.BasicAttributeRow4))
 		}
 
 		/*
