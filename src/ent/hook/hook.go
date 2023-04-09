@@ -15,11 +15,10 @@ type CareerSkillFunc func(context.Context, *ent.CareerSkillMutation) (ent.Value,
 
 // Mutate calls f(ctx, m).
 func (f CareerSkillFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.CareerSkillMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CareerSkillMutation", m)
+	if mv, ok := m.(*ent.CareerSkillMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CareerSkillMutation", m)
 }
 
 // The CareerSkillGroupFunc type is an adapter to allow the use of ordinary
@@ -28,11 +27,10 @@ type CareerSkillGroupFunc func(context.Context, *ent.CareerSkillGroupMutation) (
 
 // Mutate calls f(ctx, m).
 func (f CareerSkillGroupFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.CareerSkillGroupMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CareerSkillGroupMutation", m)
+	if mv, ok := m.(*ent.CareerSkillGroupMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CareerSkillGroupMutation", m)
 }
 
 // The CareerTaskFunc type is an adapter to allow the use of ordinary
@@ -41,11 +39,10 @@ type CareerTaskFunc func(context.Context, *ent.CareerTaskMutation) (ent.Value, e
 
 // Mutate calls f(ctx, m).
 func (f CareerTaskFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.CareerTaskMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CareerTaskMutation", m)
+	if mv, ok := m.(*ent.CareerTaskMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CareerTaskMutation", m)
 }
 
 // The CareerTaskDescriptionFunc type is an adapter to allow the use of ordinary
@@ -54,11 +51,10 @@ type CareerTaskDescriptionFunc func(context.Context, *ent.CareerTaskDescriptionM
 
 // Mutate calls f(ctx, m).
 func (f CareerTaskDescriptionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.CareerTaskDescriptionMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CareerTaskDescriptionMutation", m)
+	if mv, ok := m.(*ent.CareerTaskDescriptionMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CareerTaskDescriptionMutation", m)
 }
 
 // The SkillFunc type is an adapter to allow the use of ordinary
@@ -67,11 +63,10 @@ type SkillFunc func(context.Context, *ent.SkillMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
 func (f SkillFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.SkillMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SkillMutation", m)
+	if mv, ok := m.(*ent.SkillMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SkillMutation", m)
 }
 
 // The SkillTagFunc type is an adapter to allow the use of ordinary
@@ -80,11 +75,10 @@ type SkillTagFunc func(context.Context, *ent.SkillTagMutation) (ent.Value, error
 
 // Mutate calls f(ctx, m).
 func (f SkillTagFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.SkillTagMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SkillTagMutation", m)
+	if mv, ok := m.(*ent.SkillTagMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SkillTagMutation", m)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary
@@ -93,11 +87,10 @@ type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
 func (f UserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.UserMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserMutation", m)
+	if mv, ok := m.(*ent.UserMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserMutation", m)
 }
 
 // The UserActivityFunc type is an adapter to allow the use of ordinary
@@ -106,11 +99,10 @@ type UserActivityFunc func(context.Context, *ent.UserActivityMutation) (ent.Valu
 
 // Mutate calls f(ctx, m).
 func (f UserActivityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.UserActivityMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserActivityMutation", m)
+	if mv, ok := m.(*ent.UserActivityMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserActivityMutation", m)
 }
 
 // The UserCareerFunc type is an adapter to allow the use of ordinary
@@ -119,11 +111,10 @@ type UserCareerFunc func(context.Context, *ent.UserCareerMutation) (ent.Value, e
 
 // Mutate calls f(ctx, m).
 func (f UserCareerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.UserCareerMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserCareerMutation", m)
+	if mv, ok := m.(*ent.UserCareerMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserCareerMutation", m)
 }
 
 // The UserCareerDescriptionFunc type is an adapter to allow the use of ordinary
@@ -132,11 +123,10 @@ type UserCareerDescriptionFunc func(context.Context, *ent.UserCareerDescriptionM
 
 // Mutate calls f(ctx, m).
 func (f UserCareerDescriptionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.UserCareerDescriptionMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserCareerDescriptionMutation", m)
+	if mv, ok := m.(*ent.UserCareerDescriptionMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserCareerDescriptionMutation", m)
 }
 
 // The UserCareerGroupFunc type is an adapter to allow the use of ordinary
@@ -145,11 +135,10 @@ type UserCareerGroupFunc func(context.Context, *ent.UserCareerGroupMutation) (en
 
 // Mutate calls f(ctx, m).
 func (f UserCareerGroupFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.UserCareerGroupMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserCareerGroupMutation", m)
+	if mv, ok := m.(*ent.UserCareerGroupMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserCareerGroupMutation", m)
 }
 
 // The UserNoteFunc type is an adapter to allow the use of ordinary
@@ -158,11 +147,10 @@ type UserNoteFunc func(context.Context, *ent.UserNoteMutation) (ent.Value, error
 
 // Mutate calls f(ctx, m).
 func (f UserNoteFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.UserNoteMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserNoteMutation", m)
+	if mv, ok := m.(*ent.UserNoteMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserNoteMutation", m)
 }
 
 // The UserNoteItemFunc type is an adapter to allow the use of ordinary
@@ -171,11 +159,10 @@ type UserNoteItemFunc func(context.Context, *ent.UserNoteItemMutation) (ent.Valu
 
 // Mutate calls f(ctx, m).
 func (f UserNoteItemFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.UserNoteItemMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserNoteItemMutation", m)
+	if mv, ok := m.(*ent.UserNoteItemMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserNoteItemMutation", m)
 }
 
 // The UserQualificationFunc type is an adapter to allow the use of ordinary
@@ -184,11 +171,10 @@ type UserQualificationFunc func(context.Context, *ent.UserQualificationMutation)
 
 // Mutate calls f(ctx, m).
 func (f UserQualificationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.UserQualificationMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserQualificationMutation", m)
+	if mv, ok := m.(*ent.UserQualificationMutation); ok {
+		return f(ctx, mv)
 	}
-	return f(ctx, mv)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserQualificationMutation", m)
 }
 
 // Condition is a hook condition function.

@@ -105,41 +105,8 @@ func (uau *UserActivityUpdate) ClearUser() *UserActivityUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uau *UserActivityUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	uau.defaults()
-	if len(uau.hooks) == 0 {
-		if err = uau.check(); err != nil {
-			return 0, err
-		}
-		affected, err = uau.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserActivityMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = uau.check(); err != nil {
-				return 0, err
-			}
-			uau.mutation = mutation
-			affected, err = uau.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(uau.hooks) - 1; i >= 0; i-- {
-			if uau.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = uau.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, uau.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, UserActivityMutation](ctx, uau.sqlSave, uau.mutation, uau.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -196,16 +163,10 @@ func (uau *UserActivityUpdate) check() error {
 }
 
 func (uau *UserActivityUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   useractivity.Table,
-			Columns: useractivity.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: useractivity.FieldID,
-			},
-		},
+	if err := uau.check(); err != nil {
+		return n, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(useractivity.Table, useractivity.Columns, sqlgraph.NewFieldSpec(useractivity.FieldID, field.TypeInt))
 	if ps := uau.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -239,10 +200,7 @@ func (uau *UserActivityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{useractivity.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -255,10 +213,7 @@ func (uau *UserActivityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{useractivity.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -274,6 +229,7 @@ func (uau *UserActivityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	uau.mutation.done = true
 	return n, nil
 }
 
@@ -359,6 +315,12 @@ func (uauo *UserActivityUpdateOne) ClearUser() *UserActivityUpdateOne {
 	return uauo
 }
 
+// Where appends a list predicates to the UserActivityUpdate builder.
+func (uauo *UserActivityUpdateOne) Where(ps ...predicate.UserActivity) *UserActivityUpdateOne {
+	uauo.mutation.Where(ps...)
+	return uauo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (uauo *UserActivityUpdateOne) Select(field string, fields ...string) *UserActivityUpdateOne {
@@ -368,47 +330,8 @@ func (uauo *UserActivityUpdateOne) Select(field string, fields ...string) *UserA
 
 // Save executes the query and returns the updated UserActivity entity.
 func (uauo *UserActivityUpdateOne) Save(ctx context.Context) (*UserActivity, error) {
-	var (
-		err  error
-		node *UserActivity
-	)
 	uauo.defaults()
-	if len(uauo.hooks) == 0 {
-		if err = uauo.check(); err != nil {
-			return nil, err
-		}
-		node, err = uauo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserActivityMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = uauo.check(); err != nil {
-				return nil, err
-			}
-			uauo.mutation = mutation
-			node, err = uauo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(uauo.hooks) - 1; i >= 0; i-- {
-			if uauo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = uauo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, uauo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*UserActivity)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from UserActivityMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*UserActivity, UserActivityMutation](ctx, uauo.sqlSave, uauo.mutation, uauo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -465,16 +388,10 @@ func (uauo *UserActivityUpdateOne) check() error {
 }
 
 func (uauo *UserActivityUpdateOne) sqlSave(ctx context.Context) (_node *UserActivity, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   useractivity.Table,
-			Columns: useractivity.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: useractivity.FieldID,
-			},
-		},
+	if err := uauo.check(); err != nil {
+		return _node, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(useractivity.Table, useractivity.Columns, sqlgraph.NewFieldSpec(useractivity.FieldID, field.TypeInt))
 	id, ok := uauo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "UserActivity.id" for update`)}
@@ -525,10 +442,7 @@ func (uauo *UserActivityUpdateOne) sqlSave(ctx context.Context) (_node *UserActi
 			Columns: []string{useractivity.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -541,10 +455,7 @@ func (uauo *UserActivityUpdateOne) sqlSave(ctx context.Context) (_node *UserActi
 			Columns: []string{useractivity.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -563,5 +474,6 @@ func (uauo *UserActivityUpdateOne) sqlSave(ctx context.Context) (_node *UserActi
 		}
 		return nil, err
 	}
+	uauo.mutation.done = true
 	return _node, nil
 }

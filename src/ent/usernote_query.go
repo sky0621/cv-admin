@@ -20,11 +20,9 @@ import (
 // UserNoteQuery is the builder for querying UserNote entities.
 type UserNoteQuery struct {
 	config
-	limit         *int
-	offset        *int
-	unique        *bool
+	ctx           *QueryContext
 	order         []OrderFunc
-	fields        []string
+	inters        []Interceptor
 	predicates    []predicate.UserNote
 	withUser      *UserQuery
 	withNoteItems *UserNoteItemQuery
@@ -40,26 +38,26 @@ func (unq *UserNoteQuery) Where(ps ...predicate.UserNote) *UserNoteQuery {
 	return unq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (unq *UserNoteQuery) Limit(limit int) *UserNoteQuery {
-	unq.limit = &limit
+	unq.ctx.Limit = &limit
 	return unq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (unq *UserNoteQuery) Offset(offset int) *UserNoteQuery {
-	unq.offset = &offset
+	unq.ctx.Offset = &offset
 	return unq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (unq *UserNoteQuery) Unique(unique bool) *UserNoteQuery {
-	unq.unique = &unique
+	unq.ctx.Unique = &unique
 	return unq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (unq *UserNoteQuery) Order(o ...OrderFunc) *UserNoteQuery {
 	unq.order = append(unq.order, o...)
 	return unq
@@ -67,7 +65,7 @@ func (unq *UserNoteQuery) Order(o ...OrderFunc) *UserNoteQuery {
 
 // QueryUser chains the current query on the "user" edge.
 func (unq *UserNoteQuery) QueryUser() *UserQuery {
-	query := &UserQuery{config: unq.config}
+	query := (&UserClient{config: unq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := unq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -89,7 +87,7 @@ func (unq *UserNoteQuery) QueryUser() *UserQuery {
 
 // QueryNoteItems chains the current query on the "noteItems" edge.
 func (unq *UserNoteQuery) QueryNoteItems() *UserNoteItemQuery {
-	query := &UserNoteItemQuery{config: unq.config}
+	query := (&UserNoteItemClient{config: unq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := unq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -112,7 +110,7 @@ func (unq *UserNoteQuery) QueryNoteItems() *UserNoteItemQuery {
 // First returns the first UserNote entity from the query.
 // Returns a *NotFoundError when no UserNote was found.
 func (unq *UserNoteQuery) First(ctx context.Context) (*UserNote, error) {
-	nodes, err := unq.Limit(1).All(ctx)
+	nodes, err := unq.Limit(1).All(setContextOp(ctx, unq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +133,7 @@ func (unq *UserNoteQuery) FirstX(ctx context.Context) *UserNote {
 // Returns a *NotFoundError when no UserNote ID was found.
 func (unq *UserNoteQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = unq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = unq.Limit(1).IDs(setContextOp(ctx, unq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -158,7 +156,7 @@ func (unq *UserNoteQuery) FirstIDX(ctx context.Context) int {
 // Returns a *NotSingularError when more than one UserNote entity is found.
 // Returns a *NotFoundError when no UserNote entities are found.
 func (unq *UserNoteQuery) Only(ctx context.Context) (*UserNote, error) {
-	nodes, err := unq.Limit(2).All(ctx)
+	nodes, err := unq.Limit(2).All(setContextOp(ctx, unq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +184,7 @@ func (unq *UserNoteQuery) OnlyX(ctx context.Context) *UserNote {
 // Returns a *NotFoundError when no entities are found.
 func (unq *UserNoteQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = unq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = unq.Limit(2).IDs(setContextOp(ctx, unq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -211,10 +209,12 @@ func (unq *UserNoteQuery) OnlyIDX(ctx context.Context) int {
 
 // All executes the query and returns a list of UserNotes.
 func (unq *UserNoteQuery) All(ctx context.Context) ([]*UserNote, error) {
+	ctx = setContextOp(ctx, unq.ctx, "All")
 	if err := unq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return unq.sqlAll(ctx)
+	qr := querierAll[[]*UserNote, *UserNoteQuery]()
+	return withInterceptors[[]*UserNote](ctx, unq, qr, unq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -227,9 +227,12 @@ func (unq *UserNoteQuery) AllX(ctx context.Context) []*UserNote {
 }
 
 // IDs executes the query and returns a list of UserNote IDs.
-func (unq *UserNoteQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
-	if err := unq.Select(usernote.FieldID).Scan(ctx, &ids); err != nil {
+func (unq *UserNoteQuery) IDs(ctx context.Context) (ids []int, err error) {
+	if unq.ctx.Unique == nil && unq.path != nil {
+		unq.Unique(true)
+	}
+	ctx = setContextOp(ctx, unq.ctx, "IDs")
+	if err = unq.Select(usernote.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -246,10 +249,11 @@ func (unq *UserNoteQuery) IDsX(ctx context.Context) []int {
 
 // Count returns the count of the given query.
 func (unq *UserNoteQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, unq.ctx, "Count")
 	if err := unq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return unq.sqlCount(ctx)
+	return withInterceptors[int](ctx, unq, querierCount[*UserNoteQuery](), unq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -263,10 +267,15 @@ func (unq *UserNoteQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (unq *UserNoteQuery) Exist(ctx context.Context) (bool, error) {
-	if err := unq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = setContextOp(ctx, unq.ctx, "Exist")
+	switch _, err := unq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return unq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -286,23 +295,22 @@ func (unq *UserNoteQuery) Clone() *UserNoteQuery {
 	}
 	return &UserNoteQuery{
 		config:        unq.config,
-		limit:         unq.limit,
-		offset:        unq.offset,
+		ctx:           unq.ctx.Clone(),
 		order:         append([]OrderFunc{}, unq.order...),
+		inters:        append([]Interceptor{}, unq.inters...),
 		predicates:    append([]predicate.UserNote{}, unq.predicates...),
 		withUser:      unq.withUser.Clone(),
 		withNoteItems: unq.withNoteItems.Clone(),
 		// clone intermediate query.
-		sql:    unq.sql.Clone(),
-		path:   unq.path,
-		unique: unq.unique,
+		sql:  unq.sql.Clone(),
+		path: unq.path,
 	}
 }
 
 // WithUser tells the query-builder to eager-load the nodes that are connected to
 // the "user" edge. The optional arguments are used to configure the query builder of the edge.
 func (unq *UserNoteQuery) WithUser(opts ...func(*UserQuery)) *UserNoteQuery {
-	query := &UserQuery{config: unq.config}
+	query := (&UserClient{config: unq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -313,7 +321,7 @@ func (unq *UserNoteQuery) WithUser(opts ...func(*UserQuery)) *UserNoteQuery {
 // WithNoteItems tells the query-builder to eager-load the nodes that are connected to
 // the "noteItems" edge. The optional arguments are used to configure the query builder of the edge.
 func (unq *UserNoteQuery) WithNoteItems(opts ...func(*UserNoteItemQuery)) *UserNoteQuery {
-	query := &UserNoteItemQuery{config: unq.config}
+	query := (&UserNoteItemClient{config: unq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -336,16 +344,11 @@ func (unq *UserNoteQuery) WithNoteItems(opts ...func(*UserNoteItemQuery)) *UserN
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (unq *UserNoteQuery) GroupBy(field string, fields ...string) *UserNoteGroupBy {
-	grbuild := &UserNoteGroupBy{config: unq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := unq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return unq.sqlQuery(ctx), nil
-	}
+	unq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &UserNoteGroupBy{build: unq}
+	grbuild.flds = &unq.ctx.Fields
 	grbuild.label = usernote.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -362,11 +365,11 @@ func (unq *UserNoteQuery) GroupBy(field string, fields ...string) *UserNoteGroup
 //		Select(usernote.FieldCreateTime).
 //		Scan(ctx, &v)
 func (unq *UserNoteQuery) Select(fields ...string) *UserNoteSelect {
-	unq.fields = append(unq.fields, fields...)
-	selbuild := &UserNoteSelect{UserNoteQuery: unq}
-	selbuild.label = usernote.Label
-	selbuild.flds, selbuild.scan = &unq.fields, selbuild.Scan
-	return selbuild
+	unq.ctx.Fields = append(unq.ctx.Fields, fields...)
+	sbuild := &UserNoteSelect{UserNoteQuery: unq}
+	sbuild.label = usernote.Label
+	sbuild.flds, sbuild.scan = &unq.ctx.Fields, sbuild.Scan
+	return sbuild
 }
 
 // Aggregate returns a UserNoteSelect configured with the given aggregations.
@@ -375,7 +378,17 @@ func (unq *UserNoteQuery) Aggregate(fns ...AggregateFunc) *UserNoteSelect {
 }
 
 func (unq *UserNoteQuery) prepareQuery(ctx context.Context) error {
-	for _, f := range unq.fields {
+	for _, inter := range unq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, unq); err != nil {
+				return err
+			}
+		}
+	}
+	for _, f := range unq.ctx.Fields {
 		if !usernote.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -453,6 +466,9 @@ func (unq *UserNoteQuery) loadUser(ctx context.Context, query *UserQuery, nodes 
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(user.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -503,41 +519,22 @@ func (unq *UserNoteQuery) loadNoteItems(ctx context.Context, query *UserNoteItem
 
 func (unq *UserNoteQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := unq.querySpec()
-	_spec.Node.Columns = unq.fields
-	if len(unq.fields) > 0 {
-		_spec.Unique = unq.unique != nil && *unq.unique
+	_spec.Node.Columns = unq.ctx.Fields
+	if len(unq.ctx.Fields) > 0 {
+		_spec.Unique = unq.ctx.Unique != nil && *unq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, unq.driver, _spec)
 }
 
-func (unq *UserNoteQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := unq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (unq *UserNoteQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   usernote.Table,
-			Columns: usernote.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: usernote.FieldID,
-			},
-		},
-		From:   unq.sql,
-		Unique: true,
-	}
-	if unique := unq.unique; unique != nil {
+	_spec := sqlgraph.NewQuerySpec(usernote.Table, usernote.Columns, sqlgraph.NewFieldSpec(usernote.FieldID, field.TypeInt))
+	_spec.From = unq.sql
+	if unique := unq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if unq.path != nil {
+		_spec.Unique = true
 	}
-	if fields := unq.fields; len(fields) > 0 {
+	if fields := unq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, usernote.FieldID)
 		for i := range fields {
@@ -553,10 +550,10 @@ func (unq *UserNoteQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := unq.limit; limit != nil {
+	if limit := unq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := unq.offset; offset != nil {
+	if offset := unq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := unq.order; len(ps) > 0 {
@@ -572,7 +569,7 @@ func (unq *UserNoteQuery) querySpec() *sqlgraph.QuerySpec {
 func (unq *UserNoteQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(unq.driver.Dialect())
 	t1 := builder.Table(usernote.Table)
-	columns := unq.fields
+	columns := unq.ctx.Fields
 	if len(columns) == 0 {
 		columns = usernote.Columns
 	}
@@ -581,7 +578,7 @@ func (unq *UserNoteQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = unq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if unq.unique != nil && *unq.unique {
+	if unq.ctx.Unique != nil && *unq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range unq.predicates {
@@ -590,12 +587,12 @@ func (unq *UserNoteQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range unq.order {
 		p(selector)
 	}
-	if offset := unq.offset; offset != nil {
+	if offset := unq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := unq.limit; limit != nil {
+	if limit := unq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -603,13 +600,8 @@ func (unq *UserNoteQuery) sqlQuery(ctx context.Context) *sql.Selector {
 
 // UserNoteGroupBy is the group-by builder for UserNote entities.
 type UserNoteGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *UserNoteQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -618,58 +610,46 @@ func (ungb *UserNoteGroupBy) Aggregate(fns ...AggregateFunc) *UserNoteGroupBy {
 	return ungb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (ungb *UserNoteGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := ungb.path(ctx)
-	if err != nil {
+	ctx = setContextOp(ctx, ungb.build.ctx, "GroupBy")
+	if err := ungb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ungb.sql = query
-	return ungb.sqlScan(ctx, v)
+	return scanWithInterceptors[*UserNoteQuery, *UserNoteGroupBy](ctx, ungb.build, ungb, ungb.build.inters, v)
 }
 
-func (ungb *UserNoteGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range ungb.fields {
-		if !usernote.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (ungb *UserNoteGroupBy) sqlScan(ctx context.Context, root *UserNoteQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(ungb.fns))
+	for _, fn := range ungb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := ungb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*ungb.flds)+len(ungb.fns))
+		for _, f := range *ungb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*ungb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := ungb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := ungb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (ungb *UserNoteGroupBy) sqlQuery() *sql.Selector {
-	selector := ungb.sql.Select()
-	aggregation := make([]string, 0, len(ungb.fns))
-	for _, fn := range ungb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(ungb.fields)+len(ungb.fns))
-		for _, f := range ungb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(ungb.fields...)...)
-}
-
 // UserNoteSelect is the builder for selecting fields of UserNote entities.
 type UserNoteSelect struct {
 	*UserNoteQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
@@ -680,26 +660,27 @@ func (uns *UserNoteSelect) Aggregate(fns ...AggregateFunc) *UserNoteSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (uns *UserNoteSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, uns.ctx, "Select")
 	if err := uns.prepareQuery(ctx); err != nil {
 		return err
 	}
-	uns.sql = uns.UserNoteQuery.sqlQuery(ctx)
-	return uns.sqlScan(ctx, v)
+	return scanWithInterceptors[*UserNoteQuery, *UserNoteSelect](ctx, uns.UserNoteQuery, uns, uns.inters, v)
 }
 
-func (uns *UserNoteSelect) sqlScan(ctx context.Context, v any) error {
+func (uns *UserNoteSelect) sqlScan(ctx context.Context, root *UserNoteQuery, v any) error {
+	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(uns.fns))
 	for _, fn := range uns.fns {
-		aggregation = append(aggregation, fn(uns.sql))
+		aggregation = append(aggregation, fn(selector))
 	}
 	switch n := len(*uns.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
-		uns.sql.Select(aggregation...)
+		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
-		uns.sql.AppendSelect(aggregation...)
+		selector.AppendSelect(aggregation...)
 	}
 	rows := &sql.Rows{}
-	query, args := uns.sql.Query()
+	query, args := selector.Query()
 	if err := uns.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

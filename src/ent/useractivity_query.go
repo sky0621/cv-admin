@@ -18,11 +18,9 @@ import (
 // UserActivityQuery is the builder for querying UserActivity entities.
 type UserActivityQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
+	inters     []Interceptor
 	predicates []predicate.UserActivity
 	withUser   *UserQuery
 	withFKs    bool
@@ -37,26 +35,26 @@ func (uaq *UserActivityQuery) Where(ps ...predicate.UserActivity) *UserActivityQ
 	return uaq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (uaq *UserActivityQuery) Limit(limit int) *UserActivityQuery {
-	uaq.limit = &limit
+	uaq.ctx.Limit = &limit
 	return uaq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (uaq *UserActivityQuery) Offset(offset int) *UserActivityQuery {
-	uaq.offset = &offset
+	uaq.ctx.Offset = &offset
 	return uaq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (uaq *UserActivityQuery) Unique(unique bool) *UserActivityQuery {
-	uaq.unique = &unique
+	uaq.ctx.Unique = &unique
 	return uaq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (uaq *UserActivityQuery) Order(o ...OrderFunc) *UserActivityQuery {
 	uaq.order = append(uaq.order, o...)
 	return uaq
@@ -64,7 +62,7 @@ func (uaq *UserActivityQuery) Order(o ...OrderFunc) *UserActivityQuery {
 
 // QueryUser chains the current query on the "user" edge.
 func (uaq *UserActivityQuery) QueryUser() *UserQuery {
-	query := &UserQuery{config: uaq.config}
+	query := (&UserClient{config: uaq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uaq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -87,7 +85,7 @@ func (uaq *UserActivityQuery) QueryUser() *UserQuery {
 // First returns the first UserActivity entity from the query.
 // Returns a *NotFoundError when no UserActivity was found.
 func (uaq *UserActivityQuery) First(ctx context.Context) (*UserActivity, error) {
-	nodes, err := uaq.Limit(1).All(ctx)
+	nodes, err := uaq.Limit(1).All(setContextOp(ctx, uaq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +108,7 @@ func (uaq *UserActivityQuery) FirstX(ctx context.Context) *UserActivity {
 // Returns a *NotFoundError when no UserActivity ID was found.
 func (uaq *UserActivityQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = uaq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = uaq.Limit(1).IDs(setContextOp(ctx, uaq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -133,7 +131,7 @@ func (uaq *UserActivityQuery) FirstIDX(ctx context.Context) int {
 // Returns a *NotSingularError when more than one UserActivity entity is found.
 // Returns a *NotFoundError when no UserActivity entities are found.
 func (uaq *UserActivityQuery) Only(ctx context.Context) (*UserActivity, error) {
-	nodes, err := uaq.Limit(2).All(ctx)
+	nodes, err := uaq.Limit(2).All(setContextOp(ctx, uaq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +159,7 @@ func (uaq *UserActivityQuery) OnlyX(ctx context.Context) *UserActivity {
 // Returns a *NotFoundError when no entities are found.
 func (uaq *UserActivityQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = uaq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = uaq.Limit(2).IDs(setContextOp(ctx, uaq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -186,10 +184,12 @@ func (uaq *UserActivityQuery) OnlyIDX(ctx context.Context) int {
 
 // All executes the query and returns a list of UserActivities.
 func (uaq *UserActivityQuery) All(ctx context.Context) ([]*UserActivity, error) {
+	ctx = setContextOp(ctx, uaq.ctx, "All")
 	if err := uaq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return uaq.sqlAll(ctx)
+	qr := querierAll[[]*UserActivity, *UserActivityQuery]()
+	return withInterceptors[[]*UserActivity](ctx, uaq, qr, uaq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -202,9 +202,12 @@ func (uaq *UserActivityQuery) AllX(ctx context.Context) []*UserActivity {
 }
 
 // IDs executes the query and returns a list of UserActivity IDs.
-func (uaq *UserActivityQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
-	if err := uaq.Select(useractivity.FieldID).Scan(ctx, &ids); err != nil {
+func (uaq *UserActivityQuery) IDs(ctx context.Context) (ids []int, err error) {
+	if uaq.ctx.Unique == nil && uaq.path != nil {
+		uaq.Unique(true)
+	}
+	ctx = setContextOp(ctx, uaq.ctx, "IDs")
+	if err = uaq.Select(useractivity.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -221,10 +224,11 @@ func (uaq *UserActivityQuery) IDsX(ctx context.Context) []int {
 
 // Count returns the count of the given query.
 func (uaq *UserActivityQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, uaq.ctx, "Count")
 	if err := uaq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return uaq.sqlCount(ctx)
+	return withInterceptors[int](ctx, uaq, querierCount[*UserActivityQuery](), uaq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -238,10 +242,15 @@ func (uaq *UserActivityQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (uaq *UserActivityQuery) Exist(ctx context.Context) (bool, error) {
-	if err := uaq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = setContextOp(ctx, uaq.ctx, "Exist")
+	switch _, err := uaq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return uaq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -261,22 +270,21 @@ func (uaq *UserActivityQuery) Clone() *UserActivityQuery {
 	}
 	return &UserActivityQuery{
 		config:     uaq.config,
-		limit:      uaq.limit,
-		offset:     uaq.offset,
+		ctx:        uaq.ctx.Clone(),
 		order:      append([]OrderFunc{}, uaq.order...),
+		inters:     append([]Interceptor{}, uaq.inters...),
 		predicates: append([]predicate.UserActivity{}, uaq.predicates...),
 		withUser:   uaq.withUser.Clone(),
 		// clone intermediate query.
-		sql:    uaq.sql.Clone(),
-		path:   uaq.path,
-		unique: uaq.unique,
+		sql:  uaq.sql.Clone(),
+		path: uaq.path,
 	}
 }
 
 // WithUser tells the query-builder to eager-load the nodes that are connected to
 // the "user" edge. The optional arguments are used to configure the query builder of the edge.
 func (uaq *UserActivityQuery) WithUser(opts ...func(*UserQuery)) *UserActivityQuery {
-	query := &UserQuery{config: uaq.config}
+	query := (&UserClient{config: uaq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -299,16 +307,11 @@ func (uaq *UserActivityQuery) WithUser(opts ...func(*UserQuery)) *UserActivityQu
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (uaq *UserActivityQuery) GroupBy(field string, fields ...string) *UserActivityGroupBy {
-	grbuild := &UserActivityGroupBy{config: uaq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := uaq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return uaq.sqlQuery(ctx), nil
-	}
+	uaq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &UserActivityGroupBy{build: uaq}
+	grbuild.flds = &uaq.ctx.Fields
 	grbuild.label = useractivity.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -325,11 +328,11 @@ func (uaq *UserActivityQuery) GroupBy(field string, fields ...string) *UserActiv
 //		Select(useractivity.FieldCreateTime).
 //		Scan(ctx, &v)
 func (uaq *UserActivityQuery) Select(fields ...string) *UserActivitySelect {
-	uaq.fields = append(uaq.fields, fields...)
-	selbuild := &UserActivitySelect{UserActivityQuery: uaq}
-	selbuild.label = useractivity.Label
-	selbuild.flds, selbuild.scan = &uaq.fields, selbuild.Scan
-	return selbuild
+	uaq.ctx.Fields = append(uaq.ctx.Fields, fields...)
+	sbuild := &UserActivitySelect{UserActivityQuery: uaq}
+	sbuild.label = useractivity.Label
+	sbuild.flds, sbuild.scan = &uaq.ctx.Fields, sbuild.Scan
+	return sbuild
 }
 
 // Aggregate returns a UserActivitySelect configured with the given aggregations.
@@ -338,7 +341,17 @@ func (uaq *UserActivityQuery) Aggregate(fns ...AggregateFunc) *UserActivitySelec
 }
 
 func (uaq *UserActivityQuery) prepareQuery(ctx context.Context) error {
-	for _, f := range uaq.fields {
+	for _, inter := range uaq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, uaq); err != nil {
+				return err
+			}
+		}
+	}
+	for _, f := range uaq.ctx.Fields {
 		if !useractivity.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -408,6 +421,9 @@ func (uaq *UserActivityQuery) loadUser(ctx context.Context, query *UserQuery, no
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(user.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -427,41 +443,22 @@ func (uaq *UserActivityQuery) loadUser(ctx context.Context, query *UserQuery, no
 
 func (uaq *UserActivityQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := uaq.querySpec()
-	_spec.Node.Columns = uaq.fields
-	if len(uaq.fields) > 0 {
-		_spec.Unique = uaq.unique != nil && *uaq.unique
+	_spec.Node.Columns = uaq.ctx.Fields
+	if len(uaq.ctx.Fields) > 0 {
+		_spec.Unique = uaq.ctx.Unique != nil && *uaq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, uaq.driver, _spec)
 }
 
-func (uaq *UserActivityQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := uaq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (uaq *UserActivityQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   useractivity.Table,
-			Columns: useractivity.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: useractivity.FieldID,
-			},
-		},
-		From:   uaq.sql,
-		Unique: true,
-	}
-	if unique := uaq.unique; unique != nil {
+	_spec := sqlgraph.NewQuerySpec(useractivity.Table, useractivity.Columns, sqlgraph.NewFieldSpec(useractivity.FieldID, field.TypeInt))
+	_spec.From = uaq.sql
+	if unique := uaq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if uaq.path != nil {
+		_spec.Unique = true
 	}
-	if fields := uaq.fields; len(fields) > 0 {
+	if fields := uaq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, useractivity.FieldID)
 		for i := range fields {
@@ -477,10 +474,10 @@ func (uaq *UserActivityQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := uaq.limit; limit != nil {
+	if limit := uaq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := uaq.offset; offset != nil {
+	if offset := uaq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := uaq.order; len(ps) > 0 {
@@ -496,7 +493,7 @@ func (uaq *UserActivityQuery) querySpec() *sqlgraph.QuerySpec {
 func (uaq *UserActivityQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(uaq.driver.Dialect())
 	t1 := builder.Table(useractivity.Table)
-	columns := uaq.fields
+	columns := uaq.ctx.Fields
 	if len(columns) == 0 {
 		columns = useractivity.Columns
 	}
@@ -505,7 +502,7 @@ func (uaq *UserActivityQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = uaq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if uaq.unique != nil && *uaq.unique {
+	if uaq.ctx.Unique != nil && *uaq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range uaq.predicates {
@@ -514,12 +511,12 @@ func (uaq *UserActivityQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range uaq.order {
 		p(selector)
 	}
-	if offset := uaq.offset; offset != nil {
+	if offset := uaq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := uaq.limit; limit != nil {
+	if limit := uaq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -527,13 +524,8 @@ func (uaq *UserActivityQuery) sqlQuery(ctx context.Context) *sql.Selector {
 
 // UserActivityGroupBy is the group-by builder for UserActivity entities.
 type UserActivityGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *UserActivityQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -542,58 +534,46 @@ func (uagb *UserActivityGroupBy) Aggregate(fns ...AggregateFunc) *UserActivityGr
 	return uagb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (uagb *UserActivityGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := uagb.path(ctx)
-	if err != nil {
+	ctx = setContextOp(ctx, uagb.build.ctx, "GroupBy")
+	if err := uagb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	uagb.sql = query
-	return uagb.sqlScan(ctx, v)
+	return scanWithInterceptors[*UserActivityQuery, *UserActivityGroupBy](ctx, uagb.build, uagb, uagb.build.inters, v)
 }
 
-func (uagb *UserActivityGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range uagb.fields {
-		if !useractivity.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (uagb *UserActivityGroupBy) sqlScan(ctx context.Context, root *UserActivityQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(uagb.fns))
+	for _, fn := range uagb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := uagb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*uagb.flds)+len(uagb.fns))
+		for _, f := range *uagb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*uagb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := uagb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := uagb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (uagb *UserActivityGroupBy) sqlQuery() *sql.Selector {
-	selector := uagb.sql.Select()
-	aggregation := make([]string, 0, len(uagb.fns))
-	for _, fn := range uagb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(uagb.fields)+len(uagb.fns))
-		for _, f := range uagb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(uagb.fields...)...)
-}
-
 // UserActivitySelect is the builder for selecting fields of UserActivity entities.
 type UserActivitySelect struct {
 	*UserActivityQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
@@ -604,26 +584,27 @@ func (uas *UserActivitySelect) Aggregate(fns ...AggregateFunc) *UserActivitySele
 
 // Scan applies the selector query and scans the result into the given value.
 func (uas *UserActivitySelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, uas.ctx, "Select")
 	if err := uas.prepareQuery(ctx); err != nil {
 		return err
 	}
-	uas.sql = uas.UserActivityQuery.sqlQuery(ctx)
-	return uas.sqlScan(ctx, v)
+	return scanWithInterceptors[*UserActivityQuery, *UserActivitySelect](ctx, uas.UserActivityQuery, uas, uas.inters, v)
 }
 
-func (uas *UserActivitySelect) sqlScan(ctx context.Context, v any) error {
+func (uas *UserActivitySelect) sqlScan(ctx context.Context, root *UserActivityQuery, v any) error {
+	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(uas.fns))
 	for _, fn := range uas.fns {
-		aggregation = append(aggregation, fn(uas.sql))
+		aggregation = append(aggregation, fn(selector))
 	}
 	switch n := len(*uas.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
-		uas.sql.Select(aggregation...)
+		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
-		uas.sql.AppendSelect(aggregation...)
+		selector.AppendSelect(aggregation...)
 	}
 	rows := &sql.Rows{}
-	query, args := uas.sql.Query()
+	query, args := selector.Query()
 	if err := uas.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

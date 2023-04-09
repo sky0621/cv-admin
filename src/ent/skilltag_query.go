@@ -17,11 +17,9 @@ import (
 // SkillTagQuery is the builder for querying SkillTag entities.
 type SkillTagQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
+	inters     []Interceptor
 	predicates []predicate.SkillTag
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -34,26 +32,26 @@ func (stq *SkillTagQuery) Where(ps ...predicate.SkillTag) *SkillTagQuery {
 	return stq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (stq *SkillTagQuery) Limit(limit int) *SkillTagQuery {
-	stq.limit = &limit
+	stq.ctx.Limit = &limit
 	return stq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (stq *SkillTagQuery) Offset(offset int) *SkillTagQuery {
-	stq.offset = &offset
+	stq.ctx.Offset = &offset
 	return stq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (stq *SkillTagQuery) Unique(unique bool) *SkillTagQuery {
-	stq.unique = &unique
+	stq.ctx.Unique = &unique
 	return stq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (stq *SkillTagQuery) Order(o ...OrderFunc) *SkillTagQuery {
 	stq.order = append(stq.order, o...)
 	return stq
@@ -62,7 +60,7 @@ func (stq *SkillTagQuery) Order(o ...OrderFunc) *SkillTagQuery {
 // First returns the first SkillTag entity from the query.
 // Returns a *NotFoundError when no SkillTag was found.
 func (stq *SkillTagQuery) First(ctx context.Context) (*SkillTag, error) {
-	nodes, err := stq.Limit(1).All(ctx)
+	nodes, err := stq.Limit(1).All(setContextOp(ctx, stq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -85,7 +83,7 @@ func (stq *SkillTagQuery) FirstX(ctx context.Context) *SkillTag {
 // Returns a *NotFoundError when no SkillTag ID was found.
 func (stq *SkillTagQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = stq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = stq.Limit(1).IDs(setContextOp(ctx, stq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -108,7 +106,7 @@ func (stq *SkillTagQuery) FirstIDX(ctx context.Context) int {
 // Returns a *NotSingularError when more than one SkillTag entity is found.
 // Returns a *NotFoundError when no SkillTag entities are found.
 func (stq *SkillTagQuery) Only(ctx context.Context) (*SkillTag, error) {
-	nodes, err := stq.Limit(2).All(ctx)
+	nodes, err := stq.Limit(2).All(setContextOp(ctx, stq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +134,7 @@ func (stq *SkillTagQuery) OnlyX(ctx context.Context) *SkillTag {
 // Returns a *NotFoundError when no entities are found.
 func (stq *SkillTagQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = stq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = stq.Limit(2).IDs(setContextOp(ctx, stq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -161,10 +159,12 @@ func (stq *SkillTagQuery) OnlyIDX(ctx context.Context) int {
 
 // All executes the query and returns a list of SkillTags.
 func (stq *SkillTagQuery) All(ctx context.Context) ([]*SkillTag, error) {
+	ctx = setContextOp(ctx, stq.ctx, "All")
 	if err := stq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return stq.sqlAll(ctx)
+	qr := querierAll[[]*SkillTag, *SkillTagQuery]()
+	return withInterceptors[[]*SkillTag](ctx, stq, qr, stq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -177,9 +177,12 @@ func (stq *SkillTagQuery) AllX(ctx context.Context) []*SkillTag {
 }
 
 // IDs executes the query and returns a list of SkillTag IDs.
-func (stq *SkillTagQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
-	if err := stq.Select(skilltag.FieldID).Scan(ctx, &ids); err != nil {
+func (stq *SkillTagQuery) IDs(ctx context.Context) (ids []int, err error) {
+	if stq.ctx.Unique == nil && stq.path != nil {
+		stq.Unique(true)
+	}
+	ctx = setContextOp(ctx, stq.ctx, "IDs")
+	if err = stq.Select(skilltag.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -196,10 +199,11 @@ func (stq *SkillTagQuery) IDsX(ctx context.Context) []int {
 
 // Count returns the count of the given query.
 func (stq *SkillTagQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, stq.ctx, "Count")
 	if err := stq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return stq.sqlCount(ctx)
+	return withInterceptors[int](ctx, stq, querierCount[*SkillTagQuery](), stq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -213,10 +217,15 @@ func (stq *SkillTagQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (stq *SkillTagQuery) Exist(ctx context.Context) (bool, error) {
-	if err := stq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = setContextOp(ctx, stq.ctx, "Exist")
+	switch _, err := stq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return stq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -236,14 +245,13 @@ func (stq *SkillTagQuery) Clone() *SkillTagQuery {
 	}
 	return &SkillTagQuery{
 		config:     stq.config,
-		limit:      stq.limit,
-		offset:     stq.offset,
+		ctx:        stq.ctx.Clone(),
 		order:      append([]OrderFunc{}, stq.order...),
+		inters:     append([]Interceptor{}, stq.inters...),
 		predicates: append([]predicate.SkillTag{}, stq.predicates...),
 		// clone intermediate query.
-		sql:    stq.sql.Clone(),
-		path:   stq.path,
-		unique: stq.unique,
+		sql:  stq.sql.Clone(),
+		path: stq.path,
 	}
 }
 
@@ -262,16 +270,11 @@ func (stq *SkillTagQuery) Clone() *SkillTagQuery {
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (stq *SkillTagQuery) GroupBy(field string, fields ...string) *SkillTagGroupBy {
-	grbuild := &SkillTagGroupBy{config: stq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := stq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return stq.sqlQuery(ctx), nil
-	}
+	stq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &SkillTagGroupBy{build: stq}
+	grbuild.flds = &stq.ctx.Fields
 	grbuild.label = skilltag.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -288,11 +291,11 @@ func (stq *SkillTagQuery) GroupBy(field string, fields ...string) *SkillTagGroup
 //		Select(skilltag.FieldName).
 //		Scan(ctx, &v)
 func (stq *SkillTagQuery) Select(fields ...string) *SkillTagSelect {
-	stq.fields = append(stq.fields, fields...)
-	selbuild := &SkillTagSelect{SkillTagQuery: stq}
-	selbuild.label = skilltag.Label
-	selbuild.flds, selbuild.scan = &stq.fields, selbuild.Scan
-	return selbuild
+	stq.ctx.Fields = append(stq.ctx.Fields, fields...)
+	sbuild := &SkillTagSelect{SkillTagQuery: stq}
+	sbuild.label = skilltag.Label
+	sbuild.flds, sbuild.scan = &stq.ctx.Fields, sbuild.Scan
+	return sbuild
 }
 
 // Aggregate returns a SkillTagSelect configured with the given aggregations.
@@ -301,7 +304,17 @@ func (stq *SkillTagQuery) Aggregate(fns ...AggregateFunc) *SkillTagSelect {
 }
 
 func (stq *SkillTagQuery) prepareQuery(ctx context.Context) error {
-	for _, f := range stq.fields {
+	for _, inter := range stq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, stq); err != nil {
+				return err
+			}
+		}
+	}
+	for _, f := range stq.ctx.Fields {
 		if !skilltag.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -343,41 +356,22 @@ func (stq *SkillTagQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sk
 
 func (stq *SkillTagQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := stq.querySpec()
-	_spec.Node.Columns = stq.fields
-	if len(stq.fields) > 0 {
-		_spec.Unique = stq.unique != nil && *stq.unique
+	_spec.Node.Columns = stq.ctx.Fields
+	if len(stq.ctx.Fields) > 0 {
+		_spec.Unique = stq.ctx.Unique != nil && *stq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, stq.driver, _spec)
 }
 
-func (stq *SkillTagQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := stq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (stq *SkillTagQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   skilltag.Table,
-			Columns: skilltag.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: skilltag.FieldID,
-			},
-		},
-		From:   stq.sql,
-		Unique: true,
-	}
-	if unique := stq.unique; unique != nil {
+	_spec := sqlgraph.NewQuerySpec(skilltag.Table, skilltag.Columns, sqlgraph.NewFieldSpec(skilltag.FieldID, field.TypeInt))
+	_spec.From = stq.sql
+	if unique := stq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if stq.path != nil {
+		_spec.Unique = true
 	}
-	if fields := stq.fields; len(fields) > 0 {
+	if fields := stq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, skilltag.FieldID)
 		for i := range fields {
@@ -393,10 +387,10 @@ func (stq *SkillTagQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := stq.limit; limit != nil {
+	if limit := stq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := stq.offset; offset != nil {
+	if offset := stq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := stq.order; len(ps) > 0 {
@@ -412,7 +406,7 @@ func (stq *SkillTagQuery) querySpec() *sqlgraph.QuerySpec {
 func (stq *SkillTagQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(stq.driver.Dialect())
 	t1 := builder.Table(skilltag.Table)
-	columns := stq.fields
+	columns := stq.ctx.Fields
 	if len(columns) == 0 {
 		columns = skilltag.Columns
 	}
@@ -421,7 +415,7 @@ func (stq *SkillTagQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = stq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if stq.unique != nil && *stq.unique {
+	if stq.ctx.Unique != nil && *stq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range stq.predicates {
@@ -430,12 +424,12 @@ func (stq *SkillTagQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range stq.order {
 		p(selector)
 	}
-	if offset := stq.offset; offset != nil {
+	if offset := stq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := stq.limit; limit != nil {
+	if limit := stq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -443,13 +437,8 @@ func (stq *SkillTagQuery) sqlQuery(ctx context.Context) *sql.Selector {
 
 // SkillTagGroupBy is the group-by builder for SkillTag entities.
 type SkillTagGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *SkillTagQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -458,58 +447,46 @@ func (stgb *SkillTagGroupBy) Aggregate(fns ...AggregateFunc) *SkillTagGroupBy {
 	return stgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (stgb *SkillTagGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := stgb.path(ctx)
-	if err != nil {
+	ctx = setContextOp(ctx, stgb.build.ctx, "GroupBy")
+	if err := stgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	stgb.sql = query
-	return stgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*SkillTagQuery, *SkillTagGroupBy](ctx, stgb.build, stgb, stgb.build.inters, v)
 }
 
-func (stgb *SkillTagGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range stgb.fields {
-		if !skilltag.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (stgb *SkillTagGroupBy) sqlScan(ctx context.Context, root *SkillTagQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(stgb.fns))
+	for _, fn := range stgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := stgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*stgb.flds)+len(stgb.fns))
+		for _, f := range *stgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*stgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := stgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := stgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (stgb *SkillTagGroupBy) sqlQuery() *sql.Selector {
-	selector := stgb.sql.Select()
-	aggregation := make([]string, 0, len(stgb.fns))
-	for _, fn := range stgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(stgb.fields)+len(stgb.fns))
-		for _, f := range stgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(stgb.fields...)...)
-}
-
 // SkillTagSelect is the builder for selecting fields of SkillTag entities.
 type SkillTagSelect struct {
 	*SkillTagQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
@@ -520,26 +497,27 @@ func (sts *SkillTagSelect) Aggregate(fns ...AggregateFunc) *SkillTagSelect {
 
 // Scan applies the selector query and scans the result into the given value.
 func (sts *SkillTagSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, sts.ctx, "Select")
 	if err := sts.prepareQuery(ctx); err != nil {
 		return err
 	}
-	sts.sql = sts.SkillTagQuery.sqlQuery(ctx)
-	return sts.sqlScan(ctx, v)
+	return scanWithInterceptors[*SkillTagQuery, *SkillTagSelect](ctx, sts.SkillTagQuery, sts, sts.inters, v)
 }
 
-func (sts *SkillTagSelect) sqlScan(ctx context.Context, v any) error {
+func (sts *SkillTagSelect) sqlScan(ctx context.Context, root *SkillTagQuery, v any) error {
+	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(sts.fns))
 	for _, fn := range sts.fns {
-		aggregation = append(aggregation, fn(sts.sql))
+		aggregation = append(aggregation, fn(selector))
 	}
 	switch n := len(*sts.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
-		sts.sql.Select(aggregation...)
+		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
-		sts.sql.AppendSelect(aggregation...)
+		selector.AppendSelect(aggregation...)
 	}
 	rows := &sql.Rows{}
-	query, args := sts.sql.Query()
+	query, args := selector.Query()
 	if err := sts.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

@@ -40,49 +40,7 @@ func (stc *SkillTagCreate) Mutation() *SkillTagMutation {
 
 // Save creates the SkillTag in the database.
 func (stc *SkillTagCreate) Save(ctx context.Context) (*SkillTag, error) {
-	var (
-		err  error
-		node *SkillTag
-	)
-	if len(stc.hooks) == 0 {
-		if err = stc.check(); err != nil {
-			return nil, err
-		}
-		node, err = stc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SkillTagMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = stc.check(); err != nil {
-				return nil, err
-			}
-			stc.mutation = mutation
-			if node, err = stc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(stc.hooks) - 1; i >= 0; i-- {
-			if stc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = stc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, stc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*SkillTag)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from SkillTagMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*SkillTag, SkillTagMutation](ctx, stc.sqlSave, stc.mutation, stc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -129,6 +87,9 @@ func (stc *SkillTagCreate) check() error {
 }
 
 func (stc *SkillTagCreate) sqlSave(ctx context.Context) (*SkillTag, error) {
+	if err := stc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := stc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, stc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -138,19 +99,15 @@ func (stc *SkillTagCreate) sqlSave(ctx context.Context) (*SkillTag, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
+	stc.mutation.id = &_node.ID
+	stc.mutation.done = true
 	return _node, nil
 }
 
 func (stc *SkillTagCreate) createSpec() (*SkillTag, *sqlgraph.CreateSpec) {
 	var (
 		_node = &SkillTag{config: stc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: skilltag.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: skilltag.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(skilltag.Table, sqlgraph.NewFieldSpec(skilltag.FieldID, field.TypeInt))
 	)
 	_spec.OnConflict = stc.conflict
 	if value, ok := stc.mutation.Name(); ok {

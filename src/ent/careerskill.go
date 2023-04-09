@@ -144,19 +144,19 @@ func (cs *CareerSkill) assignValues(columns []string, values []any) error {
 
 // QueryCareerSkillGroup queries the "careerSkillGroup" edge of the CareerSkill entity.
 func (cs *CareerSkill) QueryCareerSkillGroup() *CareerSkillGroupQuery {
-	return (&CareerSkillClient{config: cs.config}).QueryCareerSkillGroup(cs)
+	return NewCareerSkillClient(cs.config).QueryCareerSkillGroup(cs)
 }
 
 // QuerySkill queries the "skill" edge of the CareerSkill entity.
 func (cs *CareerSkill) QuerySkill() *SkillQuery {
-	return (&CareerSkillClient{config: cs.config}).QuerySkill(cs)
+	return NewCareerSkillClient(cs.config).QuerySkill(cs)
 }
 
 // Update returns a builder for updating this CareerSkill.
 // Note that you need to call CareerSkill.Unwrap() before calling this method if this CareerSkill
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (cs *CareerSkill) Update() *CareerSkillUpdateOne {
-	return (&CareerSkillClient{config: cs.config}).UpdateOne(cs)
+	return NewCareerSkillClient(cs.config).UpdateOne(cs)
 }
 
 // Unwrap unwraps the CareerSkill entity that was returned from a transaction after it was closed,
@@ -191,9 +191,3 @@ func (cs *CareerSkill) String() string {
 
 // CareerSkills is a parsable slice of CareerSkill.
 type CareerSkills []*CareerSkill
-
-func (cs CareerSkills) config(cfg config) {
-	for _i := range cs {
-		cs[_i].config = cfg
-	}
-}

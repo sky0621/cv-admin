@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,34 +27,7 @@ func (unid *UserNoteItemDelete) Where(ps ...predicate.UserNoteItem) *UserNoteIte
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (unid *UserNoteItemDelete) Exec(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(unid.hooks) == 0 {
-		affected, err = unid.sqlExec(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserNoteItemMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			unid.mutation = mutation
-			affected, err = unid.sqlExec(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(unid.hooks) - 1; i >= 0; i-- {
-			if unid.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = unid.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, unid.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, UserNoteItemMutation](ctx, unid.sqlExec, unid.mutation, unid.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
@@ -68,15 +40,7 @@ func (unid *UserNoteItemDelete) ExecX(ctx context.Context) int {
 }
 
 func (unid *UserNoteItemDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: usernoteitem.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: usernoteitem.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(usernoteitem.Table, sqlgraph.NewFieldSpec(usernoteitem.FieldID, field.TypeInt))
 	if ps := unid.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -88,12 +52,19 @@ func (unid *UserNoteItemDelete) sqlExec(ctx context.Context) (int, error) {
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
+	unid.mutation.done = true
 	return affected, err
 }
 
 // UserNoteItemDeleteOne is the builder for deleting a single UserNoteItem entity.
 type UserNoteItemDeleteOne struct {
 	unid *UserNoteItemDelete
+}
+
+// Where appends a list predicates to the UserNoteItemDelete builder.
+func (unido *UserNoteItemDeleteOne) Where(ps ...predicate.UserNoteItem) *UserNoteItemDeleteOne {
+	unido.unid.mutation.Where(ps...)
+	return unido
 }
 
 // Exec executes the deletion query.
@@ -111,5 +82,7 @@ func (unido *UserNoteItemDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (unido *UserNoteItemDeleteOne) ExecX(ctx context.Context) {
-	unido.unid.ExecX(ctx)
+	if err := unido.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

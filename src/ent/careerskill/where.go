@@ -12,335 +12,217 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id int) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.CareerSkill(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id int) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.CareerSkill(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id int) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.CareerSkill(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...int) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.CareerSkill(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...int) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.CareerSkill(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id int) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.CareerSkill(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id int) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.CareerSkill(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id int) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.CareerSkill(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id int) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.CareerSkill(sql.FieldLTE(FieldID, id))
 }
 
 // CreateTime applies equality check predicate on the "create_time" field. It's identical to CreateTimeEQ.
 func CreateTime(v time.Time) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreateTime), v))
-	})
+	return predicate.CareerSkill(sql.FieldEQ(FieldCreateTime, v))
 }
 
 // UpdateTime applies equality check predicate on the "update_time" field. It's identical to UpdateTimeEQ.
 func UpdateTime(v time.Time) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdateTime), v))
-	})
+	return predicate.CareerSkill(sql.FieldEQ(FieldUpdateTime, v))
 }
 
 // Version applies equality check predicate on the "version" field. It's identical to VersionEQ.
 func Version(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldVersion), v))
-	})
+	return predicate.CareerSkill(sql.FieldEQ(FieldVersion, v))
 }
 
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreateTime), v))
-	})
+	return predicate.CareerSkill(sql.FieldEQ(FieldCreateTime, v))
 }
 
 // CreateTimeNEQ applies the NEQ predicate on the "create_time" field.
 func CreateTimeNEQ(v time.Time) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreateTime), v))
-	})
+	return predicate.CareerSkill(sql.FieldNEQ(FieldCreateTime, v))
 }
 
 // CreateTimeIn applies the In predicate on the "create_time" field.
 func CreateTimeIn(vs ...time.Time) predicate.CareerSkill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreateTime), v...))
-	})
+	return predicate.CareerSkill(sql.FieldIn(FieldCreateTime, vs...))
 }
 
 // CreateTimeNotIn applies the NotIn predicate on the "create_time" field.
 func CreateTimeNotIn(vs ...time.Time) predicate.CareerSkill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreateTime), v...))
-	})
+	return predicate.CareerSkill(sql.FieldNotIn(FieldCreateTime, vs...))
 }
 
 // CreateTimeGT applies the GT predicate on the "create_time" field.
 func CreateTimeGT(v time.Time) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreateTime), v))
-	})
+	return predicate.CareerSkill(sql.FieldGT(FieldCreateTime, v))
 }
 
 // CreateTimeGTE applies the GTE predicate on the "create_time" field.
 func CreateTimeGTE(v time.Time) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreateTime), v))
-	})
+	return predicate.CareerSkill(sql.FieldGTE(FieldCreateTime, v))
 }
 
 // CreateTimeLT applies the LT predicate on the "create_time" field.
 func CreateTimeLT(v time.Time) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreateTime), v))
-	})
+	return predicate.CareerSkill(sql.FieldLT(FieldCreateTime, v))
 }
 
 // CreateTimeLTE applies the LTE predicate on the "create_time" field.
 func CreateTimeLTE(v time.Time) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreateTime), v))
-	})
+	return predicate.CareerSkill(sql.FieldLTE(FieldCreateTime, v))
 }
 
 // UpdateTimeEQ applies the EQ predicate on the "update_time" field.
 func UpdateTimeEQ(v time.Time) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdateTime), v))
-	})
+	return predicate.CareerSkill(sql.FieldEQ(FieldUpdateTime, v))
 }
 
 // UpdateTimeNEQ applies the NEQ predicate on the "update_time" field.
 func UpdateTimeNEQ(v time.Time) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdateTime), v))
-	})
+	return predicate.CareerSkill(sql.FieldNEQ(FieldUpdateTime, v))
 }
 
 // UpdateTimeIn applies the In predicate on the "update_time" field.
 func UpdateTimeIn(vs ...time.Time) predicate.CareerSkill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdateTime), v...))
-	})
+	return predicate.CareerSkill(sql.FieldIn(FieldUpdateTime, vs...))
 }
 
 // UpdateTimeNotIn applies the NotIn predicate on the "update_time" field.
 func UpdateTimeNotIn(vs ...time.Time) predicate.CareerSkill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdateTime), v...))
-	})
+	return predicate.CareerSkill(sql.FieldNotIn(FieldUpdateTime, vs...))
 }
 
 // UpdateTimeGT applies the GT predicate on the "update_time" field.
 func UpdateTimeGT(v time.Time) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdateTime), v))
-	})
+	return predicate.CareerSkill(sql.FieldGT(FieldUpdateTime, v))
 }
 
 // UpdateTimeGTE applies the GTE predicate on the "update_time" field.
 func UpdateTimeGTE(v time.Time) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdateTime), v))
-	})
+	return predicate.CareerSkill(sql.FieldGTE(FieldUpdateTime, v))
 }
 
 // UpdateTimeLT applies the LT predicate on the "update_time" field.
 func UpdateTimeLT(v time.Time) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdateTime), v))
-	})
+	return predicate.CareerSkill(sql.FieldLT(FieldUpdateTime, v))
 }
 
 // UpdateTimeLTE applies the LTE predicate on the "update_time" field.
 func UpdateTimeLTE(v time.Time) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdateTime), v))
-	})
+	return predicate.CareerSkill(sql.FieldLTE(FieldUpdateTime, v))
 }
 
 // VersionEQ applies the EQ predicate on the "version" field.
 func VersionEQ(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldVersion), v))
-	})
+	return predicate.CareerSkill(sql.FieldEQ(FieldVersion, v))
 }
 
 // VersionNEQ applies the NEQ predicate on the "version" field.
 func VersionNEQ(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldVersion), v))
-	})
+	return predicate.CareerSkill(sql.FieldNEQ(FieldVersion, v))
 }
 
 // VersionIn applies the In predicate on the "version" field.
 func VersionIn(vs ...string) predicate.CareerSkill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldVersion), v...))
-	})
+	return predicate.CareerSkill(sql.FieldIn(FieldVersion, vs...))
 }
 
 // VersionNotIn applies the NotIn predicate on the "version" field.
 func VersionNotIn(vs ...string) predicate.CareerSkill {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldVersion), v...))
-	})
+	return predicate.CareerSkill(sql.FieldNotIn(FieldVersion, vs...))
 }
 
 // VersionGT applies the GT predicate on the "version" field.
 func VersionGT(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldVersion), v))
-	})
+	return predicate.CareerSkill(sql.FieldGT(FieldVersion, v))
 }
 
 // VersionGTE applies the GTE predicate on the "version" field.
 func VersionGTE(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldVersion), v))
-	})
+	return predicate.CareerSkill(sql.FieldGTE(FieldVersion, v))
 }
 
 // VersionLT applies the LT predicate on the "version" field.
 func VersionLT(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldVersion), v))
-	})
+	return predicate.CareerSkill(sql.FieldLT(FieldVersion, v))
 }
 
 // VersionLTE applies the LTE predicate on the "version" field.
 func VersionLTE(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldVersion), v))
-	})
+	return predicate.CareerSkill(sql.FieldLTE(FieldVersion, v))
 }
 
 // VersionContains applies the Contains predicate on the "version" field.
 func VersionContains(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldVersion), v))
-	})
+	return predicate.CareerSkill(sql.FieldContains(FieldVersion, v))
 }
 
 // VersionHasPrefix applies the HasPrefix predicate on the "version" field.
 func VersionHasPrefix(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldVersion), v))
-	})
+	return predicate.CareerSkill(sql.FieldHasPrefix(FieldVersion, v))
 }
 
 // VersionHasSuffix applies the HasSuffix predicate on the "version" field.
 func VersionHasSuffix(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldVersion), v))
-	})
+	return predicate.CareerSkill(sql.FieldHasSuffix(FieldVersion, v))
 }
 
 // VersionIsNil applies the IsNil predicate on the "version" field.
 func VersionIsNil() predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldVersion)))
-	})
+	return predicate.CareerSkill(sql.FieldIsNull(FieldVersion))
 }
 
 // VersionNotNil applies the NotNil predicate on the "version" field.
 func VersionNotNil() predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldVersion)))
-	})
+	return predicate.CareerSkill(sql.FieldNotNull(FieldVersion))
 }
 
 // VersionEqualFold applies the EqualFold predicate on the "version" field.
 func VersionEqualFold(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldVersion), v))
-	})
+	return predicate.CareerSkill(sql.FieldEqualFold(FieldVersion, v))
 }
 
 // VersionContainsFold applies the ContainsFold predicate on the "version" field.
 func VersionContainsFold(v string) predicate.CareerSkill {
-	return predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldVersion), v))
-	})
+	return predicate.CareerSkill(sql.FieldContainsFold(FieldVersion, v))
 }
 
 // HasCareerSkillGroup applies the HasEdge predicate on the "careerSkillGroup" edge.
@@ -348,7 +230,6 @@ func HasCareerSkillGroup() predicate.CareerSkill {
 	return predicate.CareerSkill(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareerSkillGroupTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, CareerSkillGroupTable, CareerSkillGroupColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -376,7 +257,6 @@ func HasSkill() predicate.CareerSkill {
 	return predicate.CareerSkill(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(SkillTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, SkillTable, SkillColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

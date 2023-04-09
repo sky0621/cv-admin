@@ -12,321 +12,207 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id int) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.UserNoteItem(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id int) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.UserNoteItem(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id int) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.UserNoteItem(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...int) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.UserNoteItem(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...int) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.UserNoteItem(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id int) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.UserNoteItem(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id int) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.UserNoteItem(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id int) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.UserNoteItem(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id int) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.UserNoteItem(sql.FieldLTE(FieldID, id))
 }
 
 // CreateTime applies equality check predicate on the "create_time" field. It's identical to CreateTimeEQ.
 func CreateTime(v time.Time) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreateTime), v))
-	})
+	return predicate.UserNoteItem(sql.FieldEQ(FieldCreateTime, v))
 }
 
 // UpdateTime applies equality check predicate on the "update_time" field. It's identical to UpdateTimeEQ.
 func UpdateTime(v time.Time) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdateTime), v))
-	})
+	return predicate.UserNoteItem(sql.FieldEQ(FieldUpdateTime, v))
 }
 
 // Text applies equality check predicate on the "text" field. It's identical to TextEQ.
 func Text(v string) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldText), v))
-	})
+	return predicate.UserNoteItem(sql.FieldEQ(FieldText, v))
 }
 
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreateTime), v))
-	})
+	return predicate.UserNoteItem(sql.FieldEQ(FieldCreateTime, v))
 }
 
 // CreateTimeNEQ applies the NEQ predicate on the "create_time" field.
 func CreateTimeNEQ(v time.Time) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreateTime), v))
-	})
+	return predicate.UserNoteItem(sql.FieldNEQ(FieldCreateTime, v))
 }
 
 // CreateTimeIn applies the In predicate on the "create_time" field.
 func CreateTimeIn(vs ...time.Time) predicate.UserNoteItem {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreateTime), v...))
-	})
+	return predicate.UserNoteItem(sql.FieldIn(FieldCreateTime, vs...))
 }
 
 // CreateTimeNotIn applies the NotIn predicate on the "create_time" field.
 func CreateTimeNotIn(vs ...time.Time) predicate.UserNoteItem {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreateTime), v...))
-	})
+	return predicate.UserNoteItem(sql.FieldNotIn(FieldCreateTime, vs...))
 }
 
 // CreateTimeGT applies the GT predicate on the "create_time" field.
 func CreateTimeGT(v time.Time) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreateTime), v))
-	})
+	return predicate.UserNoteItem(sql.FieldGT(FieldCreateTime, v))
 }
 
 // CreateTimeGTE applies the GTE predicate on the "create_time" field.
 func CreateTimeGTE(v time.Time) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreateTime), v))
-	})
+	return predicate.UserNoteItem(sql.FieldGTE(FieldCreateTime, v))
 }
 
 // CreateTimeLT applies the LT predicate on the "create_time" field.
 func CreateTimeLT(v time.Time) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreateTime), v))
-	})
+	return predicate.UserNoteItem(sql.FieldLT(FieldCreateTime, v))
 }
 
 // CreateTimeLTE applies the LTE predicate on the "create_time" field.
 func CreateTimeLTE(v time.Time) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreateTime), v))
-	})
+	return predicate.UserNoteItem(sql.FieldLTE(FieldCreateTime, v))
 }
 
 // UpdateTimeEQ applies the EQ predicate on the "update_time" field.
 func UpdateTimeEQ(v time.Time) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdateTime), v))
-	})
+	return predicate.UserNoteItem(sql.FieldEQ(FieldUpdateTime, v))
 }
 
 // UpdateTimeNEQ applies the NEQ predicate on the "update_time" field.
 func UpdateTimeNEQ(v time.Time) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdateTime), v))
-	})
+	return predicate.UserNoteItem(sql.FieldNEQ(FieldUpdateTime, v))
 }
 
 // UpdateTimeIn applies the In predicate on the "update_time" field.
 func UpdateTimeIn(vs ...time.Time) predicate.UserNoteItem {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdateTime), v...))
-	})
+	return predicate.UserNoteItem(sql.FieldIn(FieldUpdateTime, vs...))
 }
 
 // UpdateTimeNotIn applies the NotIn predicate on the "update_time" field.
 func UpdateTimeNotIn(vs ...time.Time) predicate.UserNoteItem {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdateTime), v...))
-	})
+	return predicate.UserNoteItem(sql.FieldNotIn(FieldUpdateTime, vs...))
 }
 
 // UpdateTimeGT applies the GT predicate on the "update_time" field.
 func UpdateTimeGT(v time.Time) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdateTime), v))
-	})
+	return predicate.UserNoteItem(sql.FieldGT(FieldUpdateTime, v))
 }
 
 // UpdateTimeGTE applies the GTE predicate on the "update_time" field.
 func UpdateTimeGTE(v time.Time) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdateTime), v))
-	})
+	return predicate.UserNoteItem(sql.FieldGTE(FieldUpdateTime, v))
 }
 
 // UpdateTimeLT applies the LT predicate on the "update_time" field.
 func UpdateTimeLT(v time.Time) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdateTime), v))
-	})
+	return predicate.UserNoteItem(sql.FieldLT(FieldUpdateTime, v))
 }
 
 // UpdateTimeLTE applies the LTE predicate on the "update_time" field.
 func UpdateTimeLTE(v time.Time) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdateTime), v))
-	})
+	return predicate.UserNoteItem(sql.FieldLTE(FieldUpdateTime, v))
 }
 
 // TextEQ applies the EQ predicate on the "text" field.
 func TextEQ(v string) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldText), v))
-	})
+	return predicate.UserNoteItem(sql.FieldEQ(FieldText, v))
 }
 
 // TextNEQ applies the NEQ predicate on the "text" field.
 func TextNEQ(v string) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldText), v))
-	})
+	return predicate.UserNoteItem(sql.FieldNEQ(FieldText, v))
 }
 
 // TextIn applies the In predicate on the "text" field.
 func TextIn(vs ...string) predicate.UserNoteItem {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldText), v...))
-	})
+	return predicate.UserNoteItem(sql.FieldIn(FieldText, vs...))
 }
 
 // TextNotIn applies the NotIn predicate on the "text" field.
 func TextNotIn(vs ...string) predicate.UserNoteItem {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldText), v...))
-	})
+	return predicate.UserNoteItem(sql.FieldNotIn(FieldText, vs...))
 }
 
 // TextGT applies the GT predicate on the "text" field.
 func TextGT(v string) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldText), v))
-	})
+	return predicate.UserNoteItem(sql.FieldGT(FieldText, v))
 }
 
 // TextGTE applies the GTE predicate on the "text" field.
 func TextGTE(v string) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldText), v))
-	})
+	return predicate.UserNoteItem(sql.FieldGTE(FieldText, v))
 }
 
 // TextLT applies the LT predicate on the "text" field.
 func TextLT(v string) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldText), v))
-	})
+	return predicate.UserNoteItem(sql.FieldLT(FieldText, v))
 }
 
 // TextLTE applies the LTE predicate on the "text" field.
 func TextLTE(v string) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldText), v))
-	})
+	return predicate.UserNoteItem(sql.FieldLTE(FieldText, v))
 }
 
 // TextContains applies the Contains predicate on the "text" field.
 func TextContains(v string) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldText), v))
-	})
+	return predicate.UserNoteItem(sql.FieldContains(FieldText, v))
 }
 
 // TextHasPrefix applies the HasPrefix predicate on the "text" field.
 func TextHasPrefix(v string) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldText), v))
-	})
+	return predicate.UserNoteItem(sql.FieldHasPrefix(FieldText, v))
 }
 
 // TextHasSuffix applies the HasSuffix predicate on the "text" field.
 func TextHasSuffix(v string) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldText), v))
-	})
+	return predicate.UserNoteItem(sql.FieldHasSuffix(FieldText, v))
 }
 
 // TextEqualFold applies the EqualFold predicate on the "text" field.
 func TextEqualFold(v string) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldText), v))
-	})
+	return predicate.UserNoteItem(sql.FieldEqualFold(FieldText, v))
 }
 
 // TextContainsFold applies the ContainsFold predicate on the "text" field.
 func TextContainsFold(v string) predicate.UserNoteItem {
-	return predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldText), v))
-	})
+	return predicate.UserNoteItem(sql.FieldContainsFold(FieldText, v))
 }
 
 // HasNote applies the HasEdge predicate on the "note" edge.
@@ -334,7 +220,6 @@ func HasNote() predicate.UserNoteItem {
 	return predicate.UserNoteItem(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(NoteTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, NoteTable, NoteColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

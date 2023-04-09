@@ -72,7 +72,7 @@ func (st *SkillTag) assignValues(columns []string, values []any) error {
 // Note that you need to call SkillTag.Unwrap() before calling this method if this SkillTag
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (st *SkillTag) Update() *SkillTagUpdateOne {
-	return (&SkillTagClient{config: st.config}).UpdateOne(st)
+	return NewSkillTagClient(st.config).UpdateOne(st)
 }
 
 // Unwrap unwraps the SkillTag entity that was returned from a transaction after it was closed,
@@ -102,9 +102,3 @@ func (st *SkillTag) String() string {
 
 // SkillTags is a parsable slice of SkillTag.
 type SkillTags []*SkillTag
-
-func (st SkillTags) config(cfg config) {
-	for _i := range st {
-		st[_i].config = cfg
-	}
-}

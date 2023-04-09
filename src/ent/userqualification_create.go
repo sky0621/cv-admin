@@ -131,50 +131,8 @@ func (uqc *UserQualificationCreate) Mutation() *UserQualificationMutation {
 
 // Save creates the UserQualification in the database.
 func (uqc *UserQualificationCreate) Save(ctx context.Context) (*UserQualification, error) {
-	var (
-		err  error
-		node *UserQualification
-	)
 	uqc.defaults()
-	if len(uqc.hooks) == 0 {
-		if err = uqc.check(); err != nil {
-			return nil, err
-		}
-		node, err = uqc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserQualificationMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = uqc.check(); err != nil {
-				return nil, err
-			}
-			uqc.mutation = mutation
-			if node, err = uqc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(uqc.hooks) - 1; i >= 0; i-- {
-			if uqc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = uqc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, uqc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*UserQualification)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from UserQualificationMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*UserQualification, UserQualificationMutation](ctx, uqc.sqlSave, uqc.mutation, uqc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -254,6 +212,9 @@ func (uqc *UserQualificationCreate) check() error {
 }
 
 func (uqc *UserQualificationCreate) sqlSave(ctx context.Context) (*UserQualification, error) {
+	if err := uqc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := uqc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, uqc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -263,19 +224,15 @@ func (uqc *UserQualificationCreate) sqlSave(ctx context.Context) (*UserQualifica
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
+	uqc.mutation.id = &_node.ID
+	uqc.mutation.done = true
 	return _node, nil
 }
 
 func (uqc *UserQualificationCreate) createSpec() (*UserQualification, *sqlgraph.CreateSpec) {
 	var (
 		_node = &UserQualification{config: uqc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: userqualification.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: userqualification.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(userqualification.Table, sqlgraph.NewFieldSpec(userqualification.FieldID, field.TypeInt))
 	)
 	_spec.OnConflict = uqc.conflict
 	if value, ok := uqc.mutation.CreateTime(); ok {
@@ -314,10 +271,7 @@ func (uqc *UserQualificationCreate) createSpec() (*UserQualification, *sqlgraph.
 			Columns: []string{userqualification.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

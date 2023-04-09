@@ -117,14 +117,14 @@ func (uni *UserNoteItem) assignValues(columns []string, values []any) error {
 
 // QueryNote queries the "note" edge of the UserNoteItem entity.
 func (uni *UserNoteItem) QueryNote() *UserNoteQuery {
-	return (&UserNoteItemClient{config: uni.config}).QueryNote(uni)
+	return NewUserNoteItemClient(uni.config).QueryNote(uni)
 }
 
 // Update returns a builder for updating this UserNoteItem.
 // Note that you need to call UserNoteItem.Unwrap() before calling this method if this UserNoteItem
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (uni *UserNoteItem) Update() *UserNoteItemUpdateOne {
-	return (&UserNoteItemClient{config: uni.config}).UpdateOne(uni)
+	return NewUserNoteItemClient(uni.config).UpdateOne(uni)
 }
 
 // Unwrap unwraps the UserNoteItem entity that was returned from a transaction after it was closed,
@@ -157,9 +157,3 @@ func (uni *UserNoteItem) String() string {
 
 // UserNoteItems is a parsable slice of UserNoteItem.
 type UserNoteItems []*UserNoteItem
-
-func (uni UserNoteItems) config(cfg config) {
-	for _i := range uni {
-		uni[_i].config = cfg
-	}
-}

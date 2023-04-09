@@ -19,11 +19,9 @@ import (
 // CareerSkillQuery is the builder for querying CareerSkill entities.
 type CareerSkillQuery struct {
 	config
-	limit                *int
-	offset               *int
-	unique               *bool
+	ctx                  *QueryContext
 	order                []OrderFunc
-	fields               []string
+	inters               []Interceptor
 	predicates           []predicate.CareerSkill
 	withCareerSkillGroup *CareerSkillGroupQuery
 	withSkill            *SkillQuery
@@ -39,26 +37,26 @@ func (csq *CareerSkillQuery) Where(ps ...predicate.CareerSkill) *CareerSkillQuer
 	return csq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (csq *CareerSkillQuery) Limit(limit int) *CareerSkillQuery {
-	csq.limit = &limit
+	csq.ctx.Limit = &limit
 	return csq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (csq *CareerSkillQuery) Offset(offset int) *CareerSkillQuery {
-	csq.offset = &offset
+	csq.ctx.Offset = &offset
 	return csq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (csq *CareerSkillQuery) Unique(unique bool) *CareerSkillQuery {
-	csq.unique = &unique
+	csq.ctx.Unique = &unique
 	return csq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (csq *CareerSkillQuery) Order(o ...OrderFunc) *CareerSkillQuery {
 	csq.order = append(csq.order, o...)
 	return csq
@@ -66,7 +64,7 @@ func (csq *CareerSkillQuery) Order(o ...OrderFunc) *CareerSkillQuery {
 
 // QueryCareerSkillGroup chains the current query on the "careerSkillGroup" edge.
 func (csq *CareerSkillQuery) QueryCareerSkillGroup() *CareerSkillGroupQuery {
-	query := &CareerSkillGroupQuery{config: csq.config}
+	query := (&CareerSkillGroupClient{config: csq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := csq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -88,7 +86,7 @@ func (csq *CareerSkillQuery) QueryCareerSkillGroup() *CareerSkillGroupQuery {
 
 // QuerySkill chains the current query on the "skill" edge.
 func (csq *CareerSkillQuery) QuerySkill() *SkillQuery {
-	query := &SkillQuery{config: csq.config}
+	query := (&SkillClient{config: csq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := csq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -111,7 +109,7 @@ func (csq *CareerSkillQuery) QuerySkill() *SkillQuery {
 // First returns the first CareerSkill entity from the query.
 // Returns a *NotFoundError when no CareerSkill was found.
 func (csq *CareerSkillQuery) First(ctx context.Context) (*CareerSkill, error) {
-	nodes, err := csq.Limit(1).All(ctx)
+	nodes, err := csq.Limit(1).All(setContextOp(ctx, csq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +132,7 @@ func (csq *CareerSkillQuery) FirstX(ctx context.Context) *CareerSkill {
 // Returns a *NotFoundError when no CareerSkill ID was found.
 func (csq *CareerSkillQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = csq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = csq.Limit(1).IDs(setContextOp(ctx, csq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -157,7 +155,7 @@ func (csq *CareerSkillQuery) FirstIDX(ctx context.Context) int {
 // Returns a *NotSingularError when more than one CareerSkill entity is found.
 // Returns a *NotFoundError when no CareerSkill entities are found.
 func (csq *CareerSkillQuery) Only(ctx context.Context) (*CareerSkill, error) {
-	nodes, err := csq.Limit(2).All(ctx)
+	nodes, err := csq.Limit(2).All(setContextOp(ctx, csq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +183,7 @@ func (csq *CareerSkillQuery) OnlyX(ctx context.Context) *CareerSkill {
 // Returns a *NotFoundError when no entities are found.
 func (csq *CareerSkillQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = csq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = csq.Limit(2).IDs(setContextOp(ctx, csq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -210,10 +208,12 @@ func (csq *CareerSkillQuery) OnlyIDX(ctx context.Context) int {
 
 // All executes the query and returns a list of CareerSkills.
 func (csq *CareerSkillQuery) All(ctx context.Context) ([]*CareerSkill, error) {
+	ctx = setContextOp(ctx, csq.ctx, "All")
 	if err := csq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return csq.sqlAll(ctx)
+	qr := querierAll[[]*CareerSkill, *CareerSkillQuery]()
+	return withInterceptors[[]*CareerSkill](ctx, csq, qr, csq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -226,9 +226,12 @@ func (csq *CareerSkillQuery) AllX(ctx context.Context) []*CareerSkill {
 }
 
 // IDs executes the query and returns a list of CareerSkill IDs.
-func (csq *CareerSkillQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
-	if err := csq.Select(careerskill.FieldID).Scan(ctx, &ids); err != nil {
+func (csq *CareerSkillQuery) IDs(ctx context.Context) (ids []int, err error) {
+	if csq.ctx.Unique == nil && csq.path != nil {
+		csq.Unique(true)
+	}
+	ctx = setContextOp(ctx, csq.ctx, "IDs")
+	if err = csq.Select(careerskill.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -245,10 +248,11 @@ func (csq *CareerSkillQuery) IDsX(ctx context.Context) []int {
 
 // Count returns the count of the given query.
 func (csq *CareerSkillQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, csq.ctx, "Count")
 	if err := csq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return csq.sqlCount(ctx)
+	return withInterceptors[int](ctx, csq, querierCount[*CareerSkillQuery](), csq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -262,10 +266,15 @@ func (csq *CareerSkillQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (csq *CareerSkillQuery) Exist(ctx context.Context) (bool, error) {
-	if err := csq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = setContextOp(ctx, csq.ctx, "Exist")
+	switch _, err := csq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return csq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -285,23 +294,22 @@ func (csq *CareerSkillQuery) Clone() *CareerSkillQuery {
 	}
 	return &CareerSkillQuery{
 		config:               csq.config,
-		limit:                csq.limit,
-		offset:               csq.offset,
+		ctx:                  csq.ctx.Clone(),
 		order:                append([]OrderFunc{}, csq.order...),
+		inters:               append([]Interceptor{}, csq.inters...),
 		predicates:           append([]predicate.CareerSkill{}, csq.predicates...),
 		withCareerSkillGroup: csq.withCareerSkillGroup.Clone(),
 		withSkill:            csq.withSkill.Clone(),
 		// clone intermediate query.
-		sql:    csq.sql.Clone(),
-		path:   csq.path,
-		unique: csq.unique,
+		sql:  csq.sql.Clone(),
+		path: csq.path,
 	}
 }
 
 // WithCareerSkillGroup tells the query-builder to eager-load the nodes that are connected to
 // the "careerSkillGroup" edge. The optional arguments are used to configure the query builder of the edge.
 func (csq *CareerSkillQuery) WithCareerSkillGroup(opts ...func(*CareerSkillGroupQuery)) *CareerSkillQuery {
-	query := &CareerSkillGroupQuery{config: csq.config}
+	query := (&CareerSkillGroupClient{config: csq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -312,7 +320,7 @@ func (csq *CareerSkillQuery) WithCareerSkillGroup(opts ...func(*CareerSkillGroup
 // WithSkill tells the query-builder to eager-load the nodes that are connected to
 // the "skill" edge. The optional arguments are used to configure the query builder of the edge.
 func (csq *CareerSkillQuery) WithSkill(opts ...func(*SkillQuery)) *CareerSkillQuery {
-	query := &SkillQuery{config: csq.config}
+	query := (&SkillClient{config: csq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -335,16 +343,11 @@ func (csq *CareerSkillQuery) WithSkill(opts ...func(*SkillQuery)) *CareerSkillQu
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (csq *CareerSkillQuery) GroupBy(field string, fields ...string) *CareerSkillGroupBy {
-	grbuild := &CareerSkillGroupBy{config: csq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := csq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return csq.sqlQuery(ctx), nil
-	}
+	csq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &CareerSkillGroupBy{build: csq}
+	grbuild.flds = &csq.ctx.Fields
 	grbuild.label = careerskill.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -361,11 +364,11 @@ func (csq *CareerSkillQuery) GroupBy(field string, fields ...string) *CareerSkil
 //		Select(careerskill.FieldCreateTime).
 //		Scan(ctx, &v)
 func (csq *CareerSkillQuery) Select(fields ...string) *CareerSkillSelect {
-	csq.fields = append(csq.fields, fields...)
-	selbuild := &CareerSkillSelect{CareerSkillQuery: csq}
-	selbuild.label = careerskill.Label
-	selbuild.flds, selbuild.scan = &csq.fields, selbuild.Scan
-	return selbuild
+	csq.ctx.Fields = append(csq.ctx.Fields, fields...)
+	sbuild := &CareerSkillSelect{CareerSkillQuery: csq}
+	sbuild.label = careerskill.Label
+	sbuild.flds, sbuild.scan = &csq.ctx.Fields, sbuild.Scan
+	return sbuild
 }
 
 // Aggregate returns a CareerSkillSelect configured with the given aggregations.
@@ -374,7 +377,17 @@ func (csq *CareerSkillQuery) Aggregate(fns ...AggregateFunc) *CareerSkillSelect 
 }
 
 func (csq *CareerSkillQuery) prepareQuery(ctx context.Context) error {
-	for _, f := range csq.fields {
+	for _, inter := range csq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, csq); err != nil {
+				return err
+			}
+		}
+	}
+	for _, f := range csq.ctx.Fields {
 		if !careerskill.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -451,6 +464,9 @@ func (csq *CareerSkillQuery) loadCareerSkillGroup(ctx context.Context, query *Ca
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(careerskillgroup.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -480,6 +496,9 @@ func (csq *CareerSkillQuery) loadSkill(ctx context.Context, query *SkillQuery, n
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(skill.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -499,41 +518,22 @@ func (csq *CareerSkillQuery) loadSkill(ctx context.Context, query *SkillQuery, n
 
 func (csq *CareerSkillQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := csq.querySpec()
-	_spec.Node.Columns = csq.fields
-	if len(csq.fields) > 0 {
-		_spec.Unique = csq.unique != nil && *csq.unique
+	_spec.Node.Columns = csq.ctx.Fields
+	if len(csq.ctx.Fields) > 0 {
+		_spec.Unique = csq.ctx.Unique != nil && *csq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, csq.driver, _spec)
 }
 
-func (csq *CareerSkillQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := csq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (csq *CareerSkillQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   careerskill.Table,
-			Columns: careerskill.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: careerskill.FieldID,
-			},
-		},
-		From:   csq.sql,
-		Unique: true,
-	}
-	if unique := csq.unique; unique != nil {
+	_spec := sqlgraph.NewQuerySpec(careerskill.Table, careerskill.Columns, sqlgraph.NewFieldSpec(careerskill.FieldID, field.TypeInt))
+	_spec.From = csq.sql
+	if unique := csq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if csq.path != nil {
+		_spec.Unique = true
 	}
-	if fields := csq.fields; len(fields) > 0 {
+	if fields := csq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, careerskill.FieldID)
 		for i := range fields {
@@ -549,10 +549,10 @@ func (csq *CareerSkillQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := csq.limit; limit != nil {
+	if limit := csq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := csq.offset; offset != nil {
+	if offset := csq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := csq.order; len(ps) > 0 {
@@ -568,7 +568,7 @@ func (csq *CareerSkillQuery) querySpec() *sqlgraph.QuerySpec {
 func (csq *CareerSkillQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(csq.driver.Dialect())
 	t1 := builder.Table(careerskill.Table)
-	columns := csq.fields
+	columns := csq.ctx.Fields
 	if len(columns) == 0 {
 		columns = careerskill.Columns
 	}
@@ -577,7 +577,7 @@ func (csq *CareerSkillQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = csq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if csq.unique != nil && *csq.unique {
+	if csq.ctx.Unique != nil && *csq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range csq.predicates {
@@ -586,12 +586,12 @@ func (csq *CareerSkillQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range csq.order {
 		p(selector)
 	}
-	if offset := csq.offset; offset != nil {
+	if offset := csq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := csq.limit; limit != nil {
+	if limit := csq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -599,13 +599,8 @@ func (csq *CareerSkillQuery) sqlQuery(ctx context.Context) *sql.Selector {
 
 // CareerSkillGroupBy is the group-by builder for CareerSkill entities.
 type CareerSkillGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *CareerSkillQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -614,58 +609,46 @@ func (csgb *CareerSkillGroupBy) Aggregate(fns ...AggregateFunc) *CareerSkillGrou
 	return csgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (csgb *CareerSkillGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := csgb.path(ctx)
-	if err != nil {
+	ctx = setContextOp(ctx, csgb.build.ctx, "GroupBy")
+	if err := csgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	csgb.sql = query
-	return csgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*CareerSkillQuery, *CareerSkillGroupBy](ctx, csgb.build, csgb, csgb.build.inters, v)
 }
 
-func (csgb *CareerSkillGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range csgb.fields {
-		if !careerskill.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (csgb *CareerSkillGroupBy) sqlScan(ctx context.Context, root *CareerSkillQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(csgb.fns))
+	for _, fn := range csgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := csgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*csgb.flds)+len(csgb.fns))
+		for _, f := range *csgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*csgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := csgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := csgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (csgb *CareerSkillGroupBy) sqlQuery() *sql.Selector {
-	selector := csgb.sql.Select()
-	aggregation := make([]string, 0, len(csgb.fns))
-	for _, fn := range csgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(csgb.fields)+len(csgb.fns))
-		for _, f := range csgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(csgb.fields...)...)
-}
-
 // CareerSkillSelect is the builder for selecting fields of CareerSkill entities.
 type CareerSkillSelect struct {
 	*CareerSkillQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
@@ -676,26 +659,27 @@ func (css *CareerSkillSelect) Aggregate(fns ...AggregateFunc) *CareerSkillSelect
 
 // Scan applies the selector query and scans the result into the given value.
 func (css *CareerSkillSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, css.ctx, "Select")
 	if err := css.prepareQuery(ctx); err != nil {
 		return err
 	}
-	css.sql = css.CareerSkillQuery.sqlQuery(ctx)
-	return css.sqlScan(ctx, v)
+	return scanWithInterceptors[*CareerSkillQuery, *CareerSkillSelect](ctx, css.CareerSkillQuery, css, css.inters, v)
 }
 
-func (css *CareerSkillSelect) sqlScan(ctx context.Context, v any) error {
+func (css *CareerSkillSelect) sqlScan(ctx context.Context, root *CareerSkillQuery, v any) error {
+	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(css.fns))
 	for _, fn := range css.fns {
-		aggregation = append(aggregation, fn(css.sql))
+		aggregation = append(aggregation, fn(selector))
 	}
 	switch n := len(*css.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
-		css.sql.Select(aggregation...)
+		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
-		css.sql.AppendSelect(aggregation...)
+		selector.AppendSelect(aggregation...)
 	}
 	rows := &sql.Rows{}
-	query, args := css.sql.Query()
+	query, args := selector.Query()
 	if err := css.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

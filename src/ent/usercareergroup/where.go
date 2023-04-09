@@ -12,314 +12,202 @@ import (
 
 // ID filters vertices based on their ID field.
 func ID(id int) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.UserCareerGroup(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
 func IDEQ(id int) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldID), id))
-	})
+	return predicate.UserCareerGroup(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
 func IDNEQ(id int) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldID), id))
-	})
+	return predicate.UserCareerGroup(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
 func IDIn(ids ...int) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.In(s.C(FieldID), v...))
-	})
+	return predicate.UserCareerGroup(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
 func IDNotIn(ids ...int) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		v := make([]any, len(ids))
-		for i := range v {
-			v[i] = ids[i]
-		}
-		s.Where(sql.NotIn(s.C(FieldID), v...))
-	})
+	return predicate.UserCareerGroup(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
 func IDGT(id int) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldID), id))
-	})
+	return predicate.UserCareerGroup(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
 func IDGTE(id int) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldID), id))
-	})
+	return predicate.UserCareerGroup(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
 func IDLT(id int) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldID), id))
-	})
+	return predicate.UserCareerGroup(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
 func IDLTE(id int) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldID), id))
-	})
+	return predicate.UserCareerGroup(sql.FieldLTE(FieldID, id))
 }
 
 // CreateTime applies equality check predicate on the "create_time" field. It's identical to CreateTimeEQ.
 func CreateTime(v time.Time) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreateTime), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldEQ(FieldCreateTime, v))
 }
 
 // UpdateTime applies equality check predicate on the "update_time" field. It's identical to UpdateTimeEQ.
 func UpdateTime(v time.Time) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdateTime), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldEQ(FieldUpdateTime, v))
 }
 
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldCreateTime), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldEQ(FieldCreateTime, v))
 }
 
 // CreateTimeNEQ applies the NEQ predicate on the "create_time" field.
 func CreateTimeNEQ(v time.Time) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldCreateTime), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldNEQ(FieldCreateTime, v))
 }
 
 // CreateTimeIn applies the In predicate on the "create_time" field.
 func CreateTimeIn(vs ...time.Time) predicate.UserCareerGroup {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldCreateTime), v...))
-	})
+	return predicate.UserCareerGroup(sql.FieldIn(FieldCreateTime, vs...))
 }
 
 // CreateTimeNotIn applies the NotIn predicate on the "create_time" field.
 func CreateTimeNotIn(vs ...time.Time) predicate.UserCareerGroup {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldCreateTime), v...))
-	})
+	return predicate.UserCareerGroup(sql.FieldNotIn(FieldCreateTime, vs...))
 }
 
 // CreateTimeGT applies the GT predicate on the "create_time" field.
 func CreateTimeGT(v time.Time) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldCreateTime), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldGT(FieldCreateTime, v))
 }
 
 // CreateTimeGTE applies the GTE predicate on the "create_time" field.
 func CreateTimeGTE(v time.Time) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldCreateTime), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldGTE(FieldCreateTime, v))
 }
 
 // CreateTimeLT applies the LT predicate on the "create_time" field.
 func CreateTimeLT(v time.Time) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldCreateTime), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldLT(FieldCreateTime, v))
 }
 
 // CreateTimeLTE applies the LTE predicate on the "create_time" field.
 func CreateTimeLTE(v time.Time) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldCreateTime), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldLTE(FieldCreateTime, v))
 }
 
 // UpdateTimeEQ applies the EQ predicate on the "update_time" field.
 func UpdateTimeEQ(v time.Time) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldUpdateTime), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldEQ(FieldUpdateTime, v))
 }
 
 // UpdateTimeNEQ applies the NEQ predicate on the "update_time" field.
 func UpdateTimeNEQ(v time.Time) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldUpdateTime), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldNEQ(FieldUpdateTime, v))
 }
 
 // UpdateTimeIn applies the In predicate on the "update_time" field.
 func UpdateTimeIn(vs ...time.Time) predicate.UserCareerGroup {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldUpdateTime), v...))
-	})
+	return predicate.UserCareerGroup(sql.FieldIn(FieldUpdateTime, vs...))
 }
 
 // UpdateTimeNotIn applies the NotIn predicate on the "update_time" field.
 func UpdateTimeNotIn(vs ...time.Time) predicate.UserCareerGroup {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldUpdateTime), v...))
-	})
+	return predicate.UserCareerGroup(sql.FieldNotIn(FieldUpdateTime, vs...))
 }
 
 // UpdateTimeGT applies the GT predicate on the "update_time" field.
 func UpdateTimeGT(v time.Time) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldUpdateTime), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldGT(FieldUpdateTime, v))
 }
 
 // UpdateTimeGTE applies the GTE predicate on the "update_time" field.
 func UpdateTimeGTE(v time.Time) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldUpdateTime), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldGTE(FieldUpdateTime, v))
 }
 
 // UpdateTimeLT applies the LT predicate on the "update_time" field.
 func UpdateTimeLT(v time.Time) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldUpdateTime), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldLT(FieldUpdateTime, v))
 }
 
 // UpdateTimeLTE applies the LTE predicate on the "update_time" field.
 func UpdateTimeLTE(v time.Time) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldUpdateTime), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldLTE(FieldUpdateTime, v))
 }
 
 // LabelEQ applies the EQ predicate on the "label" field.
 func LabelEQ(v string) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldLabel), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldEQ(FieldLabel, v))
 }
 
 // LabelNEQ applies the NEQ predicate on the "label" field.
 func LabelNEQ(v string) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldLabel), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldNEQ(FieldLabel, v))
 }
 
 // LabelIn applies the In predicate on the "label" field.
 func LabelIn(vs ...string) predicate.UserCareerGroup {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldLabel), v...))
-	})
+	return predicate.UserCareerGroup(sql.FieldIn(FieldLabel, vs...))
 }
 
 // LabelNotIn applies the NotIn predicate on the "label" field.
 func LabelNotIn(vs ...string) predicate.UserCareerGroup {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldLabel), v...))
-	})
+	return predicate.UserCareerGroup(sql.FieldNotIn(FieldLabel, vs...))
 }
 
 // LabelGT applies the GT predicate on the "label" field.
 func LabelGT(v string) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldLabel), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldGT(FieldLabel, v))
 }
 
 // LabelGTE applies the GTE predicate on the "label" field.
 func LabelGTE(v string) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldLabel), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldGTE(FieldLabel, v))
 }
 
 // LabelLT applies the LT predicate on the "label" field.
 func LabelLT(v string) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldLabel), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldLT(FieldLabel, v))
 }
 
 // LabelLTE applies the LTE predicate on the "label" field.
 func LabelLTE(v string) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldLabel), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldLTE(FieldLabel, v))
 }
 
 // LabelContains applies the Contains predicate on the "label" field.
 func LabelContains(v string) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldLabel), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldContains(FieldLabel, v))
 }
 
 // LabelHasPrefix applies the HasPrefix predicate on the "label" field.
 func LabelHasPrefix(v string) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldLabel), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldHasPrefix(FieldLabel, v))
 }
 
 // LabelHasSuffix applies the HasSuffix predicate on the "label" field.
 func LabelHasSuffix(v string) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldLabel), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldHasSuffix(FieldLabel, v))
 }
 
 // LabelEqualFold applies the EqualFold predicate on the "label" field.
 func LabelEqualFold(v string) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldLabel), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldEqualFold(FieldLabel, v))
 }
 
 // LabelContainsFold applies the ContainsFold predicate on the "label" field.
 func LabelContainsFold(v string) predicate.UserCareerGroup {
-	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldLabel), v))
-	})
+	return predicate.UserCareerGroup(sql.FieldContainsFold(FieldLabel, v))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.
@@ -327,7 +215,6 @@ func HasUser() predicate.UserCareerGroup {
 	return predicate.UserCareerGroup(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(UserTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
@@ -355,7 +242,6 @@ func HasCareers() predicate.UserCareerGroup {
 	return predicate.UserCareerGroup(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareersTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, CareersTable, CareersColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)

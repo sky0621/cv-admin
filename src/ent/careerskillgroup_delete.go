@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,34 +27,7 @@ func (csgd *CareerSkillGroupDelete) Where(ps ...predicate.CareerSkillGroup) *Car
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (csgd *CareerSkillGroupDelete) Exec(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(csgd.hooks) == 0 {
-		affected, err = csgd.sqlExec(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CareerSkillGroupMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			csgd.mutation = mutation
-			affected, err = csgd.sqlExec(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(csgd.hooks) - 1; i >= 0; i-- {
-			if csgd.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = csgd.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, csgd.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, CareerSkillGroupMutation](ctx, csgd.sqlExec, csgd.mutation, csgd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
@@ -68,15 +40,7 @@ func (csgd *CareerSkillGroupDelete) ExecX(ctx context.Context) int {
 }
 
 func (csgd *CareerSkillGroupDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: careerskillgroup.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: careerskillgroup.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(careerskillgroup.Table, sqlgraph.NewFieldSpec(careerskillgroup.FieldID, field.TypeInt))
 	if ps := csgd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -88,12 +52,19 @@ func (csgd *CareerSkillGroupDelete) sqlExec(ctx context.Context) (int, error) {
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
+	csgd.mutation.done = true
 	return affected, err
 }
 
 // CareerSkillGroupDeleteOne is the builder for deleting a single CareerSkillGroup entity.
 type CareerSkillGroupDeleteOne struct {
 	csgd *CareerSkillGroupDelete
+}
+
+// Where appends a list predicates to the CareerSkillGroupDelete builder.
+func (csgdo *CareerSkillGroupDeleteOne) Where(ps ...predicate.CareerSkillGroup) *CareerSkillGroupDeleteOne {
+	csgdo.csgd.mutation.Where(ps...)
+	return csgdo
 }
 
 // Exec executes the deletion query.
@@ -111,5 +82,7 @@ func (csgdo *CareerSkillGroupDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (csgdo *CareerSkillGroupDeleteOne) ExecX(ctx context.Context) {
-	csgdo.csgd.ExecX(ctx)
+	if err := csgdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

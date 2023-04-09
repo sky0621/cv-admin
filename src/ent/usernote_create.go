@@ -105,50 +105,8 @@ func (unc *UserNoteCreate) Mutation() *UserNoteMutation {
 
 // Save creates the UserNote in the database.
 func (unc *UserNoteCreate) Save(ctx context.Context) (*UserNote, error) {
-	var (
-		err  error
-		node *UserNote
-	)
 	unc.defaults()
-	if len(unc.hooks) == 0 {
-		if err = unc.check(); err != nil {
-			return nil, err
-		}
-		node, err = unc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserNoteMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = unc.check(); err != nil {
-				return nil, err
-			}
-			unc.mutation = mutation
-			if node, err = unc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(unc.hooks) - 1; i >= 0; i-- {
-			if unc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = unc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, unc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*UserNote)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from UserNoteMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*UserNote, UserNoteMutation](ctx, unc.sqlSave, unc.mutation, unc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -213,6 +171,9 @@ func (unc *UserNoteCreate) check() error {
 }
 
 func (unc *UserNoteCreate) sqlSave(ctx context.Context) (*UserNote, error) {
+	if err := unc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := unc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, unc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -222,19 +183,15 @@ func (unc *UserNoteCreate) sqlSave(ctx context.Context) (*UserNote, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
+	unc.mutation.id = &_node.ID
+	unc.mutation.done = true
 	return _node, nil
 }
 
 func (unc *UserNoteCreate) createSpec() (*UserNote, *sqlgraph.CreateSpec) {
 	var (
 		_node = &UserNote{config: unc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: usernote.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: usernote.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(usernote.Table, sqlgraph.NewFieldSpec(usernote.FieldID, field.TypeInt))
 	)
 	_spec.OnConflict = unc.conflict
 	if value, ok := unc.mutation.CreateTime(); ok {
@@ -261,10 +218,7 @@ func (unc *UserNoteCreate) createSpec() (*UserNote, *sqlgraph.CreateSpec) {
 			Columns: []string{usernote.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -281,10 +235,7 @@ func (unc *UserNoteCreate) createSpec() (*UserNote, *sqlgraph.CreateSpec) {
 			Columns: []string{usernote.NoteItemsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usernoteitem.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usernoteitem.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

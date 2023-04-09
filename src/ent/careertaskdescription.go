@@ -98,14 +98,14 @@ func (ctd *CareerTaskDescription) assignValues(columns []string, values []any) e
 
 // QueryCareerTask queries the "careerTask" edge of the CareerTaskDescription entity.
 func (ctd *CareerTaskDescription) QueryCareerTask() *CareerTaskQuery {
-	return (&CareerTaskDescriptionClient{config: ctd.config}).QueryCareerTask(ctd)
+	return NewCareerTaskDescriptionClient(ctd.config).QueryCareerTask(ctd)
 }
 
 // Update returns a builder for updating this CareerTaskDescription.
 // Note that you need to call CareerTaskDescription.Unwrap() before calling this method if this CareerTaskDescription
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (ctd *CareerTaskDescription) Update() *CareerTaskDescriptionUpdateOne {
-	return (&CareerTaskDescriptionClient{config: ctd.config}).UpdateOne(ctd)
+	return NewCareerTaskDescriptionClient(ctd.config).UpdateOne(ctd)
 }
 
 // Unwrap unwraps the CareerTaskDescription entity that was returned from a transaction after it was closed,
@@ -132,9 +132,3 @@ func (ctd *CareerTaskDescription) String() string {
 
 // CareerTaskDescriptions is a parsable slice of CareerTaskDescription.
 type CareerTaskDescriptions []*CareerTaskDescription
-
-func (ctd CareerTaskDescriptions) config(cfg config) {
-	for _i := range ctd {
-		ctd[_i].config = cfg
-	}
-}

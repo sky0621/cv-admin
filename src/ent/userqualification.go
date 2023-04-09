@@ -153,14 +153,14 @@ func (uq *UserQualification) assignValues(columns []string, values []any) error 
 
 // QueryUser queries the "user" edge of the UserQualification entity.
 func (uq *UserQualification) QueryUser() *UserQuery {
-	return (&UserQualificationClient{config: uq.config}).QueryUser(uq)
+	return NewUserQualificationClient(uq.config).QueryUser(uq)
 }
 
 // Update returns a builder for updating this UserQualification.
 // Note that you need to call UserQualification.Unwrap() before calling this method if this UserQualification
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (uq *UserQualification) Update() *UserQualificationUpdateOne {
-	return (&UserQualificationClient{config: uq.config}).UpdateOne(uq)
+	return NewUserQualificationClient(uq.config).UpdateOne(uq)
 }
 
 // Unwrap unwraps the UserQualification entity that was returned from a transaction after it was closed,
@@ -213,9 +213,3 @@ func (uq *UserQualification) String() string {
 
 // UserQualifications is a parsable slice of UserQualification.
 type UserQualifications []*UserQualification
-
-func (uq UserQualifications) config(cfg config) {
-	for _i := range uq {
-		uq[_i].config = cfg
-	}
-}

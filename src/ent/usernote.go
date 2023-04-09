@@ -137,19 +137,19 @@ func (un *UserNote) assignValues(columns []string, values []any) error {
 
 // QueryUser queries the "user" edge of the UserNote entity.
 func (un *UserNote) QueryUser() *UserQuery {
-	return (&UserNoteClient{config: un.config}).QueryUser(un)
+	return NewUserNoteClient(un.config).QueryUser(un)
 }
 
 // QueryNoteItems queries the "noteItems" edge of the UserNote entity.
 func (un *UserNote) QueryNoteItems() *UserNoteItemQuery {
-	return (&UserNoteClient{config: un.config}).QueryNoteItems(un)
+	return NewUserNoteClient(un.config).QueryNoteItems(un)
 }
 
 // Update returns a builder for updating this UserNote.
 // Note that you need to call UserNote.Unwrap() before calling this method if this UserNote
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (un *UserNote) Update() *UserNoteUpdateOne {
-	return (&UserNoteClient{config: un.config}).UpdateOne(un)
+	return NewUserNoteClient(un.config).UpdateOne(un)
 }
 
 // Unwrap unwraps the UserNote entity that was returned from a transaction after it was closed,
@@ -187,9 +187,3 @@ func (un *UserNote) String() string {
 
 // UserNotes is a parsable slice of UserNote.
 type UserNotes []*UserNote
-
-func (un UserNotes) config(cfg config) {
-	for _i := range un {
-		un[_i].config = cfg
-	}
-}

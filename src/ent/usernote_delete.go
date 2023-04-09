@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,34 +27,7 @@ func (und *UserNoteDelete) Where(ps ...predicate.UserNote) *UserNoteDelete {
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (und *UserNoteDelete) Exec(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(und.hooks) == 0 {
-		affected, err = und.sqlExec(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserNoteMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			und.mutation = mutation
-			affected, err = und.sqlExec(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(und.hooks) - 1; i >= 0; i-- {
-			if und.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = und.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, und.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, UserNoteMutation](ctx, und.sqlExec, und.mutation, und.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
@@ -68,15 +40,7 @@ func (und *UserNoteDelete) ExecX(ctx context.Context) int {
 }
 
 func (und *UserNoteDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: usernote.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: usernote.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(usernote.Table, sqlgraph.NewFieldSpec(usernote.FieldID, field.TypeInt))
 	if ps := und.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -88,12 +52,19 @@ func (und *UserNoteDelete) sqlExec(ctx context.Context) (int, error) {
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
+	und.mutation.done = true
 	return affected, err
 }
 
 // UserNoteDeleteOne is the builder for deleting a single UserNote entity.
 type UserNoteDeleteOne struct {
 	und *UserNoteDelete
+}
+
+// Where appends a list predicates to the UserNoteDelete builder.
+func (undo *UserNoteDeleteOne) Where(ps ...predicate.UserNote) *UserNoteDeleteOne {
+	undo.und.mutation.Where(ps...)
+	return undo
 }
 
 // Exec executes the deletion query.
@@ -111,5 +82,7 @@ func (undo *UserNoteDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (undo *UserNoteDeleteOne) ExecX(ctx context.Context) {
-	undo.und.ExecX(ctx)
+	if err := undo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

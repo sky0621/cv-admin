@@ -65,41 +65,8 @@ func (uniu *UserNoteItemUpdate) ClearNote() *UserNoteItemUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uniu *UserNoteItemUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	uniu.defaults()
-	if len(uniu.hooks) == 0 {
-		if err = uniu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = uniu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserNoteItemMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = uniu.check(); err != nil {
-				return 0, err
-			}
-			uniu.mutation = mutation
-			affected, err = uniu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(uniu.hooks) - 1; i >= 0; i-- {
-			if uniu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = uniu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, uniu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, UserNoteItemMutation](ctx, uniu.sqlSave, uniu.mutation, uniu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -146,16 +113,10 @@ func (uniu *UserNoteItemUpdate) check() error {
 }
 
 func (uniu *UserNoteItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   usernoteitem.Table,
-			Columns: usernoteitem.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: usernoteitem.FieldID,
-			},
-		},
+	if err := uniu.check(); err != nil {
+		return n, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(usernoteitem.Table, usernoteitem.Columns, sqlgraph.NewFieldSpec(usernoteitem.FieldID, field.TypeInt))
 	if ps := uniu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -177,10 +138,7 @@ func (uniu *UserNoteItemUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Columns: []string{usernoteitem.NoteColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usernote.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usernote.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -193,10 +151,7 @@ func (uniu *UserNoteItemUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			Columns: []string{usernoteitem.NoteColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usernote.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usernote.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -212,6 +167,7 @@ func (uniu *UserNoteItemUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		return 0, err
 	}
+	uniu.mutation.done = true
 	return n, nil
 }
 
@@ -257,6 +213,12 @@ func (uniuo *UserNoteItemUpdateOne) ClearNote() *UserNoteItemUpdateOne {
 	return uniuo
 }
 
+// Where appends a list predicates to the UserNoteItemUpdate builder.
+func (uniuo *UserNoteItemUpdateOne) Where(ps ...predicate.UserNoteItem) *UserNoteItemUpdateOne {
+	uniuo.mutation.Where(ps...)
+	return uniuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (uniuo *UserNoteItemUpdateOne) Select(field string, fields ...string) *UserNoteItemUpdateOne {
@@ -266,47 +228,8 @@ func (uniuo *UserNoteItemUpdateOne) Select(field string, fields ...string) *User
 
 // Save executes the query and returns the updated UserNoteItem entity.
 func (uniuo *UserNoteItemUpdateOne) Save(ctx context.Context) (*UserNoteItem, error) {
-	var (
-		err  error
-		node *UserNoteItem
-	)
 	uniuo.defaults()
-	if len(uniuo.hooks) == 0 {
-		if err = uniuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = uniuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserNoteItemMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = uniuo.check(); err != nil {
-				return nil, err
-			}
-			uniuo.mutation = mutation
-			node, err = uniuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(uniuo.hooks) - 1; i >= 0; i-- {
-			if uniuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = uniuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, uniuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*UserNoteItem)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from UserNoteItemMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*UserNoteItem, UserNoteItemMutation](ctx, uniuo.sqlSave, uniuo.mutation, uniuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -353,16 +276,10 @@ func (uniuo *UserNoteItemUpdateOne) check() error {
 }
 
 func (uniuo *UserNoteItemUpdateOne) sqlSave(ctx context.Context) (_node *UserNoteItem, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   usernoteitem.Table,
-			Columns: usernoteitem.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: usernoteitem.FieldID,
-			},
-		},
+	if err := uniuo.check(); err != nil {
+		return _node, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(usernoteitem.Table, usernoteitem.Columns, sqlgraph.NewFieldSpec(usernoteitem.FieldID, field.TypeInt))
 	id, ok := uniuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "UserNoteItem.id" for update`)}
@@ -401,10 +318,7 @@ func (uniuo *UserNoteItemUpdateOne) sqlSave(ctx context.Context) (_node *UserNot
 			Columns: []string{usernoteitem.NoteColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usernote.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usernote.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -417,10 +331,7 @@ func (uniuo *UserNoteItemUpdateOne) sqlSave(ctx context.Context) (_node *UserNot
 			Columns: []string{usernoteitem.NoteColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usernote.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usernote.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -439,5 +350,6 @@ func (uniuo *UserNoteItemUpdateOne) sqlSave(ctx context.Context) (_node *UserNot
 		}
 		return nil, err
 	}
+	uniuo.mutation.done = true
 	return _node, nil
 }

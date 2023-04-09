@@ -58,40 +58,7 @@ func (ucdu *UserCareerDescriptionUpdate) ClearCareer() *UserCareerDescriptionUpd
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ucdu *UserCareerDescriptionUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(ucdu.hooks) == 0 {
-		if err = ucdu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = ucdu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserCareerDescriptionMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ucdu.check(); err != nil {
-				return 0, err
-			}
-			ucdu.mutation = mutation
-			affected, err = ucdu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(ucdu.hooks) - 1; i >= 0; i-- {
-			if ucdu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ucdu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, ucdu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, UserCareerDescriptionMutation](ctx, ucdu.sqlSave, ucdu.mutation, ucdu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -130,16 +97,10 @@ func (ucdu *UserCareerDescriptionUpdate) check() error {
 }
 
 func (ucdu *UserCareerDescriptionUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   usercareerdescription.Table,
-			Columns: usercareerdescription.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: usercareerdescription.FieldID,
-			},
-		},
+	if err := ucdu.check(); err != nil {
+		return n, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(usercareerdescription.Table, usercareerdescription.Columns, sqlgraph.NewFieldSpec(usercareerdescription.FieldID, field.TypeInt))
 	if ps := ucdu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -158,10 +119,7 @@ func (ucdu *UserCareerDescriptionUpdate) sqlSave(ctx context.Context) (n int, er
 			Columns: []string{usercareerdescription.CareerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usercareer.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usercareer.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -174,10 +132,7 @@ func (ucdu *UserCareerDescriptionUpdate) sqlSave(ctx context.Context) (n int, er
 			Columns: []string{usercareerdescription.CareerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usercareer.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usercareer.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -193,6 +148,7 @@ func (ucdu *UserCareerDescriptionUpdate) sqlSave(ctx context.Context) (n int, er
 		}
 		return 0, err
 	}
+	ucdu.mutation.done = true
 	return n, nil
 }
 
@@ -232,6 +188,12 @@ func (ucduo *UserCareerDescriptionUpdateOne) ClearCareer() *UserCareerDescriptio
 	return ucduo
 }
 
+// Where appends a list predicates to the UserCareerDescriptionUpdate builder.
+func (ucduo *UserCareerDescriptionUpdateOne) Where(ps ...predicate.UserCareerDescription) *UserCareerDescriptionUpdateOne {
+	ucduo.mutation.Where(ps...)
+	return ucduo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (ucduo *UserCareerDescriptionUpdateOne) Select(field string, fields ...string) *UserCareerDescriptionUpdateOne {
@@ -241,46 +203,7 @@ func (ucduo *UserCareerDescriptionUpdateOne) Select(field string, fields ...stri
 
 // Save executes the query and returns the updated UserCareerDescription entity.
 func (ucduo *UserCareerDescriptionUpdateOne) Save(ctx context.Context) (*UserCareerDescription, error) {
-	var (
-		err  error
-		node *UserCareerDescription
-	)
-	if len(ucduo.hooks) == 0 {
-		if err = ucduo.check(); err != nil {
-			return nil, err
-		}
-		node, err = ucduo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserCareerDescriptionMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ucduo.check(); err != nil {
-				return nil, err
-			}
-			ucduo.mutation = mutation
-			node, err = ucduo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ucduo.hooks) - 1; i >= 0; i-- {
-			if ucduo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ucduo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ucduo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*UserCareerDescription)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from UserCareerDescriptionMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*UserCareerDescription, UserCareerDescriptionMutation](ctx, ucduo.sqlSave, ucduo.mutation, ucduo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -319,16 +242,10 @@ func (ucduo *UserCareerDescriptionUpdateOne) check() error {
 }
 
 func (ucduo *UserCareerDescriptionUpdateOne) sqlSave(ctx context.Context) (_node *UserCareerDescription, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   usercareerdescription.Table,
-			Columns: usercareerdescription.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: usercareerdescription.FieldID,
-			},
-		},
+	if err := ucduo.check(); err != nil {
+		return _node, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(usercareerdescription.Table, usercareerdescription.Columns, sqlgraph.NewFieldSpec(usercareerdescription.FieldID, field.TypeInt))
 	id, ok := ucduo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "UserCareerDescription.id" for update`)}
@@ -364,10 +281,7 @@ func (ucduo *UserCareerDescriptionUpdateOne) sqlSave(ctx context.Context) (_node
 			Columns: []string{usercareerdescription.CareerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usercareer.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usercareer.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -380,10 +294,7 @@ func (ucduo *UserCareerDescriptionUpdateOne) sqlSave(ctx context.Context) (_node
 			Columns: []string{usercareerdescription.CareerColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usercareer.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usercareer.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -402,5 +313,6 @@ func (ucduo *UserCareerDescriptionUpdateOne) sqlSave(ctx context.Context) (_node
 		}
 		return nil, err
 	}
+	ucduo.mutation.done = true
 	return _node, nil
 }

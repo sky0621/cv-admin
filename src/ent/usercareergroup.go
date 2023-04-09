@@ -128,19 +128,19 @@ func (ucg *UserCareerGroup) assignValues(columns []string, values []any) error {
 
 // QueryUser queries the "user" edge of the UserCareerGroup entity.
 func (ucg *UserCareerGroup) QueryUser() *UserQuery {
-	return (&UserCareerGroupClient{config: ucg.config}).QueryUser(ucg)
+	return NewUserCareerGroupClient(ucg.config).QueryUser(ucg)
 }
 
 // QueryCareers queries the "careers" edge of the UserCareerGroup entity.
 func (ucg *UserCareerGroup) QueryCareers() *UserCareerQuery {
-	return (&UserCareerGroupClient{config: ucg.config}).QueryCareers(ucg)
+	return NewUserCareerGroupClient(ucg.config).QueryCareers(ucg)
 }
 
 // Update returns a builder for updating this UserCareerGroup.
 // Note that you need to call UserCareerGroup.Unwrap() before calling this method if this UserCareerGroup
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (ucg *UserCareerGroup) Update() *UserCareerGroupUpdateOne {
-	return (&UserCareerGroupClient{config: ucg.config}).UpdateOne(ucg)
+	return NewUserCareerGroupClient(ucg.config).UpdateOne(ucg)
 }
 
 // Unwrap unwraps the UserCareerGroup entity that was returned from a transaction after it was closed,
@@ -173,9 +173,3 @@ func (ucg *UserCareerGroup) String() string {
 
 // UserCareerGroups is a parsable slice of UserCareerGroup.
 type UserCareerGroups []*UserCareerGroup
-
-func (ucg UserCareerGroups) config(cfg config) {
-	for _i := range ucg {
-		ucg[_i].config = cfg
-	}
-}

@@ -128,14 +128,14 @@ func (s *Skill) assignValues(columns []string, values []any) error {
 
 // QueryCareerSkills queries the "careerSkills" edge of the Skill entity.
 func (s *Skill) QueryCareerSkills() *CareerSkillQuery {
-	return (&SkillClient{config: s.config}).QueryCareerSkills(s)
+	return NewSkillClient(s.config).QueryCareerSkills(s)
 }
 
 // Update returns a builder for updating this Skill.
 // Note that you need to call Skill.Unwrap() before calling this method if this Skill
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (s *Skill) Update() *SkillUpdateOne {
-	return (&SkillClient{config: s.config}).UpdateOne(s)
+	return NewSkillClient(s.config).UpdateOne(s)
 }
 
 // Unwrap unwraps the Skill entity that was returned from a transaction after it was closed,
@@ -181,9 +181,3 @@ func (s *Skill) String() string {
 
 // Skills is a parsable slice of Skill.
 type Skills []*Skill
-
-func (s Skills) config(cfg config) {
-	for _i := range s {
-		s[_i].config = cfg
-	}
-}

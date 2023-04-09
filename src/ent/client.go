@@ -10,6 +10,10 @@ import (
 
 	"github.com/sky0621/cv-admin/src/ent/migrate"
 
+	"entgo.io/ent"
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/sky0621/cv-admin/src/ent/careerskill"
 	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
 	"github.com/sky0621/cv-admin/src/ent/careertask"
@@ -24,10 +28,6 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
-
-	"entgo.io/ent/dialect"
-	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // Client is the client that holds all ent builders.
@@ -67,7 +67,7 @@ type Client struct {
 
 // NewClient creates a new client configured with the given options.
 func NewClient(opts ...Option) *Client {
-	cfg := config{log: log.Println, hooks: &hooks{}}
+	cfg := config{log: log.Println, hooks: &hooks{}, inters: &inters{}}
 	cfg.options(opts...)
 	client := &Client{config: cfg}
 	client.init()
@@ -90,6 +90,55 @@ func (c *Client) init() {
 	c.UserNote = NewUserNoteClient(c.config)
 	c.UserNoteItem = NewUserNoteItemClient(c.config)
 	c.UserQualification = NewUserQualificationClient(c.config)
+}
+
+type (
+	// config is the configuration for the client and its builder.
+	config struct {
+		// driver used for executing database requests.
+		driver dialect.Driver
+		// debug enable a debug logging.
+		debug bool
+		// log used for logging on debug mode.
+		log func(...any)
+		// hooks to execute on mutations.
+		hooks *hooks
+		// interceptors to execute on queries.
+		inters *inters
+	}
+	// Option function to configure the client.
+	Option func(*config)
+)
+
+// options applies the options on the config object.
+func (c *config) options(opts ...Option) {
+	for _, opt := range opts {
+		opt(c)
+	}
+	if c.debug {
+		c.driver = dialect.Debug(c.driver, c.log)
+	}
+}
+
+// Debug enables debug logging on the ent.Driver.
+func Debug() Option {
+	return func(c *config) {
+		c.debug = true
+	}
+}
+
+// Log sets the logging function for debug mode.
+func Log(fn func(...any)) Option {
+	return func(c *config) {
+		c.log = fn
+	}
+}
+
+// Driver configures the client driver.
+func Driver(driver dialect.Driver) Option {
+	return func(c *config) {
+		c.driver = driver
+	}
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -198,20 +247,63 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.CareerSkill.Use(hooks...)
-	c.CareerSkillGroup.Use(hooks...)
-	c.CareerTask.Use(hooks...)
-	c.CareerTaskDescription.Use(hooks...)
-	c.Skill.Use(hooks...)
-	c.SkillTag.Use(hooks...)
-	c.User.Use(hooks...)
-	c.UserActivity.Use(hooks...)
-	c.UserCareer.Use(hooks...)
-	c.UserCareerDescription.Use(hooks...)
-	c.UserCareerGroup.Use(hooks...)
-	c.UserNote.Use(hooks...)
-	c.UserNoteItem.Use(hooks...)
-	c.UserQualification.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.CareerSkill, c.CareerSkillGroup, c.CareerTask, c.CareerTaskDescription,
+		c.Skill, c.SkillTag, c.User, c.UserActivity, c.UserCareer,
+		c.UserCareerDescription, c.UserCareerGroup, c.UserNote, c.UserNoteItem,
+		c.UserQualification,
+	} {
+		n.Use(hooks...)
+	}
+}
+
+// Intercept adds the query interceptors to all the entity clients.
+// In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
+func (c *Client) Intercept(interceptors ...Interceptor) {
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.CareerSkill, c.CareerSkillGroup, c.CareerTask, c.CareerTaskDescription,
+		c.Skill, c.SkillTag, c.User, c.UserActivity, c.UserCareer,
+		c.UserCareerDescription, c.UserCareerGroup, c.UserNote, c.UserNoteItem,
+		c.UserQualification,
+	} {
+		n.Intercept(interceptors...)
+	}
+}
+
+// Mutate implements the ent.Mutator interface.
+func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
+	switch m := m.(type) {
+	case *CareerSkillMutation:
+		return c.CareerSkill.mutate(ctx, m)
+	case *CareerSkillGroupMutation:
+		return c.CareerSkillGroup.mutate(ctx, m)
+	case *CareerTaskMutation:
+		return c.CareerTask.mutate(ctx, m)
+	case *CareerTaskDescriptionMutation:
+		return c.CareerTaskDescription.mutate(ctx, m)
+	case *SkillMutation:
+		return c.Skill.mutate(ctx, m)
+	case *SkillTagMutation:
+		return c.SkillTag.mutate(ctx, m)
+	case *UserMutation:
+		return c.User.mutate(ctx, m)
+	case *UserActivityMutation:
+		return c.UserActivity.mutate(ctx, m)
+	case *UserCareerMutation:
+		return c.UserCareer.mutate(ctx, m)
+	case *UserCareerDescriptionMutation:
+		return c.UserCareerDescription.mutate(ctx, m)
+	case *UserCareerGroupMutation:
+		return c.UserCareerGroup.mutate(ctx, m)
+	case *UserNoteMutation:
+		return c.UserNote.mutate(ctx, m)
+	case *UserNoteItemMutation:
+		return c.UserNoteItem.mutate(ctx, m)
+	case *UserQualificationMutation:
+		return c.UserQualification.mutate(ctx, m)
+	default:
+		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
 }
 
 // CareerSkillClient is a client for the CareerSkill schema.
@@ -228,6 +320,12 @@ func NewCareerSkillClient(c config) *CareerSkillClient {
 // A call to `Use(f, g, h)` equals to `careerskill.Hooks(f(g(h())))`.
 func (c *CareerSkillClient) Use(hooks ...Hook) {
 	c.hooks.CareerSkill = append(c.hooks.CareerSkill, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `careerskill.Intercept(f(g(h())))`.
+func (c *CareerSkillClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CareerSkill = append(c.inters.CareerSkill, interceptors...)
 }
 
 // Create returns a builder for creating a CareerSkill entity.
@@ -282,6 +380,8 @@ func (c *CareerSkillClient) DeleteOneID(id int) *CareerSkillDeleteOne {
 func (c *CareerSkillClient) Query() *CareerSkillQuery {
 	return &CareerSkillQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeCareerSkill},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -301,7 +401,7 @@ func (c *CareerSkillClient) GetX(ctx context.Context, id int) *CareerSkill {
 
 // QueryCareerSkillGroup queries the careerSkillGroup edge of a CareerSkill.
 func (c *CareerSkillClient) QueryCareerSkillGroup(cs *CareerSkill) *CareerSkillGroupQuery {
-	query := &CareerSkillGroupQuery{config: c.config}
+	query := (&CareerSkillGroupClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := cs.ID
 		step := sqlgraph.NewStep(
@@ -317,7 +417,7 @@ func (c *CareerSkillClient) QueryCareerSkillGroup(cs *CareerSkill) *CareerSkillG
 
 // QuerySkill queries the skill edge of a CareerSkill.
 func (c *CareerSkillClient) QuerySkill(cs *CareerSkill) *SkillQuery {
-	query := &SkillQuery{config: c.config}
+	query := (&SkillClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := cs.ID
 		step := sqlgraph.NewStep(
@@ -336,6 +436,26 @@ func (c *CareerSkillClient) Hooks() []Hook {
 	return c.hooks.CareerSkill
 }
 
+// Interceptors returns the client interceptors.
+func (c *CareerSkillClient) Interceptors() []Interceptor {
+	return c.inters.CareerSkill
+}
+
+func (c *CareerSkillClient) mutate(ctx context.Context, m *CareerSkillMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CareerSkillCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CareerSkillUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CareerSkillUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CareerSkillDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CareerSkill mutation op: %q", m.Op())
+	}
+}
+
 // CareerSkillGroupClient is a client for the CareerSkillGroup schema.
 type CareerSkillGroupClient struct {
 	config
@@ -350,6 +470,12 @@ func NewCareerSkillGroupClient(c config) *CareerSkillGroupClient {
 // A call to `Use(f, g, h)` equals to `careerskillgroup.Hooks(f(g(h())))`.
 func (c *CareerSkillGroupClient) Use(hooks ...Hook) {
 	c.hooks.CareerSkillGroup = append(c.hooks.CareerSkillGroup, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `careerskillgroup.Intercept(f(g(h())))`.
+func (c *CareerSkillGroupClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CareerSkillGroup = append(c.inters.CareerSkillGroup, interceptors...)
 }
 
 // Create returns a builder for creating a CareerSkillGroup entity.
@@ -404,6 +530,8 @@ func (c *CareerSkillGroupClient) DeleteOneID(id int) *CareerSkillGroupDeleteOne 
 func (c *CareerSkillGroupClient) Query() *CareerSkillGroupQuery {
 	return &CareerSkillGroupQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeCareerSkillGroup},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -423,7 +551,7 @@ func (c *CareerSkillGroupClient) GetX(ctx context.Context, id int) *CareerSkillG
 
 // QueryCareer queries the career edge of a CareerSkillGroup.
 func (c *CareerSkillGroupClient) QueryCareer(csg *CareerSkillGroup) *UserCareerQuery {
-	query := &UserCareerQuery{config: c.config}
+	query := (&UserCareerClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := csg.ID
 		step := sqlgraph.NewStep(
@@ -439,7 +567,7 @@ func (c *CareerSkillGroupClient) QueryCareer(csg *CareerSkillGroup) *UserCareerQ
 
 // QueryCareerSkills queries the careerSkills edge of a CareerSkillGroup.
 func (c *CareerSkillGroupClient) QueryCareerSkills(csg *CareerSkillGroup) *CareerSkillQuery {
-	query := &CareerSkillQuery{config: c.config}
+	query := (&CareerSkillClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := csg.ID
 		step := sqlgraph.NewStep(
@@ -458,6 +586,26 @@ func (c *CareerSkillGroupClient) Hooks() []Hook {
 	return c.hooks.CareerSkillGroup
 }
 
+// Interceptors returns the client interceptors.
+func (c *CareerSkillGroupClient) Interceptors() []Interceptor {
+	return c.inters.CareerSkillGroup
+}
+
+func (c *CareerSkillGroupClient) mutate(ctx context.Context, m *CareerSkillGroupMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CareerSkillGroupCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CareerSkillGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CareerSkillGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CareerSkillGroupDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CareerSkillGroup mutation op: %q", m.Op())
+	}
+}
+
 // CareerTaskClient is a client for the CareerTask schema.
 type CareerTaskClient struct {
 	config
@@ -472,6 +620,12 @@ func NewCareerTaskClient(c config) *CareerTaskClient {
 // A call to `Use(f, g, h)` equals to `careertask.Hooks(f(g(h())))`.
 func (c *CareerTaskClient) Use(hooks ...Hook) {
 	c.hooks.CareerTask = append(c.hooks.CareerTask, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `careertask.Intercept(f(g(h())))`.
+func (c *CareerTaskClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CareerTask = append(c.inters.CareerTask, interceptors...)
 }
 
 // Create returns a builder for creating a CareerTask entity.
@@ -526,6 +680,8 @@ func (c *CareerTaskClient) DeleteOneID(id int) *CareerTaskDeleteOne {
 func (c *CareerTaskClient) Query() *CareerTaskQuery {
 	return &CareerTaskQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeCareerTask},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -545,7 +701,7 @@ func (c *CareerTaskClient) GetX(ctx context.Context, id int) *CareerTask {
 
 // QueryCareer queries the career edge of a CareerTask.
 func (c *CareerTaskClient) QueryCareer(ct *CareerTask) *UserCareerQuery {
-	query := &UserCareerQuery{config: c.config}
+	query := (&UserCareerClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ct.ID
 		step := sqlgraph.NewStep(
@@ -561,7 +717,7 @@ func (c *CareerTaskClient) QueryCareer(ct *CareerTask) *UserCareerQuery {
 
 // QueryCareerTaskDescriptions queries the careerTaskDescriptions edge of a CareerTask.
 func (c *CareerTaskClient) QueryCareerTaskDescriptions(ct *CareerTask) *CareerTaskDescriptionQuery {
-	query := &CareerTaskDescriptionQuery{config: c.config}
+	query := (&CareerTaskDescriptionClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ct.ID
 		step := sqlgraph.NewStep(
@@ -580,6 +736,26 @@ func (c *CareerTaskClient) Hooks() []Hook {
 	return c.hooks.CareerTask
 }
 
+// Interceptors returns the client interceptors.
+func (c *CareerTaskClient) Interceptors() []Interceptor {
+	return c.inters.CareerTask
+}
+
+func (c *CareerTaskClient) mutate(ctx context.Context, m *CareerTaskMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CareerTaskCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CareerTaskUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CareerTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CareerTaskDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CareerTask mutation op: %q", m.Op())
+	}
+}
+
 // CareerTaskDescriptionClient is a client for the CareerTaskDescription schema.
 type CareerTaskDescriptionClient struct {
 	config
@@ -594,6 +770,12 @@ func NewCareerTaskDescriptionClient(c config) *CareerTaskDescriptionClient {
 // A call to `Use(f, g, h)` equals to `careertaskdescription.Hooks(f(g(h())))`.
 func (c *CareerTaskDescriptionClient) Use(hooks ...Hook) {
 	c.hooks.CareerTaskDescription = append(c.hooks.CareerTaskDescription, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `careertaskdescription.Intercept(f(g(h())))`.
+func (c *CareerTaskDescriptionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CareerTaskDescription = append(c.inters.CareerTaskDescription, interceptors...)
 }
 
 // Create returns a builder for creating a CareerTaskDescription entity.
@@ -648,6 +830,8 @@ func (c *CareerTaskDescriptionClient) DeleteOneID(id int) *CareerTaskDescription
 func (c *CareerTaskDescriptionClient) Query() *CareerTaskDescriptionQuery {
 	return &CareerTaskDescriptionQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeCareerTaskDescription},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -667,7 +851,7 @@ func (c *CareerTaskDescriptionClient) GetX(ctx context.Context, id int) *CareerT
 
 // QueryCareerTask queries the careerTask edge of a CareerTaskDescription.
 func (c *CareerTaskDescriptionClient) QueryCareerTask(ctd *CareerTaskDescription) *CareerTaskQuery {
-	query := &CareerTaskQuery{config: c.config}
+	query := (&CareerTaskClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ctd.ID
 		step := sqlgraph.NewStep(
@@ -686,6 +870,26 @@ func (c *CareerTaskDescriptionClient) Hooks() []Hook {
 	return c.hooks.CareerTaskDescription
 }
 
+// Interceptors returns the client interceptors.
+func (c *CareerTaskDescriptionClient) Interceptors() []Interceptor {
+	return c.inters.CareerTaskDescription
+}
+
+func (c *CareerTaskDescriptionClient) mutate(ctx context.Context, m *CareerTaskDescriptionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CareerTaskDescriptionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CareerTaskDescriptionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CareerTaskDescriptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CareerTaskDescriptionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CareerTaskDescription mutation op: %q", m.Op())
+	}
+}
+
 // SkillClient is a client for the Skill schema.
 type SkillClient struct {
 	config
@@ -700,6 +904,12 @@ func NewSkillClient(c config) *SkillClient {
 // A call to `Use(f, g, h)` equals to `skill.Hooks(f(g(h())))`.
 func (c *SkillClient) Use(hooks ...Hook) {
 	c.hooks.Skill = append(c.hooks.Skill, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `skill.Intercept(f(g(h())))`.
+func (c *SkillClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Skill = append(c.inters.Skill, interceptors...)
 }
 
 // Create returns a builder for creating a Skill entity.
@@ -754,6 +964,8 @@ func (c *SkillClient) DeleteOneID(id int) *SkillDeleteOne {
 func (c *SkillClient) Query() *SkillQuery {
 	return &SkillQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeSkill},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -773,7 +985,7 @@ func (c *SkillClient) GetX(ctx context.Context, id int) *Skill {
 
 // QueryCareerSkills queries the careerSkills edge of a Skill.
 func (c *SkillClient) QueryCareerSkills(s *Skill) *CareerSkillQuery {
-	query := &CareerSkillQuery{config: c.config}
+	query := (&CareerSkillClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := s.ID
 		step := sqlgraph.NewStep(
@@ -792,6 +1004,26 @@ func (c *SkillClient) Hooks() []Hook {
 	return c.hooks.Skill
 }
 
+// Interceptors returns the client interceptors.
+func (c *SkillClient) Interceptors() []Interceptor {
+	return c.inters.Skill
+}
+
+func (c *SkillClient) mutate(ctx context.Context, m *SkillMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SkillCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SkillUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SkillUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SkillDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Skill mutation op: %q", m.Op())
+	}
+}
+
 // SkillTagClient is a client for the SkillTag schema.
 type SkillTagClient struct {
 	config
@@ -806,6 +1038,12 @@ func NewSkillTagClient(c config) *SkillTagClient {
 // A call to `Use(f, g, h)` equals to `skilltag.Hooks(f(g(h())))`.
 func (c *SkillTagClient) Use(hooks ...Hook) {
 	c.hooks.SkillTag = append(c.hooks.SkillTag, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `skilltag.Intercept(f(g(h())))`.
+func (c *SkillTagClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SkillTag = append(c.inters.SkillTag, interceptors...)
 }
 
 // Create returns a builder for creating a SkillTag entity.
@@ -860,6 +1098,8 @@ func (c *SkillTagClient) DeleteOneID(id int) *SkillTagDeleteOne {
 func (c *SkillTagClient) Query() *SkillTagQuery {
 	return &SkillTagQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeSkillTag},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -882,6 +1122,26 @@ func (c *SkillTagClient) Hooks() []Hook {
 	return c.hooks.SkillTag
 }
 
+// Interceptors returns the client interceptors.
+func (c *SkillTagClient) Interceptors() []Interceptor {
+	return c.inters.SkillTag
+}
+
+func (c *SkillTagClient) mutate(ctx context.Context, m *SkillTagMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SkillTagCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SkillTagUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SkillTagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SkillTagDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SkillTag mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -896,6 +1156,12 @@ func NewUserClient(c config) *UserClient {
 // A call to `Use(f, g, h)` equals to `user.Hooks(f(g(h())))`.
 func (c *UserClient) Use(hooks ...Hook) {
 	c.hooks.User = append(c.hooks.User, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `user.Intercept(f(g(h())))`.
+func (c *UserClient) Intercept(interceptors ...Interceptor) {
+	c.inters.User = append(c.inters.User, interceptors...)
 }
 
 // Create returns a builder for creating a User entity.
@@ -950,6 +1216,8 @@ func (c *UserClient) DeleteOneID(id int) *UserDeleteOne {
 func (c *UserClient) Query() *UserQuery {
 	return &UserQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeUser},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -969,7 +1237,7 @@ func (c *UserClient) GetX(ctx context.Context, id int) *User {
 
 // QueryActivities queries the activities edge of a User.
 func (c *UserClient) QueryActivities(u *User) *UserActivityQuery {
-	query := &UserActivityQuery{config: c.config}
+	query := (&UserActivityClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
@@ -985,7 +1253,7 @@ func (c *UserClient) QueryActivities(u *User) *UserActivityQuery {
 
 // QueryQualifications queries the qualifications edge of a User.
 func (c *UserClient) QueryQualifications(u *User) *UserQualificationQuery {
-	query := &UserQualificationQuery{config: c.config}
+	query := (&UserQualificationClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
@@ -1001,7 +1269,7 @@ func (c *UserClient) QueryQualifications(u *User) *UserQualificationQuery {
 
 // QueryCareerGroups queries the careerGroups edge of a User.
 func (c *UserClient) QueryCareerGroups(u *User) *UserCareerGroupQuery {
-	query := &UserCareerGroupQuery{config: c.config}
+	query := (&UserCareerGroupClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
@@ -1017,7 +1285,7 @@ func (c *UserClient) QueryCareerGroups(u *User) *UserCareerGroupQuery {
 
 // QueryNotes queries the notes edge of a User.
 func (c *UserClient) QueryNotes(u *User) *UserNoteQuery {
-	query := &UserNoteQuery{config: c.config}
+	query := (&UserNoteClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := u.ID
 		step := sqlgraph.NewStep(
@@ -1036,6 +1304,26 @@ func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
 }
 
+// Interceptors returns the client interceptors.
+func (c *UserClient) Interceptors() []Interceptor {
+	return c.inters.User
+}
+
+func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown User mutation op: %q", m.Op())
+	}
+}
+
 // UserActivityClient is a client for the UserActivity schema.
 type UserActivityClient struct {
 	config
@@ -1050,6 +1338,12 @@ func NewUserActivityClient(c config) *UserActivityClient {
 // A call to `Use(f, g, h)` equals to `useractivity.Hooks(f(g(h())))`.
 func (c *UserActivityClient) Use(hooks ...Hook) {
 	c.hooks.UserActivity = append(c.hooks.UserActivity, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `useractivity.Intercept(f(g(h())))`.
+func (c *UserActivityClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserActivity = append(c.inters.UserActivity, interceptors...)
 }
 
 // Create returns a builder for creating a UserActivity entity.
@@ -1104,6 +1398,8 @@ func (c *UserActivityClient) DeleteOneID(id int) *UserActivityDeleteOne {
 func (c *UserActivityClient) Query() *UserActivityQuery {
 	return &UserActivityQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserActivity},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -1123,7 +1419,7 @@ func (c *UserActivityClient) GetX(ctx context.Context, id int) *UserActivity {
 
 // QueryUser queries the user edge of a UserActivity.
 func (c *UserActivityClient) QueryUser(ua *UserActivity) *UserQuery {
-	query := &UserQuery{config: c.config}
+	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ua.ID
 		step := sqlgraph.NewStep(
@@ -1142,6 +1438,26 @@ func (c *UserActivityClient) Hooks() []Hook {
 	return c.hooks.UserActivity
 }
 
+// Interceptors returns the client interceptors.
+func (c *UserActivityClient) Interceptors() []Interceptor {
+	return c.inters.UserActivity
+}
+
+func (c *UserActivityClient) mutate(ctx context.Context, m *UserActivityMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserActivityCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserActivityUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserActivityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserActivityDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserActivity mutation op: %q", m.Op())
+	}
+}
+
 // UserCareerClient is a client for the UserCareer schema.
 type UserCareerClient struct {
 	config
@@ -1156,6 +1472,12 @@ func NewUserCareerClient(c config) *UserCareerClient {
 // A call to `Use(f, g, h)` equals to `usercareer.Hooks(f(g(h())))`.
 func (c *UserCareerClient) Use(hooks ...Hook) {
 	c.hooks.UserCareer = append(c.hooks.UserCareer, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `usercareer.Intercept(f(g(h())))`.
+func (c *UserCareerClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserCareer = append(c.inters.UserCareer, interceptors...)
 }
 
 // Create returns a builder for creating a UserCareer entity.
@@ -1210,6 +1532,8 @@ func (c *UserCareerClient) DeleteOneID(id int) *UserCareerDeleteOne {
 func (c *UserCareerClient) Query() *UserCareerQuery {
 	return &UserCareerQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserCareer},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -1229,7 +1553,7 @@ func (c *UserCareerClient) GetX(ctx context.Context, id int) *UserCareer {
 
 // QueryCareerGroup queries the careerGroup edge of a UserCareer.
 func (c *UserCareerClient) QueryCareerGroup(uc *UserCareer) *UserCareerGroupQuery {
-	query := &UserCareerGroupQuery{config: c.config}
+	query := (&UserCareerGroupClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := uc.ID
 		step := sqlgraph.NewStep(
@@ -1245,7 +1569,7 @@ func (c *UserCareerClient) QueryCareerGroup(uc *UserCareer) *UserCareerGroupQuer
 
 // QueryCareerDescriptions queries the careerDescriptions edge of a UserCareer.
 func (c *UserCareerClient) QueryCareerDescriptions(uc *UserCareer) *UserCareerDescriptionQuery {
-	query := &UserCareerDescriptionQuery{config: c.config}
+	query := (&UserCareerDescriptionClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := uc.ID
 		step := sqlgraph.NewStep(
@@ -1261,7 +1585,7 @@ func (c *UserCareerClient) QueryCareerDescriptions(uc *UserCareer) *UserCareerDe
 
 // QueryCareerTasks queries the careerTasks edge of a UserCareer.
 func (c *UserCareerClient) QueryCareerTasks(uc *UserCareer) *CareerTaskQuery {
-	query := &CareerTaskQuery{config: c.config}
+	query := (&CareerTaskClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := uc.ID
 		step := sqlgraph.NewStep(
@@ -1277,7 +1601,7 @@ func (c *UserCareerClient) QueryCareerTasks(uc *UserCareer) *CareerTaskQuery {
 
 // QueryCareerSkillGroups queries the careerSkillGroups edge of a UserCareer.
 func (c *UserCareerClient) QueryCareerSkillGroups(uc *UserCareer) *CareerSkillGroupQuery {
-	query := &CareerSkillGroupQuery{config: c.config}
+	query := (&CareerSkillGroupClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := uc.ID
 		step := sqlgraph.NewStep(
@@ -1296,6 +1620,26 @@ func (c *UserCareerClient) Hooks() []Hook {
 	return c.hooks.UserCareer
 }
 
+// Interceptors returns the client interceptors.
+func (c *UserCareerClient) Interceptors() []Interceptor {
+	return c.inters.UserCareer
+}
+
+func (c *UserCareerClient) mutate(ctx context.Context, m *UserCareerMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserCareerCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserCareerUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserCareerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserCareerDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserCareer mutation op: %q", m.Op())
+	}
+}
+
 // UserCareerDescriptionClient is a client for the UserCareerDescription schema.
 type UserCareerDescriptionClient struct {
 	config
@@ -1310,6 +1654,12 @@ func NewUserCareerDescriptionClient(c config) *UserCareerDescriptionClient {
 // A call to `Use(f, g, h)` equals to `usercareerdescription.Hooks(f(g(h())))`.
 func (c *UserCareerDescriptionClient) Use(hooks ...Hook) {
 	c.hooks.UserCareerDescription = append(c.hooks.UserCareerDescription, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `usercareerdescription.Intercept(f(g(h())))`.
+func (c *UserCareerDescriptionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserCareerDescription = append(c.inters.UserCareerDescription, interceptors...)
 }
 
 // Create returns a builder for creating a UserCareerDescription entity.
@@ -1364,6 +1714,8 @@ func (c *UserCareerDescriptionClient) DeleteOneID(id int) *UserCareerDescription
 func (c *UserCareerDescriptionClient) Query() *UserCareerDescriptionQuery {
 	return &UserCareerDescriptionQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserCareerDescription},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -1383,7 +1735,7 @@ func (c *UserCareerDescriptionClient) GetX(ctx context.Context, id int) *UserCar
 
 // QueryCareer queries the career edge of a UserCareerDescription.
 func (c *UserCareerDescriptionClient) QueryCareer(ucd *UserCareerDescription) *UserCareerQuery {
-	query := &UserCareerQuery{config: c.config}
+	query := (&UserCareerClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ucd.ID
 		step := sqlgraph.NewStep(
@@ -1402,6 +1754,26 @@ func (c *UserCareerDescriptionClient) Hooks() []Hook {
 	return c.hooks.UserCareerDescription
 }
 
+// Interceptors returns the client interceptors.
+func (c *UserCareerDescriptionClient) Interceptors() []Interceptor {
+	return c.inters.UserCareerDescription
+}
+
+func (c *UserCareerDescriptionClient) mutate(ctx context.Context, m *UserCareerDescriptionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserCareerDescriptionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserCareerDescriptionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserCareerDescriptionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserCareerDescriptionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserCareerDescription mutation op: %q", m.Op())
+	}
+}
+
 // UserCareerGroupClient is a client for the UserCareerGroup schema.
 type UserCareerGroupClient struct {
 	config
@@ -1416,6 +1788,12 @@ func NewUserCareerGroupClient(c config) *UserCareerGroupClient {
 // A call to `Use(f, g, h)` equals to `usercareergroup.Hooks(f(g(h())))`.
 func (c *UserCareerGroupClient) Use(hooks ...Hook) {
 	c.hooks.UserCareerGroup = append(c.hooks.UserCareerGroup, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `usercareergroup.Intercept(f(g(h())))`.
+func (c *UserCareerGroupClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserCareerGroup = append(c.inters.UserCareerGroup, interceptors...)
 }
 
 // Create returns a builder for creating a UserCareerGroup entity.
@@ -1470,6 +1848,8 @@ func (c *UserCareerGroupClient) DeleteOneID(id int) *UserCareerGroupDeleteOne {
 func (c *UserCareerGroupClient) Query() *UserCareerGroupQuery {
 	return &UserCareerGroupQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserCareerGroup},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -1489,7 +1869,7 @@ func (c *UserCareerGroupClient) GetX(ctx context.Context, id int) *UserCareerGro
 
 // QueryUser queries the user edge of a UserCareerGroup.
 func (c *UserCareerGroupClient) QueryUser(ucg *UserCareerGroup) *UserQuery {
-	query := &UserQuery{config: c.config}
+	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ucg.ID
 		step := sqlgraph.NewStep(
@@ -1505,7 +1885,7 @@ func (c *UserCareerGroupClient) QueryUser(ucg *UserCareerGroup) *UserQuery {
 
 // QueryCareers queries the careers edge of a UserCareerGroup.
 func (c *UserCareerGroupClient) QueryCareers(ucg *UserCareerGroup) *UserCareerQuery {
-	query := &UserCareerQuery{config: c.config}
+	query := (&UserCareerClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := ucg.ID
 		step := sqlgraph.NewStep(
@@ -1524,6 +1904,26 @@ func (c *UserCareerGroupClient) Hooks() []Hook {
 	return c.hooks.UserCareerGroup
 }
 
+// Interceptors returns the client interceptors.
+func (c *UserCareerGroupClient) Interceptors() []Interceptor {
+	return c.inters.UserCareerGroup
+}
+
+func (c *UserCareerGroupClient) mutate(ctx context.Context, m *UserCareerGroupMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserCareerGroupCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserCareerGroupUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserCareerGroupUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserCareerGroupDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserCareerGroup mutation op: %q", m.Op())
+	}
+}
+
 // UserNoteClient is a client for the UserNote schema.
 type UserNoteClient struct {
 	config
@@ -1538,6 +1938,12 @@ func NewUserNoteClient(c config) *UserNoteClient {
 // A call to `Use(f, g, h)` equals to `usernote.Hooks(f(g(h())))`.
 func (c *UserNoteClient) Use(hooks ...Hook) {
 	c.hooks.UserNote = append(c.hooks.UserNote, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `usernote.Intercept(f(g(h())))`.
+func (c *UserNoteClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserNote = append(c.inters.UserNote, interceptors...)
 }
 
 // Create returns a builder for creating a UserNote entity.
@@ -1592,6 +1998,8 @@ func (c *UserNoteClient) DeleteOneID(id int) *UserNoteDeleteOne {
 func (c *UserNoteClient) Query() *UserNoteQuery {
 	return &UserNoteQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserNote},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -1611,7 +2019,7 @@ func (c *UserNoteClient) GetX(ctx context.Context, id int) *UserNote {
 
 // QueryUser queries the user edge of a UserNote.
 func (c *UserNoteClient) QueryUser(un *UserNote) *UserQuery {
-	query := &UserQuery{config: c.config}
+	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := un.ID
 		step := sqlgraph.NewStep(
@@ -1627,7 +2035,7 @@ func (c *UserNoteClient) QueryUser(un *UserNote) *UserQuery {
 
 // QueryNoteItems queries the noteItems edge of a UserNote.
 func (c *UserNoteClient) QueryNoteItems(un *UserNote) *UserNoteItemQuery {
-	query := &UserNoteItemQuery{config: c.config}
+	query := (&UserNoteItemClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := un.ID
 		step := sqlgraph.NewStep(
@@ -1646,6 +2054,26 @@ func (c *UserNoteClient) Hooks() []Hook {
 	return c.hooks.UserNote
 }
 
+// Interceptors returns the client interceptors.
+func (c *UserNoteClient) Interceptors() []Interceptor {
+	return c.inters.UserNote
+}
+
+func (c *UserNoteClient) mutate(ctx context.Context, m *UserNoteMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserNoteCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserNoteUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserNoteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserNoteDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserNote mutation op: %q", m.Op())
+	}
+}
+
 // UserNoteItemClient is a client for the UserNoteItem schema.
 type UserNoteItemClient struct {
 	config
@@ -1660,6 +2088,12 @@ func NewUserNoteItemClient(c config) *UserNoteItemClient {
 // A call to `Use(f, g, h)` equals to `usernoteitem.Hooks(f(g(h())))`.
 func (c *UserNoteItemClient) Use(hooks ...Hook) {
 	c.hooks.UserNoteItem = append(c.hooks.UserNoteItem, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `usernoteitem.Intercept(f(g(h())))`.
+func (c *UserNoteItemClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserNoteItem = append(c.inters.UserNoteItem, interceptors...)
 }
 
 // Create returns a builder for creating a UserNoteItem entity.
@@ -1714,6 +2148,8 @@ func (c *UserNoteItemClient) DeleteOneID(id int) *UserNoteItemDeleteOne {
 func (c *UserNoteItemClient) Query() *UserNoteItemQuery {
 	return &UserNoteItemQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserNoteItem},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -1733,7 +2169,7 @@ func (c *UserNoteItemClient) GetX(ctx context.Context, id int) *UserNoteItem {
 
 // QueryNote queries the note edge of a UserNoteItem.
 func (c *UserNoteItemClient) QueryNote(uni *UserNoteItem) *UserNoteQuery {
-	query := &UserNoteQuery{config: c.config}
+	query := (&UserNoteClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := uni.ID
 		step := sqlgraph.NewStep(
@@ -1752,6 +2188,26 @@ func (c *UserNoteItemClient) Hooks() []Hook {
 	return c.hooks.UserNoteItem
 }
 
+// Interceptors returns the client interceptors.
+func (c *UserNoteItemClient) Interceptors() []Interceptor {
+	return c.inters.UserNoteItem
+}
+
+func (c *UserNoteItemClient) mutate(ctx context.Context, m *UserNoteItemMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserNoteItemCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserNoteItemUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserNoteItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserNoteItemDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserNoteItem mutation op: %q", m.Op())
+	}
+}
+
 // UserQualificationClient is a client for the UserQualification schema.
 type UserQualificationClient struct {
 	config
@@ -1766,6 +2222,12 @@ func NewUserQualificationClient(c config) *UserQualificationClient {
 // A call to `Use(f, g, h)` equals to `userqualification.Hooks(f(g(h())))`.
 func (c *UserQualificationClient) Use(hooks ...Hook) {
 	c.hooks.UserQualification = append(c.hooks.UserQualification, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `userqualification.Intercept(f(g(h())))`.
+func (c *UserQualificationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserQualification = append(c.inters.UserQualification, interceptors...)
 }
 
 // Create returns a builder for creating a UserQualification entity.
@@ -1820,6 +2282,8 @@ func (c *UserQualificationClient) DeleteOneID(id int) *UserQualificationDeleteOn
 func (c *UserQualificationClient) Query() *UserQualificationQuery {
 	return &UserQualificationQuery{
 		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserQualification},
+		inters: c.Interceptors(),
 	}
 }
 
@@ -1839,7 +2303,7 @@ func (c *UserQualificationClient) GetX(ctx context.Context, id int) *UserQualifi
 
 // QueryUser queries the user edge of a UserQualification.
 func (c *UserQualificationClient) QueryUser(uq *UserQualification) *UserQuery {
-	query := &UserQuery{config: c.config}
+	query := (&UserClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := uq.ID
 		step := sqlgraph.NewStep(
@@ -1857,3 +2321,37 @@ func (c *UserQualificationClient) QueryUser(uq *UserQualification) *UserQuery {
 func (c *UserQualificationClient) Hooks() []Hook {
 	return c.hooks.UserQualification
 }
+
+// Interceptors returns the client interceptors.
+func (c *UserQualificationClient) Interceptors() []Interceptor {
+	return c.inters.UserQualification
+}
+
+func (c *UserQualificationClient) mutate(ctx context.Context, m *UserQualificationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserQualificationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserQualificationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserQualificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserQualificationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserQualification mutation op: %q", m.Op())
+	}
+}
+
+// hooks and interceptors per client, for fast access.
+type (
+	hooks struct {
+		CareerSkill, CareerSkillGroup, CareerTask, CareerTaskDescription, Skill,
+		SkillTag, User, UserActivity, UserCareer, UserCareerDescription,
+		UserCareerGroup, UserNote, UserNoteItem, UserQualification []ent.Hook
+	}
+	inters struct {
+		CareerSkill, CareerSkillGroup, CareerTask, CareerTaskDescription, Skill,
+		SkillTag, User, UserActivity, UserCareer, UserCareerDescription,
+		UserCareerGroup, UserNote, UserNoteItem, UserQualification []ent.Interceptor
+	}
+)

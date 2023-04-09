@@ -95,50 +95,8 @@ func (csc *CareerSkillCreate) Mutation() *CareerSkillMutation {
 
 // Save creates the CareerSkill in the database.
 func (csc *CareerSkillCreate) Save(ctx context.Context) (*CareerSkill, error) {
-	var (
-		err  error
-		node *CareerSkill
-	)
 	csc.defaults()
-	if len(csc.hooks) == 0 {
-		if err = csc.check(); err != nil {
-			return nil, err
-		}
-		node, err = csc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CareerSkillMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = csc.check(); err != nil {
-				return nil, err
-			}
-			csc.mutation = mutation
-			if node, err = csc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(csc.hooks) - 1; i >= 0; i-- {
-			if csc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = csc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, csc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*CareerSkill)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CareerSkillMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*CareerSkill, CareerSkillMutation](ctx, csc.sqlSave, csc.mutation, csc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -198,6 +156,9 @@ func (csc *CareerSkillCreate) check() error {
 }
 
 func (csc *CareerSkillCreate) sqlSave(ctx context.Context) (*CareerSkill, error) {
+	if err := csc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := csc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, csc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -207,19 +168,15 @@ func (csc *CareerSkillCreate) sqlSave(ctx context.Context) (*CareerSkill, error)
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
+	csc.mutation.id = &_node.ID
+	csc.mutation.done = true
 	return _node, nil
 }
 
 func (csc *CareerSkillCreate) createSpec() (*CareerSkill, *sqlgraph.CreateSpec) {
 	var (
 		_node = &CareerSkill{config: csc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: careerskill.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: careerskill.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(careerskill.Table, sqlgraph.NewFieldSpec(careerskill.FieldID, field.TypeInt))
 	)
 	_spec.OnConflict = csc.conflict
 	if value, ok := csc.mutation.CreateTime(); ok {
@@ -242,10 +199,7 @@ func (csc *CareerSkillCreate) createSpec() (*CareerSkill, *sqlgraph.CreateSpec) 
 			Columns: []string{careerskill.CareerSkillGroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: careerskillgroup.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(careerskillgroup.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -262,10 +216,7 @@ func (csc *CareerSkillCreate) createSpec() (*CareerSkill, *sqlgraph.CreateSpec) 
 			Columns: []string{careerskill.SkillColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: skill.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(skill.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

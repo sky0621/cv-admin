@@ -204,29 +204,29 @@ func (u *User) assignValues(columns []string, values []any) error {
 
 // QueryActivities queries the "activities" edge of the User entity.
 func (u *User) QueryActivities() *UserActivityQuery {
-	return (&UserClient{config: u.config}).QueryActivities(u)
+	return NewUserClient(u.config).QueryActivities(u)
 }
 
 // QueryQualifications queries the "qualifications" edge of the User entity.
 func (u *User) QueryQualifications() *UserQualificationQuery {
-	return (&UserClient{config: u.config}).QueryQualifications(u)
+	return NewUserClient(u.config).QueryQualifications(u)
 }
 
 // QueryCareerGroups queries the "careerGroups" edge of the User entity.
 func (u *User) QueryCareerGroups() *UserCareerGroupQuery {
-	return (&UserClient{config: u.config}).QueryCareerGroups(u)
+	return NewUserClient(u.config).QueryCareerGroups(u)
 }
 
 // QueryNotes queries the "notes" edge of the User entity.
 func (u *User) QueryNotes() *UserNoteQuery {
-	return (&UserClient{config: u.config}).QueryNotes(u)
+	return NewUserClient(u.config).QueryNotes(u)
 }
 
 // Update returns a builder for updating this User.
 // Note that you need to call User.Unwrap() before calling this method if this User
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (u *User) Update() *UserUpdateOne {
-	return (&UserClient{config: u.config}).UpdateOne(u)
+	return NewUserClient(u.config).UpdateOne(u)
 }
 
 // Unwrap unwraps the User entity that was returned from a transaction after it was closed,
@@ -293,9 +293,3 @@ func (u *User) String() string {
 
 // Users is a parsable slice of User.
 type Users []*User
-
-func (u Users) config(cfg config) {
-	for _i := range u {
-		u[_i].config = cfg
-	}
-}

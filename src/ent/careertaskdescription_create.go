@@ -46,49 +46,7 @@ func (ctdc *CareerTaskDescriptionCreate) Mutation() *CareerTaskDescriptionMutati
 
 // Save creates the CareerTaskDescription in the database.
 func (ctdc *CareerTaskDescriptionCreate) Save(ctx context.Context) (*CareerTaskDescription, error) {
-	var (
-		err  error
-		node *CareerTaskDescription
-	)
-	if len(ctdc.hooks) == 0 {
-		if err = ctdc.check(); err != nil {
-			return nil, err
-		}
-		node, err = ctdc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CareerTaskDescriptionMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ctdc.check(); err != nil {
-				return nil, err
-			}
-			ctdc.mutation = mutation
-			if node, err = ctdc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ctdc.hooks) - 1; i >= 0; i-- {
-			if ctdc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ctdc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ctdc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*CareerTaskDescription)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CareerTaskDescriptionMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*CareerTaskDescription, CareerTaskDescriptionMutation](ctx, ctdc.sqlSave, ctdc.mutation, ctdc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -130,6 +88,9 @@ func (ctdc *CareerTaskDescriptionCreate) check() error {
 }
 
 func (ctdc *CareerTaskDescriptionCreate) sqlSave(ctx context.Context) (*CareerTaskDescription, error) {
+	if err := ctdc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := ctdc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ctdc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -139,19 +100,15 @@ func (ctdc *CareerTaskDescriptionCreate) sqlSave(ctx context.Context) (*CareerTa
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
+	ctdc.mutation.id = &_node.ID
+	ctdc.mutation.done = true
 	return _node, nil
 }
 
 func (ctdc *CareerTaskDescriptionCreate) createSpec() (*CareerTaskDescription, *sqlgraph.CreateSpec) {
 	var (
 		_node = &CareerTaskDescription{config: ctdc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: careertaskdescription.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: careertaskdescription.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(careertaskdescription.Table, sqlgraph.NewFieldSpec(careertaskdescription.FieldID, field.TypeInt))
 	)
 	_spec.OnConflict = ctdc.conflict
 	if value, ok := ctdc.mutation.Description(); ok {
@@ -166,10 +123,7 @@ func (ctdc *CareerTaskDescriptionCreate) createSpec() (*CareerTaskDescription, *
 			Columns: []string{careertaskdescription.CareerTaskColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: careertask.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(careertask.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

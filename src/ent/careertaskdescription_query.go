@@ -18,11 +18,9 @@ import (
 // CareerTaskDescriptionQuery is the builder for querying CareerTaskDescription entities.
 type CareerTaskDescriptionQuery struct {
 	config
-	limit          *int
-	offset         *int
-	unique         *bool
+	ctx            *QueryContext
 	order          []OrderFunc
-	fields         []string
+	inters         []Interceptor
 	predicates     []predicate.CareerTaskDescription
 	withCareerTask *CareerTaskQuery
 	withFKs        bool
@@ -37,26 +35,26 @@ func (ctdq *CareerTaskDescriptionQuery) Where(ps ...predicate.CareerTaskDescript
 	return ctdq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (ctdq *CareerTaskDescriptionQuery) Limit(limit int) *CareerTaskDescriptionQuery {
-	ctdq.limit = &limit
+	ctdq.ctx.Limit = &limit
 	return ctdq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (ctdq *CareerTaskDescriptionQuery) Offset(offset int) *CareerTaskDescriptionQuery {
-	ctdq.offset = &offset
+	ctdq.ctx.Offset = &offset
 	return ctdq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (ctdq *CareerTaskDescriptionQuery) Unique(unique bool) *CareerTaskDescriptionQuery {
-	ctdq.unique = &unique
+	ctdq.ctx.Unique = &unique
 	return ctdq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (ctdq *CareerTaskDescriptionQuery) Order(o ...OrderFunc) *CareerTaskDescriptionQuery {
 	ctdq.order = append(ctdq.order, o...)
 	return ctdq
@@ -64,7 +62,7 @@ func (ctdq *CareerTaskDescriptionQuery) Order(o ...OrderFunc) *CareerTaskDescrip
 
 // QueryCareerTask chains the current query on the "careerTask" edge.
 func (ctdq *CareerTaskDescriptionQuery) QueryCareerTask() *CareerTaskQuery {
-	query := &CareerTaskQuery{config: ctdq.config}
+	query := (&CareerTaskClient{config: ctdq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ctdq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -87,7 +85,7 @@ func (ctdq *CareerTaskDescriptionQuery) QueryCareerTask() *CareerTaskQuery {
 // First returns the first CareerTaskDescription entity from the query.
 // Returns a *NotFoundError when no CareerTaskDescription was found.
 func (ctdq *CareerTaskDescriptionQuery) First(ctx context.Context) (*CareerTaskDescription, error) {
-	nodes, err := ctdq.Limit(1).All(ctx)
+	nodes, err := ctdq.Limit(1).All(setContextOp(ctx, ctdq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +108,7 @@ func (ctdq *CareerTaskDescriptionQuery) FirstX(ctx context.Context) *CareerTaskD
 // Returns a *NotFoundError when no CareerTaskDescription ID was found.
 func (ctdq *CareerTaskDescriptionQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = ctdq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = ctdq.Limit(1).IDs(setContextOp(ctx, ctdq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -133,7 +131,7 @@ func (ctdq *CareerTaskDescriptionQuery) FirstIDX(ctx context.Context) int {
 // Returns a *NotSingularError when more than one CareerTaskDescription entity is found.
 // Returns a *NotFoundError when no CareerTaskDescription entities are found.
 func (ctdq *CareerTaskDescriptionQuery) Only(ctx context.Context) (*CareerTaskDescription, error) {
-	nodes, err := ctdq.Limit(2).All(ctx)
+	nodes, err := ctdq.Limit(2).All(setContextOp(ctx, ctdq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +159,7 @@ func (ctdq *CareerTaskDescriptionQuery) OnlyX(ctx context.Context) *CareerTaskDe
 // Returns a *NotFoundError when no entities are found.
 func (ctdq *CareerTaskDescriptionQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = ctdq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = ctdq.Limit(2).IDs(setContextOp(ctx, ctdq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -186,10 +184,12 @@ func (ctdq *CareerTaskDescriptionQuery) OnlyIDX(ctx context.Context) int {
 
 // All executes the query and returns a list of CareerTaskDescriptions.
 func (ctdq *CareerTaskDescriptionQuery) All(ctx context.Context) ([]*CareerTaskDescription, error) {
+	ctx = setContextOp(ctx, ctdq.ctx, "All")
 	if err := ctdq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return ctdq.sqlAll(ctx)
+	qr := querierAll[[]*CareerTaskDescription, *CareerTaskDescriptionQuery]()
+	return withInterceptors[[]*CareerTaskDescription](ctx, ctdq, qr, ctdq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -202,9 +202,12 @@ func (ctdq *CareerTaskDescriptionQuery) AllX(ctx context.Context) []*CareerTaskD
 }
 
 // IDs executes the query and returns a list of CareerTaskDescription IDs.
-func (ctdq *CareerTaskDescriptionQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
-	if err := ctdq.Select(careertaskdescription.FieldID).Scan(ctx, &ids); err != nil {
+func (ctdq *CareerTaskDescriptionQuery) IDs(ctx context.Context) (ids []int, err error) {
+	if ctdq.ctx.Unique == nil && ctdq.path != nil {
+		ctdq.Unique(true)
+	}
+	ctx = setContextOp(ctx, ctdq.ctx, "IDs")
+	if err = ctdq.Select(careertaskdescription.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -221,10 +224,11 @@ func (ctdq *CareerTaskDescriptionQuery) IDsX(ctx context.Context) []int {
 
 // Count returns the count of the given query.
 func (ctdq *CareerTaskDescriptionQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, ctdq.ctx, "Count")
 	if err := ctdq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return ctdq.sqlCount(ctx)
+	return withInterceptors[int](ctx, ctdq, querierCount[*CareerTaskDescriptionQuery](), ctdq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -238,10 +242,15 @@ func (ctdq *CareerTaskDescriptionQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ctdq *CareerTaskDescriptionQuery) Exist(ctx context.Context) (bool, error) {
-	if err := ctdq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = setContextOp(ctx, ctdq.ctx, "Exist")
+	switch _, err := ctdq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return ctdq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -261,22 +270,21 @@ func (ctdq *CareerTaskDescriptionQuery) Clone() *CareerTaskDescriptionQuery {
 	}
 	return &CareerTaskDescriptionQuery{
 		config:         ctdq.config,
-		limit:          ctdq.limit,
-		offset:         ctdq.offset,
+		ctx:            ctdq.ctx.Clone(),
 		order:          append([]OrderFunc{}, ctdq.order...),
+		inters:         append([]Interceptor{}, ctdq.inters...),
 		predicates:     append([]predicate.CareerTaskDescription{}, ctdq.predicates...),
 		withCareerTask: ctdq.withCareerTask.Clone(),
 		// clone intermediate query.
-		sql:    ctdq.sql.Clone(),
-		path:   ctdq.path,
-		unique: ctdq.unique,
+		sql:  ctdq.sql.Clone(),
+		path: ctdq.path,
 	}
 }
 
 // WithCareerTask tells the query-builder to eager-load the nodes that are connected to
 // the "careerTask" edge. The optional arguments are used to configure the query builder of the edge.
 func (ctdq *CareerTaskDescriptionQuery) WithCareerTask(opts ...func(*CareerTaskQuery)) *CareerTaskDescriptionQuery {
-	query := &CareerTaskQuery{config: ctdq.config}
+	query := (&CareerTaskClient{config: ctdq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -299,16 +307,11 @@ func (ctdq *CareerTaskDescriptionQuery) WithCareerTask(opts ...func(*CareerTaskQ
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (ctdq *CareerTaskDescriptionQuery) GroupBy(field string, fields ...string) *CareerTaskDescriptionGroupBy {
-	grbuild := &CareerTaskDescriptionGroupBy{config: ctdq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := ctdq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return ctdq.sqlQuery(ctx), nil
-	}
+	ctdq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &CareerTaskDescriptionGroupBy{build: ctdq}
+	grbuild.flds = &ctdq.ctx.Fields
 	grbuild.label = careertaskdescription.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -325,11 +328,11 @@ func (ctdq *CareerTaskDescriptionQuery) GroupBy(field string, fields ...string) 
 //		Select(careertaskdescription.FieldDescription).
 //		Scan(ctx, &v)
 func (ctdq *CareerTaskDescriptionQuery) Select(fields ...string) *CareerTaskDescriptionSelect {
-	ctdq.fields = append(ctdq.fields, fields...)
-	selbuild := &CareerTaskDescriptionSelect{CareerTaskDescriptionQuery: ctdq}
-	selbuild.label = careertaskdescription.Label
-	selbuild.flds, selbuild.scan = &ctdq.fields, selbuild.Scan
-	return selbuild
+	ctdq.ctx.Fields = append(ctdq.ctx.Fields, fields...)
+	sbuild := &CareerTaskDescriptionSelect{CareerTaskDescriptionQuery: ctdq}
+	sbuild.label = careertaskdescription.Label
+	sbuild.flds, sbuild.scan = &ctdq.ctx.Fields, sbuild.Scan
+	return sbuild
 }
 
 // Aggregate returns a CareerTaskDescriptionSelect configured with the given aggregations.
@@ -338,7 +341,17 @@ func (ctdq *CareerTaskDescriptionQuery) Aggregate(fns ...AggregateFunc) *CareerT
 }
 
 func (ctdq *CareerTaskDescriptionQuery) prepareQuery(ctx context.Context) error {
-	for _, f := range ctdq.fields {
+	for _, inter := range ctdq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, ctdq); err != nil {
+				return err
+			}
+		}
+	}
+	for _, f := range ctdq.ctx.Fields {
 		if !careertaskdescription.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -408,6 +421,9 @@ func (ctdq *CareerTaskDescriptionQuery) loadCareerTask(ctx context.Context, quer
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(careertask.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -427,41 +443,22 @@ func (ctdq *CareerTaskDescriptionQuery) loadCareerTask(ctx context.Context, quer
 
 func (ctdq *CareerTaskDescriptionQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ctdq.querySpec()
-	_spec.Node.Columns = ctdq.fields
-	if len(ctdq.fields) > 0 {
-		_spec.Unique = ctdq.unique != nil && *ctdq.unique
+	_spec.Node.Columns = ctdq.ctx.Fields
+	if len(ctdq.ctx.Fields) > 0 {
+		_spec.Unique = ctdq.ctx.Unique != nil && *ctdq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, ctdq.driver, _spec)
 }
 
-func (ctdq *CareerTaskDescriptionQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := ctdq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (ctdq *CareerTaskDescriptionQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   careertaskdescription.Table,
-			Columns: careertaskdescription.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: careertaskdescription.FieldID,
-			},
-		},
-		From:   ctdq.sql,
-		Unique: true,
-	}
-	if unique := ctdq.unique; unique != nil {
+	_spec := sqlgraph.NewQuerySpec(careertaskdescription.Table, careertaskdescription.Columns, sqlgraph.NewFieldSpec(careertaskdescription.FieldID, field.TypeInt))
+	_spec.From = ctdq.sql
+	if unique := ctdq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if ctdq.path != nil {
+		_spec.Unique = true
 	}
-	if fields := ctdq.fields; len(fields) > 0 {
+	if fields := ctdq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, careertaskdescription.FieldID)
 		for i := range fields {
@@ -477,10 +474,10 @@ func (ctdq *CareerTaskDescriptionQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := ctdq.limit; limit != nil {
+	if limit := ctdq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := ctdq.offset; offset != nil {
+	if offset := ctdq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := ctdq.order; len(ps) > 0 {
@@ -496,7 +493,7 @@ func (ctdq *CareerTaskDescriptionQuery) querySpec() *sqlgraph.QuerySpec {
 func (ctdq *CareerTaskDescriptionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(ctdq.driver.Dialect())
 	t1 := builder.Table(careertaskdescription.Table)
-	columns := ctdq.fields
+	columns := ctdq.ctx.Fields
 	if len(columns) == 0 {
 		columns = careertaskdescription.Columns
 	}
@@ -505,7 +502,7 @@ func (ctdq *CareerTaskDescriptionQuery) sqlQuery(ctx context.Context) *sql.Selec
 		selector = ctdq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if ctdq.unique != nil && *ctdq.unique {
+	if ctdq.ctx.Unique != nil && *ctdq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range ctdq.predicates {
@@ -514,12 +511,12 @@ func (ctdq *CareerTaskDescriptionQuery) sqlQuery(ctx context.Context) *sql.Selec
 	for _, p := range ctdq.order {
 		p(selector)
 	}
-	if offset := ctdq.offset; offset != nil {
+	if offset := ctdq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := ctdq.limit; limit != nil {
+	if limit := ctdq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -527,13 +524,8 @@ func (ctdq *CareerTaskDescriptionQuery) sqlQuery(ctx context.Context) *sql.Selec
 
 // CareerTaskDescriptionGroupBy is the group-by builder for CareerTaskDescription entities.
 type CareerTaskDescriptionGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *CareerTaskDescriptionQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -542,58 +534,46 @@ func (ctdgb *CareerTaskDescriptionGroupBy) Aggregate(fns ...AggregateFunc) *Care
 	return ctdgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (ctdgb *CareerTaskDescriptionGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := ctdgb.path(ctx)
-	if err != nil {
+	ctx = setContextOp(ctx, ctdgb.build.ctx, "GroupBy")
+	if err := ctdgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ctdgb.sql = query
-	return ctdgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*CareerTaskDescriptionQuery, *CareerTaskDescriptionGroupBy](ctx, ctdgb.build, ctdgb, ctdgb.build.inters, v)
 }
 
-func (ctdgb *CareerTaskDescriptionGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range ctdgb.fields {
-		if !careertaskdescription.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (ctdgb *CareerTaskDescriptionGroupBy) sqlScan(ctx context.Context, root *CareerTaskDescriptionQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(ctdgb.fns))
+	for _, fn := range ctdgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := ctdgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*ctdgb.flds)+len(ctdgb.fns))
+		for _, f := range *ctdgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*ctdgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := ctdgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := ctdgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (ctdgb *CareerTaskDescriptionGroupBy) sqlQuery() *sql.Selector {
-	selector := ctdgb.sql.Select()
-	aggregation := make([]string, 0, len(ctdgb.fns))
-	for _, fn := range ctdgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(ctdgb.fields)+len(ctdgb.fns))
-		for _, f := range ctdgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(ctdgb.fields...)...)
-}
-
 // CareerTaskDescriptionSelect is the builder for selecting fields of CareerTaskDescription entities.
 type CareerTaskDescriptionSelect struct {
 	*CareerTaskDescriptionQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
@@ -604,26 +584,27 @@ func (ctds *CareerTaskDescriptionSelect) Aggregate(fns ...AggregateFunc) *Career
 
 // Scan applies the selector query and scans the result into the given value.
 func (ctds *CareerTaskDescriptionSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, ctds.ctx, "Select")
 	if err := ctds.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ctds.sql = ctds.CareerTaskDescriptionQuery.sqlQuery(ctx)
-	return ctds.sqlScan(ctx, v)
+	return scanWithInterceptors[*CareerTaskDescriptionQuery, *CareerTaskDescriptionSelect](ctx, ctds.CareerTaskDescriptionQuery, ctds, ctds.inters, v)
 }
 
-func (ctds *CareerTaskDescriptionSelect) sqlScan(ctx context.Context, v any) error {
+func (ctds *CareerTaskDescriptionSelect) sqlScan(ctx context.Context, root *CareerTaskDescriptionQuery, v any) error {
+	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(ctds.fns))
 	for _, fn := range ctds.fns {
-		aggregation = append(aggregation, fn(ctds.sql))
+		aggregation = append(aggregation, fn(selector))
 	}
 	switch n := len(*ctds.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
-		ctds.sql.Select(aggregation...)
+		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
-		ctds.sql.AppendSelect(aggregation...)
+		selector.AppendSelect(aggregation...)
 	}
 	rows := &sql.Rows{}
-	query, args := ctds.sql.Query()
+	query, args := selector.Query()
 	if err := ctds.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

@@ -167,29 +167,29 @@ func (uc *UserCareer) assignValues(columns []string, values []any) error {
 
 // QueryCareerGroup queries the "careerGroup" edge of the UserCareer entity.
 func (uc *UserCareer) QueryCareerGroup() *UserCareerGroupQuery {
-	return (&UserCareerClient{config: uc.config}).QueryCareerGroup(uc)
+	return NewUserCareerClient(uc.config).QueryCareerGroup(uc)
 }
 
 // QueryCareerDescriptions queries the "careerDescriptions" edge of the UserCareer entity.
 func (uc *UserCareer) QueryCareerDescriptions() *UserCareerDescriptionQuery {
-	return (&UserCareerClient{config: uc.config}).QueryCareerDescriptions(uc)
+	return NewUserCareerClient(uc.config).QueryCareerDescriptions(uc)
 }
 
 // QueryCareerTasks queries the "careerTasks" edge of the UserCareer entity.
 func (uc *UserCareer) QueryCareerTasks() *CareerTaskQuery {
-	return (&UserCareerClient{config: uc.config}).QueryCareerTasks(uc)
+	return NewUserCareerClient(uc.config).QueryCareerTasks(uc)
 }
 
 // QueryCareerSkillGroups queries the "careerSkillGroups" edge of the UserCareer entity.
 func (uc *UserCareer) QueryCareerSkillGroups() *CareerSkillGroupQuery {
-	return (&UserCareerClient{config: uc.config}).QueryCareerSkillGroups(uc)
+	return NewUserCareerClient(uc.config).QueryCareerSkillGroups(uc)
 }
 
 // Update returns a builder for updating this UserCareer.
 // Note that you need to call UserCareer.Unwrap() before calling this method if this UserCareer
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (uc *UserCareer) Update() *UserCareerUpdateOne {
-	return (&UserCareerClient{config: uc.config}).UpdateOne(uc)
+	return NewUserCareerClient(uc.config).UpdateOne(uc)
 }
 
 // Unwrap unwraps the UserCareer entity that was returned from a transaction after it was closed,
@@ -230,9 +230,3 @@ func (uc *UserCareer) String() string {
 
 // UserCareers is a parsable slice of UserCareer.
 type UserCareers []*UserCareer
-
-func (uc UserCareers) config(cfg config) {
-	for _i := range uc {
-		uc[_i].config = cfg
-	}
-}

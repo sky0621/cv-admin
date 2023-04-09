@@ -18,11 +18,9 @@ import (
 // UserQualificationQuery is the builder for querying UserQualification entities.
 type UserQualificationQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
+	inters     []Interceptor
 	predicates []predicate.UserQualification
 	withUser   *UserQuery
 	withFKs    bool
@@ -37,26 +35,26 @@ func (uqq *UserQualificationQuery) Where(ps ...predicate.UserQualification) *Use
 	return uqq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (uqq *UserQualificationQuery) Limit(limit int) *UserQualificationQuery {
-	uqq.limit = &limit
+	uqq.ctx.Limit = &limit
 	return uqq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (uqq *UserQualificationQuery) Offset(offset int) *UserQualificationQuery {
-	uqq.offset = &offset
+	uqq.ctx.Offset = &offset
 	return uqq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (uqq *UserQualificationQuery) Unique(unique bool) *UserQualificationQuery {
-	uqq.unique = &unique
+	uqq.ctx.Unique = &unique
 	return uqq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (uqq *UserQualificationQuery) Order(o ...OrderFunc) *UserQualificationQuery {
 	uqq.order = append(uqq.order, o...)
 	return uqq
@@ -64,7 +62,7 @@ func (uqq *UserQualificationQuery) Order(o ...OrderFunc) *UserQualificationQuery
 
 // QueryUser chains the current query on the "user" edge.
 func (uqq *UserQualificationQuery) QueryUser() *UserQuery {
-	query := &UserQuery{config: uqq.config}
+	query := (&UserClient{config: uqq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := uqq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -87,7 +85,7 @@ func (uqq *UserQualificationQuery) QueryUser() *UserQuery {
 // First returns the first UserQualification entity from the query.
 // Returns a *NotFoundError when no UserQualification was found.
 func (uqq *UserQualificationQuery) First(ctx context.Context) (*UserQualification, error) {
-	nodes, err := uqq.Limit(1).All(ctx)
+	nodes, err := uqq.Limit(1).All(setContextOp(ctx, uqq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +108,7 @@ func (uqq *UserQualificationQuery) FirstX(ctx context.Context) *UserQualificatio
 // Returns a *NotFoundError when no UserQualification ID was found.
 func (uqq *UserQualificationQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = uqq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = uqq.Limit(1).IDs(setContextOp(ctx, uqq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -133,7 +131,7 @@ func (uqq *UserQualificationQuery) FirstIDX(ctx context.Context) int {
 // Returns a *NotSingularError when more than one UserQualification entity is found.
 // Returns a *NotFoundError when no UserQualification entities are found.
 func (uqq *UserQualificationQuery) Only(ctx context.Context) (*UserQualification, error) {
-	nodes, err := uqq.Limit(2).All(ctx)
+	nodes, err := uqq.Limit(2).All(setContextOp(ctx, uqq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +159,7 @@ func (uqq *UserQualificationQuery) OnlyX(ctx context.Context) *UserQualification
 // Returns a *NotFoundError when no entities are found.
 func (uqq *UserQualificationQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = uqq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = uqq.Limit(2).IDs(setContextOp(ctx, uqq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -186,10 +184,12 @@ func (uqq *UserQualificationQuery) OnlyIDX(ctx context.Context) int {
 
 // All executes the query and returns a list of UserQualifications.
 func (uqq *UserQualificationQuery) All(ctx context.Context) ([]*UserQualification, error) {
+	ctx = setContextOp(ctx, uqq.ctx, "All")
 	if err := uqq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return uqq.sqlAll(ctx)
+	qr := querierAll[[]*UserQualification, *UserQualificationQuery]()
+	return withInterceptors[[]*UserQualification](ctx, uqq, qr, uqq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -202,9 +202,12 @@ func (uqq *UserQualificationQuery) AllX(ctx context.Context) []*UserQualificatio
 }
 
 // IDs executes the query and returns a list of UserQualification IDs.
-func (uqq *UserQualificationQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
-	if err := uqq.Select(userqualification.FieldID).Scan(ctx, &ids); err != nil {
+func (uqq *UserQualificationQuery) IDs(ctx context.Context) (ids []int, err error) {
+	if uqq.ctx.Unique == nil && uqq.path != nil {
+		uqq.Unique(true)
+	}
+	ctx = setContextOp(ctx, uqq.ctx, "IDs")
+	if err = uqq.Select(userqualification.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -221,10 +224,11 @@ func (uqq *UserQualificationQuery) IDsX(ctx context.Context) []int {
 
 // Count returns the count of the given query.
 func (uqq *UserQualificationQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, uqq.ctx, "Count")
 	if err := uqq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return uqq.sqlCount(ctx)
+	return withInterceptors[int](ctx, uqq, querierCount[*UserQualificationQuery](), uqq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -238,10 +242,15 @@ func (uqq *UserQualificationQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (uqq *UserQualificationQuery) Exist(ctx context.Context) (bool, error) {
-	if err := uqq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = setContextOp(ctx, uqq.ctx, "Exist")
+	switch _, err := uqq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return uqq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -261,22 +270,21 @@ func (uqq *UserQualificationQuery) Clone() *UserQualificationQuery {
 	}
 	return &UserQualificationQuery{
 		config:     uqq.config,
-		limit:      uqq.limit,
-		offset:     uqq.offset,
+		ctx:        uqq.ctx.Clone(),
 		order:      append([]OrderFunc{}, uqq.order...),
+		inters:     append([]Interceptor{}, uqq.inters...),
 		predicates: append([]predicate.UserQualification{}, uqq.predicates...),
 		withUser:   uqq.withUser.Clone(),
 		// clone intermediate query.
-		sql:    uqq.sql.Clone(),
-		path:   uqq.path,
-		unique: uqq.unique,
+		sql:  uqq.sql.Clone(),
+		path: uqq.path,
 	}
 }
 
 // WithUser tells the query-builder to eager-load the nodes that are connected to
 // the "user" edge. The optional arguments are used to configure the query builder of the edge.
 func (uqq *UserQualificationQuery) WithUser(opts ...func(*UserQuery)) *UserQualificationQuery {
-	query := &UserQuery{config: uqq.config}
+	query := (&UserClient{config: uqq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -299,16 +307,11 @@ func (uqq *UserQualificationQuery) WithUser(opts ...func(*UserQuery)) *UserQuali
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (uqq *UserQualificationQuery) GroupBy(field string, fields ...string) *UserQualificationGroupBy {
-	grbuild := &UserQualificationGroupBy{config: uqq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := uqq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return uqq.sqlQuery(ctx), nil
-	}
+	uqq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &UserQualificationGroupBy{build: uqq}
+	grbuild.flds = &uqq.ctx.Fields
 	grbuild.label = userqualification.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -325,11 +328,11 @@ func (uqq *UserQualificationQuery) GroupBy(field string, fields ...string) *User
 //		Select(userqualification.FieldCreateTime).
 //		Scan(ctx, &v)
 func (uqq *UserQualificationQuery) Select(fields ...string) *UserQualificationSelect {
-	uqq.fields = append(uqq.fields, fields...)
-	selbuild := &UserQualificationSelect{UserQualificationQuery: uqq}
-	selbuild.label = userqualification.Label
-	selbuild.flds, selbuild.scan = &uqq.fields, selbuild.Scan
-	return selbuild
+	uqq.ctx.Fields = append(uqq.ctx.Fields, fields...)
+	sbuild := &UserQualificationSelect{UserQualificationQuery: uqq}
+	sbuild.label = userqualification.Label
+	sbuild.flds, sbuild.scan = &uqq.ctx.Fields, sbuild.Scan
+	return sbuild
 }
 
 // Aggregate returns a UserQualificationSelect configured with the given aggregations.
@@ -338,7 +341,17 @@ func (uqq *UserQualificationQuery) Aggregate(fns ...AggregateFunc) *UserQualific
 }
 
 func (uqq *UserQualificationQuery) prepareQuery(ctx context.Context) error {
-	for _, f := range uqq.fields {
+	for _, inter := range uqq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, uqq); err != nil {
+				return err
+			}
+		}
+	}
+	for _, f := range uqq.ctx.Fields {
 		if !userqualification.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -408,6 +421,9 @@ func (uqq *UserQualificationQuery) loadUser(ctx context.Context, query *UserQuer
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(user.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -427,41 +443,22 @@ func (uqq *UserQualificationQuery) loadUser(ctx context.Context, query *UserQuer
 
 func (uqq *UserQualificationQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := uqq.querySpec()
-	_spec.Node.Columns = uqq.fields
-	if len(uqq.fields) > 0 {
-		_spec.Unique = uqq.unique != nil && *uqq.unique
+	_spec.Node.Columns = uqq.ctx.Fields
+	if len(uqq.ctx.Fields) > 0 {
+		_spec.Unique = uqq.ctx.Unique != nil && *uqq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, uqq.driver, _spec)
 }
 
-func (uqq *UserQualificationQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := uqq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (uqq *UserQualificationQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   userqualification.Table,
-			Columns: userqualification.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: userqualification.FieldID,
-			},
-		},
-		From:   uqq.sql,
-		Unique: true,
-	}
-	if unique := uqq.unique; unique != nil {
+	_spec := sqlgraph.NewQuerySpec(userqualification.Table, userqualification.Columns, sqlgraph.NewFieldSpec(userqualification.FieldID, field.TypeInt))
+	_spec.From = uqq.sql
+	if unique := uqq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if uqq.path != nil {
+		_spec.Unique = true
 	}
-	if fields := uqq.fields; len(fields) > 0 {
+	if fields := uqq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, userqualification.FieldID)
 		for i := range fields {
@@ -477,10 +474,10 @@ func (uqq *UserQualificationQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := uqq.limit; limit != nil {
+	if limit := uqq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := uqq.offset; offset != nil {
+	if offset := uqq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := uqq.order; len(ps) > 0 {
@@ -496,7 +493,7 @@ func (uqq *UserQualificationQuery) querySpec() *sqlgraph.QuerySpec {
 func (uqq *UserQualificationQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(uqq.driver.Dialect())
 	t1 := builder.Table(userqualification.Table)
-	columns := uqq.fields
+	columns := uqq.ctx.Fields
 	if len(columns) == 0 {
 		columns = userqualification.Columns
 	}
@@ -505,7 +502,7 @@ func (uqq *UserQualificationQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = uqq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if uqq.unique != nil && *uqq.unique {
+	if uqq.ctx.Unique != nil && *uqq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range uqq.predicates {
@@ -514,12 +511,12 @@ func (uqq *UserQualificationQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range uqq.order {
 		p(selector)
 	}
-	if offset := uqq.offset; offset != nil {
+	if offset := uqq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := uqq.limit; limit != nil {
+	if limit := uqq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -527,13 +524,8 @@ func (uqq *UserQualificationQuery) sqlQuery(ctx context.Context) *sql.Selector {
 
 // UserQualificationGroupBy is the group-by builder for UserQualification entities.
 type UserQualificationGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *UserQualificationQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -542,58 +534,46 @@ func (uqgb *UserQualificationGroupBy) Aggregate(fns ...AggregateFunc) *UserQuali
 	return uqgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (uqgb *UserQualificationGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := uqgb.path(ctx)
-	if err != nil {
+	ctx = setContextOp(ctx, uqgb.build.ctx, "GroupBy")
+	if err := uqgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	uqgb.sql = query
-	return uqgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*UserQualificationQuery, *UserQualificationGroupBy](ctx, uqgb.build, uqgb, uqgb.build.inters, v)
 }
 
-func (uqgb *UserQualificationGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range uqgb.fields {
-		if !userqualification.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (uqgb *UserQualificationGroupBy) sqlScan(ctx context.Context, root *UserQualificationQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(uqgb.fns))
+	for _, fn := range uqgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := uqgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*uqgb.flds)+len(uqgb.fns))
+		for _, f := range *uqgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*uqgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := uqgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := uqgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (uqgb *UserQualificationGroupBy) sqlQuery() *sql.Selector {
-	selector := uqgb.sql.Select()
-	aggregation := make([]string, 0, len(uqgb.fns))
-	for _, fn := range uqgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(uqgb.fields)+len(uqgb.fns))
-		for _, f := range uqgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(uqgb.fields...)...)
-}
-
 // UserQualificationSelect is the builder for selecting fields of UserQualification entities.
 type UserQualificationSelect struct {
 	*UserQualificationQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
@@ -604,26 +584,27 @@ func (uqs *UserQualificationSelect) Aggregate(fns ...AggregateFunc) *UserQualifi
 
 // Scan applies the selector query and scans the result into the given value.
 func (uqs *UserQualificationSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, uqs.ctx, "Select")
 	if err := uqs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	uqs.sql = uqs.UserQualificationQuery.sqlQuery(ctx)
-	return uqs.sqlScan(ctx, v)
+	return scanWithInterceptors[*UserQualificationQuery, *UserQualificationSelect](ctx, uqs.UserQualificationQuery, uqs, uqs.inters, v)
 }
 
-func (uqs *UserQualificationSelect) sqlScan(ctx context.Context, v any) error {
+func (uqs *UserQualificationSelect) sqlScan(ctx context.Context, root *UserQualificationQuery, v any) error {
+	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(uqs.fns))
 	for _, fn := range uqs.fns {
-		aggregation = append(aggregation, fn(uqs.sql))
+		aggregation = append(aggregation, fn(selector))
 	}
 	switch n := len(*uqs.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
-		uqs.sql.Select(aggregation...)
+		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
-		uqs.sql.AppendSelect(aggregation...)
+		selector.AppendSelect(aggregation...)
 	}
 	rows := &sql.Rows{}
-	query, args := uqs.sql.Query()
+	query, args := selector.Query()
 	if err := uqs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

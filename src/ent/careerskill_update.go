@@ -97,41 +97,8 @@ func (csu *CareerSkillUpdate) ClearSkill() *CareerSkillUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (csu *CareerSkillUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	csu.defaults()
-	if len(csu.hooks) == 0 {
-		if err = csu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = csu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CareerSkillMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = csu.check(); err != nil {
-				return 0, err
-			}
-			csu.mutation = mutation
-			affected, err = csu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(csu.hooks) - 1; i >= 0; i-- {
-			if csu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = csu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, csu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, CareerSkillMutation](ctx, csu.sqlSave, csu.mutation, csu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -181,16 +148,10 @@ func (csu *CareerSkillUpdate) check() error {
 }
 
 func (csu *CareerSkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   careerskill.Table,
-			Columns: careerskill.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: careerskill.FieldID,
-			},
-		},
+	if err := csu.check(); err != nil {
+		return n, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(careerskill.Table, careerskill.Columns, sqlgraph.NewFieldSpec(careerskill.FieldID, field.TypeInt))
 	if ps := csu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -215,10 +176,7 @@ func (csu *CareerSkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{careerskill.CareerSkillGroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: careerskillgroup.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(careerskillgroup.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -231,10 +189,7 @@ func (csu *CareerSkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{careerskill.CareerSkillGroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: careerskillgroup.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(careerskillgroup.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -250,10 +205,7 @@ func (csu *CareerSkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{careerskill.SkillColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: skill.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(skill.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -266,10 +218,7 @@ func (csu *CareerSkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{careerskill.SkillColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: skill.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(skill.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -285,6 +234,7 @@ func (csu *CareerSkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	csu.mutation.done = true
 	return n, nil
 }
 
@@ -361,6 +311,12 @@ func (csuo *CareerSkillUpdateOne) ClearSkill() *CareerSkillUpdateOne {
 	return csuo
 }
 
+// Where appends a list predicates to the CareerSkillUpdate builder.
+func (csuo *CareerSkillUpdateOne) Where(ps ...predicate.CareerSkill) *CareerSkillUpdateOne {
+	csuo.mutation.Where(ps...)
+	return csuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (csuo *CareerSkillUpdateOne) Select(field string, fields ...string) *CareerSkillUpdateOne {
@@ -370,47 +326,8 @@ func (csuo *CareerSkillUpdateOne) Select(field string, fields ...string) *Career
 
 // Save executes the query and returns the updated CareerSkill entity.
 func (csuo *CareerSkillUpdateOne) Save(ctx context.Context) (*CareerSkill, error) {
-	var (
-		err  error
-		node *CareerSkill
-	)
 	csuo.defaults()
-	if len(csuo.hooks) == 0 {
-		if err = csuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = csuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CareerSkillMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = csuo.check(); err != nil {
-				return nil, err
-			}
-			csuo.mutation = mutation
-			node, err = csuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(csuo.hooks) - 1; i >= 0; i-- {
-			if csuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = csuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, csuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*CareerSkill)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from CareerSkillMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*CareerSkill, CareerSkillMutation](ctx, csuo.sqlSave, csuo.mutation, csuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -460,16 +377,10 @@ func (csuo *CareerSkillUpdateOne) check() error {
 }
 
 func (csuo *CareerSkillUpdateOne) sqlSave(ctx context.Context) (_node *CareerSkill, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   careerskill.Table,
-			Columns: careerskill.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: careerskill.FieldID,
-			},
-		},
+	if err := csuo.check(); err != nil {
+		return _node, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(careerskill.Table, careerskill.Columns, sqlgraph.NewFieldSpec(careerskill.FieldID, field.TypeInt))
 	id, ok := csuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "CareerSkill.id" for update`)}
@@ -511,10 +422,7 @@ func (csuo *CareerSkillUpdateOne) sqlSave(ctx context.Context) (_node *CareerSki
 			Columns: []string{careerskill.CareerSkillGroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: careerskillgroup.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(careerskillgroup.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -527,10 +435,7 @@ func (csuo *CareerSkillUpdateOne) sqlSave(ctx context.Context) (_node *CareerSki
 			Columns: []string{careerskill.CareerSkillGroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: careerskillgroup.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(careerskillgroup.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -546,10 +451,7 @@ func (csuo *CareerSkillUpdateOne) sqlSave(ctx context.Context) (_node *CareerSki
 			Columns: []string{careerskill.SkillColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: skill.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(skill.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -562,10 +464,7 @@ func (csuo *CareerSkillUpdateOne) sqlSave(ctx context.Context) (_node *CareerSki
 			Columns: []string{careerskill.SkillColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: skill.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(skill.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -584,5 +483,6 @@ func (csuo *CareerSkillUpdateOne) sqlSave(ctx context.Context) (_node *CareerSki
 		}
 		return nil, err
 	}
+	csuo.mutation.done = true
 	return _node, nil
 }

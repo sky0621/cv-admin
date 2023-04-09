@@ -145,41 +145,8 @@ func (uqu *UserQualificationUpdate) ClearUser() *UserQualificationUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uqu *UserQualificationUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	uqu.defaults()
-	if len(uqu.hooks) == 0 {
-		if err = uqu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = uqu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserQualificationMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = uqu.check(); err != nil {
-				return 0, err
-			}
-			uqu.mutation = mutation
-			affected, err = uqu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(uqu.hooks) - 1; i >= 0; i-- {
-			if uqu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = uqu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, uqu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, UserQualificationMutation](ctx, uqu.sqlSave, uqu.mutation, uqu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -246,16 +213,10 @@ func (uqu *UserQualificationUpdate) check() error {
 }
 
 func (uqu *UserQualificationUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   userqualification.Table,
-			Columns: userqualification.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: userqualification.FieldID,
-			},
-		},
+	if err := uqu.check(); err != nil {
+		return n, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(userqualification.Table, userqualification.Columns, sqlgraph.NewFieldSpec(userqualification.FieldID, field.TypeInt))
 	if ps := uqu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -301,10 +262,7 @@ func (uqu *UserQualificationUpdate) sqlSave(ctx context.Context) (n int, err err
 			Columns: []string{userqualification.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -317,10 +275,7 @@ func (uqu *UserQualificationUpdate) sqlSave(ctx context.Context) (n int, err err
 			Columns: []string{userqualification.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -336,6 +291,7 @@ func (uqu *UserQualificationUpdate) sqlSave(ctx context.Context) (n int, err err
 		}
 		return 0, err
 	}
+	uqu.mutation.done = true
 	return n, nil
 }
 
@@ -461,6 +417,12 @@ func (uquo *UserQualificationUpdateOne) ClearUser() *UserQualificationUpdateOne 
 	return uquo
 }
 
+// Where appends a list predicates to the UserQualificationUpdate builder.
+func (uquo *UserQualificationUpdateOne) Where(ps ...predicate.UserQualification) *UserQualificationUpdateOne {
+	uquo.mutation.Where(ps...)
+	return uquo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (uquo *UserQualificationUpdateOne) Select(field string, fields ...string) *UserQualificationUpdateOne {
@@ -470,47 +432,8 @@ func (uquo *UserQualificationUpdateOne) Select(field string, fields ...string) *
 
 // Save executes the query and returns the updated UserQualification entity.
 func (uquo *UserQualificationUpdateOne) Save(ctx context.Context) (*UserQualification, error) {
-	var (
-		err  error
-		node *UserQualification
-	)
 	uquo.defaults()
-	if len(uquo.hooks) == 0 {
-		if err = uquo.check(); err != nil {
-			return nil, err
-		}
-		node, err = uquo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserQualificationMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = uquo.check(); err != nil {
-				return nil, err
-			}
-			uquo.mutation = mutation
-			node, err = uquo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(uquo.hooks) - 1; i >= 0; i-- {
-			if uquo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = uquo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, uquo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*UserQualification)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from UserQualificationMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*UserQualification, UserQualificationMutation](ctx, uquo.sqlSave, uquo.mutation, uquo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -577,16 +500,10 @@ func (uquo *UserQualificationUpdateOne) check() error {
 }
 
 func (uquo *UserQualificationUpdateOne) sqlSave(ctx context.Context) (_node *UserQualification, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   userqualification.Table,
-			Columns: userqualification.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: userqualification.FieldID,
-			},
-		},
+	if err := uquo.check(); err != nil {
+		return _node, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(userqualification.Table, userqualification.Columns, sqlgraph.NewFieldSpec(userqualification.FieldID, field.TypeInt))
 	id, ok := uquo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "UserQualification.id" for update`)}
@@ -649,10 +566,7 @@ func (uquo *UserQualificationUpdateOne) sqlSave(ctx context.Context) (_node *Use
 			Columns: []string{userqualification.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -665,10 +579,7 @@ func (uquo *UserQualificationUpdateOne) sqlSave(ctx context.Context) (_node *Use
 			Columns: []string{userqualification.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -687,5 +598,6 @@ func (uquo *UserQualificationUpdateOne) sqlSave(ctx context.Context) (_node *Use
 		}
 		return nil, err
 	}
+	uquo.mutation.done = true
 	return _node, nil
 }

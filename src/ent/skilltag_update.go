@@ -46,40 +46,7 @@ func (stu *SkillTagUpdate) Mutation() *SkillTagMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (stu *SkillTagUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(stu.hooks) == 0 {
-		if err = stu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = stu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SkillTagMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = stu.check(); err != nil {
-				return 0, err
-			}
-			stu.mutation = mutation
-			affected, err = stu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(stu.hooks) - 1; i >= 0; i-- {
-			if stu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = stu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, stu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, SkillTagMutation](ctx, stu.sqlSave, stu.mutation, stu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -120,16 +87,10 @@ func (stu *SkillTagUpdate) check() error {
 }
 
 func (stu *SkillTagUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   skilltag.Table,
-			Columns: skilltag.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: skilltag.FieldID,
-			},
-		},
+	if err := stu.check(); err != nil {
+		return n, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(skilltag.Table, skilltag.Columns, sqlgraph.NewFieldSpec(skilltag.FieldID, field.TypeInt))
 	if ps := stu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -151,6 +112,7 @@ func (stu *SkillTagUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
+	stu.mutation.done = true
 	return n, nil
 }
 
@@ -179,6 +141,12 @@ func (stuo *SkillTagUpdateOne) Mutation() *SkillTagMutation {
 	return stuo.mutation
 }
 
+// Where appends a list predicates to the SkillTagUpdate builder.
+func (stuo *SkillTagUpdateOne) Where(ps ...predicate.SkillTag) *SkillTagUpdateOne {
+	stuo.mutation.Where(ps...)
+	return stuo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (stuo *SkillTagUpdateOne) Select(field string, fields ...string) *SkillTagUpdateOne {
@@ -188,46 +156,7 @@ func (stuo *SkillTagUpdateOne) Select(field string, fields ...string) *SkillTagU
 
 // Save executes the query and returns the updated SkillTag entity.
 func (stuo *SkillTagUpdateOne) Save(ctx context.Context) (*SkillTag, error) {
-	var (
-		err  error
-		node *SkillTag
-	)
-	if len(stuo.hooks) == 0 {
-		if err = stuo.check(); err != nil {
-			return nil, err
-		}
-		node, err = stuo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SkillTagMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = stuo.check(); err != nil {
-				return nil, err
-			}
-			stuo.mutation = mutation
-			node, err = stuo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(stuo.hooks) - 1; i >= 0; i-- {
-			if stuo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = stuo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, stuo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*SkillTag)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from SkillTagMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*SkillTag, SkillTagMutation](ctx, stuo.sqlSave, stuo.mutation, stuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -268,16 +197,10 @@ func (stuo *SkillTagUpdateOne) check() error {
 }
 
 func (stuo *SkillTagUpdateOne) sqlSave(ctx context.Context) (_node *SkillTag, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   skilltag.Table,
-			Columns: skilltag.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: skilltag.FieldID,
-			},
-		},
+	if err := stuo.check(); err != nil {
+		return _node, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(skilltag.Table, skilltag.Columns, sqlgraph.NewFieldSpec(skilltag.FieldID, field.TypeInt))
 	id, ok := stuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "SkillTag.id" for update`)}
@@ -319,5 +242,6 @@ func (stuo *SkillTagUpdateOne) sqlSave(ctx context.Context) (_node *SkillTag, er
 		}
 		return nil, err
 	}
+	stuo.mutation.done = true
 	return _node, nil
 }

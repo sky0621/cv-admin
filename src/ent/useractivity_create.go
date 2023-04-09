@@ -103,50 +103,8 @@ func (uac *UserActivityCreate) Mutation() *UserActivityMutation {
 
 // Save creates the UserActivity in the database.
 func (uac *UserActivityCreate) Save(ctx context.Context) (*UserActivity, error) {
-	var (
-		err  error
-		node *UserActivity
-	)
 	uac.defaults()
-	if len(uac.hooks) == 0 {
-		if err = uac.check(); err != nil {
-			return nil, err
-		}
-		node, err = uac.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserActivityMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = uac.check(); err != nil {
-				return nil, err
-			}
-			uac.mutation = mutation
-			if node, err = uac.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(uac.hooks) - 1; i >= 0; i-- {
-			if uac.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = uac.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, uac.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*UserActivity)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from UserActivityMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*UserActivity, UserActivityMutation](ctx, uac.sqlSave, uac.mutation, uac.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -216,6 +174,9 @@ func (uac *UserActivityCreate) check() error {
 }
 
 func (uac *UserActivityCreate) sqlSave(ctx context.Context) (*UserActivity, error) {
+	if err := uac.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := uac.createSpec()
 	if err := sqlgraph.CreateNode(ctx, uac.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -225,19 +186,15 @@ func (uac *UserActivityCreate) sqlSave(ctx context.Context) (*UserActivity, erro
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
+	uac.mutation.id = &_node.ID
+	uac.mutation.done = true
 	return _node, nil
 }
 
 func (uac *UserActivityCreate) createSpec() (*UserActivity, *sqlgraph.CreateSpec) {
 	var (
 		_node = &UserActivity{config: uac.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: useractivity.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: useractivity.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(useractivity.Table, sqlgraph.NewFieldSpec(useractivity.FieldID, field.TypeInt))
 	)
 	_spec.OnConflict = uac.conflict
 	if value, ok := uac.mutation.CreateTime(); ok {
@@ -268,10 +225,7 @@ func (uac *UserActivityCreate) createSpec() (*UserActivity, *sqlgraph.CreateSpec
 			Columns: []string{useractivity.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

@@ -143,50 +143,8 @@ func (ucc *UserCareerCreate) Mutation() *UserCareerMutation {
 
 // Save creates the UserCareer in the database.
 func (ucc *UserCareerCreate) Save(ctx context.Context) (*UserCareer, error) {
-	var (
-		err  error
-		node *UserCareer
-	)
 	ucc.defaults()
-	if len(ucc.hooks) == 0 {
-		if err = ucc.check(); err != nil {
-			return nil, err
-		}
-		node, err = ucc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserCareerMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ucc.check(); err != nil {
-				return nil, err
-			}
-			ucc.mutation = mutation
-			if node, err = ucc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ucc.hooks) - 1; i >= 0; i-- {
-			if ucc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ucc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ucc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*UserCareer)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from UserCareerMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*UserCareer, UserCareerMutation](ctx, ucc.sqlSave, ucc.mutation, ucc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -259,6 +217,9 @@ func (ucc *UserCareerCreate) check() error {
 }
 
 func (ucc *UserCareerCreate) sqlSave(ctx context.Context) (*UserCareer, error) {
+	if err := ucc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := ucc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, ucc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -268,19 +229,15 @@ func (ucc *UserCareerCreate) sqlSave(ctx context.Context) (*UserCareer, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
+	ucc.mutation.id = &_node.ID
+	ucc.mutation.done = true
 	return _node, nil
 }
 
 func (ucc *UserCareerCreate) createSpec() (*UserCareer, *sqlgraph.CreateSpec) {
 	var (
 		_node = &UserCareer{config: ucc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: usercareer.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: usercareer.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(usercareer.Table, sqlgraph.NewFieldSpec(usercareer.FieldID, field.TypeInt))
 	)
 	_spec.OnConflict = ucc.conflict
 	if value, ok := ucc.mutation.CreateTime(); ok {
@@ -311,10 +268,7 @@ func (ucc *UserCareerCreate) createSpec() (*UserCareer, *sqlgraph.CreateSpec) {
 			Columns: []string{usercareer.CareerGroupColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usercareergroup.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usercareergroup.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -331,10 +285,7 @@ func (ucc *UserCareerCreate) createSpec() (*UserCareer, *sqlgraph.CreateSpec) {
 			Columns: []string{usercareer.CareerDescriptionsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usercareerdescription.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usercareerdescription.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -350,10 +301,7 @@ func (ucc *UserCareerCreate) createSpec() (*UserCareer, *sqlgraph.CreateSpec) {
 			Columns: []string{usercareer.CareerTasksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: careertask.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(careertask.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -369,10 +317,7 @@ func (ucc *UserCareerCreate) createSpec() (*UserCareer, *sqlgraph.CreateSpec) {
 			Columns: []string{usercareer.CareerSkillGroupsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: careerskillgroup.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(careerskillgroup.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

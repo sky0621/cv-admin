@@ -113,50 +113,8 @@ func (sc *SkillCreate) Mutation() *SkillMutation {
 
 // Save creates the Skill in the database.
 func (sc *SkillCreate) Save(ctx context.Context) (*Skill, error) {
-	var (
-		err  error
-		node *Skill
-	)
 	sc.defaults()
-	if len(sc.hooks) == 0 {
-		if err = sc.check(); err != nil {
-			return nil, err
-		}
-		node, err = sc.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*SkillMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = sc.check(); err != nil {
-				return nil, err
-			}
-			sc.mutation = mutation
-			if node, err = sc.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(sc.hooks) - 1; i >= 0; i-- {
-			if sc.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = sc.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, sc.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*Skill)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from SkillMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*Skill, SkillMutation](ctx, sc.sqlSave, sc.mutation, sc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -231,6 +189,9 @@ func (sc *SkillCreate) check() error {
 }
 
 func (sc *SkillCreate) sqlSave(ctx context.Context) (*Skill, error) {
+	if err := sc.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := sc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, sc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -240,19 +201,15 @@ func (sc *SkillCreate) sqlSave(ctx context.Context) (*Skill, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
+	sc.mutation.id = &_node.ID
+	sc.mutation.done = true
 	return _node, nil
 }
 
 func (sc *SkillCreate) createSpec() (*Skill, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Skill{config: sc.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: skill.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: skill.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(skill.Table, sqlgraph.NewFieldSpec(skill.FieldID, field.TypeInt))
 	)
 	_spec.OnConflict = sc.conflict
 	if value, ok := sc.mutation.CreateTime(); ok {
@@ -287,10 +244,7 @@ func (sc *SkillCreate) createSpec() (*Skill, *sqlgraph.CreateSpec) {
 			Columns: []string{skill.CareerSkillsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: careerskill.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(careerskill.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

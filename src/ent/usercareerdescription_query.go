@@ -18,11 +18,9 @@ import (
 // UserCareerDescriptionQuery is the builder for querying UserCareerDescription entities.
 type UserCareerDescriptionQuery struct {
 	config
-	limit      *int
-	offset     *int
-	unique     *bool
+	ctx        *QueryContext
 	order      []OrderFunc
-	fields     []string
+	inters     []Interceptor
 	predicates []predicate.UserCareerDescription
 	withCareer *UserCareerQuery
 	withFKs    bool
@@ -37,26 +35,26 @@ func (ucdq *UserCareerDescriptionQuery) Where(ps ...predicate.UserCareerDescript
 	return ucdq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (ucdq *UserCareerDescriptionQuery) Limit(limit int) *UserCareerDescriptionQuery {
-	ucdq.limit = &limit
+	ucdq.ctx.Limit = &limit
 	return ucdq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (ucdq *UserCareerDescriptionQuery) Offset(offset int) *UserCareerDescriptionQuery {
-	ucdq.offset = &offset
+	ucdq.ctx.Offset = &offset
 	return ucdq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (ucdq *UserCareerDescriptionQuery) Unique(unique bool) *UserCareerDescriptionQuery {
-	ucdq.unique = &unique
+	ucdq.ctx.Unique = &unique
 	return ucdq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (ucdq *UserCareerDescriptionQuery) Order(o ...OrderFunc) *UserCareerDescriptionQuery {
 	ucdq.order = append(ucdq.order, o...)
 	return ucdq
@@ -64,7 +62,7 @@ func (ucdq *UserCareerDescriptionQuery) Order(o ...OrderFunc) *UserCareerDescrip
 
 // QueryCareer chains the current query on the "career" edge.
 func (ucdq *UserCareerDescriptionQuery) QueryCareer() *UserCareerQuery {
-	query := &UserCareerQuery{config: ucdq.config}
+	query := (&UserCareerClient{config: ucdq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ucdq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -87,7 +85,7 @@ func (ucdq *UserCareerDescriptionQuery) QueryCareer() *UserCareerQuery {
 // First returns the first UserCareerDescription entity from the query.
 // Returns a *NotFoundError when no UserCareerDescription was found.
 func (ucdq *UserCareerDescriptionQuery) First(ctx context.Context) (*UserCareerDescription, error) {
-	nodes, err := ucdq.Limit(1).All(ctx)
+	nodes, err := ucdq.Limit(1).All(setContextOp(ctx, ucdq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +108,7 @@ func (ucdq *UserCareerDescriptionQuery) FirstX(ctx context.Context) *UserCareerD
 // Returns a *NotFoundError when no UserCareerDescription ID was found.
 func (ucdq *UserCareerDescriptionQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = ucdq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = ucdq.Limit(1).IDs(setContextOp(ctx, ucdq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -133,7 +131,7 @@ func (ucdq *UserCareerDescriptionQuery) FirstIDX(ctx context.Context) int {
 // Returns a *NotSingularError when more than one UserCareerDescription entity is found.
 // Returns a *NotFoundError when no UserCareerDescription entities are found.
 func (ucdq *UserCareerDescriptionQuery) Only(ctx context.Context) (*UserCareerDescription, error) {
-	nodes, err := ucdq.Limit(2).All(ctx)
+	nodes, err := ucdq.Limit(2).All(setContextOp(ctx, ucdq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +159,7 @@ func (ucdq *UserCareerDescriptionQuery) OnlyX(ctx context.Context) *UserCareerDe
 // Returns a *NotFoundError when no entities are found.
 func (ucdq *UserCareerDescriptionQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = ucdq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = ucdq.Limit(2).IDs(setContextOp(ctx, ucdq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -186,10 +184,12 @@ func (ucdq *UserCareerDescriptionQuery) OnlyIDX(ctx context.Context) int {
 
 // All executes the query and returns a list of UserCareerDescriptions.
 func (ucdq *UserCareerDescriptionQuery) All(ctx context.Context) ([]*UserCareerDescription, error) {
+	ctx = setContextOp(ctx, ucdq.ctx, "All")
 	if err := ucdq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return ucdq.sqlAll(ctx)
+	qr := querierAll[[]*UserCareerDescription, *UserCareerDescriptionQuery]()
+	return withInterceptors[[]*UserCareerDescription](ctx, ucdq, qr, ucdq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -202,9 +202,12 @@ func (ucdq *UserCareerDescriptionQuery) AllX(ctx context.Context) []*UserCareerD
 }
 
 // IDs executes the query and returns a list of UserCareerDescription IDs.
-func (ucdq *UserCareerDescriptionQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
-	if err := ucdq.Select(usercareerdescription.FieldID).Scan(ctx, &ids); err != nil {
+func (ucdq *UserCareerDescriptionQuery) IDs(ctx context.Context) (ids []int, err error) {
+	if ucdq.ctx.Unique == nil && ucdq.path != nil {
+		ucdq.Unique(true)
+	}
+	ctx = setContextOp(ctx, ucdq.ctx, "IDs")
+	if err = ucdq.Select(usercareerdescription.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -221,10 +224,11 @@ func (ucdq *UserCareerDescriptionQuery) IDsX(ctx context.Context) []int {
 
 // Count returns the count of the given query.
 func (ucdq *UserCareerDescriptionQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, ucdq.ctx, "Count")
 	if err := ucdq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return ucdq.sqlCount(ctx)
+	return withInterceptors[int](ctx, ucdq, querierCount[*UserCareerDescriptionQuery](), ucdq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -238,10 +242,15 @@ func (ucdq *UserCareerDescriptionQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ucdq *UserCareerDescriptionQuery) Exist(ctx context.Context) (bool, error) {
-	if err := ucdq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = setContextOp(ctx, ucdq.ctx, "Exist")
+	switch _, err := ucdq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return ucdq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -261,22 +270,21 @@ func (ucdq *UserCareerDescriptionQuery) Clone() *UserCareerDescriptionQuery {
 	}
 	return &UserCareerDescriptionQuery{
 		config:     ucdq.config,
-		limit:      ucdq.limit,
-		offset:     ucdq.offset,
+		ctx:        ucdq.ctx.Clone(),
 		order:      append([]OrderFunc{}, ucdq.order...),
+		inters:     append([]Interceptor{}, ucdq.inters...),
 		predicates: append([]predicate.UserCareerDescription{}, ucdq.predicates...),
 		withCareer: ucdq.withCareer.Clone(),
 		// clone intermediate query.
-		sql:    ucdq.sql.Clone(),
-		path:   ucdq.path,
-		unique: ucdq.unique,
+		sql:  ucdq.sql.Clone(),
+		path: ucdq.path,
 	}
 }
 
 // WithCareer tells the query-builder to eager-load the nodes that are connected to
 // the "career" edge. The optional arguments are used to configure the query builder of the edge.
 func (ucdq *UserCareerDescriptionQuery) WithCareer(opts ...func(*UserCareerQuery)) *UserCareerDescriptionQuery {
-	query := &UserCareerQuery{config: ucdq.config}
+	query := (&UserCareerClient{config: ucdq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -299,16 +307,11 @@ func (ucdq *UserCareerDescriptionQuery) WithCareer(opts ...func(*UserCareerQuery
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (ucdq *UserCareerDescriptionQuery) GroupBy(field string, fields ...string) *UserCareerDescriptionGroupBy {
-	grbuild := &UserCareerDescriptionGroupBy{config: ucdq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := ucdq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return ucdq.sqlQuery(ctx), nil
-	}
+	ucdq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &UserCareerDescriptionGroupBy{build: ucdq}
+	grbuild.flds = &ucdq.ctx.Fields
 	grbuild.label = usercareerdescription.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -325,11 +328,11 @@ func (ucdq *UserCareerDescriptionQuery) GroupBy(field string, fields ...string) 
 //		Select(usercareerdescription.FieldDescription).
 //		Scan(ctx, &v)
 func (ucdq *UserCareerDescriptionQuery) Select(fields ...string) *UserCareerDescriptionSelect {
-	ucdq.fields = append(ucdq.fields, fields...)
-	selbuild := &UserCareerDescriptionSelect{UserCareerDescriptionQuery: ucdq}
-	selbuild.label = usercareerdescription.Label
-	selbuild.flds, selbuild.scan = &ucdq.fields, selbuild.Scan
-	return selbuild
+	ucdq.ctx.Fields = append(ucdq.ctx.Fields, fields...)
+	sbuild := &UserCareerDescriptionSelect{UserCareerDescriptionQuery: ucdq}
+	sbuild.label = usercareerdescription.Label
+	sbuild.flds, sbuild.scan = &ucdq.ctx.Fields, sbuild.Scan
+	return sbuild
 }
 
 // Aggregate returns a UserCareerDescriptionSelect configured with the given aggregations.
@@ -338,7 +341,17 @@ func (ucdq *UserCareerDescriptionQuery) Aggregate(fns ...AggregateFunc) *UserCar
 }
 
 func (ucdq *UserCareerDescriptionQuery) prepareQuery(ctx context.Context) error {
-	for _, f := range ucdq.fields {
+	for _, inter := range ucdq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, ucdq); err != nil {
+				return err
+			}
+		}
+	}
+	for _, f := range ucdq.ctx.Fields {
 		if !usercareerdescription.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -408,6 +421,9 @@ func (ucdq *UserCareerDescriptionQuery) loadCareer(ctx context.Context, query *U
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(usercareer.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -427,41 +443,22 @@ func (ucdq *UserCareerDescriptionQuery) loadCareer(ctx context.Context, query *U
 
 func (ucdq *UserCareerDescriptionQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ucdq.querySpec()
-	_spec.Node.Columns = ucdq.fields
-	if len(ucdq.fields) > 0 {
-		_spec.Unique = ucdq.unique != nil && *ucdq.unique
+	_spec.Node.Columns = ucdq.ctx.Fields
+	if len(ucdq.ctx.Fields) > 0 {
+		_spec.Unique = ucdq.ctx.Unique != nil && *ucdq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, ucdq.driver, _spec)
 }
 
-func (ucdq *UserCareerDescriptionQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := ucdq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (ucdq *UserCareerDescriptionQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   usercareerdescription.Table,
-			Columns: usercareerdescription.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: usercareerdescription.FieldID,
-			},
-		},
-		From:   ucdq.sql,
-		Unique: true,
-	}
-	if unique := ucdq.unique; unique != nil {
+	_spec := sqlgraph.NewQuerySpec(usercareerdescription.Table, usercareerdescription.Columns, sqlgraph.NewFieldSpec(usercareerdescription.FieldID, field.TypeInt))
+	_spec.From = ucdq.sql
+	if unique := ucdq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if ucdq.path != nil {
+		_spec.Unique = true
 	}
-	if fields := ucdq.fields; len(fields) > 0 {
+	if fields := ucdq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, usercareerdescription.FieldID)
 		for i := range fields {
@@ -477,10 +474,10 @@ func (ucdq *UserCareerDescriptionQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := ucdq.limit; limit != nil {
+	if limit := ucdq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := ucdq.offset; offset != nil {
+	if offset := ucdq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := ucdq.order; len(ps) > 0 {
@@ -496,7 +493,7 @@ func (ucdq *UserCareerDescriptionQuery) querySpec() *sqlgraph.QuerySpec {
 func (ucdq *UserCareerDescriptionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(ucdq.driver.Dialect())
 	t1 := builder.Table(usercareerdescription.Table)
-	columns := ucdq.fields
+	columns := ucdq.ctx.Fields
 	if len(columns) == 0 {
 		columns = usercareerdescription.Columns
 	}
@@ -505,7 +502,7 @@ func (ucdq *UserCareerDescriptionQuery) sqlQuery(ctx context.Context) *sql.Selec
 		selector = ucdq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if ucdq.unique != nil && *ucdq.unique {
+	if ucdq.ctx.Unique != nil && *ucdq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range ucdq.predicates {
@@ -514,12 +511,12 @@ func (ucdq *UserCareerDescriptionQuery) sqlQuery(ctx context.Context) *sql.Selec
 	for _, p := range ucdq.order {
 		p(selector)
 	}
-	if offset := ucdq.offset; offset != nil {
+	if offset := ucdq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := ucdq.limit; limit != nil {
+	if limit := ucdq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -527,13 +524,8 @@ func (ucdq *UserCareerDescriptionQuery) sqlQuery(ctx context.Context) *sql.Selec
 
 // UserCareerDescriptionGroupBy is the group-by builder for UserCareerDescription entities.
 type UserCareerDescriptionGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *UserCareerDescriptionQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -542,58 +534,46 @@ func (ucdgb *UserCareerDescriptionGroupBy) Aggregate(fns ...AggregateFunc) *User
 	return ucdgb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (ucdgb *UserCareerDescriptionGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := ucdgb.path(ctx)
-	if err != nil {
+	ctx = setContextOp(ctx, ucdgb.build.ctx, "GroupBy")
+	if err := ucdgb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ucdgb.sql = query
-	return ucdgb.sqlScan(ctx, v)
+	return scanWithInterceptors[*UserCareerDescriptionQuery, *UserCareerDescriptionGroupBy](ctx, ucdgb.build, ucdgb, ucdgb.build.inters, v)
 }
 
-func (ucdgb *UserCareerDescriptionGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range ucdgb.fields {
-		if !usercareerdescription.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (ucdgb *UserCareerDescriptionGroupBy) sqlScan(ctx context.Context, root *UserCareerDescriptionQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(ucdgb.fns))
+	for _, fn := range ucdgb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := ucdgb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*ucdgb.flds)+len(ucdgb.fns))
+		for _, f := range *ucdgb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*ucdgb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := ucdgb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := ucdgb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (ucdgb *UserCareerDescriptionGroupBy) sqlQuery() *sql.Selector {
-	selector := ucdgb.sql.Select()
-	aggregation := make([]string, 0, len(ucdgb.fns))
-	for _, fn := range ucdgb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(ucdgb.fields)+len(ucdgb.fns))
-		for _, f := range ucdgb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(ucdgb.fields...)...)
-}
-
 // UserCareerDescriptionSelect is the builder for selecting fields of UserCareerDescription entities.
 type UserCareerDescriptionSelect struct {
 	*UserCareerDescriptionQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
@@ -604,26 +584,27 @@ func (ucds *UserCareerDescriptionSelect) Aggregate(fns ...AggregateFunc) *UserCa
 
 // Scan applies the selector query and scans the result into the given value.
 func (ucds *UserCareerDescriptionSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, ucds.ctx, "Select")
 	if err := ucds.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ucds.sql = ucds.UserCareerDescriptionQuery.sqlQuery(ctx)
-	return ucds.sqlScan(ctx, v)
+	return scanWithInterceptors[*UserCareerDescriptionQuery, *UserCareerDescriptionSelect](ctx, ucds.UserCareerDescriptionQuery, ucds, ucds.inters, v)
 }
 
-func (ucds *UserCareerDescriptionSelect) sqlScan(ctx context.Context, v any) error {
+func (ucds *UserCareerDescriptionSelect) sqlScan(ctx context.Context, root *UserCareerDescriptionQuery, v any) error {
+	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(ucds.fns))
 	for _, fn := range ucds.fns {
-		aggregation = append(aggregation, fn(ucds.sql))
+		aggregation = append(aggregation, fn(selector))
 	}
 	switch n := len(*ucds.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
-		ucds.sql.Select(aggregation...)
+		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
-		ucds.sql.AppendSelect(aggregation...)
+		selector.AppendSelect(aggregation...)
 	}
 	rows := &sql.Rows{}
-	query, args := ucds.sql.Query()
+	query, args := selector.Query()
 	if err := ucds.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

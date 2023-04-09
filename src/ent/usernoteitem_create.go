@@ -75,50 +75,8 @@ func (unic *UserNoteItemCreate) Mutation() *UserNoteItemMutation {
 
 // Save creates the UserNoteItem in the database.
 func (unic *UserNoteItemCreate) Save(ctx context.Context) (*UserNoteItem, error) {
-	var (
-		err  error
-		node *UserNoteItem
-	)
 	unic.defaults()
-	if len(unic.hooks) == 0 {
-		if err = unic.check(); err != nil {
-			return nil, err
-		}
-		node, err = unic.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserNoteItemMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = unic.check(); err != nil {
-				return nil, err
-			}
-			unic.mutation = mutation
-			if node, err = unic.sqlSave(ctx); err != nil {
-				return nil, err
-			}
-			mutation.id = &node.ID
-			mutation.done = true
-			return node, err
-		})
-		for i := len(unic.hooks) - 1; i >= 0; i-- {
-			if unic.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = unic.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, unic.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*UserNoteItem)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from UserNoteItemMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*UserNoteItem, UserNoteItemMutation](ctx, unic.sqlSave, unic.mutation, unic.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -178,6 +136,9 @@ func (unic *UserNoteItemCreate) check() error {
 }
 
 func (unic *UserNoteItemCreate) sqlSave(ctx context.Context) (*UserNoteItem, error) {
+	if err := unic.check(); err != nil {
+		return nil, err
+	}
 	_node, _spec := unic.createSpec()
 	if err := sqlgraph.CreateNode(ctx, unic.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -187,19 +148,15 @@ func (unic *UserNoteItemCreate) sqlSave(ctx context.Context) (*UserNoteItem, err
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
+	unic.mutation.id = &_node.ID
+	unic.mutation.done = true
 	return _node, nil
 }
 
 func (unic *UserNoteItemCreate) createSpec() (*UserNoteItem, *sqlgraph.CreateSpec) {
 	var (
 		_node = &UserNoteItem{config: unic.config}
-		_spec = &sqlgraph.CreateSpec{
-			Table: usernoteitem.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: usernoteitem.FieldID,
-			},
-		}
+		_spec = sqlgraph.NewCreateSpec(usernoteitem.Table, sqlgraph.NewFieldSpec(usernoteitem.FieldID, field.TypeInt))
 	)
 	_spec.OnConflict = unic.conflict
 	if value, ok := unic.mutation.CreateTime(); ok {
@@ -222,10 +179,7 @@ func (unic *UserNoteItemCreate) createSpec() (*UserNoteItem, *sqlgraph.CreateSpe
 			Columns: []string{usernoteitem.NoteColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usernote.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usernote.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,34 +27,7 @@ func (csd *CareerSkillDelete) Where(ps ...predicate.CareerSkill) *CareerSkillDel
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (csd *CareerSkillDelete) Exec(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
-	if len(csd.hooks) == 0 {
-		affected, err = csd.sqlExec(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*CareerSkillMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			csd.mutation = mutation
-			affected, err = csd.sqlExec(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(csd.hooks) - 1; i >= 0; i-- {
-			if csd.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = csd.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, csd.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, CareerSkillMutation](ctx, csd.sqlExec, csd.mutation, csd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
@@ -68,15 +40,7 @@ func (csd *CareerSkillDelete) ExecX(ctx context.Context) int {
 }
 
 func (csd *CareerSkillDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := &sqlgraph.DeleteSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table: careerskill.Table,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: careerskill.FieldID,
-			},
-		},
-	}
+	_spec := sqlgraph.NewDeleteSpec(careerskill.Table, sqlgraph.NewFieldSpec(careerskill.FieldID, field.TypeInt))
 	if ps := csd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -88,12 +52,19 @@ func (csd *CareerSkillDelete) sqlExec(ctx context.Context) (int, error) {
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
+	csd.mutation.done = true
 	return affected, err
 }
 
 // CareerSkillDeleteOne is the builder for deleting a single CareerSkill entity.
 type CareerSkillDeleteOne struct {
 	csd *CareerSkillDelete
+}
+
+// Where appends a list predicates to the CareerSkillDelete builder.
+func (csdo *CareerSkillDeleteOne) Where(ps ...predicate.CareerSkill) *CareerSkillDeleteOne {
+	csdo.csd.mutation.Where(ps...)
+	return csdo
 }
 
 // Exec executes the deletion query.
@@ -111,5 +82,7 @@ func (csdo *CareerSkillDeleteOne) Exec(ctx context.Context) error {
 
 // ExecX is like Exec, but panics if an error occurs.
 func (csdo *CareerSkillDeleteOne) ExecX(ctx context.Context) {
-	csdo.csd.ExecX(ctx)
+	if err := csdo.Exec(ctx); err != nil {
+		panic(err)
+	}
 }

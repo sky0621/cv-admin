@@ -20,11 +20,9 @@ import (
 // UserCareerGroupQuery is the builder for querying UserCareerGroup entities.
 type UserCareerGroupQuery struct {
 	config
-	limit       *int
-	offset      *int
-	unique      *bool
+	ctx         *QueryContext
 	order       []OrderFunc
-	fields      []string
+	inters      []Interceptor
 	predicates  []predicate.UserCareerGroup
 	withUser    *UserQuery
 	withCareers *UserCareerQuery
@@ -40,26 +38,26 @@ func (ucgq *UserCareerGroupQuery) Where(ps ...predicate.UserCareerGroup) *UserCa
 	return ucgq
 }
 
-// Limit adds a limit step to the query.
+// Limit the number of records to be returned by this query.
 func (ucgq *UserCareerGroupQuery) Limit(limit int) *UserCareerGroupQuery {
-	ucgq.limit = &limit
+	ucgq.ctx.Limit = &limit
 	return ucgq
 }
 
-// Offset adds an offset step to the query.
+// Offset to start from.
 func (ucgq *UserCareerGroupQuery) Offset(offset int) *UserCareerGroupQuery {
-	ucgq.offset = &offset
+	ucgq.ctx.Offset = &offset
 	return ucgq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
 func (ucgq *UserCareerGroupQuery) Unique(unique bool) *UserCareerGroupQuery {
-	ucgq.unique = &unique
+	ucgq.ctx.Unique = &unique
 	return ucgq
 }
 
-// Order adds an order step to the query.
+// Order specifies how the records should be ordered.
 func (ucgq *UserCareerGroupQuery) Order(o ...OrderFunc) *UserCareerGroupQuery {
 	ucgq.order = append(ucgq.order, o...)
 	return ucgq
@@ -67,7 +65,7 @@ func (ucgq *UserCareerGroupQuery) Order(o ...OrderFunc) *UserCareerGroupQuery {
 
 // QueryUser chains the current query on the "user" edge.
 func (ucgq *UserCareerGroupQuery) QueryUser() *UserQuery {
-	query := &UserQuery{config: ucgq.config}
+	query := (&UserClient{config: ucgq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ucgq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -89,7 +87,7 @@ func (ucgq *UserCareerGroupQuery) QueryUser() *UserQuery {
 
 // QueryCareers chains the current query on the "careers" edge.
 func (ucgq *UserCareerGroupQuery) QueryCareers() *UserCareerQuery {
-	query := &UserCareerQuery{config: ucgq.config}
+	query := (&UserCareerClient{config: ucgq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := ucgq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -112,7 +110,7 @@ func (ucgq *UserCareerGroupQuery) QueryCareers() *UserCareerQuery {
 // First returns the first UserCareerGroup entity from the query.
 // Returns a *NotFoundError when no UserCareerGroup was found.
 func (ucgq *UserCareerGroupQuery) First(ctx context.Context) (*UserCareerGroup, error) {
-	nodes, err := ucgq.Limit(1).All(ctx)
+	nodes, err := ucgq.Limit(1).All(setContextOp(ctx, ucgq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +133,7 @@ func (ucgq *UserCareerGroupQuery) FirstX(ctx context.Context) *UserCareerGroup {
 // Returns a *NotFoundError when no UserCareerGroup ID was found.
 func (ucgq *UserCareerGroupQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = ucgq.Limit(1).IDs(ctx); err != nil {
+	if ids, err = ucgq.Limit(1).IDs(setContextOp(ctx, ucgq.ctx, "FirstID")); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -158,7 +156,7 @@ func (ucgq *UserCareerGroupQuery) FirstIDX(ctx context.Context) int {
 // Returns a *NotSingularError when more than one UserCareerGroup entity is found.
 // Returns a *NotFoundError when no UserCareerGroup entities are found.
 func (ucgq *UserCareerGroupQuery) Only(ctx context.Context) (*UserCareerGroup, error) {
-	nodes, err := ucgq.Limit(2).All(ctx)
+	nodes, err := ucgq.Limit(2).All(setContextOp(ctx, ucgq.ctx, "Only"))
 	if err != nil {
 		return nil, err
 	}
@@ -186,7 +184,7 @@ func (ucgq *UserCareerGroupQuery) OnlyX(ctx context.Context) *UserCareerGroup {
 // Returns a *NotFoundError when no entities are found.
 func (ucgq *UserCareerGroupQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = ucgq.Limit(2).IDs(ctx); err != nil {
+	if ids, err = ucgq.Limit(2).IDs(setContextOp(ctx, ucgq.ctx, "OnlyID")); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -211,10 +209,12 @@ func (ucgq *UserCareerGroupQuery) OnlyIDX(ctx context.Context) int {
 
 // All executes the query and returns a list of UserCareerGroups.
 func (ucgq *UserCareerGroupQuery) All(ctx context.Context) ([]*UserCareerGroup, error) {
+	ctx = setContextOp(ctx, ucgq.ctx, "All")
 	if err := ucgq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	return ucgq.sqlAll(ctx)
+	qr := querierAll[[]*UserCareerGroup, *UserCareerGroupQuery]()
+	return withInterceptors[[]*UserCareerGroup](ctx, ucgq, qr, ucgq.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
@@ -227,9 +227,12 @@ func (ucgq *UserCareerGroupQuery) AllX(ctx context.Context) []*UserCareerGroup {
 }
 
 // IDs executes the query and returns a list of UserCareerGroup IDs.
-func (ucgq *UserCareerGroupQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
-	if err := ucgq.Select(usercareergroup.FieldID).Scan(ctx, &ids); err != nil {
+func (ucgq *UserCareerGroupQuery) IDs(ctx context.Context) (ids []int, err error) {
+	if ucgq.ctx.Unique == nil && ucgq.path != nil {
+		ucgq.Unique(true)
+	}
+	ctx = setContextOp(ctx, ucgq.ctx, "IDs")
+	if err = ucgq.Select(usercareergroup.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
@@ -246,10 +249,11 @@ func (ucgq *UserCareerGroupQuery) IDsX(ctx context.Context) []int {
 
 // Count returns the count of the given query.
 func (ucgq *UserCareerGroupQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, ucgq.ctx, "Count")
 	if err := ucgq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return ucgq.sqlCount(ctx)
+	return withInterceptors[int](ctx, ucgq, querierCount[*UserCareerGroupQuery](), ucgq.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
@@ -263,10 +267,15 @@ func (ucgq *UserCareerGroupQuery) CountX(ctx context.Context) int {
 
 // Exist returns true if the query has elements in the graph.
 func (ucgq *UserCareerGroupQuery) Exist(ctx context.Context) (bool, error) {
-	if err := ucgq.prepareQuery(ctx); err != nil {
-		return false, err
+	ctx = setContextOp(ctx, ucgq.ctx, "Exist")
+	switch _, err := ucgq.FirstID(ctx); {
+	case IsNotFound(err):
+		return false, nil
+	case err != nil:
+		return false, fmt.Errorf("ent: check existence: %w", err)
+	default:
+		return true, nil
 	}
-	return ucgq.sqlExist(ctx)
 }
 
 // ExistX is like Exist, but panics if an error occurs.
@@ -286,23 +295,22 @@ func (ucgq *UserCareerGroupQuery) Clone() *UserCareerGroupQuery {
 	}
 	return &UserCareerGroupQuery{
 		config:      ucgq.config,
-		limit:       ucgq.limit,
-		offset:      ucgq.offset,
+		ctx:         ucgq.ctx.Clone(),
 		order:       append([]OrderFunc{}, ucgq.order...),
+		inters:      append([]Interceptor{}, ucgq.inters...),
 		predicates:  append([]predicate.UserCareerGroup{}, ucgq.predicates...),
 		withUser:    ucgq.withUser.Clone(),
 		withCareers: ucgq.withCareers.Clone(),
 		// clone intermediate query.
-		sql:    ucgq.sql.Clone(),
-		path:   ucgq.path,
-		unique: ucgq.unique,
+		sql:  ucgq.sql.Clone(),
+		path: ucgq.path,
 	}
 }
 
 // WithUser tells the query-builder to eager-load the nodes that are connected to
 // the "user" edge. The optional arguments are used to configure the query builder of the edge.
 func (ucgq *UserCareerGroupQuery) WithUser(opts ...func(*UserQuery)) *UserCareerGroupQuery {
-	query := &UserQuery{config: ucgq.config}
+	query := (&UserClient{config: ucgq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -313,7 +321,7 @@ func (ucgq *UserCareerGroupQuery) WithUser(opts ...func(*UserQuery)) *UserCareer
 // WithCareers tells the query-builder to eager-load the nodes that are connected to
 // the "careers" edge. The optional arguments are used to configure the query builder of the edge.
 func (ucgq *UserCareerGroupQuery) WithCareers(opts ...func(*UserCareerQuery)) *UserCareerGroupQuery {
-	query := &UserCareerQuery{config: ucgq.config}
+	query := (&UserCareerClient{config: ucgq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -336,16 +344,11 @@ func (ucgq *UserCareerGroupQuery) WithCareers(opts ...func(*UserCareerQuery)) *U
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (ucgq *UserCareerGroupQuery) GroupBy(field string, fields ...string) *UserCareerGroupGroupBy {
-	grbuild := &UserCareerGroupGroupBy{config: ucgq.config}
-	grbuild.fields = append([]string{field}, fields...)
-	grbuild.path = func(ctx context.Context) (prev *sql.Selector, err error) {
-		if err := ucgq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		return ucgq.sqlQuery(ctx), nil
-	}
+	ucgq.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &UserCareerGroupGroupBy{build: ucgq}
+	grbuild.flds = &ucgq.ctx.Fields
 	grbuild.label = usercareergroup.Label
-	grbuild.flds, grbuild.scan = &grbuild.fields, grbuild.Scan
+	grbuild.scan = grbuild.Scan
 	return grbuild
 }
 
@@ -362,11 +365,11 @@ func (ucgq *UserCareerGroupQuery) GroupBy(field string, fields ...string) *UserC
 //		Select(usercareergroup.FieldCreateTime).
 //		Scan(ctx, &v)
 func (ucgq *UserCareerGroupQuery) Select(fields ...string) *UserCareerGroupSelect {
-	ucgq.fields = append(ucgq.fields, fields...)
-	selbuild := &UserCareerGroupSelect{UserCareerGroupQuery: ucgq}
-	selbuild.label = usercareergroup.Label
-	selbuild.flds, selbuild.scan = &ucgq.fields, selbuild.Scan
-	return selbuild
+	ucgq.ctx.Fields = append(ucgq.ctx.Fields, fields...)
+	sbuild := &UserCareerGroupSelect{UserCareerGroupQuery: ucgq}
+	sbuild.label = usercareergroup.Label
+	sbuild.flds, sbuild.scan = &ucgq.ctx.Fields, sbuild.Scan
+	return sbuild
 }
 
 // Aggregate returns a UserCareerGroupSelect configured with the given aggregations.
@@ -375,7 +378,17 @@ func (ucgq *UserCareerGroupQuery) Aggregate(fns ...AggregateFunc) *UserCareerGro
 }
 
 func (ucgq *UserCareerGroupQuery) prepareQuery(ctx context.Context) error {
-	for _, f := range ucgq.fields {
+	for _, inter := range ucgq.inters {
+		if inter == nil {
+			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+		}
+		if trv, ok := inter.(Traverser); ok {
+			if err := trv.Traverse(ctx, ucgq); err != nil {
+				return err
+			}
+		}
+	}
+	for _, f := range ucgq.ctx.Fields {
 		if !usercareergroup.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
@@ -453,6 +466,9 @@ func (ucgq *UserCareerGroupQuery) loadUser(ctx context.Context, query *UserQuery
 		}
 		nodeids[fk] = append(nodeids[fk], nodes[i])
 	}
+	if len(ids) == 0 {
+		return nil
+	}
 	query.Where(user.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -503,41 +519,22 @@ func (ucgq *UserCareerGroupQuery) loadCareers(ctx context.Context, query *UserCa
 
 func (ucgq *UserCareerGroupQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ucgq.querySpec()
-	_spec.Node.Columns = ucgq.fields
-	if len(ucgq.fields) > 0 {
-		_spec.Unique = ucgq.unique != nil && *ucgq.unique
+	_spec.Node.Columns = ucgq.ctx.Fields
+	if len(ucgq.ctx.Fields) > 0 {
+		_spec.Unique = ucgq.ctx.Unique != nil && *ucgq.ctx.Unique
 	}
 	return sqlgraph.CountNodes(ctx, ucgq.driver, _spec)
 }
 
-func (ucgq *UserCareerGroupQuery) sqlExist(ctx context.Context) (bool, error) {
-	switch _, err := ucgq.FirstID(ctx); {
-	case IsNotFound(err):
-		return false, nil
-	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
-	default:
-		return true, nil
-	}
-}
-
 func (ucgq *UserCareerGroupQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := &sqlgraph.QuerySpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   usercareergroup.Table,
-			Columns: usercareergroup.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: usercareergroup.FieldID,
-			},
-		},
-		From:   ucgq.sql,
-		Unique: true,
-	}
-	if unique := ucgq.unique; unique != nil {
+	_spec := sqlgraph.NewQuerySpec(usercareergroup.Table, usercareergroup.Columns, sqlgraph.NewFieldSpec(usercareergroup.FieldID, field.TypeInt))
+	_spec.From = ucgq.sql
+	if unique := ucgq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
+	} else if ucgq.path != nil {
+		_spec.Unique = true
 	}
-	if fields := ucgq.fields; len(fields) > 0 {
+	if fields := ucgq.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, usercareergroup.FieldID)
 		for i := range fields {
@@ -553,10 +550,10 @@ func (ucgq *UserCareerGroupQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if limit := ucgq.limit; limit != nil {
+	if limit := ucgq.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := ucgq.offset; offset != nil {
+	if offset := ucgq.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
 	if ps := ucgq.order; len(ps) > 0 {
@@ -572,7 +569,7 @@ func (ucgq *UserCareerGroupQuery) querySpec() *sqlgraph.QuerySpec {
 func (ucgq *UserCareerGroupQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(ucgq.driver.Dialect())
 	t1 := builder.Table(usercareergroup.Table)
-	columns := ucgq.fields
+	columns := ucgq.ctx.Fields
 	if len(columns) == 0 {
 		columns = usercareergroup.Columns
 	}
@@ -581,7 +578,7 @@ func (ucgq *UserCareerGroupQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector = ucgq.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if ucgq.unique != nil && *ucgq.unique {
+	if ucgq.ctx.Unique != nil && *ucgq.ctx.Unique {
 		selector.Distinct()
 	}
 	for _, p := range ucgq.predicates {
@@ -590,12 +587,12 @@ func (ucgq *UserCareerGroupQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	for _, p := range ucgq.order {
 		p(selector)
 	}
-	if offset := ucgq.offset; offset != nil {
+	if offset := ucgq.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := ucgq.limit; limit != nil {
+	if limit := ucgq.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -603,13 +600,8 @@ func (ucgq *UserCareerGroupQuery) sqlQuery(ctx context.Context) *sql.Selector {
 
 // UserCareerGroupGroupBy is the group-by builder for UserCareerGroup entities.
 type UserCareerGroupGroupBy struct {
-	config
 	selector
-	fields []string
-	fns    []AggregateFunc
-	// intermediate query (i.e. traversal path).
-	sql  *sql.Selector
-	path func(context.Context) (*sql.Selector, error)
+	build *UserCareerGroupQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
@@ -618,58 +610,46 @@ func (ucggb *UserCareerGroupGroupBy) Aggregate(fns ...AggregateFunc) *UserCareer
 	return ucggb
 }
 
-// Scan applies the group-by query and scans the result into the given value.
+// Scan applies the selector query and scans the result into the given value.
 func (ucggb *UserCareerGroupGroupBy) Scan(ctx context.Context, v any) error {
-	query, err := ucggb.path(ctx)
-	if err != nil {
+	ctx = setContextOp(ctx, ucggb.build.ctx, "GroupBy")
+	if err := ucggb.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ucggb.sql = query
-	return ucggb.sqlScan(ctx, v)
+	return scanWithInterceptors[*UserCareerGroupQuery, *UserCareerGroupGroupBy](ctx, ucggb.build, ucggb, ucggb.build.inters, v)
 }
 
-func (ucggb *UserCareerGroupGroupBy) sqlScan(ctx context.Context, v any) error {
-	for _, f := range ucggb.fields {
-		if !usercareergroup.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
-		}
+func (ucggb *UserCareerGroupGroupBy) sqlScan(ctx context.Context, root *UserCareerGroupQuery, v any) error {
+	selector := root.sqlQuery(ctx).Select()
+	aggregation := make([]string, 0, len(ucggb.fns))
+	for _, fn := range ucggb.fns {
+		aggregation = append(aggregation, fn(selector))
 	}
-	selector := ucggb.sqlQuery()
+	if len(selector.SelectedColumns()) == 0 {
+		columns := make([]string, 0, len(*ucggb.flds)+len(ucggb.fns))
+		for _, f := range *ucggb.flds {
+			columns = append(columns, selector.C(f))
+		}
+		columns = append(columns, aggregation...)
+		selector.Select(columns...)
+	}
+	selector.GroupBy(selector.Columns(*ucggb.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := ucggb.driver.Query(ctx, query, args, rows); err != nil {
+	if err := ucggb.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-func (ucggb *UserCareerGroupGroupBy) sqlQuery() *sql.Selector {
-	selector := ucggb.sql.Select()
-	aggregation := make([]string, 0, len(ucggb.fns))
-	for _, fn := range ucggb.fns {
-		aggregation = append(aggregation, fn(selector))
-	}
-	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(ucggb.fields)+len(ucggb.fns))
-		for _, f := range ucggb.fields {
-			columns = append(columns, selector.C(f))
-		}
-		columns = append(columns, aggregation...)
-		selector.Select(columns...)
-	}
-	return selector.GroupBy(selector.Columns(ucggb.fields...)...)
-}
-
 // UserCareerGroupSelect is the builder for selecting fields of UserCareerGroup entities.
 type UserCareerGroupSelect struct {
 	*UserCareerGroupQuery
 	selector
-	// intermediate query (i.e. traversal path).
-	sql *sql.Selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
@@ -680,26 +660,27 @@ func (ucgs *UserCareerGroupSelect) Aggregate(fns ...AggregateFunc) *UserCareerGr
 
 // Scan applies the selector query and scans the result into the given value.
 func (ucgs *UserCareerGroupSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, ucgs.ctx, "Select")
 	if err := ucgs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	ucgs.sql = ucgs.UserCareerGroupQuery.sqlQuery(ctx)
-	return ucgs.sqlScan(ctx, v)
+	return scanWithInterceptors[*UserCareerGroupQuery, *UserCareerGroupSelect](ctx, ucgs.UserCareerGroupQuery, ucgs, ucgs.inters, v)
 }
 
-func (ucgs *UserCareerGroupSelect) sqlScan(ctx context.Context, v any) error {
+func (ucgs *UserCareerGroupSelect) sqlScan(ctx context.Context, root *UserCareerGroupQuery, v any) error {
+	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(ucgs.fns))
 	for _, fn := range ucgs.fns {
-		aggregation = append(aggregation, fn(ucgs.sql))
+		aggregation = append(aggregation, fn(selector))
 	}
 	switch n := len(*ucgs.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
-		ucgs.sql.Select(aggregation...)
+		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
-		ucgs.sql.AppendSelect(aggregation...)
+		selector.AppendSelect(aggregation...)
 	}
 	rows := &sql.Rows{}
-	query, args := ucgs.sql.Query()
+	query, args := selector.Query()
 	if err := ucgs.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}

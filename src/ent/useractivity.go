@@ -135,14 +135,14 @@ func (ua *UserActivity) assignValues(columns []string, values []any) error {
 
 // QueryUser queries the "user" edge of the UserActivity entity.
 func (ua *UserActivity) QueryUser() *UserQuery {
-	return (&UserActivityClient{config: ua.config}).QueryUser(ua)
+	return NewUserActivityClient(ua.config).QueryUser(ua)
 }
 
 // Update returns a builder for updating this UserActivity.
 // Note that you need to call UserActivity.Unwrap() before calling this method if this UserActivity
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (ua *UserActivity) Update() *UserActivityUpdateOne {
-	return (&UserActivityClient{config: ua.config}).UpdateOne(ua)
+	return NewUserActivityClient(ua.config).UpdateOne(ua)
 }
 
 // Unwrap unwraps the UserActivity entity that was returned from a transaction after it was closed,
@@ -185,9 +185,3 @@ func (ua *UserActivity) String() string {
 
 // UserActivities is a parsable slice of UserActivity.
 type UserActivities []*UserActivity
-
-func (ua UserActivities) config(cfg config) {
-	for _i := range ua {
-		ua[_i].config = cfg
-	}
-}

@@ -98,14 +98,14 @@ func (ucd *UserCareerDescription) assignValues(columns []string, values []any) e
 
 // QueryCareer queries the "career" edge of the UserCareerDescription entity.
 func (ucd *UserCareerDescription) QueryCareer() *UserCareerQuery {
-	return (&UserCareerDescriptionClient{config: ucd.config}).QueryCareer(ucd)
+	return NewUserCareerDescriptionClient(ucd.config).QueryCareer(ucd)
 }
 
 // Update returns a builder for updating this UserCareerDescription.
 // Note that you need to call UserCareerDescription.Unwrap() before calling this method if this UserCareerDescription
 // was returned from a transaction, and the transaction was committed or rolled back.
 func (ucd *UserCareerDescription) Update() *UserCareerDescriptionUpdateOne {
-	return (&UserCareerDescriptionClient{config: ucd.config}).UpdateOne(ucd)
+	return NewUserCareerDescriptionClient(ucd.config).UpdateOne(ucd)
 }
 
 // Unwrap unwraps the UserCareerDescription entity that was returned from a transaction after it was closed,
@@ -132,9 +132,3 @@ func (ucd *UserCareerDescription) String() string {
 
 // UserCareerDescriptions is a parsable slice of UserCareerDescription.
 type UserCareerDescriptions []*UserCareerDescription
-
-func (ucd UserCareerDescriptions) config(cfg config) {
-	for _i := range ucd {
-		ucd[_i].config = cfg
-	}
-}

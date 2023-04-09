@@ -102,41 +102,8 @@ func (ucgu *UserCareerGroupUpdate) RemoveCareers(u ...*UserCareer) *UserCareerGr
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ucgu *UserCareerGroupUpdate) Save(ctx context.Context) (int, error) {
-	var (
-		err      error
-		affected int
-	)
 	ucgu.defaults()
-	if len(ucgu.hooks) == 0 {
-		if err = ucgu.check(); err != nil {
-			return 0, err
-		}
-		affected, err = ucgu.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserCareerGroupMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ucgu.check(); err != nil {
-				return 0, err
-			}
-			ucgu.mutation = mutation
-			affected, err = ucgu.sqlSave(ctx)
-			mutation.done = true
-			return affected, err
-		})
-		for i := len(ucgu.hooks) - 1; i >= 0; i-- {
-			if ucgu.hooks[i] == nil {
-				return 0, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ucgu.hooks[i](mut)
-		}
-		if _, err := mut.Mutate(ctx, ucgu.mutation); err != nil {
-			return 0, err
-		}
-	}
-	return affected, err
+	return withHooks[int, UserCareerGroupMutation](ctx, ucgu.sqlSave, ucgu.mutation, ucgu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -183,16 +150,10 @@ func (ucgu *UserCareerGroupUpdate) check() error {
 }
 
 func (ucgu *UserCareerGroupUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   usercareergroup.Table,
-			Columns: usercareergroup.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: usercareergroup.FieldID,
-			},
-		},
+	if err := ucgu.check(); err != nil {
+		return n, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(usercareergroup.Table, usercareergroup.Columns, sqlgraph.NewFieldSpec(usercareergroup.FieldID, field.TypeInt))
 	if ps := ucgu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -214,10 +175,7 @@ func (ucgu *UserCareerGroupUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{usercareergroup.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -230,10 +188,7 @@ func (ucgu *UserCareerGroupUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{usercareergroup.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -249,10 +204,7 @@ func (ucgu *UserCareerGroupUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{usercareergroup.CareersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usercareer.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usercareer.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -265,10 +217,7 @@ func (ucgu *UserCareerGroupUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{usercareergroup.CareersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usercareer.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usercareer.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -284,10 +233,7 @@ func (ucgu *UserCareerGroupUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Columns: []string{usercareergroup.CareersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usercareer.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usercareer.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -303,6 +249,7 @@ func (ucgu *UserCareerGroupUpdate) sqlSave(ctx context.Context) (n int, err erro
 		}
 		return 0, err
 	}
+	ucgu.mutation.done = true
 	return n, nil
 }
 
@@ -384,6 +331,12 @@ func (ucguo *UserCareerGroupUpdateOne) RemoveCareers(u ...*UserCareer) *UserCare
 	return ucguo.RemoveCareerIDs(ids...)
 }
 
+// Where appends a list predicates to the UserCareerGroupUpdate builder.
+func (ucguo *UserCareerGroupUpdateOne) Where(ps ...predicate.UserCareerGroup) *UserCareerGroupUpdateOne {
+	ucguo.mutation.Where(ps...)
+	return ucguo
+}
+
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
 func (ucguo *UserCareerGroupUpdateOne) Select(field string, fields ...string) *UserCareerGroupUpdateOne {
@@ -393,47 +346,8 @@ func (ucguo *UserCareerGroupUpdateOne) Select(field string, fields ...string) *U
 
 // Save executes the query and returns the updated UserCareerGroup entity.
 func (ucguo *UserCareerGroupUpdateOne) Save(ctx context.Context) (*UserCareerGroup, error) {
-	var (
-		err  error
-		node *UserCareerGroup
-	)
 	ucguo.defaults()
-	if len(ucguo.hooks) == 0 {
-		if err = ucguo.check(); err != nil {
-			return nil, err
-		}
-		node, err = ucguo.sqlSave(ctx)
-	} else {
-		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*UserCareerGroupMutation)
-			if !ok {
-				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = ucguo.check(); err != nil {
-				return nil, err
-			}
-			ucguo.mutation = mutation
-			node, err = ucguo.sqlSave(ctx)
-			mutation.done = true
-			return node, err
-		})
-		for i := len(ucguo.hooks) - 1; i >= 0; i-- {
-			if ucguo.hooks[i] == nil {
-				return nil, fmt.Errorf("ent: uninitialized hook (forgotten import ent/runtime?)")
-			}
-			mut = ucguo.hooks[i](mut)
-		}
-		v, err := mut.Mutate(ctx, ucguo.mutation)
-		if err != nil {
-			return nil, err
-		}
-		nv, ok := v.(*UserCareerGroup)
-		if !ok {
-			return nil, fmt.Errorf("unexpected node type %T returned from UserCareerGroupMutation", v)
-		}
-		node = nv
-	}
-	return node, err
+	return withHooks[*UserCareerGroup, UserCareerGroupMutation](ctx, ucguo.sqlSave, ucguo.mutation, ucguo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -480,16 +394,10 @@ func (ucguo *UserCareerGroupUpdateOne) check() error {
 }
 
 func (ucguo *UserCareerGroupUpdateOne) sqlSave(ctx context.Context) (_node *UserCareerGroup, err error) {
-	_spec := &sqlgraph.UpdateSpec{
-		Node: &sqlgraph.NodeSpec{
-			Table:   usercareergroup.Table,
-			Columns: usercareergroup.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
-				Column: usercareergroup.FieldID,
-			},
-		},
+	if err := ucguo.check(); err != nil {
+		return _node, err
 	}
+	_spec := sqlgraph.NewUpdateSpec(usercareergroup.Table, usercareergroup.Columns, sqlgraph.NewFieldSpec(usercareergroup.FieldID, field.TypeInt))
 	id, ok := ucguo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "UserCareerGroup.id" for update`)}
@@ -528,10 +436,7 @@ func (ucguo *UserCareerGroupUpdateOne) sqlSave(ctx context.Context) (_node *User
 			Columns: []string{usercareergroup.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -544,10 +449,7 @@ func (ucguo *UserCareerGroupUpdateOne) sqlSave(ctx context.Context) (_node *User
 			Columns: []string{usercareergroup.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: user.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -563,10 +465,7 @@ func (ucguo *UserCareerGroupUpdateOne) sqlSave(ctx context.Context) (_node *User
 			Columns: []string{usercareergroup.CareersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usercareer.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usercareer.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -579,10 +478,7 @@ func (ucguo *UserCareerGroupUpdateOne) sqlSave(ctx context.Context) (_node *User
 			Columns: []string{usercareergroup.CareersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usercareer.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usercareer.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -598,10 +494,7 @@ func (ucguo *UserCareerGroupUpdateOne) sqlSave(ctx context.Context) (_node *User
 			Columns: []string{usercareergroup.CareersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
-					Column: usercareer.FieldID,
-				},
+				IDSpec: sqlgraph.NewFieldSpec(usercareer.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -620,5 +513,6 @@ func (ucguo *UserCareerGroupUpdateOne) sqlSave(ctx context.Context) (_node *User
 		}
 		return nil, err
 	}
+	ucguo.mutation.done = true
 	return _node, nil
 }
