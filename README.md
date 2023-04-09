@@ -97,15 +97,15 @@ sample/skill_sheet.xlsx
 ### OS
 
 ```
-$ cat /etc/os-release 
-PRETTY_NAME="Ubuntu 22.04.1 LTS"
+Mac Book Air M2 2022
+Ventura 13.2.1
 ```
 
 ### go
 
 ```
-$ go version
-go version go1.19 linux/amd64
+❯ go version
+go version go1.20.2 darwin/arm64
 ```
 
 ## setup
@@ -129,8 +129,13 @@ go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
 
 ### ent
 
+from entity model to db table
+
 ```
-cd src/adapter/gateway/ent
+cd src/ent
+```
+
+```
 go run -mod=mod entgo.io/ent/cmd/ent init User UserActivity UserQualification UserCareerGroup UserCareer UserCareerDescription UserCareerPeriod CareerTask CareerSkillGroup CareerSkill UserNote UserNoteItem
 ```
 
@@ -142,6 +147,9 @@ https://github.com/spf13/cobra-cli/blob/main/README.md
 
 ```
 go install github.com/spf13/cobra-cli@latest
+```
+
+```
 cobra-cli init
 ```
 
@@ -149,6 +157,9 @@ cobra-cli init
 
 ```
 cd src
+```
+
+```
 cobra-cli add server
 ```
 
