@@ -130,6 +130,11 @@ to quickly create a Cobra application.`,
 			))
 			w.Merge(titleCell, s.Cell(s.EndCol, s.TitleRow))
 
+			// for top, bottom border
+			forTitleRowBorderCols := []string{"B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+			for _, col := range forTitleRowBorderCols {
+				w.CellStyle(s.Cell(col, s.TitleRow), s.NewStyle(s.Borders(s.FullBorder)))
+			}
 			// 枠線「右」が機能していないための措置
 			w.CellStyle(s.Cell(s.SuppleCol, s.TitleRow), s.NewStyle(s.Borders(s.LeftBorder)))
 		}
