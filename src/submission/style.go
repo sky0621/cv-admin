@@ -8,10 +8,10 @@ const (
 )
 
 const (
-	headerColor           = "9FE2BF"
+	headerColor           = "b0c4de"
 	borderBaseColor       = headerColor
 	borderBaseStyle       = 5
-	careerGroupLabelColor = "F0FFF0"
+	careerGroupLabelColor = "f0f8ff"
 )
 
 var FullBorder = []excelize.Border{
@@ -48,6 +48,12 @@ var LeftTopBottomBorder = []excelize.Border{
 var RightTopBottomBorder = []excelize.Border{
 	{Type: "right", Color: borderBaseColor, Style: borderBaseStyle},
 	{Type: "top", Color: borderBaseColor, Style: borderBaseStyle},
+	{Type: "bottom", Color: borderBaseColor, Style: borderBaseStyle},
+}
+
+var SideBottomBorder = []excelize.Border{
+	{Type: "left", Color: borderBaseColor, Style: borderBaseStyle},
+	{Type: "right", Color: borderBaseColor, Style: borderBaseStyle},
 	{Type: "bottom", Color: borderBaseColor, Style: borderBaseStyle},
 }
 
