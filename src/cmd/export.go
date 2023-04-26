@@ -125,7 +125,7 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// exportCmd.PersistentFlags().String("foo", "", "A help for foo")
-	exportCmd.PersistentFlags().IntVarP(&targetUserID, "userid", "u", 29, "target user id")
+	exportCmd.PersistentFlags().IntVarP(&targetUserID, "userid", "u", 1, "target user id")
 	exportCmd.PersistentFlags().StringVarP(&exportDir, "dir", "d", "/tmp", "export directory")
 
 	// Cobra supports local flags which will only run when this command
