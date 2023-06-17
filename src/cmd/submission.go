@@ -836,7 +836,7 @@ to quickly create a Cobra application.`,
 							w.Set(spaceCell, "")
 							w.Merge(spaceCell, s.Cell(s.EndCol, rowNo))
 							w.CellRangeStyle(spaceCell, s.Cell(s.EndCol, rowNo), s.NewStyle(
-								s.Borders(s.SideBorder),
+								s.Borders(s.SideBottomBorder),
 							))
 						}
 					}

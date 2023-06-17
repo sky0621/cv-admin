@@ -2,6 +2,7 @@ package rest
 
 import (
 	"errors"
+	"github.com/sky0621/cv-admin/src/ent/usercareer"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -29,7 +30,8 @@ func (s *ServerImpl) GetUsersByUserIdCareergroups(ctx echo.Context, byUserId Use
 		q.WithCareerTasks(func(q *ent.CareerTaskQuery) {
 			q.WithCareerTaskDescriptions()
 		})
-	}).All(ctx.Request().Context())
+	}).Order(ent.Desc(usercareergroup.FieldCreateTime), ent.Desc(usercareer.FieldCreateTime)).
+		All(ctx.Request().Context())
 	if err != nil {
 		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
 	}
