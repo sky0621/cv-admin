@@ -3,8 +3,6 @@ package rest
 import (
 	"context"
 	"errors"
-
-	"github.com/sky0621/cv-admin/src/converter"
 )
 
 // PostUsers ユーザー登録
@@ -16,12 +14,8 @@ func (s *strictServerImpl) PostUsers(ctx context.Context, request PostUsersReque
 	}
 	userAttribute := *request.Body
 
-	postUsers400JSONResponse := func(msg string) PostUsers400JSONResponse {
-		return PostUsers400JSONResponse{N400BadRequestJSONResponse{Message: converter.ToPtr(msg)}}
-	}
-
 	if err := userAttribute.Validate(); err != nil {
-		return postUsers400JSONResponse("validation failed"), err
+		return PostUsers400JSONResponse{n400("validation failed")}, err
 	}
 
 	entUser, err := ToEntUserCreate(userAttribute, s.dbClient.User.Create()).Save(ctx)

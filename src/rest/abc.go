@@ -3,30 +3,21 @@ package rest
 import (
 	"context"
 
+	"github.com/sky0621/cv-admin/src/converter"
+
 	"github.com/sky0621/cv-admin/src/ent"
 )
 
+func n400(msg string) N400BadRequestJSONResponse {
+	return N400BadRequestJSONResponse{Message: converter.ToPtr(msg)}
+}
+
+func n404(msg string) N404NotFoundJSONResponse {
+	return N404NotFoundJSONResponse{Message: converter.ToPtr(msg)}
+}
+
 type strictServerImpl struct {
 	dbClient *ent.Client
-}
-
-// GetUsersByUserIdActivities アクティビティ群取得
-// アクティビティ群取得
-// (GET /users/{byUserId}/activities)
-func (s *strictServerImpl) GetUsersByUserIdActivities(ctx context.Context, request GetUsersByUserIdActivitiesRequestObject) (GetUsersByUserIdActivitiesResponseObject, error) {
-
-}
-
-// アクティビティ群最新化
-// (PUT /users/{byUserId}/activities)
-func (s *strictServerImpl) PutUsersByUserIdActivities(ctx context.Context, request PutUsersByUserIdActivitiesRequestObject) (PutUsersByUserIdActivitiesResponseObject, error) {
-
-}
-
-// 属性取得
-// (GET /users/{byUserId}/attribute)
-func (s *strictServerImpl) GetUsersByUserIdAttribute(ctx context.Context, request GetUsersByUserIdAttributeRequestObject) (GetUsersByUserIdAttributeResponseObject, error) {
-
 }
 
 // 属性更新
@@ -104,11 +95,5 @@ func (s *strictServerImpl) GetUsersByUserIdQualifications(ctx context.Context, r
 // 資格情報群最新化
 // (PUT /users/{byUserId}/qualifications)
 func (s *strictServerImpl) PutUsersByUserIdQualifications(ctx context.Context, request PutUsersByUserIdQualificationsRequestObject) (PutUsersByUserIdQualificationsResponseObject, error) {
-
-}
-
-// スキル群取得
-// (GET /users/{byUserId}/skills)
-func (s *strictServerImpl) GetUsersByUserIdSkills(ctx context.Context, request GetUsersByUserIdSkillsRequestObject) (GetUsersByUserIdSkillsResponseObject, error) {
 
 }
