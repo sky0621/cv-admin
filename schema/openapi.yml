@@ -805,11 +805,6 @@ components:
       example: "too long"
       minLength: 1
       maxLength: 80
-    ClientError:
-      type: object
-      properties:
-        message:
-          $ref: "#/components/schemas/ErrorMessage"
     NotFoundError:
       type: object
       properties:
@@ -976,10 +971,18 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ClientError"
+            type: object
+            properties:
+              message:
+                $ref: "#/components/schemas/ErrorMessage"
     404-NotFound:
       description: "Not Found: 指定リソースが存在しない。"
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/NotFoundError"
+            type: object
+            properties:
+              message:
+                $ref: "#/components/schemas/ErrorMessage"
+    500-InternalServerError:
+      description: "Internal Server Error"

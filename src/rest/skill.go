@@ -2,6 +2,7 @@ package rest
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/sky0621/cv-admin/src/converter"
 	"github.com/sky0621/cv-admin/src/ent"
 	"github.com/sky0621/cv-admin/src/ent/helper"
 	"github.com/sky0621/cv-admin/src/ent/skill"
@@ -13,7 +14,7 @@ import (
 
 // PostSkilltags スキルタグ新規登録
 // (POST /skilltags)
-func (s *ServerImpl) PostSkilltags(ctx echo.Context) error {
+func (s *ServerImpl) PostSkilltags(ctx echo.Context) (PostSkilltagsResponseObject, error) {
 	var skillTag SkillTag
 	if err := ctx.Bind(&skillTag); err != nil {
 		return sendClientError(ctx, http.StatusBadRequest, err.Error())
@@ -27,7 +28,7 @@ func (s *ServerImpl) PostSkilltags(ctx echo.Context) error {
 
 	entSkillTags, err := s.dbClient.SkillTag.Query().All(rCtx)
 	if err != nil {
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		return nil, sendStatusInternalServerError(ctx, err.Error())
 	}
 
 	if slice.Contains(helper.PickupSkillTagName(entSkillTags), *skillTag.Name) {
@@ -39,69 +40,77 @@ func (s *ServerImpl) PostSkilltags(ctx echo.Context) error {
 
 	entSkillTag, err := ToEntSkillTagCreate(skillTag, s.dbClient.SkillTag.Create()).Save(rCtx)
 	if err != nil {
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		return nil, sendStatusInternalServerError(ctx, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, ToSwaggerSkillTag(entSkillTag))
+	return PostSkilltagsResponseObject{ToSwaggerSkillTag(entSkillTag)}, nil
 }
 
 // GetSkilltags 全スキルタグ取得
 // (GET /skilltags)
-func (s *ServerImpl) GetSkilltags(ctx echo.Context) error {
+func (s *ServerImpl) GetSkilltags(ctx echo.Context) (GetSkilltagsResponseObject, error) {
 	entSkillTags, err := s.dbClient.SkillTag.Query().All(ctx.Request().Context())
 	if err != nil {
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		return nil, sendStatusInternalServerError(ctx, err.Error())
 	}
 
-	return ctx.JSON(http.StatusOK, ToSwaggerSkillTags(entSkillTags))
+	return GetSkilltags200JSONResponse{ToSwaggerSkillTags(entSkillTags)}, nil
 }
 
 // PostSkills スキル新規登録
 // (POST /skills)
-func (s *ServerImpl) PostSkills(ctx echo.Context) error {
+func (s *ServerImpl) PostSkills(ctx echo.Context) (PostSkillsResponseObject, error) {
+	postSkills400JSONResponse := func(msg string) PostSkills400JSONResponse {
+		return PostSkills400JSONResponse{N400BadRequestJSONResponse{Message: converter.ToPtr(msg)}}
+	}
+
 	var skill_ Skill
 	if err := ctx.Bind(&skill_); err != nil {
-		return sendClientError(ctx, http.StatusBadRequest, err.Error())
+		return postSkills400JSONResponse("bind failed"), err
 	}
 
 	if err := skill_.Validate(); err != nil {
-		return sendClientError(ctx, http.StatusBadRequest, err.Error())
+		return postSkills400JSONResponse("validation failed"), err
 	}
 
 	rCtx := ctx.Request().Context()
 
 	entSkills, err := s.dbClient.Skill.Query().All(rCtx)
 	if err != nil {
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		return nil, sendStatusInternalServerError(ctx, err.Error())
 	}
 
 	if slice.Contains(helper.PickupSkillName(entSkills), *skill_.Name) {
-		return sendClientError(ctx, http.StatusBadRequest, "already registered under the same name")
+		return postSkills400JSONResponse("already registered under the same name"), nil
 	}
 	if slice.Contains(helper.PickupSkillKey(entSkills), *skill_.Key) {
-		return sendClientError(ctx, http.StatusBadRequest, "already registered under the same key")
+		return postSkills400JSONResponse("already registered under the same key"), nil
 	}
 
 	entSkill, err := ToEntSkillCreate(skill_, s.dbClient.Skill.Create()).Save(rCtx)
 	if err != nil {
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		return nil, sendStatusInternalServerError(ctx, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, ToSwaggerSkill(entSkill))
+	return PostSkills201JSONResponse{N201CreatedSkillJSONResponse(ToSwaggerSkill(entSkill))}, nil
 }
 
 // PostSkillrecords スキル新規一括登録
 // (POST /skillrecords)
-func (s *ServerImpl) PostSkillrecords(ctx echo.Context) error {
+func (s *ServerImpl) PostSkillrecords(ctx echo.Context) (PostSkillrecordsResponseObject, error) {
+	postSkillrecords400JSONResponse := func(msg string) PostSkillrecords400JSONResponse {
+		return PostSkillrecords400JSONResponse{N400BadRequestJSONResponse{Message: converter.ToPtr(msg)}}
+	}
+
 	var skills []Skill
 	if err := ctx.Bind(&skills); err != nil {
-		return sendClientError(ctx, http.StatusBadRequest, err.Error())
+		return postSkillrecords400JSONResponse("bind failed"), err
 	}
 
 	// TODO: やり方考える。
 	for _, skill_ := range skills {
 		if err := skill_.Validate(); err != nil {
-			return sendClientError(ctx, http.StatusBadRequest, err.Error())
+			return postSkillrecords400JSONResponse("validation failed"), err
 		}
 	}
 
@@ -109,16 +118,16 @@ func (s *ServerImpl) PostSkillrecords(ctx echo.Context) error {
 
 	entSkills, err := s.dbClient.Skill.Query().All(rCtx)
 	if err != nil {
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		return nil, sendStatusInternalServerError(ctx, err.Error())
 	}
 
 	// TODO: やり方考える。
 	for _, skill_ := range skills {
 		if slice.Contains(helper.PickupSkillName(entSkills), *skill_.Name) {
-			return sendClientError(ctx, http.StatusBadRequest, "already registered under the same name")
+			return postSkillrecords400JSONResponse("already registered under the same name"), nil
 		}
 		if slice.Contains(helper.PickupSkillKey(entSkills), *skill_.Key) {
-			return sendClientError(ctx, http.StatusBadRequest, "already registered under the same key")
+			return postSkillrecords400JSONResponse("already registered under the same key"), nil
 		}
 	}
 
@@ -134,35 +143,35 @@ func (s *ServerImpl) PostSkillrecords(ctx echo.Context) error {
 		}
 		return nil
 	}); err != nil {
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		return nil, sendStatusInternalServerError(ctx, err.Error())
 	}
 
-	return ctx.JSON(http.StatusCreated, ToSwaggerSkills(createdEntSkills))
+	return PostSkillrecords201JSONResponse{ToSwaggerSkills(createdEntSkills)}, nil
 }
 
 // GetSkills 全スキル取得
 // (GET /skills)
-func (s *ServerImpl) GetSkills(ctx echo.Context) error {
+func (s *ServerImpl) GetSkills(ctx echo.Context) (GetSkillsResponseObject, error) {
 	entSkills, err := s.dbClient.Skill.Query().All(ctx.Request().Context())
 	if err != nil {
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		return nil, sendStatusInternalServerError(ctx, err.Error())
 	}
 
 	return ctx.JSON(http.StatusOK, ToSwaggerSkills(entSkills))
 }
 
-func (s *ServerImpl) GetSkillsBySkillId(ctx echo.Context, bySkillId SkillId) error {
+func (s *ServerImpl) GetSkillsBySkillId(ctx echo.Context, bySkillId SkillId) (GetSkillsBySkillIdRequestObject, error) {
 	// FIXME: implement me
 	panic("implement me")
 }
 
 // GetUsersByUserIdSkills スキル群取得
 // (GET /users/{byUserId}/skills)
-func (s *ServerImpl) GetUsersByUserIdSkills(ctx echo.Context, byUserId UserId) error {
+func (s *ServerImpl) GetUsersByUserIdSkills(ctx echo.Context, byUserId UserId) (GetUsersByUserIdSkillsResponseObject, error) {
 	rCtx := ctx.Request().Context()
 	entSkillTags, err := s.dbClient.SkillTag.Query().All(rCtx)
 	if err != nil {
-		return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+		return nil, sendStatusInternalServerError(ctx, err.Error())
 	}
 
 	var userSkillTags []UserSkillTag
@@ -177,7 +186,7 @@ func (s *ServerImpl) GetUsersByUserIdSkills(ctx echo.Context, byUserId UserId) e
 			})
 		}).All(rCtx)
 		if err != nil {
-			return sendClientError(ctx, http.StatusInternalServerError, err.Error())
+			return nil, sendStatusInternalServerError(ctx, err.Error())
 		}
 
 		var userSkills []UserSkill

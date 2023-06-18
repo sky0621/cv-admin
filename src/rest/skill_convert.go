@@ -1,6 +1,9 @@
 package rest
 
-import "github.com/sky0621/cv-admin/src/ent"
+import (
+	"github.com/sky0621/cv-admin/src/converter"
+	"github.com/sky0621/cv-admin/src/ent"
+)
 
 // TODO: goverter での置き換えを試す。
 
@@ -35,10 +38,11 @@ func ToEntSkillCreate(s Skill, c *ent.SkillCreate) *ent.SkillCreate {
 
 func ToSwaggerSkill(entSkill *ent.Skill) Skill {
 	return Skill{
-		Name:   &entSkill.Name,
-		Key:    &entSkill.Key,
-		Url:    entSkill.URL,
-		TagKey: entSkill.TagKey,
+		SkillID: converter.ToPtr(entSkill.ID),
+		Name:    &entSkill.Name,
+		Key:     &entSkill.Key,
+		Url:     entSkill.URL,
+		TagKey:  entSkill.TagKey,
 	}
 }
 
