@@ -38,7 +38,7 @@ func ToEntUserUpdate(ua UserAttribute, c *ent.UserUpdateOne) *ent.UserUpdateOne 
 
 func ToSwaggerUserAttribute(u *ent.User) UserAttribute {
 	var ua UserAttribute
-	ua.Id = &u.ID
+	ua.UserID = &u.ID
 	ua.Name = &u.Name
 	ua.Nickname = u.Nickname
 	ua.AvatarUrl = u.AvatarURL

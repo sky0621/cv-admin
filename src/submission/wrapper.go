@@ -68,7 +68,7 @@ type Wrapper interface {
 	ValueCellRangeStyle(start, end string)
 	CellExternalHyperLink(cell, url string)
 	AddPicture(cell, path string)
-	AddPictureFromBytes(cell, name, extension string, file []byte)
+	AddPictureFromBytes(cell, extension string, file []byte)
 	InsertPageBreak(cell string)
 
 	SaveAs(name string)
@@ -171,10 +171,14 @@ func (w *wrapper) AddPicture(cell, path string) {
 	}
 }
 
-func (w *wrapper) AddPictureFromBytes(cell, name, extension string, file []byte) {
-	if err := w.f.AddPictureFromBytes(getDefaultSheetName(w.f), cell, name, extension, file, &excelize.GraphicOptions{
-		OffsetX: 16, OffsetY: 16,
-	}); err != nil {
+func (w *wrapper) AddPictureFromBytes(cell, extension string, file []byte) {
+	if err := w.f.AddPictureFromBytes(getDefaultSheetName(w.f), cell,
+		&excelize.Picture{
+			Extension: extension, File: file, Format: &excelize.GraphicOptions{
+				OffsetX: 16, OffsetY: 16,
+			},
+		},
+	); err != nil {
 		panic(err)
 	}
 }

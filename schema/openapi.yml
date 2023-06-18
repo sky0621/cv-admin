@@ -421,11 +421,13 @@ components:
       format: int
       description: "スキルタグを一意に識別するキー"
       example: 1
+      x-go-name: SkillTagID
     SkillId:
       type: integer
       format: int
       description: "スキルを一意に識別するキー"
       example: 1
+      x-go-name: SkillID
     SkillTag:
       type: object
       description: "１スキルタグの属性"
@@ -455,6 +457,7 @@ components:
       format: int
       description: "ユーザーを一意に識別するキー"
       example: 1
+      x-go-name: UserID
     UserName:
       type: string
       description: "ユーザーの本名"
@@ -606,6 +609,7 @@ components:
       format: int
       description: "注釈を一意に識別するID"
       example: 1
+      x-go-name: NoteID
     NoteItemText:
       type: string
       description: "注釈内の１要素"
@@ -683,6 +687,7 @@ components:
       format: int
       description: "キャリアグループを一意に識別するID"
       example: 1
+      x-go-name: CareerGroupID
     CareerSkillGroup:
       type: object
       description: "１キャリアのスキルグループ"

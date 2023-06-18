@@ -285,7 +285,7 @@ to quickly create a Cobra application.`,
 			 */
 			gravatarCell := s.Cell("X", s.BasicAttributeRow2)
 			if avatarImgBytes != nil {
-				w.AddPictureFromBytes(gravatarCell, "avatar", ".png", avatarImgBytes)
+				w.AddPictureFromBytes(gravatarCell, ".png", avatarImgBytes)
 			}
 
 			w.Merge(gravatarCell, s.Cell(s.EndCol, s.BasicAttributeRow2))
