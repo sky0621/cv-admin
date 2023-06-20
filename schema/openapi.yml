@@ -245,7 +245,7 @@ paths:
               $ref: "#/components/schemas/UserCareerGroup"
       responses:
         "201":
-          description: "Created: キャリアグループを新規登録済み。"
+          $ref: "#/components/responses/201-Created-UserCareerGroup"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
@@ -331,7 +331,7 @@ paths:
               $ref: "#/components/schemas/UserNote"
       responses:
         "201":
-          description: "Created: 注釈を新規登録済み。"
+          $ref: "#/components/responses/201-Created-UserNote"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
@@ -864,6 +864,18 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/UserAttribute"
+    201-Created-UserCareerGroup:
+      description: "Created: 指定ユーザーのキャリアグループを返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserCareerGroup"
+    201-Created-UserNote:
+      description: "Created: 指定ユーザーの注釈を返却する。"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UserNote"
     200-OK-Skill:
       description: "OK: 指定スキルを返却する。"
       content:

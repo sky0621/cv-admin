@@ -116,10 +116,6 @@ func ToSwaggerCareerTask(entCareerTask *ent.CareerTask) *CareerTask {
 		}
 	}
 
-	var careerDescriptions TaskDescription
-	for _, entTaskDescription := range entCareerTask.Edges.CareerTaskDescriptions {
-		careerDescriptions = append(careerDescriptions, ToSwaggerCareerTaskDescription(entTaskDescription))
-	}
 	return &CareerTask{
 		Name:        &entCareerTask.Name,
 		Description: ToSwaggerCareerTaskDescriptions(entCareerTask.Edges.CareerTaskDescriptions),
