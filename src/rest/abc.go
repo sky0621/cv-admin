@@ -20,24 +20,6 @@ type strictServerImpl struct {
 	dbClient *ent.Client
 }
 
-// 属性更新
-// (PUT /users/{byUserId}/attribute)
-func (s *strictServerImpl) PutUsersByUserIdAttribute(ctx context.Context, request PutUsersByUserIdAttributeRequestObject) (PutUsersByUserIdAttributeResponseObject, error) {
-
-}
-
-// キャリアグループ群取得
-// (GET /users/{byUserId}/careergroups)
-func (s *strictServerImpl) GetUsersByUserIdCareergroups(ctx context.Context, request GetUsersByUserIdCareergroupsRequestObject) (GetUsersByUserIdCareergroupsResponseObject, error) {
-
-}
-
-// キャリアグループ新規登録
-// (POST /users/{byUserId}/careergroups)
-func (s *strictServerImpl) PostUsersByUserIdCareergroups(ctx context.Context, request PostUsersByUserIdCareergroupsRequestObject) (PostUsersByUserIdCareergroupsResponseObject, error) {
-
-}
-
 // 【未実装】キャリアグループ削除
 // (DELETE /users/{byUserId}/careergroups/{byCareerGroupId})
 func (s *strictServerImpl) DeleteUsersByUserIdCareergroupsByCareerGroupId(ctx context.Context, request DeleteUsersByUserIdCareergroupsByCareerGroupIdRequestObject) (DeleteUsersByUserIdCareergroupsByCareerGroupIdResponseObject, error) {
