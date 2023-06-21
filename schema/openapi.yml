@@ -100,7 +100,13 @@ paths:
                 $ref: "#/components/schemas/Skill"
       responses:
         "201":
-          $ref: "#/components/responses/201-Created-SkillRecords"
+          description: "Created: 作成した全スキルを返却する。"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Skill"
         "400":
           $ref: "#/components/responses/400-BadRequest"
 
@@ -128,7 +134,11 @@ paths:
               $ref: "#/components/schemas/UserAttribute"
       responses:
         "201":
-          $ref: "#/components/responses/201-Created-UserAttribute"
+          description: "Created: 指定ユーザーの属性を返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAttribute"
         "400":
           $ref: "#/components/responses/400-BadRequest"
 
@@ -259,7 +269,11 @@ paths:
               $ref: "#/components/schemas/UserCareerGroup"
       responses:
         "201":
-          $ref: "#/components/responses/201-Created-UserCareerGroup"
+          description: "Created: 指定ユーザーのキャリアグループを返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCareerGroup"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
@@ -345,7 +359,11 @@ paths:
               $ref: "#/components/schemas/UserNote"
       responses:
         "201":
-          $ref: "#/components/responses/201-Created-UserNote"
+          description: "Created: 指定ユーザーの注釈を返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserNote"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
@@ -852,32 +870,6 @@ components:
         $ref: "#/components/schemas/CareerGroupId"
 
   responses:
-    201-Created-SkillRecords:
-      description: "Created: 作成した全スキルを返却する。"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/Skill"
-    201-Created-UserAttribute:
-      description: "Created: 指定ユーザーの属性を返却する。"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/UserAttribute"
-    201-Created-UserCareerGroup:
-      description: "Created: 指定ユーザーのキャリアグループを返却する。"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/UserCareerGroup"
-    201-Created-UserNote:
-      description: "Created: 指定ユーザーの注釈を返却する。"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/UserNote"
     200-OK-Skill:
       description: "OK: 指定スキルを返却する。"
       content:

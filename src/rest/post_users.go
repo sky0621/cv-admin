@@ -23,5 +23,5 @@ func (s *strictServerImpl) PostUsers(ctx context.Context, request PostUsersReque
 		return nil, err
 	}
 
-	return PostUsers201JSONResponse{N201CreatedUserAttributeJSONResponse(ToSwaggerUserAttribute(entUser))}, nil
+	return PostUsers201JSONResponse(ToSwaggerUserAttribute(entUser)), nil
 }

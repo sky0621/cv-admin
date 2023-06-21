@@ -45,5 +45,5 @@ func (s *strictServerImpl) PostUsersByUserIdNotes(ctx context.Context, request P
 		return nil, err
 	}
 
-	return PostUsersByUserIdNotes201JSONResponse{N201CreatedUserNoteJSONResponse(ToSwaggerUserNote(entUserNote))}, nil
+	return PostUsersByUserIdNotes201JSONResponse(ToSwaggerUserNote(entUserNote)), nil
 }

@@ -55,5 +55,5 @@ func (s *strictServerImpl) PostSkillrecords(ctx context.Context, request PostSki
 		return nil, err
 	}
 
-	return PostSkillrecords201JSONResponse{ToSwaggerSkills(createdEntSkills)}, nil
+	return PostSkillrecords201JSONResponse(ToSwaggerSkills(createdEntSkills)), nil
 }

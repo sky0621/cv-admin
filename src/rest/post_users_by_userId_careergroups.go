@@ -164,5 +164,5 @@ func (s *strictServerImpl) PostUsersByUserIdCareergroups(ctx context.Context, re
 		return nil, err
 	}
 
-	return PostUsersByUserIdCareergroups201JSONResponse{N201CreatedUserCareerGroupJSONResponse(ToSwaggerUserCareerGroup(entUserCareerGroup))}, nil
+	return PostUsersByUserIdCareergroups201JSONResponse(ToSwaggerUserCareerGroup(entUserCareerGroup)), nil
 }
