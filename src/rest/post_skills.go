@@ -38,5 +38,5 @@ func (s *strictServerImpl) PostSkills(ctx context.Context, request PostSkillsReq
 		return nil, err
 	}
 
-	return PostSkills201JSONResponse{N201CreatedSkillJSONResponse(ToSwaggerSkill(entSkill))}, nil
+	return PostSkills201JSONResponse(ToSwaggerSkill(entSkill)), nil
 }

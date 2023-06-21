@@ -38,5 +38,5 @@ func (s *strictServerImpl) PostSkilltags(ctx context.Context, request PostSkillt
 		return nil, err
 	}
 
-	return PostSkilltags201JSONResponse{N201CreatedSkillTagJSONResponse(ToSwaggerSkillTag(entSkillTag))}, nil
+	return PostSkilltags201JSONResponse(ToSwaggerSkillTag(entSkillTag)), nil
 }

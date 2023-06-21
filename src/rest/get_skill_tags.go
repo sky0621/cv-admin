@@ -11,5 +11,5 @@ func (s *strictServerImpl) GetSkilltags(ctx context.Context, _ GetSkilltagsReque
 		return nil, err
 	}
 
-	return GetSkilltags200JSONResponse{ToSwaggerSkillTags(entSkillTags)}, nil
+	return GetSkilltags200JSONResponse(ToSwaggerSkillTags(entSkillTags)), nil
 }
