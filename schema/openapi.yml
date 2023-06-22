@@ -36,7 +36,11 @@ paths:
               $ref: "#/components/schemas/SkillTag"
       responses:
         "201":
-          $ref: "#/components/responses/201-Created-SkillTag"
+          description: "Created: 作成したスキルタグを返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SkillTag"
         "400":
           $ref: "#/components/responses/400-BadRequest"
     get:
@@ -45,7 +49,13 @@ paths:
       tags: ["skills"]
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-SkillTagRecords"
+          description: "OK: 全スキルタグを返却する。"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SkillTag"
 
   "/skills":
     post:
@@ -60,7 +70,11 @@ paths:
               $ref: "#/components/schemas/Skill"
       responses:
         "201":
-          $ref: "#/components/responses/201-Created-Skill"
+          description: "Created: 作成したスキルを返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Skill"
         "400":
           $ref: "#/components/responses/400-BadRequest"
     get:
@@ -69,7 +83,13 @@ paths:
       tags: ["skills"]
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-SkillRecords"
+          description: "OK: 全スキルを返却する。"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Skill"
 
   "/skillrecords":
     post:
@@ -86,7 +106,13 @@ paths:
                 $ref: "#/components/schemas/Skill"
       responses:
         "201":
-          $ref: "#/components/responses/201-Created-SkillRecords"
+          description: "Created: 作成した全スキルを返却する。"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Skill"
         "400":
           $ref: "#/components/responses/400-BadRequest"
 
@@ -99,7 +125,11 @@ paths:
       tags: ["skills"]
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-Skill"
+          description: "OK: 指定スキルを返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Skill"
 
   "/users":
     post:
@@ -114,7 +144,11 @@ paths:
               $ref: "#/components/schemas/UserAttribute"
       responses:
         "201":
-          $ref: "#/components/responses/201-Created-UserAttribute"
+          description: "Created: 指定ユーザーの属性を返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAttribute"
         "400":
           $ref: "#/components/responses/400-BadRequest"
 
@@ -147,7 +181,11 @@ paths:
               $ref: "#/components/schemas/UserAttribute"
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-UserAttribute"
+          description: "OK: 指定ユーザーの属性を返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAttribute"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
@@ -158,7 +196,11 @@ paths:
       tags: ["users"]
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-UserAttribute"
+          description: "OK: 指定ユーザーの属性を返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAttribute"
         "404":
           $ref: "#/components/responses/404-NotFound"
 
@@ -181,7 +223,13 @@ paths:
                 $ref: "#/components/schemas/UserActivity"
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-UserActivities"
+          description: "OK: 指定ユーザーのアクティビティ群を返却する。"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserActivity"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
@@ -192,7 +240,13 @@ paths:
       tags: ["users"]
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-UserActivities"
+          description: "OK: 指定ユーザーのアクティビティ群を返却する。"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserActivity"
         "404":
           $ref: "#/components/responses/404-NotFound"
 
@@ -215,7 +269,13 @@ paths:
                 $ref: "#/components/schemas/UserQualification"
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-UserQualifications"
+          description: "OK: 指定ユーザーの資格情報群を返却する。"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserQualification"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
@@ -226,7 +286,13 @@ paths:
       tags: ["users"]
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-UserQualifications"
+          description: "OK: 指定ユーザーの資格情報群を返却する。"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserQualification"
         "404":
           $ref: "#/components/responses/404-NotFound"
 
@@ -245,7 +311,11 @@ paths:
               $ref: "#/components/schemas/UserCareerGroup"
       responses:
         "201":
-          description: "Created: キャリアグループを新規登録済み。"
+          description: "Created: 指定ユーザーのキャリアグループを返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCareerGroup"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
@@ -256,7 +326,13 @@ paths:
       tags: ["users"]
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-UserCareerGroups"
+          description: "OK: 指定ユーザーのキャリアグループ群を返却する。"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserCareerGroup"
         "404":
           $ref: "#/components/responses/404-NotFound"
 
@@ -276,7 +352,11 @@ paths:
               $ref: "#/components/schemas/UserCareerGroupOwn"
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-UserCareerGroupOwn"
+          description: "OK: 指定ユーザーのキャリアグループ自身を返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCareerGroupOwn"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
@@ -310,7 +390,13 @@ paths:
                 $ref: "#/components/schemas/UserCareer"
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-UserCareers"
+          description: "OK: 指定ユーザーの１キャリアグループ内のキャリア群を返却する。"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserCareer"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
@@ -331,7 +417,11 @@ paths:
               $ref: "#/components/schemas/UserNote"
       responses:
         "201":
-          description: "Created: 注釈を新規登録済み。"
+          description: "Created: 指定ユーザーの注釈を返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserNote"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
@@ -342,7 +432,13 @@ paths:
       tags: ["users"]
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-UserNotes"
+          description: "OK: 指定ユーザーの注釈群を返却する。"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserNote"
         "404":
           $ref: "#/components/responses/404-NotFound"
 
@@ -362,7 +458,11 @@ paths:
               $ref: "#/components/schemas/UserNoteOwn"
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-UserNoteOwn"
+          description: "OK: 指定ユーザーの注釈自身を返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserNoteOwn"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
@@ -395,7 +495,13 @@ paths:
                $ref: "#/components/schemas/UserNoteItem"
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-UserNoteItems"
+          description: "OK: 指定ユーザーの１注釈内の要素群を返却する。"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserNoteItem"
         "400":
           $ref: "#/components/responses/400-BadRequest"
         "404":
@@ -410,7 +516,13 @@ paths:
       tags: ["users"]
       responses:
         "200":
-          $ref: "#/components/responses/200-OK-UserSkills"
+          description: "OK: 指定ユーザーのスキル群を返却する。"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserSkillTag"
         "404":
           $ref: "#/components/responses/404-NotFound"
 
@@ -805,11 +917,6 @@ components:
       example: "too long"
       minLength: 1
       maxLength: 80
-    ClientError:
-      type: object
-      properties:
-        message:
-          $ref: "#/components/schemas/ErrorMessage"
     NotFoundError:
       type: object
       properties:
@@ -843,143 +950,23 @@ components:
         $ref: "#/components/schemas/CareerGroupId"
 
   responses:
-    201-Created-SkillTag:
-      description: "Created: 作成したスキルタグを返却する。"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/SkillTag"
-    201-Created-Skill:
-      description: "Created: 作成したスキルを返却する。"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Skill"
-    201-Created-SkillRecords:
-      description: "Created: 作成した全スキルを返却する。"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/Skill"
-    201-Created-UserAttribute:
-      description: "Created: 指定ユーザーの属性を返却する。"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/UserAttribute"
-    200-OK-Skill:
-      description: "OK: 指定スキルを返却する。"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Skill"
-    200-OK-SkillTagRecords:
-      description: "OK: 全スキルタグを返却する。"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/SkillTag"
-    200-OK-SkillRecords:
-      description: "OK: 全スキルを返却する。"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/Skill"
-    200-OK-UserAttribute:
-      description: "OK: 指定ユーザーの属性を返却する。"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/UserAttribute"
-    200-OK-UserActivities:
-      description: "OK: 指定ユーザーのアクティビティ群を返却する。"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/UserActivity"
-    200-OK-UserQualifications:
-      description: "OK: 指定ユーザーの資格情報群を返却する。"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/UserQualification"
-    200-OK-UserCareers:
-      description: "OK: 指定ユーザーの１キャリアグループ内のキャリア群を返却する。"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/UserCareer"
-    200-OK-UserCareerGroups:
-      description: "OK: 指定ユーザーのキャリアグループ群を返却する。"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/UserCareerGroup"
-    200-OK-UserCareerGroupOwn:
-      description: "OK: 指定ユーザーのキャリアグループ自身を返却する。"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/UserCareerGroupOwn"
-    200-OK-UserNoteItems:
-      description: "OK: 指定ユーザーの１注釈内の要素群を返却する。"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/UserNoteItem"
-    200-OK-UserNoteOwn:
-      description: "OK: 指定ユーザーの注釈自身を返却する。"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/UserNoteOwn"
-    200-OK-UserNote:
-      description: "OK: 指定ユーザーの注釈を返却する。"
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/UserNote"
-    200-OK-UserNotes:
-      description: "OK: 指定ユーザーの注釈群を返却する。"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/UserNote"
-    200-OK-UserSkills:
-      description: "OK: 指定ユーザーのスキル群を返却する。"
-      content:
-        application/json:
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/UserSkillTag"
     400-BadRequest:
       description: "Bad Request: 属性に誤りがある。"
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ClientError"
+            type: object
+            properties:
+              message:
+                $ref: "#/components/schemas/ErrorMessage"
     404-NotFound:
       description: "Not Found: 指定リソースが存在しない。"
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/NotFoundError"
+            type: object
+            properties:
+              message:
+                $ref: "#/components/schemas/ErrorMessage"
+    500-InternalServerError:
+      description: "Internal Server Error"

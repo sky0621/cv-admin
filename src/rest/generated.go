@@ -97,12 +97,6 @@ type CareerTask struct {
 	Name *TaskName `json:"name,omitempty"`
 }
 
-// ClientError defines model for ClientError.
-type ClientError struct {
-	// Message エラーメッセージ
-	Message *ErrorMessage `json:"message,omitempty"`
-}
-
 // Day 生年月日の「日」
 type Day = int
 
@@ -114,12 +108,6 @@ type Job = string
 
 // Month 生年月日の「月」
 type Month = int
-
-// NotFoundError defines model for NotFoundError.
-type NotFoundError struct {
-	// Message エラーメッセージ
-	Message *ErrorMessage `json:"message,omitempty"`
-}
 
 // NoteID 注釈を一意に識別するID
 type NoteID = int
@@ -390,62 +378,17 @@ type SkillId = SkillID
 // UserId ユーザーを一意に識別するキー
 type UserId = UserID
 
-// N200OKSkill １スキルの属性
-type N200OKSkill = Skill
-
-// N200OKSkillRecords defines model for 200-OK-SkillRecords.
-type N200OKSkillRecords = []Skill
-
-// N200OKSkillTagRecords defines model for 200-OK-SkillTagRecords.
-type N200OKSkillTagRecords = []SkillTag
-
-// N200OKUserActivities defines model for 200-OK-UserActivities.
-type N200OKUserActivities = []UserActivity
-
-// N200OKUserAttribute １ユーザーの属性
-type N200OKUserAttribute = UserAttribute
-
-// N200OKUserCareerGroupOwn １ユーザーのキャリアグループ自身
-type N200OKUserCareerGroupOwn = UserCareerGroupOwn
-
-// N200OKUserCareerGroups defines model for 200-OK-UserCareerGroups.
-type N200OKUserCareerGroups = []UserCareerGroup
-
-// N200OKUserCareers defines model for 200-OK-UserCareers.
-type N200OKUserCareers = []UserCareer
-
-// N200OKUserNoteItems defines model for 200-OK-UserNoteItems.
-type N200OKUserNoteItems = []UserNoteItem
-
-// N200OKUserNoteOwn １ユーザーの注釈自身
-type N200OKUserNoteOwn = UserNoteOwn
-
-// N200OKUserNotes defines model for 200-OK-UserNotes.
-type N200OKUserNotes = []UserNote
-
-// N200OKUserQualifications defines model for 200-OK-UserQualifications.
-type N200OKUserQualifications = []UserQualification
-
-// N200OKUserSkills defines model for 200-OK-UserSkills.
-type N200OKUserSkills = []UserSkillTag
-
-// N201CreatedSkill １スキルの属性
-type N201CreatedSkill = Skill
-
-// N201CreatedSkillRecords defines model for 201-Created-SkillRecords.
-type N201CreatedSkillRecords = []Skill
-
-// N201CreatedSkillTag １スキルタグの属性
-type N201CreatedSkillTag = SkillTag
-
-// N201CreatedUserAttribute １ユーザーの属性
-type N201CreatedUserAttribute = UserAttribute
-
 // N400BadRequest defines model for 400-BadRequest.
-type N400BadRequest = ClientError
+type N400BadRequest struct {
+	// Message エラーメッセージ
+	Message *ErrorMessage `json:"message,omitempty"`
+}
 
 // N404NotFound defines model for 404-NotFound.
-type N404NotFound = NotFoundError
+type N404NotFound struct {
+	// Message エラーメッセージ
+	Message *ErrorMessage `json:"message,omitempty"`
+}
 
 // PostSkillrecordsJSONBody defines parameters for PostSkillrecords.
 type PostSkillrecordsJSONBody = []Skill
@@ -1047,43 +990,15 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 
 }
 
-type N200OKSkillJSONResponse Skill
+type N400BadRequestJSONResponse struct {
+	// Message エラーメッセージ
+	Message *ErrorMessage `json:"message,omitempty"`
+}
 
-type N200OKSkillRecordsJSONResponse []Skill
-
-type N200OKSkillTagRecordsJSONResponse []SkillTag
-
-type N200OKUserActivitiesJSONResponse []UserActivity
-
-type N200OKUserAttributeJSONResponse UserAttribute
-
-type N200OKUserCareerGroupOwnJSONResponse UserCareerGroupOwn
-
-type N200OKUserCareerGroupsJSONResponse []UserCareerGroup
-
-type N200OKUserCareersJSONResponse []UserCareer
-
-type N200OKUserNoteItemsJSONResponse []UserNoteItem
-
-type N200OKUserNoteOwnJSONResponse UserNoteOwn
-
-type N200OKUserNotesJSONResponse []UserNote
-
-type N200OKUserQualificationsJSONResponse []UserQualification
-
-type N200OKUserSkillsJSONResponse []UserSkillTag
-
-type N201CreatedSkillJSONResponse Skill
-
-type N201CreatedSkillRecordsJSONResponse []Skill
-
-type N201CreatedSkillTagJSONResponse SkillTag
-
-type N201CreatedUserAttributeJSONResponse UserAttribute
-
-type N400BadRequestJSONResponse ClientError
-
-type N404NotFoundJSONResponse NotFoundError
+type N404NotFoundJSONResponse struct {
+	// Message エラーメッセージ
+	Message *ErrorMessage `json:"message,omitempty"`
+}
 
 type PostSkillrecordsRequestObject struct {
 	Body *PostSkillrecordsJSONRequestBody
@@ -1093,9 +1008,7 @@ type PostSkillrecordsResponseObject interface {
 	VisitPostSkillrecordsResponse(w http.ResponseWriter) error
 }
 
-type PostSkillrecords201JSONResponse struct {
-	N201CreatedSkillRecordsJSONResponse
-}
+type PostSkillrecords201JSONResponse []Skill
 
 func (response PostSkillrecords201JSONResponse) VisitPostSkillrecordsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1120,7 +1033,7 @@ type GetSkillsResponseObject interface {
 	VisitGetSkillsResponse(w http.ResponseWriter) error
 }
 
-type GetSkills200JSONResponse struct{ N200OKSkillRecordsJSONResponse }
+type GetSkills200JSONResponse []Skill
 
 func (response GetSkills200JSONResponse) VisitGetSkillsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1137,7 +1050,7 @@ type PostSkillsResponseObject interface {
 	VisitPostSkillsResponse(w http.ResponseWriter) error
 }
 
-type PostSkills201JSONResponse struct{ N201CreatedSkillJSONResponse }
+type PostSkills201JSONResponse Skill
 
 func (response PostSkills201JSONResponse) VisitPostSkillsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1163,7 +1076,7 @@ type GetSkillsBySkillIdResponseObject interface {
 	VisitGetSkillsBySkillIdResponse(w http.ResponseWriter) error
 }
 
-type GetSkillsBySkillId200JSONResponse struct{ N200OKSkillJSONResponse }
+type GetSkillsBySkillId200JSONResponse Skill
 
 func (response GetSkillsBySkillId200JSONResponse) VisitGetSkillsBySkillIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1179,9 +1092,7 @@ type GetSkilltagsResponseObject interface {
 	VisitGetSkilltagsResponse(w http.ResponseWriter) error
 }
 
-type GetSkilltags200JSONResponse struct {
-	N200OKSkillTagRecordsJSONResponse
-}
+type GetSkilltags200JSONResponse []SkillTag
 
 func (response GetSkilltags200JSONResponse) VisitGetSkilltagsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1198,9 +1109,7 @@ type PostSkilltagsResponseObject interface {
 	VisitPostSkilltagsResponse(w http.ResponseWriter) error
 }
 
-type PostSkilltags201JSONResponse struct {
-	N201CreatedSkillTagJSONResponse
-}
+type PostSkilltags201JSONResponse SkillTag
 
 func (response PostSkilltags201JSONResponse) VisitPostSkilltagsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1226,9 +1135,7 @@ type PostUsersResponseObject interface {
 	VisitPostUsersResponse(w http.ResponseWriter) error
 }
 
-type PostUsers201JSONResponse struct {
-	N201CreatedUserAttributeJSONResponse
-}
+type PostUsers201JSONResponse UserAttribute
 
 func (response PostUsers201JSONResponse) VisitPostUsersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1279,9 +1186,7 @@ type GetUsersByUserIdActivitiesResponseObject interface {
 	VisitGetUsersByUserIdActivitiesResponse(w http.ResponseWriter) error
 }
 
-type GetUsersByUserIdActivities200JSONResponse struct {
-	N200OKUserActivitiesJSONResponse
-}
+type GetUsersByUserIdActivities200JSONResponse []UserActivity
 
 func (response GetUsersByUserIdActivities200JSONResponse) VisitGetUsersByUserIdActivitiesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1308,9 +1213,7 @@ type PutUsersByUserIdActivitiesResponseObject interface {
 	VisitPutUsersByUserIdActivitiesResponse(w http.ResponseWriter) error
 }
 
-type PutUsersByUserIdActivities200JSONResponse struct {
-	N200OKUserActivitiesJSONResponse
-}
+type PutUsersByUserIdActivities200JSONResponse []UserActivity
 
 func (response PutUsersByUserIdActivities200JSONResponse) VisitPutUsersByUserIdActivitiesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1345,9 +1248,7 @@ type GetUsersByUserIdAttributeResponseObject interface {
 	VisitGetUsersByUserIdAttributeResponse(w http.ResponseWriter) error
 }
 
-type GetUsersByUserIdAttribute200JSONResponse struct {
-	N200OKUserAttributeJSONResponse
-}
+type GetUsersByUserIdAttribute200JSONResponse UserAttribute
 
 func (response GetUsersByUserIdAttribute200JSONResponse) VisitGetUsersByUserIdAttributeResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1374,9 +1275,7 @@ type PutUsersByUserIdAttributeResponseObject interface {
 	VisitPutUsersByUserIdAttributeResponse(w http.ResponseWriter) error
 }
 
-type PutUsersByUserIdAttribute200JSONResponse struct {
-	N200OKUserAttributeJSONResponse
-}
+type PutUsersByUserIdAttribute200JSONResponse UserAttribute
 
 func (response PutUsersByUserIdAttribute200JSONResponse) VisitPutUsersByUserIdAttributeResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1411,9 +1310,7 @@ type GetUsersByUserIdCareergroupsResponseObject interface {
 	VisitGetUsersByUserIdCareergroupsResponse(w http.ResponseWriter) error
 }
 
-type GetUsersByUserIdCareergroups200JSONResponse struct {
-	N200OKUserCareerGroupsJSONResponse
-}
+type GetUsersByUserIdCareergroups200JSONResponse []UserCareerGroup
 
 func (response GetUsersByUserIdCareergroups200JSONResponse) VisitGetUsersByUserIdCareergroupsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1440,12 +1337,13 @@ type PostUsersByUserIdCareergroupsResponseObject interface {
 	VisitPostUsersByUserIdCareergroupsResponse(w http.ResponseWriter) error
 }
 
-type PostUsersByUserIdCareergroups201Response struct {
-}
+type PostUsersByUserIdCareergroups201JSONResponse UserCareerGroup
 
-func (response PostUsersByUserIdCareergroups201Response) VisitPostUsersByUserIdCareergroupsResponse(w http.ResponseWriter) error {
+func (response PostUsersByUserIdCareergroups201JSONResponse) VisitPostUsersByUserIdCareergroupsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(201)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type PostUsersByUserIdCareergroups400JSONResponse struct{ N400BadRequestJSONResponse }
@@ -1502,9 +1400,7 @@ type PutUsersByUserIdCareergroupsByCareerGroupIdResponseObject interface {
 	VisitPutUsersByUserIdCareergroupsByCareerGroupIdResponse(w http.ResponseWriter) error
 }
 
-type PutUsersByUserIdCareergroupsByCareerGroupId200JSONResponse struct {
-	N200OKUserCareerGroupOwnJSONResponse
-}
+type PutUsersByUserIdCareergroupsByCareerGroupId200JSONResponse UserCareerGroupOwn
 
 func (response PutUsersByUserIdCareergroupsByCareerGroupId200JSONResponse) VisitPutUsersByUserIdCareergroupsByCareerGroupIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1541,7 +1437,7 @@ type PutUsersByUserIdCareergroupsByCareerGroupIdCareersResponseObject interface 
 	VisitPutUsersByUserIdCareergroupsByCareerGroupIdCareersResponse(w http.ResponseWriter) error
 }
 
-type PutUsersByUserIdCareergroupsByCareerGroupIdCareers200JSONResponse struct{ N200OKUserCareersJSONResponse }
+type PutUsersByUserIdCareergroupsByCareerGroupIdCareers200JSONResponse []UserCareer
 
 func (response PutUsersByUserIdCareergroupsByCareerGroupIdCareers200JSONResponse) VisitPutUsersByUserIdCareergroupsByCareerGroupIdCareersResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1576,7 +1472,7 @@ type GetUsersByUserIdNotesResponseObject interface {
 	VisitGetUsersByUserIdNotesResponse(w http.ResponseWriter) error
 }
 
-type GetUsersByUserIdNotes200JSONResponse struct{ N200OKUserNotesJSONResponse }
+type GetUsersByUserIdNotes200JSONResponse []UserNote
 
 func (response GetUsersByUserIdNotes200JSONResponse) VisitGetUsersByUserIdNotesResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1603,12 +1499,13 @@ type PostUsersByUserIdNotesResponseObject interface {
 	VisitPostUsersByUserIdNotesResponse(w http.ResponseWriter) error
 }
 
-type PostUsersByUserIdNotes201Response struct {
-}
+type PostUsersByUserIdNotes201JSONResponse UserNote
 
-func (response PostUsersByUserIdNotes201Response) VisitPostUsersByUserIdNotesResponse(w http.ResponseWriter) error {
+func (response PostUsersByUserIdNotes201JSONResponse) VisitPostUsersByUserIdNotesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(201)
-	return nil
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type PostUsersByUserIdNotes400JSONResponse struct{ N400BadRequestJSONResponse }
@@ -1665,7 +1562,7 @@ type PutUsersByUserIdNotesByNoteIdResponseObject interface {
 	VisitPutUsersByUserIdNotesByNoteIdResponse(w http.ResponseWriter) error
 }
 
-type PutUsersByUserIdNotesByNoteId200JSONResponse struct{ N200OKUserNoteOwnJSONResponse }
+type PutUsersByUserIdNotesByNoteId200JSONResponse UserNoteOwn
 
 func (response PutUsersByUserIdNotesByNoteId200JSONResponse) VisitPutUsersByUserIdNotesByNoteIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1702,9 +1599,7 @@ type PutUsersByUserIdNotesByNoteIdItemsResponseObject interface {
 	VisitPutUsersByUserIdNotesByNoteIdItemsResponse(w http.ResponseWriter) error
 }
 
-type PutUsersByUserIdNotesByNoteIdItems200JSONResponse struct {
-	N200OKUserNoteItemsJSONResponse
-}
+type PutUsersByUserIdNotesByNoteIdItems200JSONResponse []UserNoteItem
 
 func (response PutUsersByUserIdNotesByNoteIdItems200JSONResponse) VisitPutUsersByUserIdNotesByNoteIdItemsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1739,9 +1634,7 @@ type GetUsersByUserIdQualificationsResponseObject interface {
 	VisitGetUsersByUserIdQualificationsResponse(w http.ResponseWriter) error
 }
 
-type GetUsersByUserIdQualifications200JSONResponse struct {
-	N200OKUserQualificationsJSONResponse
-}
+type GetUsersByUserIdQualifications200JSONResponse []UserQualification
 
 func (response GetUsersByUserIdQualifications200JSONResponse) VisitGetUsersByUserIdQualificationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1768,9 +1661,7 @@ type PutUsersByUserIdQualificationsResponseObject interface {
 	VisitPutUsersByUserIdQualificationsResponse(w http.ResponseWriter) error
 }
 
-type PutUsersByUserIdQualifications200JSONResponse struct {
-	N200OKUserQualificationsJSONResponse
-}
+type PutUsersByUserIdQualifications200JSONResponse []UserQualification
 
 func (response PutUsersByUserIdQualifications200JSONResponse) VisitPutUsersByUserIdQualificationsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -1805,7 +1696,7 @@ type GetUsersByUserIdSkillsResponseObject interface {
 	VisitGetUsersByUserIdSkillsResponse(w http.ResponseWriter) error
 }
 
-type GetUsersByUserIdSkills200JSONResponse struct{ N200OKUserSkillsJSONResponse }
+type GetUsersByUserIdSkills200JSONResponse []UserSkillTag
 
 func (response GetUsersByUserIdSkills200JSONResponse) VisitGetUsersByUserIdSkillsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -2615,70 +2506,68 @@ func (sh *strictHandler) GetUsersByUserIdSkills(ctx echo.Context, byUserId UserI
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"Rn1t1A8NhD1OrF07Xft3AAAA//9Bz5H7S2EAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

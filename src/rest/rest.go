@@ -1,19 +1,23 @@
 package rest
 
 import (
-	"github.com/labstack/echo/v4"
+	"github.com/sky0621/cv-admin/src/converter"
 
 	"github.com/sky0621/cv-admin/src/ent"
 )
 
-type ServerImpl struct {
+type strictServerImpl struct {
 	dbClient *ent.Client
 }
 
 func NewRESTService(dbClient *ent.Client) ServerInterface {
-	return &ServerImpl{dbClient}
+	return NewStrictHandler(&strictServerImpl{dbClient}, nil)
 }
 
-func sendClientError(ctx echo.Context, code int, message string) error {
-	return ctx.JSON(code, &ClientError{Message: &message})
+func n400(msg string) N400BadRequestJSONResponse {
+	return N400BadRequestJSONResponse{Message: converter.ToPtr(msg)}
+}
+
+func n404(msg string) N404NotFoundJSONResponse {
+	return N404NotFoundJSONResponse{Message: converter.ToPtr(msg)}
 }
