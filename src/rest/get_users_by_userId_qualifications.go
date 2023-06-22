@@ -16,5 +16,5 @@ func (s *strictServerImpl) GetUsersByUserIdQualifications(ctx context.Context, r
 		return nil, err
 	}
 
-	return GetUsersByUserIdQualifications200JSONResponse{ToSwaggerUserQualifications(entUser.Edges.Qualifications)}, nil
+	return GetUsersByUserIdQualifications200JSONResponse(ToSwaggerUserQualifications(entUser.Edges.Qualifications)), nil
 }

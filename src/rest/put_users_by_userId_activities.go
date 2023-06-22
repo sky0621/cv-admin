@@ -49,5 +49,5 @@ func (s *strictServerImpl) PutUsersByUserIdActivities(ctx context.Context, reque
 		return nil, err
 	}
 
-	return PutUsersByUserIdActivities200JSONResponse{ToSwaggerUserActivities(results)}, nil
+	return PutUsersByUserIdActivities200JSONResponse(ToSwaggerUserActivities(results)), nil
 }

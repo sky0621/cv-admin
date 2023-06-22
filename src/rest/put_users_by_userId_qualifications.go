@@ -38,5 +38,5 @@ func (s *strictServerImpl) PutUsersByUserIdQualifications(ctx context.Context, r
 		return nil, err
 	}
 
-	return PutUsersByUserIdQualifications200JSONResponse{ToSwaggerUserQualifications(results)}, nil
+	return PutUsersByUserIdQualifications200JSONResponse(ToSwaggerUserQualifications(results)), nil
 }

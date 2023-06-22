@@ -11,5 +11,5 @@ func (s *strictServerImpl) GetSkills(ctx context.Context, _ GetSkillsRequestObje
 		return nil, err
 	}
 
-	return GetSkills200JSONResponse{ToSwaggerSkills(entSkills)}, nil
+	return GetSkills200JSONResponse(ToSwaggerSkills(entSkills)), nil
 }

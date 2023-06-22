@@ -31,5 +31,5 @@ func (s *strictServerImpl) GetUsersByUserIdCareergroups(ctx context.Context, req
 		return nil, err
 	}
 
-	return GetUsersByUserIdCareergroups200JSONResponse{ToSwaggerUserCareerGroups(careerGroups)}, nil
+	return GetUsersByUserIdCareergroups200JSONResponse(ToSwaggerUserCareerGroups(careerGroups)), nil
 }

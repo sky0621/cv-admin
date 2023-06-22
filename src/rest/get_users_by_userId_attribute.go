@@ -21,5 +21,5 @@ func (s *strictServerImpl) GetUsersByUserIdAttribute(ctx context.Context, reques
 		return GetUsersByUserIdAttribute404JSONResponse{n404("user is none")}, nil
 	}
 
-	return GetUsersByUserIdAttribute200JSONResponse{N200OKUserAttributeJSONResponse(ToSwaggerUserAttribute(entUser))}, nil
+	return GetUsersByUserIdAttribute200JSONResponse(ToSwaggerUserAttribute(entUser)), nil
 }

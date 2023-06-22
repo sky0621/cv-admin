@@ -16,5 +16,5 @@ func (s *strictServerImpl) GetUsersByUserIdNotes(ctx context.Context, request Ge
 		return nil, err
 	}
 
-	return GetUsersByUserIdNotes200JSONResponse{ToSwaggerUserNotes(userNotes)}, nil
+	return GetUsersByUserIdNotes200JSONResponse(ToSwaggerUserNotes(userNotes)), nil
 }

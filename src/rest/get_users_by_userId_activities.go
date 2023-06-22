@@ -25,5 +25,5 @@ func (s *strictServerImpl) GetUsersByUserIdActivities(ctx context.Context, reque
 		return GetUsersByUserIdActivities404JSONResponse{n404("user is none")}, nil
 	}
 
-	return GetUsersByUserIdActivities200JSONResponse{ToSwaggerUserActivities(entUser.Edges.Activities)}, nil
+	return GetUsersByUserIdActivities200JSONResponse(ToSwaggerUserActivities(entUser.Edges.Activities)), nil
 }

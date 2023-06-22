@@ -58,5 +58,5 @@ func (s *strictServerImpl) GetUsersByUserIdSkills(ctx context.Context, request G
 		})
 	}
 
-	return GetUsersByUserIdSkills200JSONResponse{userSkillTags}, nil
+	return GetUsersByUserIdSkills200JSONResponse(userSkillTags), nil
 }

@@ -23,5 +23,5 @@ func (s *strictServerImpl) PutUsersByUserIdAttribute(ctx context.Context, reques
 		return nil, err
 	}
 
-	return PutUsersByUserIdAttribute200JSONResponse{N200OKUserAttributeJSONResponse(ToSwaggerUserAttribute(entUser))}, nil
+	return PutUsersByUserIdAttribute200JSONResponse(ToSwaggerUserAttribute(entUser)), nil
 }
