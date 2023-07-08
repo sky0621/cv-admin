@@ -36,6 +36,14 @@ func ToEntUserUpdate(ua UserAttribute, c *ent.UserUpdateOne) *ent.UserUpdateOne 
 		SetNillablePr(ua.Pr)
 }
 
+func ToSwaggerUserAttributes(users []*ent.User) []UserAttribute {
+	var uas []UserAttribute
+	for _, user := range users {
+		uas = append(uas, ToSwaggerUserAttribute(user))
+	}
+	return uas
+}
+
 func ToSwaggerUserAttribute(u *ent.User) UserAttribute {
 	var ua UserAttribute
 	ua.UserID = &u.ID
