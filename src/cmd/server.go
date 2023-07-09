@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	echomiddleware "github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/cobra"
 
@@ -35,6 +36,7 @@ to quickly create a Cobra application.`,
 		 * API Server
 		 */
 		e := echo.New()
+		e.Use(middleware.CORS())
 		e.Use(echomiddleware.Logger())
 		e.Use(echomiddleware.Recover())
 		rest.RegisterHandlers(e, rest.NewRESTService(dbClient))
