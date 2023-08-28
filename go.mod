@@ -13,7 +13,7 @@ require (
 	github.com/sky0621/golang-utils v0.0.2
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
-	github.com/xuri/excelize/v2 v2.7.1
+	github.com/xuri/excelize/v2 v2.8.0
 	gopkg.in/ini.v1 v1.67.0
 )
 
@@ -64,15 +64,15 @@ require (
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
-	github.com/xuri/efp v0.0.0-20220603152613-6918739fd470 // indirect
-	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
+	github.com/xuri/efp v0.0.0-20230802181842-ad255f2331ca // indirect
+	github.com/xuri/nfp v0.0.0-20230819163627-dc951e3ffe1a // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
-	golang.org/x/crypto v0.9.0 // indirect
+	golang.org/x/crypto v0.12.0 // indirect
 	golang.org/x/mod v0.10.0 // indirect
-	golang.org/x/net v0.10.0 // indirect
-	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/net v0.14.0 // indirect
+	golang.org/x/sys v0.11.0 // indirect
+	golang.org/x/text v0.12.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
