@@ -3,7 +3,7 @@ module github.com/sky0621/cv-admin
 go 1.20
 
 require (
-	entgo.io/ent v0.12.3
+	entgo.io/ent v0.12.4
 	github.com/deepmap/oapi-codegen v1.13.0
 	github.com/getkin/kin-openapi v0.118.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
@@ -18,7 +18,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.10.2-0.20230427182402-87a07dfb83bf // indirect
+	ariga.io/atlas v0.14.1-0.20230918065911-83ad451a4935 // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
