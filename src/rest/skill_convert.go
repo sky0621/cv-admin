@@ -15,8 +15,9 @@ func ToEntSkillTagCreate(s SkillTag, c *ent.SkillTagCreate) *ent.SkillTagCreate 
 
 func ToSwaggerSkillTag(entSkillTag *ent.SkillTag) SkillTag {
 	return SkillTag{
-		Name: &entSkillTag.Name,
-		Key:  &entSkillTag.Key,
+		SkillTagID: &entSkillTag.ID,
+		Name:       &entSkillTag.Name,
+		Key:        &entSkillTag.Key,
 	}
 }
 
