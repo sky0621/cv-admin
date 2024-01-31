@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
@@ -31,6 +32,7 @@ type UserCareer struct {
 	// The values are being populated by the UserCareerQuery when eager-loading is set.
 	Edges           UserCareerEdges `json:"edges"`
 	career_group_id *int
+	selectValues    sql.SelectValues
 }
 
 // UserCareerEdges holds the relations/edges for other nodes in the graph.
@@ -102,7 +104,7 @@ func (*UserCareer) scanValues(columns []string) ([]any, error) {
 		case usercareer.ForeignKeys[0]: // career_group_id
 			values[i] = new(sql.NullInt64)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type UserCareer", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -160,9 +162,17 @@ func (uc *UserCareer) assignValues(columns []string, values []any) error {
 				uc.career_group_id = new(int)
 				*uc.career_group_id = int(value.Int64)
 			}
+		default:
+			uc.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the UserCareer.
+// This includes values selected through modifiers, order, etc.
+func (uc *UserCareer) Value(name string) (ent.Value, error) {
+	return uc.selectValues.Get(name)
 }
 
 // QueryCareerGroup queries the "careerGroup" edge of the UserCareer entity.

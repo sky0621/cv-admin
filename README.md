@@ -136,7 +136,7 @@ cd src/ent
 ```
 
 ```
-go run -mod=mod entgo.io/ent/cmd/ent init User UserActivity UserQualification UserCareerGroup UserCareer UserCareerDescription UserCareerPeriod CareerTask CareerSkillGroup CareerSkill UserNote UserNoteItem
+go run -mod=mod entgo.io/ent/cmd/ent new User UserActivity UserQualification UserCareerGroup UserCareer UserCareerDescription UserCareerPeriod CareerTask CareerSkillGroup CareerSkill UserNote UserNoteItem SkillTag Skill
 ```
 
 ### cobra

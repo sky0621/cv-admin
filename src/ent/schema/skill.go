@@ -7,6 +7,7 @@ import (
 )
 
 const skillEdgeName = "skill"
+const skillsRef = "skills"
 
 // Skill holds the schema definition for the Skill entity.
 type Skill struct {
@@ -19,7 +20,6 @@ func (Skill) Fields() []ent.Field {
 		field.String("name").NotEmpty().Validate(maxRuneCount(100)).Unique(),
 		field.String("key").NotEmpty().Validate(maxRuneCount(40)).Unique(),
 		field.String("url").Validate(rangeRuneCount(1, 4096)).Optional().Nillable(),
-		field.String("tag_key").Validate(maxRuneCount(40)).Optional().Nillable(),
 	}
 }
 
@@ -32,6 +32,8 @@ func (Skill) Mixin() []ent.Mixin {
 // Edges of the Skill.
 func (Skill) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.From(skillTagEdgeName, SkillTag.Type).Ref(skillsRef).Unique().Required(),
+
 		edge.To(careerSkillsRef, CareerSkill.Type).StorageKey(edge.Column("skill_id")),
 	}
 }

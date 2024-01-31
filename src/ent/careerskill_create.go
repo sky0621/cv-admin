@@ -96,7 +96,7 @@ func (csc *CareerSkillCreate) Mutation() *CareerSkillMutation {
 // Save creates the CareerSkill in the database.
 func (csc *CareerSkillCreate) Save(ctx context.Context) (*CareerSkill, error) {
 	csc.defaults()
-	return withHooks[*CareerSkill, CareerSkillMutation](ctx, csc.sqlSave, csc.mutation, csc.hooks)
+	return withHooks(ctx, csc.sqlSave, csc.mutation, csc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -445,8 +445,8 @@ func (cscb *CareerSkillCreateBulk) Save(ctx context.Context) ([]*CareerSkill, er
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, cscb.builders[i+1].mutation)
 				} else {

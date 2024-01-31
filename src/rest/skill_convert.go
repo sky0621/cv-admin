@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"github.com/sky0621/cv-admin/src/converter"
 	"github.com/sky0621/cv-admin/src/ent"
 )
 
@@ -33,17 +32,15 @@ func ToEntSkillCreate(s Skill, c *ent.SkillCreate) *ent.SkillCreate {
 	return c.
 		SetName(*s.Name).
 		SetKey(*s.Key).
-		SetNillableURL(s.Url).
-		SetNillableTagKey(s.TagKey)
+		SetNillableURL(s.Url)
 }
 
 func ToSwaggerSkill(entSkill *ent.Skill) Skill {
 	return Skill{
-		SkillID: converter.ToPtr(entSkill.ID),
+		SkillID: ToPtr(entSkill.ID),
 		Name:    &entSkill.Name,
 		Key:     &entSkill.Key,
 		Url:     entSkill.URL,
-		TagKey:  entSkill.TagKey,
 	}
 }
 

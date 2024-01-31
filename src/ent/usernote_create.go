@@ -106,7 +106,7 @@ func (unc *UserNoteCreate) Mutation() *UserNoteMutation {
 // Save creates the UserNote in the database.
 func (unc *UserNoteCreate) Save(ctx context.Context) (*UserNote, error) {
 	unc.defaults()
-	return withHooks[*UserNote, UserNoteMutation](ctx, unc.sqlSave, unc.mutation, unc.hooks)
+	return withHooks(ctx, unc.sqlSave, unc.mutation, unc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -489,8 +489,8 @@ func (uncb *UserNoteCreateBulk) Save(ctx context.Context) ([]*UserNote, error) {
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, uncb.builders[i+1].mutation)
 				} else {

@@ -27,7 +27,7 @@ func (sd *SkillDelete) Where(ps ...predicate.Skill) *SkillDelete {
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (sd *SkillDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, SkillMutation](ctx, sd.sqlExec, sd.mutation, sd.hooks)
+	return withHooks(ctx, sd.sqlExec, sd.mutation, sd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

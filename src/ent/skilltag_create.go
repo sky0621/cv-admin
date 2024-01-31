@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sky0621/cv-admin/src/ent/skill"
 	"github.com/sky0621/cv-admin/src/ent/skilltag"
 )
 
@@ -33,6 +34,21 @@ func (stc *SkillTagCreate) SetKey(s string) *SkillTagCreate {
 	return stc
 }
 
+// AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
+func (stc *SkillTagCreate) AddSkillIDs(ids ...int) *SkillTagCreate {
+	stc.mutation.AddSkillIDs(ids...)
+	return stc
+}
+
+// AddSkills adds the "skills" edges to the Skill entity.
+func (stc *SkillTagCreate) AddSkills(s ...*Skill) *SkillTagCreate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return stc.AddSkillIDs(ids...)
+}
+
 // Mutation returns the SkillTagMutation object of the builder.
 func (stc *SkillTagCreate) Mutation() *SkillTagMutation {
 	return stc.mutation
@@ -40,7 +56,7 @@ func (stc *SkillTagCreate) Mutation() *SkillTagMutation {
 
 // Save creates the SkillTag in the database.
 func (stc *SkillTagCreate) Save(ctx context.Context) (*SkillTag, error) {
-	return withHooks[*SkillTag, SkillTagMutation](ctx, stc.sqlSave, stc.mutation, stc.hooks)
+	return withHooks(ctx, stc.sqlSave, stc.mutation, stc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -117,6 +133,22 @@ func (stc *SkillTagCreate) createSpec() (*SkillTag, *sqlgraph.CreateSpec) {
 	if value, ok := stc.mutation.Key(); ok {
 		_spec.SetField(skilltag.FieldKey, field.TypeString, value)
 		_node.Key = value
+	}
+	if nodes := stc.mutation.SkillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skilltag.SkillsTable,
+			Columns: []string{skilltag.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(skill.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -319,8 +351,8 @@ func (stcb *SkillTagCreateBulk) Save(ctx context.Context) ([]*SkillTag, error) {
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, stcb.builders[i+1].mutation)
 				} else {

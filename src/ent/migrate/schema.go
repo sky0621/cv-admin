@@ -109,13 +109,21 @@ var (
 		{Name: "name", Type: field.TypeString, Unique: true},
 		{Name: "key", Type: field.TypeString, Unique: true},
 		{Name: "url", Type: field.TypeString, Nullable: true},
-		{Name: "tag_key", Type: field.TypeString, Nullable: true},
+		{Name: "tag_id", Type: field.TypeInt},
 	}
 	// SkillsTable holds the schema information for the "skills" table.
 	SkillsTable = &schema.Table{
 		Name:       "skills",
 		Columns:    SkillsColumns,
 		PrimaryKey: []*schema.Column{SkillsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "skills_skill_tags_skills",
+				Columns:    []*schema.Column{SkillsColumns[6]},
+				RefColumns: []*schema.Column{SkillTagsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 	}
 	// SkillTagsColumns holds the columns for the "skill_tags" table.
 	SkillTagsColumns = []*schema.Column{
@@ -336,6 +344,7 @@ func init() {
 	CareerSkillGroupsTable.ForeignKeys[0].RefTable = UserCareersTable
 	CareerTasksTable.ForeignKeys[0].RefTable = UserCareersTable
 	CareerTaskDescriptionsTable.ForeignKeys[0].RefTable = CareerTasksTable
+	SkillsTable.ForeignKeys[0].RefTable = SkillTagsTable
 	UserActivitiesTable.ForeignKeys[0].RefTable = UsersTable
 	UserCareersTable.ForeignKeys[0].RefTable = UserCareerGroupsTable
 	UserCareerDescriptionsTable.ForeignKeys[0].RefTable = UserCareersTable

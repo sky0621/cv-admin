@@ -80,11 +80,6 @@ func URL(v string) predicate.Skill {
 	return predicate.Skill(sql.FieldEQ(FieldURL, v))
 }
 
-// TagKey applies equality check predicate on the "tag_key" field. It's identical to TagKeyEQ.
-func TagKey(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEQ(FieldTagKey, v))
-}
-
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
 func CreateTimeEQ(v time.Time) predicate.Skill {
 	return predicate.Skill(sql.FieldEQ(FieldCreateTime, v))
@@ -370,79 +365,27 @@ func URLContainsFold(v string) predicate.Skill {
 	return predicate.Skill(sql.FieldContainsFold(FieldURL, v))
 }
 
-// TagKeyEQ applies the EQ predicate on the "tag_key" field.
-func TagKeyEQ(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEQ(FieldTagKey, v))
+// HasSkillTag applies the HasEdge predicate on the "skillTag" edge.
+func HasSkillTag() predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, SkillTagTable, SkillTagColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
 }
 
-// TagKeyNEQ applies the NEQ predicate on the "tag_key" field.
-func TagKeyNEQ(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldNEQ(FieldTagKey, v))
-}
-
-// TagKeyIn applies the In predicate on the "tag_key" field.
-func TagKeyIn(vs ...string) predicate.Skill {
-	return predicate.Skill(sql.FieldIn(FieldTagKey, vs...))
-}
-
-// TagKeyNotIn applies the NotIn predicate on the "tag_key" field.
-func TagKeyNotIn(vs ...string) predicate.Skill {
-	return predicate.Skill(sql.FieldNotIn(FieldTagKey, vs...))
-}
-
-// TagKeyGT applies the GT predicate on the "tag_key" field.
-func TagKeyGT(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldGT(FieldTagKey, v))
-}
-
-// TagKeyGTE applies the GTE predicate on the "tag_key" field.
-func TagKeyGTE(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldGTE(FieldTagKey, v))
-}
-
-// TagKeyLT applies the LT predicate on the "tag_key" field.
-func TagKeyLT(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldLT(FieldTagKey, v))
-}
-
-// TagKeyLTE applies the LTE predicate on the "tag_key" field.
-func TagKeyLTE(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldLTE(FieldTagKey, v))
-}
-
-// TagKeyContains applies the Contains predicate on the "tag_key" field.
-func TagKeyContains(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldContains(FieldTagKey, v))
-}
-
-// TagKeyHasPrefix applies the HasPrefix predicate on the "tag_key" field.
-func TagKeyHasPrefix(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldHasPrefix(FieldTagKey, v))
-}
-
-// TagKeyHasSuffix applies the HasSuffix predicate on the "tag_key" field.
-func TagKeyHasSuffix(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldHasSuffix(FieldTagKey, v))
-}
-
-// TagKeyIsNil applies the IsNil predicate on the "tag_key" field.
-func TagKeyIsNil() predicate.Skill {
-	return predicate.Skill(sql.FieldIsNull(FieldTagKey))
-}
-
-// TagKeyNotNil applies the NotNil predicate on the "tag_key" field.
-func TagKeyNotNil() predicate.Skill {
-	return predicate.Skill(sql.FieldNotNull(FieldTagKey))
-}
-
-// TagKeyEqualFold applies the EqualFold predicate on the "tag_key" field.
-func TagKeyEqualFold(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEqualFold(FieldTagKey, v))
-}
-
-// TagKeyContainsFold applies the ContainsFold predicate on the "tag_key" field.
-func TagKeyContainsFold(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldContainsFold(FieldTagKey, v))
+// HasSkillTagWith applies the HasEdge predicate on the "skillTag" edge with a given conditions (other predicates).
+func HasSkillTagWith(preds ...predicate.SkillTag) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		step := newSkillTagStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // HasCareerSkills applies the HasEdge predicate on the "careerSkills" edge.
@@ -459,11 +402,7 @@ func HasCareerSkills() predicate.Skill {
 // HasCareerSkillsWith applies the HasEdge predicate on the "careerSkills" edge with a given conditions (other predicates).
 func HasCareerSkillsWith(preds ...predicate.CareerSkill) predicate.Skill {
 	return predicate.Skill(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareerSkillsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CareerSkillsTable, CareerSkillsColumn),
-		)
+		step := newCareerSkillsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

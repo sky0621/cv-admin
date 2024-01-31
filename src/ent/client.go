@@ -983,6 +983,22 @@ func (c *SkillClient) GetX(ctx context.Context, id int) *Skill {
 	return obj
 }
 
+// QuerySkillTag queries the skillTag edge of a Skill.
+func (c *SkillClient) QuerySkillTag(s *Skill) *SkillTagQuery {
+	query := (&SkillTagClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(skill.Table, skill.FieldID, id),
+			sqlgraph.To(skilltag.Table, skilltag.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, skill.SkillTagTable, skill.SkillTagColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryCareerSkills queries the careerSkills edge of a Skill.
 func (c *SkillClient) QueryCareerSkills(s *Skill) *CareerSkillQuery {
 	query := (&CareerSkillClient{config: c.config}).Query()
@@ -1115,6 +1131,22 @@ func (c *SkillTagClient) GetX(ctx context.Context, id int) *SkillTag {
 		panic(err)
 	}
 	return obj
+}
+
+// QuerySkills queries the skills edge of a SkillTag.
+func (c *SkillTagClient) QuerySkills(st *SkillTag) *SkillQuery {
+	query := (&SkillClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := st.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(skilltag.Table, skilltag.FieldID, id),
+			sqlgraph.To(skill.Table, skill.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, skilltag.SkillsTable, skilltag.SkillsColumn),
+		)
+		fromV = sqlgraph.Neighbors(st.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // Hooks returns the client hooks.

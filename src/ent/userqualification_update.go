@@ -146,7 +146,7 @@ func (uqu *UserQualificationUpdate) ClearUser() *UserQualificationUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uqu *UserQualificationUpdate) Save(ctx context.Context) (int, error) {
 	uqu.defaults()
-	return withHooks[int, UserQualificationMutation](ctx, uqu.sqlSave, uqu.mutation, uqu.hooks)
+	return withHooks(ctx, uqu.sqlSave, uqu.mutation, uqu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -433,7 +433,7 @@ func (uquo *UserQualificationUpdateOne) Select(field string, fields ...string) *
 // Save executes the query and returns the updated UserQualification entity.
 func (uquo *UserQualificationUpdateOne) Save(ctx context.Context) (*UserQualification, error) {
 	uquo.defaults()
-	return withHooks[*UserQualification, UserQualificationMutation](ctx, uquo.sqlSave, uquo.mutation, uquo.hooks)
+	return withHooks(ctx, uquo.sqlSave, uquo.mutation, uquo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

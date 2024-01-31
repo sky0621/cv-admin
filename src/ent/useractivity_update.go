@@ -106,7 +106,7 @@ func (uau *UserActivityUpdate) ClearUser() *UserActivityUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uau *UserActivityUpdate) Save(ctx context.Context) (int, error) {
 	uau.defaults()
-	return withHooks[int, UserActivityMutation](ctx, uau.sqlSave, uau.mutation, uau.hooks)
+	return withHooks(ctx, uau.sqlSave, uau.mutation, uau.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -331,7 +331,7 @@ func (uauo *UserActivityUpdateOne) Select(field string, fields ...string) *UserA
 // Save executes the query and returns the updated UserActivity entity.
 func (uauo *UserActivityUpdateOne) Save(ctx context.Context) (*UserActivity, error) {
 	uauo.defaults()
-	return withHooks[*UserActivity, UserActivityMutation](ctx, uauo.sqlSave, uauo.mutation, uauo.hooks)
+	return withHooks(ctx, uauo.sqlSave, uauo.mutation, uauo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

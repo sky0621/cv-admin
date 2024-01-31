@@ -76,7 +76,7 @@ func (unic *UserNoteItemCreate) Mutation() *UserNoteItemMutation {
 // Save creates the UserNoteItem in the database.
 func (unic *UserNoteItemCreate) Save(ctx context.Context) (*UserNoteItem, error) {
 	unic.defaults()
-	return withHooks[*UserNoteItem, UserNoteItemMutation](ctx, unic.sqlSave, unic.mutation, unic.hooks)
+	return withHooks(ctx, unic.sqlSave, unic.mutation, unic.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -395,8 +395,8 @@ func (unicb *UserNoteItemCreateBulk) Save(ctx context.Context) ([]*UserNoteItem,
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, unicb.builders[i+1].mutation)
 				} else {

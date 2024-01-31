@@ -7,8 +7,10 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/skill"
+	"github.com/sky0621/cv-admin/src/ent/skilltag"
 )
 
 // Skill is the model entity for the Skill schema.
@@ -26,26 +28,41 @@ type Skill struct {
 	Key string `json:"key,omitempty"`
 	// URL holds the value of the "url" field.
 	URL *string `json:"url,omitempty"`
-	// TagKey holds the value of the "tag_key" field.
-	TagKey *string `json:"tag_key,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SkillQuery when eager-loading is set.
-	Edges SkillEdges `json:"edges"`
+	Edges        SkillEdges `json:"edges"`
+	tag_id       *int
+	selectValues sql.SelectValues
 }
 
 // SkillEdges holds the relations/edges for other nodes in the graph.
 type SkillEdges struct {
+	// SkillTag holds the value of the skillTag edge.
+	SkillTag *SkillTag `json:"skillTag,omitempty"`
 	// CareerSkills holds the value of the careerSkills edge.
 	CareerSkills []*CareerSkill `json:"careerSkills,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
+}
+
+// SkillTagOrErr returns the SkillTag value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SkillEdges) SkillTagOrErr() (*SkillTag, error) {
+	if e.loadedTypes[0] {
+		if e.SkillTag == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: skilltag.Label}
+		}
+		return e.SkillTag, nil
+	}
+	return nil, &NotLoadedError{edge: "skillTag"}
 }
 
 // CareerSkillsOrErr returns the CareerSkills value or an error if the edge
 // was not loaded in eager-loading.
 func (e SkillEdges) CareerSkillsOrErr() ([]*CareerSkill, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		return e.CareerSkills, nil
 	}
 	return nil, &NotLoadedError{edge: "careerSkills"}
@@ -58,12 +75,14 @@ func (*Skill) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case skill.FieldID:
 			values[i] = new(sql.NullInt64)
-		case skill.FieldName, skill.FieldKey, skill.FieldURL, skill.FieldTagKey:
+		case skill.FieldName, skill.FieldKey, skill.FieldURL:
 			values[i] = new(sql.NullString)
 		case skill.FieldCreateTime, skill.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
+		case skill.ForeignKeys[0]: // tag_id
+			values[i] = new(sql.NullInt64)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Skill", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -114,16 +133,29 @@ func (s *Skill) assignValues(columns []string, values []any) error {
 				s.URL = new(string)
 				*s.URL = value.String
 			}
-		case skill.FieldTagKey:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field tag_key", values[i])
+		case skill.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field tag_id", value)
 			} else if value.Valid {
-				s.TagKey = new(string)
-				*s.TagKey = value.String
+				s.tag_id = new(int)
+				*s.tag_id = int(value.Int64)
 			}
+		default:
+			s.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the Skill.
+// This includes values selected through modifiers, order, etc.
+func (s *Skill) Value(name string) (ent.Value, error) {
+	return s.selectValues.Get(name)
+}
+
+// QuerySkillTag queries the "skillTag" edge of the Skill entity.
+func (s *Skill) QuerySkillTag() *SkillTagQuery {
+	return NewSkillClient(s.config).QuerySkillTag(s)
 }
 
 // QueryCareerSkills queries the "careerSkills" edge of the Skill entity.
@@ -168,11 +200,6 @@ func (s *Skill) String() string {
 	builder.WriteString(", ")
 	if v := s.URL; v != nil {
 		builder.WriteString("url=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := s.TagKey; v != nil {
-		builder.WriteString("tag_key=")
 		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')

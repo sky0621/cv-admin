@@ -46,7 +46,7 @@ func (ctdc *CareerTaskDescriptionCreate) Mutation() *CareerTaskDescriptionMutati
 
 // Save creates the CareerTaskDescription in the database.
 func (ctdc *CareerTaskDescriptionCreate) Save(ctx context.Context) (*CareerTaskDescription, error) {
-	return withHooks[*CareerTaskDescription, CareerTaskDescriptionMutation](ctx, ctdc.sqlSave, ctdc.mutation, ctdc.hooks)
+	return withHooks(ctx, ctdc.sqlSave, ctdc.mutation, ctdc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -307,8 +307,8 @@ func (ctdcb *CareerTaskDescriptionCreateBulk) Save(ctx context.Context) ([]*Care
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, ctdcb.builders[i+1].mutation)
 				} else {

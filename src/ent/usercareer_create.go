@@ -144,7 +144,7 @@ func (ucc *UserCareerCreate) Mutation() *UserCareerMutation {
 // Save creates the UserCareer in the database.
 func (ucc *UserCareerCreate) Save(ctx context.Context) (*UserCareer, error) {
 	ucc.defaults()
-	return withHooks[*UserCareer, UserCareerMutation](ctx, ucc.sqlSave, ucc.mutation, ucc.hooks)
+	return withHooks(ctx, ucc.sqlSave, ucc.mutation, ucc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -597,8 +597,8 @@ func (uccb *UserCareerCreateBulk) Save(ctx context.Context) ([]*UserCareer, erro
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, uccb.builders[i+1].mutation)
 				} else {

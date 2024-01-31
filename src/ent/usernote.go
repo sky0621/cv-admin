@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/usernote"
@@ -27,8 +28,9 @@ type UserNote struct {
 	Memo *string `json:"memo,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserNoteQuery when eager-loading is set.
-	Edges   UserNoteEdges `json:"edges"`
-	user_id *int
+	Edges        UserNoteEdges `json:"edges"`
+	user_id      *int
+	selectValues sql.SelectValues
 }
 
 // UserNoteEdges holds the relations/edges for other nodes in the graph.
@@ -78,7 +80,7 @@ func (*UserNote) scanValues(columns []string) ([]any, error) {
 		case usernote.ForeignKeys[0]: // user_id
 			values[i] = new(sql.NullInt64)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type UserNote", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -130,9 +132,17 @@ func (un *UserNote) assignValues(columns []string, values []any) error {
 				un.user_id = new(int)
 				*un.user_id = int(value.Int64)
 			}
+		default:
+			un.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the UserNote.
+// This includes values selected through modifiers, order, etc.
+func (un *UserNote) Value(name string) (ent.Value, error) {
+	return un.selectValues.Get(name)
 }
 
 // QueryUser queries the "user" edge of the UserNote entity.

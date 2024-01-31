@@ -137,11 +137,7 @@ func HasCareer() predicate.UserCareerDescription {
 // HasCareerWith applies the HasEdge predicate on the "career" edge with a given conditions (other predicates).
 func HasCareerWith(preds ...predicate.UserCareer) predicate.UserCareerDescription {
 	return predicate.UserCareerDescription(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareerInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CareerTable, CareerColumn),
-		)
+		step := newCareerStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

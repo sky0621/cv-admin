@@ -224,11 +224,7 @@ func HasUser() predicate.UserCareerGroup {
 // HasUserWith applies the HasEdge predicate on the "user" edge with a given conditions (other predicates).
 func HasUserWith(preds ...predicate.User) predicate.UserCareerGroup {
 	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(UserInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
-		)
+		step := newUserStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -251,11 +247,7 @@ func HasCareers() predicate.UserCareerGroup {
 // HasCareersWith applies the HasEdge predicate on the "careers" edge with a given conditions (other predicates).
 func HasCareersWith(preds ...predicate.UserCareer) predicate.UserCareerGroup {
 	return predicate.UserCareerGroup(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareersInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CareersTable, CareersColumn),
-		)
+		step := newCareersStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

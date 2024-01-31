@@ -4,6 +4,9 @@ package user
 
 import (
 	"time"
+
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -125,3 +128,150 @@ var (
 	// PrValidator is a validator for the "pr" field. It is called by the builders before save.
 	PrValidator func(string) error
 )
+
+// OrderOption defines the ordering options for the User queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreateTime orders the results by the create_time field.
+func ByCreateTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreateTime, opts...).ToFunc()
+}
+
+// ByUpdateTime orders the results by the update_time field.
+func ByUpdateTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdateTime, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByNickname orders the results by the nickname field.
+func ByNickname(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNickname, opts...).ToFunc()
+}
+
+// ByAvatarURL orders the results by the avatar_url field.
+func ByAvatarURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAvatarURL, opts...).ToFunc()
+}
+
+// ByBirthdayYear orders the results by the birthday_year field.
+func ByBirthdayYear(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBirthdayYear, opts...).ToFunc()
+}
+
+// ByBirthdayMonth orders the results by the birthday_month field.
+func ByBirthdayMonth(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBirthdayMonth, opts...).ToFunc()
+}
+
+// ByBirthdayDay orders the results by the birthday_day field.
+func ByBirthdayDay(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBirthdayDay, opts...).ToFunc()
+}
+
+// ByJob orders the results by the job field.
+func ByJob(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldJob, opts...).ToFunc()
+}
+
+// ByBelongTo orders the results by the belong_to field.
+func ByBelongTo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBelongTo, opts...).ToFunc()
+}
+
+// ByPr orders the results by the pr field.
+func ByPr(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPr, opts...).ToFunc()
+}
+
+// ByActivitiesCount orders the results by activities count.
+func ByActivitiesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newActivitiesStep(), opts...)
+	}
+}
+
+// ByActivities orders the results by activities terms.
+func ByActivities(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newActivitiesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByQualificationsCount orders the results by qualifications count.
+func ByQualificationsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newQualificationsStep(), opts...)
+	}
+}
+
+// ByQualifications orders the results by qualifications terms.
+func ByQualifications(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newQualificationsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByCareerGroupsCount orders the results by careerGroups count.
+func ByCareerGroupsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCareerGroupsStep(), opts...)
+	}
+}
+
+// ByCareerGroups orders the results by careerGroups terms.
+func ByCareerGroups(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCareerGroupsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByNotesCount orders the results by notes count.
+func ByNotesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newNotesStep(), opts...)
+	}
+}
+
+// ByNotes orders the results by notes terms.
+func ByNotes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newNotesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newActivitiesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ActivitiesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ActivitiesTable, ActivitiesColumn),
+	)
+}
+func newQualificationsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(QualificationsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, QualificationsTable, QualificationsColumn),
+	)
+}
+func newCareerGroupsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CareerGroupsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CareerGroupsTable, CareerGroupsColumn),
+	)
+}
+func newNotesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(NotesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, NotesTable, NotesColumn),
+	)
+}

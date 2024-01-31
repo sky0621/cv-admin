@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/careertask"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
@@ -25,8 +26,9 @@ type CareerTask struct {
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CareerTaskQuery when eager-loading is set.
-	Edges     CareerTaskEdges `json:"edges"`
-	career_id *int
+	Edges        CareerTaskEdges `json:"edges"`
+	career_id    *int
+	selectValues sql.SelectValues
 }
 
 // CareerTaskEdges holds the relations/edges for other nodes in the graph.
@@ -76,7 +78,7 @@ func (*CareerTask) scanValues(columns []string) ([]any, error) {
 		case careertask.ForeignKeys[0]: // career_id
 			values[i] = new(sql.NullInt64)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type CareerTask", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -121,9 +123,17 @@ func (ct *CareerTask) assignValues(columns []string, values []any) error {
 				ct.career_id = new(int)
 				*ct.career_id = int(value.Int64)
 			}
+		default:
+			ct.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the CareerTask.
+// This includes values selected through modifiers, order, etc.
+func (ct *CareerTask) Value(name string) (ent.Value, error) {
+	return ct.selectValues.Get(name)
 }
 
 // QueryCareer queries the "career" edge of the CareerTask entity.

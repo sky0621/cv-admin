@@ -103,7 +103,7 @@ func (ucgu *UserCareerGroupUpdate) RemoveCareers(u ...*UserCareer) *UserCareerGr
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ucgu *UserCareerGroupUpdate) Save(ctx context.Context) (int, error) {
 	ucgu.defaults()
-	return withHooks[int, UserCareerGroupMutation](ctx, ucgu.sqlSave, ucgu.mutation, ucgu.hooks)
+	return withHooks(ctx, ucgu.sqlSave, ucgu.mutation, ucgu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -347,7 +347,7 @@ func (ucguo *UserCareerGroupUpdateOne) Select(field string, fields ...string) *U
 // Save executes the query and returns the updated UserCareerGroup entity.
 func (ucguo *UserCareerGroupUpdateOne) Save(ctx context.Context) (*UserCareerGroup, error) {
 	ucguo.defaults()
-	return withHooks[*UserCareerGroup, UserCareerGroupMutation](ctx, ucguo.sqlSave, ucguo.mutation, ucguo.hooks)
+	return withHooks(ctx, ucguo.sqlSave, ucguo.mutation, ucguo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

@@ -21,7 +21,7 @@ import (
 type CareerSkillGroupQuery struct {
 	config
 	ctx              *QueryContext
-	order            []OrderFunc
+	order            []careerskillgroup.OrderOption
 	inters           []Interceptor
 	predicates       []predicate.CareerSkillGroup
 	withCareer       *UserCareerQuery
@@ -58,7 +58,7 @@ func (csgq *CareerSkillGroupQuery) Unique(unique bool) *CareerSkillGroupQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (csgq *CareerSkillGroupQuery) Order(o ...OrderFunc) *CareerSkillGroupQuery {
+func (csgq *CareerSkillGroupQuery) Order(o ...careerskillgroup.OrderOption) *CareerSkillGroupQuery {
 	csgq.order = append(csgq.order, o...)
 	return csgq
 }
@@ -296,7 +296,7 @@ func (csgq *CareerSkillGroupQuery) Clone() *CareerSkillGroupQuery {
 	return &CareerSkillGroupQuery{
 		config:           csgq.config,
 		ctx:              csgq.ctx.Clone(),
-		order:            append([]OrderFunc{}, csgq.order...),
+		order:            append([]careerskillgroup.OrderOption{}, csgq.order...),
 		inters:           append([]Interceptor{}, csgq.inters...),
 		predicates:       append([]predicate.CareerSkillGroup{}, csgq.predicates...),
 		withCareer:       csgq.withCareer.Clone(),
@@ -497,7 +497,7 @@ func (csgq *CareerSkillGroupQuery) loadCareerSkills(ctx context.Context, query *
 	}
 	query.withFKs = true
 	query.Where(predicate.CareerSkill(func(s *sql.Selector) {
-		s.Where(sql.InValues(careerskillgroup.CareerSkillsColumn, fks...))
+		s.Where(sql.InValues(s.C(careerskillgroup.CareerSkillsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -510,7 +510,7 @@ func (csgq *CareerSkillGroupQuery) loadCareerSkills(ctx context.Context, query *
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "career_skill_group_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "career_skill_group_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

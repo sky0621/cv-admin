@@ -58,7 +58,7 @@ func (ucdu *UserCareerDescriptionUpdate) ClearCareer() *UserCareerDescriptionUpd
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ucdu *UserCareerDescriptionUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks[int, UserCareerDescriptionMutation](ctx, ucdu.sqlSave, ucdu.mutation, ucdu.hooks)
+	return withHooks(ctx, ucdu.sqlSave, ucdu.mutation, ucdu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -203,7 +203,7 @@ func (ucduo *UserCareerDescriptionUpdateOne) Select(field string, fields ...stri
 
 // Save executes the query and returns the updated UserCareerDescription entity.
 func (ucduo *UserCareerDescriptionUpdateOne) Save(ctx context.Context) (*UserCareerDescription, error) {
-	return withHooks[*UserCareerDescription, UserCareerDescriptionMutation](ctx, ucduo.sqlSave, ucduo.mutation, ucduo.hooks)
+	return withHooks(ctx, ucduo.sqlSave, ucduo.mutation, ucduo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

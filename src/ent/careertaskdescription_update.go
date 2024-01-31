@@ -58,7 +58,7 @@ func (ctdu *CareerTaskDescriptionUpdate) ClearCareerTask() *CareerTaskDescriptio
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ctdu *CareerTaskDescriptionUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks[int, CareerTaskDescriptionMutation](ctx, ctdu.sqlSave, ctdu.mutation, ctdu.hooks)
+	return withHooks(ctx, ctdu.sqlSave, ctdu.mutation, ctdu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -203,7 +203,7 @@ func (ctduo *CareerTaskDescriptionUpdateOne) Select(field string, fields ...stri
 
 // Save executes the query and returns the updated CareerTaskDescription entity.
 func (ctduo *CareerTaskDescriptionUpdateOne) Save(ctx context.Context) (*CareerTaskDescription, error) {
-	return withHooks[*CareerTaskDescription, CareerTaskDescriptionMutation](ctx, ctduo.sqlSave, ctduo.mutation, ctduo.hooks)
+	return withHooks(ctx, ctduo.sqlSave, ctduo.mutation, ctduo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
@@ -29,8 +30,9 @@ type UserActivity struct {
 	Icon *string `json:"icon,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserActivityQuery when eager-loading is set.
-	Edges   UserActivityEdges `json:"edges"`
-	user_id *int
+	Edges        UserActivityEdges `json:"edges"`
+	user_id      *int
+	selectValues sql.SelectValues
 }
 
 // UserActivityEdges holds the relations/edges for other nodes in the graph.
@@ -69,7 +71,7 @@ func (*UserActivity) scanValues(columns []string) ([]any, error) {
 		case useractivity.ForeignKeys[0]: // user_id
 			values[i] = new(sql.NullInt64)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type UserActivity", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -128,9 +130,17 @@ func (ua *UserActivity) assignValues(columns []string, values []any) error {
 				ua.user_id = new(int)
 				*ua.user_id = int(value.Int64)
 			}
+		default:
+			ua.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the UserActivity.
+// This includes values selected through modifiers, order, etc.
+func (ua *UserActivity) Value(name string) (ent.Value, error) {
+	return ua.selectValues.Get(name)
 }
 
 // QueryUser queries the "user" edge of the UserActivity entity.

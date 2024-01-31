@@ -27,7 +27,7 @@ func (uad *UserActivityDelete) Where(ps ...predicate.UserActivity) *UserActivity
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (uad *UserActivityDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, UserActivityMutation](ctx, uad.sqlExec, uad.mutation, uad.hooks)
+	return withHooks(ctx, uad.sqlExec, uad.mutation, uad.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

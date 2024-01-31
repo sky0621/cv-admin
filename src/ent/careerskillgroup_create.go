@@ -92,7 +92,7 @@ func (csgc *CareerSkillGroupCreate) Mutation() *CareerSkillGroupMutation {
 // Save creates the CareerSkillGroup in the database.
 func (csgc *CareerSkillGroupCreate) Save(ctx context.Context) (*CareerSkillGroup, error) {
 	csgc.defaults()
-	return withHooks[*CareerSkillGroup, CareerSkillGroupMutation](ctx, csgc.sqlSave, csgc.mutation, csgc.hooks)
+	return withHooks(ctx, csgc.sqlSave, csgc.mutation, csgc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -427,8 +427,8 @@ func (csgcb *CareerSkillGroupCreateBulk) Save(ctx context.Context) ([]*CareerSki
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, csgcb.builders[i+1].mutation)
 				} else {

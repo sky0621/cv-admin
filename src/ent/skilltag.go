@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/skilltag"
 )
@@ -19,6 +20,28 @@ type SkillTag struct {
 	Name string `json:"name,omitempty"`
 	// Key holds the value of the "key" field.
 	Key string `json:"key,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the SkillTagQuery when eager-loading is set.
+	Edges        SkillTagEdges `json:"edges"`
+	selectValues sql.SelectValues
+}
+
+// SkillTagEdges holds the relations/edges for other nodes in the graph.
+type SkillTagEdges struct {
+	// Skills holds the value of the skills edge.
+	Skills []*Skill `json:"skills,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// SkillsOrErr returns the Skills value or an error if the edge
+// was not loaded in eager-loading.
+func (e SkillTagEdges) SkillsOrErr() ([]*Skill, error) {
+	if e.loadedTypes[0] {
+		return e.Skills, nil
+	}
+	return nil, &NotLoadedError{edge: "skills"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -31,7 +54,7 @@ func (*SkillTag) scanValues(columns []string) ([]any, error) {
 		case skilltag.FieldName, skilltag.FieldKey:
 			values[i] = new(sql.NullString)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type SkillTag", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -63,9 +86,22 @@ func (st *SkillTag) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				st.Key = value.String
 			}
+		default:
+			st.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the SkillTag.
+// This includes values selected through modifiers, order, etc.
+func (st *SkillTag) Value(name string) (ent.Value, error) {
+	return st.selectValues.Get(name)
+}
+
+// QuerySkills queries the "skills" edge of the SkillTag entity.
+func (st *SkillTag) QuerySkills() *SkillQuery {
+	return NewSkillTagClient(st.config).QuerySkills(st)
 }
 
 // Update returns a builder for updating this SkillTag.

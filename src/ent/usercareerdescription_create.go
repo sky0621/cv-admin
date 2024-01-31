@@ -46,7 +46,7 @@ func (ucdc *UserCareerDescriptionCreate) Mutation() *UserCareerDescriptionMutati
 
 // Save creates the UserCareerDescription in the database.
 func (ucdc *UserCareerDescriptionCreate) Save(ctx context.Context) (*UserCareerDescription, error) {
-	return withHooks[*UserCareerDescription, UserCareerDescriptionMutation](ctx, ucdc.sqlSave, ucdc.mutation, ucdc.hooks)
+	return withHooks(ctx, ucdc.sqlSave, ucdc.mutation, ucdc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -307,8 +307,8 @@ func (ucdcb *UserCareerDescriptionCreateBulk) Save(ctx context.Context) ([]*User
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, ucdcb.builders[i+1].mutation)
 				} else {

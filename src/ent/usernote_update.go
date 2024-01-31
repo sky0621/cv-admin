@@ -123,7 +123,7 @@ func (unu *UserNoteUpdate) RemoveNoteItems(u ...*UserNoteItem) *UserNoteUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (unu *UserNoteUpdate) Save(ctx context.Context) (int, error) {
 	unu.defaults()
-	return withHooks[int, UserNoteMutation](ctx, unu.sqlSave, unu.mutation, unu.hooks)
+	return withHooks(ctx, unu.sqlSave, unu.mutation, unu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -398,7 +398,7 @@ func (unuo *UserNoteUpdateOne) Select(field string, fields ...string) *UserNoteU
 // Save executes the query and returns the updated UserNote entity.
 func (unuo *UserNoteUpdateOne) Save(ctx context.Context) (*UserNote, error) {
 	unuo.defaults()
-	return withHooks[*UserNote, UserNoteMutation](ctx, unuo.sqlSave, unuo.mutation, unuo.hooks)
+	return withHooks(ctx, unuo.sqlSave, unuo.mutation, unuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

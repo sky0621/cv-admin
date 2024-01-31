@@ -21,7 +21,7 @@ import (
 type UserNoteQuery struct {
 	config
 	ctx           *QueryContext
-	order         []OrderFunc
+	order         []usernote.OrderOption
 	inters        []Interceptor
 	predicates    []predicate.UserNote
 	withUser      *UserQuery
@@ -58,7 +58,7 @@ func (unq *UserNoteQuery) Unique(unique bool) *UserNoteQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (unq *UserNoteQuery) Order(o ...OrderFunc) *UserNoteQuery {
+func (unq *UserNoteQuery) Order(o ...usernote.OrderOption) *UserNoteQuery {
 	unq.order = append(unq.order, o...)
 	return unq
 }
@@ -296,7 +296,7 @@ func (unq *UserNoteQuery) Clone() *UserNoteQuery {
 	return &UserNoteQuery{
 		config:        unq.config,
 		ctx:           unq.ctx.Clone(),
-		order:         append([]OrderFunc{}, unq.order...),
+		order:         append([]usernote.OrderOption{}, unq.order...),
 		inters:        append([]Interceptor{}, unq.inters...),
 		predicates:    append([]predicate.UserNote{}, unq.predicates...),
 		withUser:      unq.withUser.Clone(),
@@ -497,7 +497,7 @@ func (unq *UserNoteQuery) loadNoteItems(ctx context.Context, query *UserNoteItem
 	}
 	query.withFKs = true
 	query.Where(predicate.UserNoteItem(func(s *sql.Selector) {
-		s.Where(sql.InValues(usernote.NoteItemsColumn, fks...))
+		s.Where(sql.InValues(s.C(usernote.NoteItemsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -510,7 +510,7 @@ func (unq *UserNoteQuery) loadNoteItems(ctx context.Context, query *UserNoteItem
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_note_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_note_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

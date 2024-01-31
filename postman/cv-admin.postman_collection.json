@@ -461,6 +461,42 @@
 					"response": []
 				},
 				{
+					"name": "get skilltagByID",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/skilltags/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"skilltags",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create skill",
 					"request": {
 						"method": "POST",
@@ -554,6 +590,42 @@
 							],
 							"path": [
 								"skills"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get skills by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/skills/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"skills",
+								"1"
 							]
 						}
 					},

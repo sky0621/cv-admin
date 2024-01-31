@@ -23,7 +23,7 @@ import (
 type UserQuery struct {
 	config
 	ctx                *QueryContext
-	order              []OrderFunc
+	order              []user.OrderOption
 	inters             []Interceptor
 	predicates         []predicate.User
 	withActivities     *UserActivityQuery
@@ -61,7 +61,7 @@ func (uq *UserQuery) Unique(unique bool) *UserQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (uq *UserQuery) Order(o ...OrderFunc) *UserQuery {
+func (uq *UserQuery) Order(o ...user.OrderOption) *UserQuery {
 	uq.order = append(uq.order, o...)
 	return uq
 }
@@ -343,7 +343,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 	return &UserQuery{
 		config:             uq.config,
 		ctx:                uq.ctx.Clone(),
-		order:              append([]OrderFunc{}, uq.order...),
+		order:              append([]user.OrderOption{}, uq.order...),
 		inters:             append([]Interceptor{}, uq.inters...),
 		predicates:         append([]predicate.User{}, uq.predicates...),
 		withActivities:     uq.withActivities.Clone(),
@@ -546,7 +546,7 @@ func (uq *UserQuery) loadActivities(ctx context.Context, query *UserActivityQuer
 	}
 	query.withFKs = true
 	query.Where(predicate.UserActivity(func(s *sql.Selector) {
-		s.Where(sql.InValues(user.ActivitiesColumn, fks...))
+		s.Where(sql.InValues(s.C(user.ActivitiesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -559,7 +559,7 @@ func (uq *UserQuery) loadActivities(ctx context.Context, query *UserActivityQuer
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -577,7 +577,7 @@ func (uq *UserQuery) loadQualifications(ctx context.Context, query *UserQualific
 	}
 	query.withFKs = true
 	query.Where(predicate.UserQualification(func(s *sql.Selector) {
-		s.Where(sql.InValues(user.QualificationsColumn, fks...))
+		s.Where(sql.InValues(s.C(user.QualificationsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -590,7 +590,7 @@ func (uq *UserQuery) loadQualifications(ctx context.Context, query *UserQualific
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -608,7 +608,7 @@ func (uq *UserQuery) loadCareerGroups(ctx context.Context, query *UserCareerGrou
 	}
 	query.withFKs = true
 	query.Where(predicate.UserCareerGroup(func(s *sql.Selector) {
-		s.Where(sql.InValues(user.CareerGroupsColumn, fks...))
+		s.Where(sql.InValues(s.C(user.CareerGroupsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -621,7 +621,7 @@ func (uq *UserQuery) loadCareerGroups(ctx context.Context, query *UserCareerGrou
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -639,7 +639,7 @@ func (uq *UserQuery) loadNotes(ctx context.Context, query *UserNoteQuery, nodes 
 	}
 	query.withFKs = true
 	query.Where(predicate.UserNote(func(s *sql.Selector) {
-		s.Where(sql.InValues(user.NotesColumn, fks...))
+		s.Where(sql.InValues(s.C(user.NotesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -652,7 +652,7 @@ func (uq *UserQuery) loadNotes(ctx context.Context, query *UserNoteQuery, nodes 
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

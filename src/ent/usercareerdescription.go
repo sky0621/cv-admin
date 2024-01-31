@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
 	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
@@ -20,8 +21,9 @@ type UserCareerDescription struct {
 	Description string `json:"description,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserCareerDescriptionQuery when eager-loading is set.
-	Edges     UserCareerDescriptionEdges `json:"edges"`
-	career_id *int
+	Edges        UserCareerDescriptionEdges `json:"edges"`
+	career_id    *int
+	selectValues sql.SelectValues
 }
 
 // UserCareerDescriptionEdges holds the relations/edges for other nodes in the graph.
@@ -58,7 +60,7 @@ func (*UserCareerDescription) scanValues(columns []string) ([]any, error) {
 		case usercareerdescription.ForeignKeys[0]: // career_id
 			values[i] = new(sql.NullInt64)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type UserCareerDescription", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -91,9 +93,17 @@ func (ucd *UserCareerDescription) assignValues(columns []string, values []any) e
 				ucd.career_id = new(int)
 				*ucd.career_id = int(value.Int64)
 			}
+		default:
+			ucd.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the UserCareerDescription.
+// This includes values selected through modifiers, order, etc.
+func (ucd *UserCareerDescription) Value(name string) (ent.Value, error) {
+	return ucd.selectValues.Get(name)
 }
 
 // QueryCareer queries the "career" edge of the UserCareerDescription entity.

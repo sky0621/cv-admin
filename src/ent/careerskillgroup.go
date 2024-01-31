@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
@@ -25,8 +26,9 @@ type CareerSkillGroup struct {
 	Label string `json:"label,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CareerSkillGroupQuery when eager-loading is set.
-	Edges     CareerSkillGroupEdges `json:"edges"`
-	career_id *int
+	Edges        CareerSkillGroupEdges `json:"edges"`
+	career_id    *int
+	selectValues sql.SelectValues
 }
 
 // CareerSkillGroupEdges holds the relations/edges for other nodes in the graph.
@@ -76,7 +78,7 @@ func (*CareerSkillGroup) scanValues(columns []string) ([]any, error) {
 		case careerskillgroup.ForeignKeys[0]: // career_id
 			values[i] = new(sql.NullInt64)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type CareerSkillGroup", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -121,9 +123,17 @@ func (csg *CareerSkillGroup) assignValues(columns []string, values []any) error 
 				csg.career_id = new(int)
 				*csg.career_id = int(value.Int64)
 			}
+		default:
+			csg.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the CareerSkillGroup.
+// This includes values selected through modifiers, order, etc.
+func (csg *CareerSkillGroup) Value(name string) (ent.Value, error) {
+	return csg.selectValues.Get(name)
 }
 
 // QueryCareer queries the "career" edge of the CareerSkillGroup entity.

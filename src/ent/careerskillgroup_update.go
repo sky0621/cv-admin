@@ -103,7 +103,7 @@ func (csgu *CareerSkillGroupUpdate) RemoveCareerSkills(c ...*CareerSkill) *Caree
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (csgu *CareerSkillGroupUpdate) Save(ctx context.Context) (int, error) {
 	csgu.defaults()
-	return withHooks[int, CareerSkillGroupMutation](ctx, csgu.sqlSave, csgu.mutation, csgu.hooks)
+	return withHooks(ctx, csgu.sqlSave, csgu.mutation, csgu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -347,7 +347,7 @@ func (csguo *CareerSkillGroupUpdateOne) Select(field string, fields ...string) *
 // Save executes the query and returns the updated CareerSkillGroup entity.
 func (csguo *CareerSkillGroupUpdateOne) Save(ctx context.Context) (*CareerSkillGroup, error) {
 	csguo.defaults()
-	return withHooks[*CareerSkillGroup, CareerSkillGroupMutation](ctx, csguo.sqlSave, csguo.mutation, csguo.hooks)
+	return withHooks(ctx, csguo.sqlSave, csguo.mutation, csguo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

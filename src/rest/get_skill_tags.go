@@ -1,6 +1,8 @@
 package rest
 
-import "context"
+import (
+	"context"
+)
 
 // GetSkilltags 全スキルタグ取得
 // 全スキルタグ取得

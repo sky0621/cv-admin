@@ -75,7 +75,6 @@ func ToSwaggerCareerSkill(entCareer *ent.CareerSkill) CareerSkill {
 		Name:    &entSkill.Name,
 		Key:     &entSkill.Key,
 		Url:     entSkill.URL,
-		TagKey:  entSkill.TagKey,
 	}
 	return cs
 }

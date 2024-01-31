@@ -186,10 +186,6 @@ func init() {
 	skillDescURL := skillFields[2].Descriptor()
 	// skill.URLValidator is a validator for the "url" field. It is called by the builders before save.
 	skill.URLValidator = skillDescURL.Validators[0].(func(string) error)
-	// skillDescTagKey is the schema descriptor for tag_key field.
-	skillDescTagKey := skillFields[3].Descriptor()
-	// skill.TagKeyValidator is a validator for the "tag_key" field. It is called by the builders before save.
-	skill.TagKeyValidator = skillDescTagKey.Validators[0].(func(string) error)
 	skilltagFields := schema.SkillTag{}.Fields()
 	_ = skilltagFields
 	// skilltagDescName is the schema descriptor for name field.

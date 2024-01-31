@@ -132,7 +132,7 @@ func (uqc *UserQualificationCreate) Mutation() *UserQualificationMutation {
 // Save creates the UserQualification in the database.
 func (uqc *UserQualificationCreate) Save(ctx context.Context) (*UserQualification, error) {
 	uqc.defaults()
-	return withHooks[*UserQualification, UserQualificationMutation](ctx, uqc.sqlSave, uqc.mutation, uqc.hooks)
+	return withHooks(ctx, uqc.sqlSave, uqc.mutation, uqc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -643,8 +643,8 @@ func (uqcb *UserQualificationCreateBulk) Save(ctx context.Context) ([]*UserQuali
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, uqcb.builders[i+1].mutation)
 				} else {

@@ -4,6 +4,9 @@ package skill
 
 import (
 	"time"
+
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -21,12 +24,19 @@ const (
 	FieldKey = "key"
 	// FieldURL holds the string denoting the url field in the database.
 	FieldURL = "url"
-	// FieldTagKey holds the string denoting the tag_key field in the database.
-	FieldTagKey = "tag_key"
+	// EdgeSkillTag holds the string denoting the skilltag edge name in mutations.
+	EdgeSkillTag = "skillTag"
 	// EdgeCareerSkills holds the string denoting the careerskills edge name in mutations.
 	EdgeCareerSkills = "careerSkills"
 	// Table holds the table name of the skill in the database.
 	Table = "skills"
+	// SkillTagTable is the table that holds the skillTag relation/edge.
+	SkillTagTable = "skills"
+	// SkillTagInverseTable is the table name for the SkillTag entity.
+	// It exists in this package in order to avoid circular dependency with the "skilltag" package.
+	SkillTagInverseTable = "skill_tags"
+	// SkillTagColumn is the table column denoting the skillTag relation/edge.
+	SkillTagColumn = "tag_id"
 	// CareerSkillsTable is the table that holds the careerSkills relation/edge.
 	CareerSkillsTable = "career_skills"
 	// CareerSkillsInverseTable is the table name for the CareerSkill entity.
@@ -44,13 +54,23 @@ var Columns = []string{
 	FieldName,
 	FieldKey,
 	FieldURL,
-	FieldTagKey,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "skills"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"tag_id",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -70,6 +90,72 @@ var (
 	KeyValidator func(string) error
 	// URLValidator is a validator for the "url" field. It is called by the builders before save.
 	URLValidator func(string) error
-	// TagKeyValidator is a validator for the "tag_key" field. It is called by the builders before save.
-	TagKeyValidator func(string) error
 )
+
+// OrderOption defines the ordering options for the Skill queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreateTime orders the results by the create_time field.
+func ByCreateTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreateTime, opts...).ToFunc()
+}
+
+// ByUpdateTime orders the results by the update_time field.
+func ByUpdateTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdateTime, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByKey orders the results by the key field.
+func ByKey(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldKey, opts...).ToFunc()
+}
+
+// ByURL orders the results by the url field.
+func ByURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldURL, opts...).ToFunc()
+}
+
+// BySkillTagField orders the results by skillTag field.
+func BySkillTagField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSkillTagStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByCareerSkillsCount orders the results by careerSkills count.
+func ByCareerSkillsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCareerSkillsStep(), opts...)
+	}
+}
+
+// ByCareerSkills orders the results by careerSkills terms.
+func ByCareerSkills(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCareerSkillsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newSkillTagStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SkillTagInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, SkillTagTable, SkillTagColumn),
+	)
+}
+func newCareerSkillsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CareerSkillsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CareerSkillsTable, CareerSkillsColumn),
+	)
+}

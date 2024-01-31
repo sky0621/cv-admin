@@ -104,7 +104,7 @@ func (uac *UserActivityCreate) Mutation() *UserActivityMutation {
 // Save creates the UserActivity in the database.
 func (uac *UserActivityCreate) Save(ctx context.Context) (*UserActivity, error) {
 	uac.defaults()
-	return withHooks[*UserActivity, UserActivityMutation](ctx, uac.sqlSave, uac.mutation, uac.hooks)
+	return withHooks(ctx, uac.sqlSave, uac.mutation, uac.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -519,8 +519,8 @@ func (uacb *UserActivityCreateBulk) Save(ctx context.Context) ([]*UserActivity, 
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, uacb.builders[i+1].mutation)
 				} else {

@@ -92,7 +92,7 @@ func (ucgc *UserCareerGroupCreate) Mutation() *UserCareerGroupMutation {
 // Save creates the UserCareerGroup in the database.
 func (ucgc *UserCareerGroupCreate) Save(ctx context.Context) (*UserCareerGroup, error) {
 	ucgc.defaults()
-	return withHooks[*UserCareerGroup, UserCareerGroupMutation](ctx, ucgc.sqlSave, ucgc.mutation, ucgc.hooks)
+	return withHooks(ctx, ucgc.sqlSave, ucgc.mutation, ucgc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -427,8 +427,8 @@ func (ucgcb *UserCareerGroupCreateBulk) Save(ctx context.Context) ([]*UserCareer
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, ucgcb.builders[i+1].mutation)
 				} else {

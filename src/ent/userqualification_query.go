@@ -19,7 +19,7 @@ import (
 type UserQualificationQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []userqualification.OrderOption
 	inters     []Interceptor
 	predicates []predicate.UserQualification
 	withUser   *UserQuery
@@ -55,7 +55,7 @@ func (uqq *UserQualificationQuery) Unique(unique bool) *UserQualificationQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (uqq *UserQualificationQuery) Order(o ...OrderFunc) *UserQualificationQuery {
+func (uqq *UserQualificationQuery) Order(o ...userqualification.OrderOption) *UserQualificationQuery {
 	uqq.order = append(uqq.order, o...)
 	return uqq
 }
@@ -271,7 +271,7 @@ func (uqq *UserQualificationQuery) Clone() *UserQualificationQuery {
 	return &UserQualificationQuery{
 		config:     uqq.config,
 		ctx:        uqq.ctx.Clone(),
-		order:      append([]OrderFunc{}, uqq.order...),
+		order:      append([]userqualification.OrderOption{}, uqq.order...),
 		inters:     append([]Interceptor{}, uqq.inters...),
 		predicates: append([]predicate.UserQualification{}, uqq.predicates...),
 		withUser:   uqq.withUser.Clone(),

@@ -21,7 +21,7 @@ import (
 type CareerTaskQuery struct {
 	config
 	ctx                        *QueryContext
-	order                      []OrderFunc
+	order                      []careertask.OrderOption
 	inters                     []Interceptor
 	predicates                 []predicate.CareerTask
 	withCareer                 *UserCareerQuery
@@ -58,7 +58,7 @@ func (ctq *CareerTaskQuery) Unique(unique bool) *CareerTaskQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (ctq *CareerTaskQuery) Order(o ...OrderFunc) *CareerTaskQuery {
+func (ctq *CareerTaskQuery) Order(o ...careertask.OrderOption) *CareerTaskQuery {
 	ctq.order = append(ctq.order, o...)
 	return ctq
 }
@@ -296,7 +296,7 @@ func (ctq *CareerTaskQuery) Clone() *CareerTaskQuery {
 	return &CareerTaskQuery{
 		config:                     ctq.config,
 		ctx:                        ctq.ctx.Clone(),
-		order:                      append([]OrderFunc{}, ctq.order...),
+		order:                      append([]careertask.OrderOption{}, ctq.order...),
 		inters:                     append([]Interceptor{}, ctq.inters...),
 		predicates:                 append([]predicate.CareerTask{}, ctq.predicates...),
 		withCareer:                 ctq.withCareer.Clone(),
@@ -499,7 +499,7 @@ func (ctq *CareerTaskQuery) loadCareerTaskDescriptions(ctx context.Context, quer
 	}
 	query.withFKs = true
 	query.Where(predicate.CareerTaskDescription(func(s *sql.Selector) {
-		s.Where(sql.InValues(careertask.CareerTaskDescriptionsColumn, fks...))
+		s.Where(sql.InValues(s.C(careertask.CareerTaskDescriptionsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -512,7 +512,7 @@ func (ctq *CareerTaskQuery) loadCareerTaskDescriptions(ctx context.Context, quer
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "career_task_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "career_task_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

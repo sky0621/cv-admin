@@ -14,6 +14,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/careerskill"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 	"github.com/sky0621/cv-admin/src/ent/skill"
+	"github.com/sky0621/cv-admin/src/ent/skilltag"
 )
 
 // SkillUpdate is the builder for updating Skill entities.
@@ -67,24 +68,15 @@ func (su *SkillUpdate) ClearURL() *SkillUpdate {
 	return su
 }
 
-// SetTagKey sets the "tag_key" field.
-func (su *SkillUpdate) SetTagKey(s string) *SkillUpdate {
-	su.mutation.SetTagKey(s)
+// SetSkillTagID sets the "skillTag" edge to the SkillTag entity by ID.
+func (su *SkillUpdate) SetSkillTagID(id int) *SkillUpdate {
+	su.mutation.SetSkillTagID(id)
 	return su
 }
 
-// SetNillableTagKey sets the "tag_key" field if the given value is not nil.
-func (su *SkillUpdate) SetNillableTagKey(s *string) *SkillUpdate {
-	if s != nil {
-		su.SetTagKey(*s)
-	}
-	return su
-}
-
-// ClearTagKey clears the value of the "tag_key" field.
-func (su *SkillUpdate) ClearTagKey() *SkillUpdate {
-	su.mutation.ClearTagKey()
-	return su
+// SetSkillTag sets the "skillTag" edge to the SkillTag entity.
+func (su *SkillUpdate) SetSkillTag(s *SkillTag) *SkillUpdate {
+	return su.SetSkillTagID(s.ID)
 }
 
 // AddCareerSkillIDs adds the "careerSkills" edge to the CareerSkill entity by IDs.
@@ -105,6 +97,12 @@ func (su *SkillUpdate) AddCareerSkills(c ...*CareerSkill) *SkillUpdate {
 // Mutation returns the SkillMutation object of the builder.
 func (su *SkillUpdate) Mutation() *SkillMutation {
 	return su.mutation
+}
+
+// ClearSkillTag clears the "skillTag" edge to the SkillTag entity.
+func (su *SkillUpdate) ClearSkillTag() *SkillUpdate {
+	su.mutation.ClearSkillTag()
+	return su
 }
 
 // ClearCareerSkills clears all "careerSkills" edges to the CareerSkill entity.
@@ -131,7 +129,7 @@ func (su *SkillUpdate) RemoveCareerSkills(c ...*CareerSkill) *SkillUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (su *SkillUpdate) Save(ctx context.Context) (int, error) {
 	su.defaults()
-	return withHooks[int, SkillMutation](ctx, su.sqlSave, su.mutation, su.hooks)
+	return withHooks(ctx, su.sqlSave, su.mutation, su.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -181,10 +179,8 @@ func (su *SkillUpdate) check() error {
 			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Skill.url": %w`, err)}
 		}
 	}
-	if v, ok := su.mutation.TagKey(); ok {
-		if err := skill.TagKeyValidator(v); err != nil {
-			return &ValidationError{Name: "tag_key", err: fmt.Errorf(`ent: validator failed for field "Skill.tag_key": %w`, err)}
-		}
+	if _, ok := su.mutation.SkillTagID(); su.mutation.SkillTagCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Skill.skillTag"`)
 	}
 	return nil
 }
@@ -216,11 +212,34 @@ func (su *SkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if su.mutation.URLCleared() {
 		_spec.ClearField(skill.FieldURL, field.TypeString)
 	}
-	if value, ok := su.mutation.TagKey(); ok {
-		_spec.SetField(skill.FieldTagKey, field.TypeString, value)
+	if su.mutation.SkillTagCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   skill.SkillTagTable,
+			Columns: []string{skill.SkillTagColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(skilltag.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if su.mutation.TagKeyCleared() {
-		_spec.ClearField(skill.FieldTagKey, field.TypeString)
+	if nodes := su.mutation.SkillTagIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   skill.SkillTagTable,
+			Columns: []string{skill.SkillTagColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(skilltag.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if su.mutation.CareerSkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -325,24 +344,15 @@ func (suo *SkillUpdateOne) ClearURL() *SkillUpdateOne {
 	return suo
 }
 
-// SetTagKey sets the "tag_key" field.
-func (suo *SkillUpdateOne) SetTagKey(s string) *SkillUpdateOne {
-	suo.mutation.SetTagKey(s)
+// SetSkillTagID sets the "skillTag" edge to the SkillTag entity by ID.
+func (suo *SkillUpdateOne) SetSkillTagID(id int) *SkillUpdateOne {
+	suo.mutation.SetSkillTagID(id)
 	return suo
 }
 
-// SetNillableTagKey sets the "tag_key" field if the given value is not nil.
-func (suo *SkillUpdateOne) SetNillableTagKey(s *string) *SkillUpdateOne {
-	if s != nil {
-		suo.SetTagKey(*s)
-	}
-	return suo
-}
-
-// ClearTagKey clears the value of the "tag_key" field.
-func (suo *SkillUpdateOne) ClearTagKey() *SkillUpdateOne {
-	suo.mutation.ClearTagKey()
-	return suo
+// SetSkillTag sets the "skillTag" edge to the SkillTag entity.
+func (suo *SkillUpdateOne) SetSkillTag(s *SkillTag) *SkillUpdateOne {
+	return suo.SetSkillTagID(s.ID)
 }
 
 // AddCareerSkillIDs adds the "careerSkills" edge to the CareerSkill entity by IDs.
@@ -363,6 +373,12 @@ func (suo *SkillUpdateOne) AddCareerSkills(c ...*CareerSkill) *SkillUpdateOne {
 // Mutation returns the SkillMutation object of the builder.
 func (suo *SkillUpdateOne) Mutation() *SkillMutation {
 	return suo.mutation
+}
+
+// ClearSkillTag clears the "skillTag" edge to the SkillTag entity.
+func (suo *SkillUpdateOne) ClearSkillTag() *SkillUpdateOne {
+	suo.mutation.ClearSkillTag()
+	return suo
 }
 
 // ClearCareerSkills clears all "careerSkills" edges to the CareerSkill entity.
@@ -402,7 +418,7 @@ func (suo *SkillUpdateOne) Select(field string, fields ...string) *SkillUpdateOn
 // Save executes the query and returns the updated Skill entity.
 func (suo *SkillUpdateOne) Save(ctx context.Context) (*Skill, error) {
 	suo.defaults()
-	return withHooks[*Skill, SkillMutation](ctx, suo.sqlSave, suo.mutation, suo.hooks)
+	return withHooks(ctx, suo.sqlSave, suo.mutation, suo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -452,10 +468,8 @@ func (suo *SkillUpdateOne) check() error {
 			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Skill.url": %w`, err)}
 		}
 	}
-	if v, ok := suo.mutation.TagKey(); ok {
-		if err := skill.TagKeyValidator(v); err != nil {
-			return &ValidationError{Name: "tag_key", err: fmt.Errorf(`ent: validator failed for field "Skill.tag_key": %w`, err)}
-		}
+	if _, ok := suo.mutation.SkillTagID(); suo.mutation.SkillTagCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Skill.skillTag"`)
 	}
 	return nil
 }
@@ -504,11 +518,34 @@ func (suo *SkillUpdateOne) sqlSave(ctx context.Context) (_node *Skill, err error
 	if suo.mutation.URLCleared() {
 		_spec.ClearField(skill.FieldURL, field.TypeString)
 	}
-	if value, ok := suo.mutation.TagKey(); ok {
-		_spec.SetField(skill.FieldTagKey, field.TypeString, value)
+	if suo.mutation.SkillTagCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   skill.SkillTagTable,
+			Columns: []string{skill.SkillTagColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(skilltag.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if suo.mutation.TagKeyCleared() {
-		_spec.ClearField(skill.FieldTagKey, field.TypeString)
+	if nodes := suo.mutation.SkillTagIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   skill.SkillTagTable,
+			Columns: []string{skill.SkillTagColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(skilltag.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if suo.mutation.CareerSkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{

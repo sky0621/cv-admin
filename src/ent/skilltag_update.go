@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
+	"github.com/sky0621/cv-admin/src/ent/skill"
 	"github.com/sky0621/cv-admin/src/ent/skilltag"
 )
 
@@ -39,14 +40,50 @@ func (stu *SkillTagUpdate) SetKey(s string) *SkillTagUpdate {
 	return stu
 }
 
+// AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
+func (stu *SkillTagUpdate) AddSkillIDs(ids ...int) *SkillTagUpdate {
+	stu.mutation.AddSkillIDs(ids...)
+	return stu
+}
+
+// AddSkills adds the "skills" edges to the Skill entity.
+func (stu *SkillTagUpdate) AddSkills(s ...*Skill) *SkillTagUpdate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return stu.AddSkillIDs(ids...)
+}
+
 // Mutation returns the SkillTagMutation object of the builder.
 func (stu *SkillTagUpdate) Mutation() *SkillTagMutation {
 	return stu.mutation
 }
 
+// ClearSkills clears all "skills" edges to the Skill entity.
+func (stu *SkillTagUpdate) ClearSkills() *SkillTagUpdate {
+	stu.mutation.ClearSkills()
+	return stu
+}
+
+// RemoveSkillIDs removes the "skills" edge to Skill entities by IDs.
+func (stu *SkillTagUpdate) RemoveSkillIDs(ids ...int) *SkillTagUpdate {
+	stu.mutation.RemoveSkillIDs(ids...)
+	return stu
+}
+
+// RemoveSkills removes "skills" edges to Skill entities.
+func (stu *SkillTagUpdate) RemoveSkills(s ...*Skill) *SkillTagUpdate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return stu.RemoveSkillIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (stu *SkillTagUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks[int, SkillTagMutation](ctx, stu.sqlSave, stu.mutation, stu.hooks)
+	return withHooks(ctx, stu.sqlSave, stu.mutation, stu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -104,6 +141,51 @@ func (stu *SkillTagUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := stu.mutation.Key(); ok {
 		_spec.SetField(skilltag.FieldKey, field.TypeString, value)
 	}
+	if stu.mutation.SkillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skilltag.SkillsTable,
+			Columns: []string{skilltag.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(skill.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := stu.mutation.RemovedSkillsIDs(); len(nodes) > 0 && !stu.mutation.SkillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skilltag.SkillsTable,
+			Columns: []string{skilltag.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(skill.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := stu.mutation.SkillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skilltag.SkillsTable,
+			Columns: []string{skilltag.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(skill.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, stu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{skilltag.Label}
@@ -136,9 +218,45 @@ func (stuo *SkillTagUpdateOne) SetKey(s string) *SkillTagUpdateOne {
 	return stuo
 }
 
+// AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
+func (stuo *SkillTagUpdateOne) AddSkillIDs(ids ...int) *SkillTagUpdateOne {
+	stuo.mutation.AddSkillIDs(ids...)
+	return stuo
+}
+
+// AddSkills adds the "skills" edges to the Skill entity.
+func (stuo *SkillTagUpdateOne) AddSkills(s ...*Skill) *SkillTagUpdateOne {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return stuo.AddSkillIDs(ids...)
+}
+
 // Mutation returns the SkillTagMutation object of the builder.
 func (stuo *SkillTagUpdateOne) Mutation() *SkillTagMutation {
 	return stuo.mutation
+}
+
+// ClearSkills clears all "skills" edges to the Skill entity.
+func (stuo *SkillTagUpdateOne) ClearSkills() *SkillTagUpdateOne {
+	stuo.mutation.ClearSkills()
+	return stuo
+}
+
+// RemoveSkillIDs removes the "skills" edge to Skill entities by IDs.
+func (stuo *SkillTagUpdateOne) RemoveSkillIDs(ids ...int) *SkillTagUpdateOne {
+	stuo.mutation.RemoveSkillIDs(ids...)
+	return stuo
+}
+
+// RemoveSkills removes "skills" edges to Skill entities.
+func (stuo *SkillTagUpdateOne) RemoveSkills(s ...*Skill) *SkillTagUpdateOne {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return stuo.RemoveSkillIDs(ids...)
 }
 
 // Where appends a list predicates to the SkillTagUpdate builder.
@@ -156,7 +274,7 @@ func (stuo *SkillTagUpdateOne) Select(field string, fields ...string) *SkillTagU
 
 // Save executes the query and returns the updated SkillTag entity.
 func (stuo *SkillTagUpdateOne) Save(ctx context.Context) (*SkillTag, error) {
-	return withHooks[*SkillTag, SkillTagMutation](ctx, stuo.sqlSave, stuo.mutation, stuo.hooks)
+	return withHooks(ctx, stuo.sqlSave, stuo.mutation, stuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -230,6 +348,51 @@ func (stuo *SkillTagUpdateOne) sqlSave(ctx context.Context) (_node *SkillTag, er
 	}
 	if value, ok := stuo.mutation.Key(); ok {
 		_spec.SetField(skilltag.FieldKey, field.TypeString, value)
+	}
+	if stuo.mutation.SkillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skilltag.SkillsTable,
+			Columns: []string{skilltag.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(skill.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := stuo.mutation.RemovedSkillsIDs(); len(nodes) > 0 && !stuo.mutation.SkillsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skilltag.SkillsTable,
+			Columns: []string{skilltag.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(skill.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := stuo.mutation.SkillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skilltag.SkillsTable,
+			Columns: []string{skilltag.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(skill.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &SkillTag{config: stuo.config}
 	_spec.Assign = _node.assignValues

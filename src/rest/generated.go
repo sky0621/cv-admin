@@ -375,6 +375,12 @@ type NoteId = NoteID
 // SkillId スキルを一意に識別するキー
 type SkillId = SkillID
 
+// SkillTagId スキルタグを一意に識別するキー
+type SkillTagId = SkillTagID
+
+// SkillTagIdQuery スキルタグを一意に識別するキー
+type SkillTagIdQuery = SkillTagID
+
 // UserId ユーザーを一意に識別するキー
 type UserId = UserID
 
@@ -392,6 +398,16 @@ type N404NotFound struct {
 
 // PostSkillrecordsJSONBody defines parameters for PostSkillrecords.
 type PostSkillrecordsJSONBody = []Skill
+
+// GetSkillsParams defines parameters for GetSkills.
+type GetSkillsParams struct {
+	Tag *SkillTagIdQuery `form:"tag,omitempty" json:"tag,omitempty"`
+}
+
+// PostSkillsParams defines parameters for PostSkills.
+type PostSkillsParams struct {
+	Tag *SkillTagIdQuery `form:"tag,omitempty" json:"tag,omitempty"`
+}
 
 // PutUsersByUserIdActivitiesJSONBody defines parameters for PutUsersByUserIdActivities.
 type PutUsersByUserIdActivitiesJSONBody = []UserActivity
@@ -449,13 +465,13 @@ type ServerInterface interface {
 	// スキル一括登録
 	// (POST /skillrecords)
 	PostSkillrecords(ctx echo.Context) error
-	// 全スキル取得
+	// スキル群取得
 	// (GET /skills)
-	GetSkills(ctx echo.Context) error
+	GetSkills(ctx echo.Context, params GetSkillsParams) error
 	// スキル登録
 	// (POST /skills)
-	PostSkills(ctx echo.Context) error
-	// 【未実装】指定スキル取得
+	PostSkills(ctx echo.Context, params PostSkillsParams) error
+	// 指定スキル取得
 	// (GET /skills/{bySkillId})
 	GetSkillsBySkillId(ctx echo.Context, bySkillId SkillId) error
 	// 全スキルタグ取得
@@ -464,6 +480,9 @@ type ServerInterface interface {
 	// スキルタグ登録
 	// (POST /skilltags)
 	PostSkilltags(ctx echo.Context) error
+	// 指定スキルタグ取得
+	// (GET /skilltags/{bySkillTagId})
+	GetSkilltagsBySkillTagId(ctx echo.Context, bySkillTagId SkillTagId) error
 	// ユーザー一覧取得
 	// (GET /users)
 	GetUsers(ctx echo.Context) error
@@ -544,8 +563,17 @@ func (w *ServerInterfaceWrapper) PostSkillrecords(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetSkills(ctx echo.Context) error {
 	var err error
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetSkillsParams
+	// ------------- Optional query parameter "tag" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "tag", ctx.QueryParams(), &params.Tag)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter tag: %s", err))
+	}
+
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetSkills(ctx)
+	err = w.Handler.GetSkills(ctx, params)
 	return err
 }
 
@@ -553,8 +581,17 @@ func (w *ServerInterfaceWrapper) GetSkills(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) PostSkills(ctx echo.Context) error {
 	var err error
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PostSkillsParams
+	// ------------- Optional query parameter "tag" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "tag", ctx.QueryParams(), &params.Tag)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter tag: %s", err))
+	}
+
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PostSkills(ctx)
+	err = w.Handler.PostSkills(ctx, params)
 	return err
 }
 
@@ -589,6 +626,22 @@ func (w *ServerInterfaceWrapper) PostSkilltags(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.PostSkilltags(ctx)
+	return err
+}
+
+// GetSkilltagsBySkillTagId converts echo context to params.
+func (w *ServerInterfaceWrapper) GetSkilltagsBySkillTagId(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "bySkillTagId" -------------
+	var bySkillTagId SkillTagId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "bySkillTagId", runtime.ParamLocationPath, ctx.Param("bySkillTagId"), &bySkillTagId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter bySkillTagId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetSkilltagsBySkillTagId(ctx, bySkillTagId)
 	return err
 }
 
@@ -980,6 +1033,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/skills/:bySkillId", wrapper.GetSkillsBySkillId)
 	router.GET(baseURL+"/skilltags", wrapper.GetSkilltags)
 	router.POST(baseURL+"/skilltags", wrapper.PostSkilltags)
+	router.GET(baseURL+"/skilltags/:bySkillTagId", wrapper.GetSkilltagsBySkillTagId)
 	router.GET(baseURL+"/users", wrapper.GetUsers)
 	router.POST(baseURL+"/users", wrapper.PostUsers)
 	router.DELETE(baseURL+"/users/:byUserId", wrapper.DeleteUsersByUserId)
@@ -1040,6 +1094,7 @@ func (response PostSkillrecords400JSONResponse) VisitPostSkillrecordsResponse(w 
 }
 
 type GetSkillsRequestObject struct {
+	Params GetSkillsParams
 }
 
 type GetSkillsResponseObject interface {
@@ -1056,7 +1111,8 @@ func (response GetSkills200JSONResponse) VisitGetSkillsResponse(w http.ResponseW
 }
 
 type PostSkillsRequestObject struct {
-	Body *PostSkillsJSONRequestBody
+	Params PostSkillsParams
+	Body   *PostSkillsJSONRequestBody
 }
 
 type PostSkillsResponseObject interface {
@@ -1094,6 +1150,15 @@ type GetSkillsBySkillId200JSONResponse Skill
 func (response GetSkillsBySkillId200JSONResponse) VisitGetSkillsBySkillIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSkillsBySkillId404JSONResponse struct{ N404NotFoundJSONResponse }
+
+func (response GetSkillsBySkillId404JSONResponse) VisitGetSkillsBySkillIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response)
 }
@@ -1136,6 +1201,32 @@ type PostSkilltags400JSONResponse struct{ N400BadRequestJSONResponse }
 func (response PostSkilltags400JSONResponse) VisitPostSkilltagsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSkilltagsBySkillTagIdRequestObject struct {
+	BySkillTagId SkillTagId `json:"bySkillTagId"`
+}
+
+type GetSkilltagsBySkillTagIdResponseObject interface {
+	VisitGetSkilltagsBySkillTagIdResponse(w http.ResponseWriter) error
+}
+
+type GetSkilltagsBySkillTagId200JSONResponse SkillTag
+
+func (response GetSkilltagsBySkillTagId200JSONResponse) VisitGetSkilltagsBySkillTagIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSkilltagsBySkillTagId404JSONResponse struct{ N404NotFoundJSONResponse }
+
+func (response GetSkilltagsBySkillTagId404JSONResponse) VisitGetSkilltagsBySkillTagIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response)
 }
@@ -1748,13 +1839,13 @@ type StrictServerInterface interface {
 	// スキル一括登録
 	// (POST /skillrecords)
 	PostSkillrecords(ctx context.Context, request PostSkillrecordsRequestObject) (PostSkillrecordsResponseObject, error)
-	// 全スキル取得
+	// スキル群取得
 	// (GET /skills)
 	GetSkills(ctx context.Context, request GetSkillsRequestObject) (GetSkillsResponseObject, error)
 	// スキル登録
 	// (POST /skills)
 	PostSkills(ctx context.Context, request PostSkillsRequestObject) (PostSkillsResponseObject, error)
-	// 【未実装】指定スキル取得
+	// 指定スキル取得
 	// (GET /skills/{bySkillId})
 	GetSkillsBySkillId(ctx context.Context, request GetSkillsBySkillIdRequestObject) (GetSkillsBySkillIdResponseObject, error)
 	// 全スキルタグ取得
@@ -1763,6 +1854,9 @@ type StrictServerInterface interface {
 	// スキルタグ登録
 	// (POST /skilltags)
 	PostSkilltags(ctx context.Context, request PostSkilltagsRequestObject) (PostSkilltagsResponseObject, error)
+	// 指定スキルタグ取得
+	// (GET /skilltags/{bySkillTagId})
+	GetSkilltagsBySkillTagId(ctx context.Context, request GetSkilltagsBySkillTagIdRequestObject) (GetSkilltagsBySkillTagIdResponseObject, error)
 	// ユーザー一覧取得
 	// (GET /users)
 	GetUsers(ctx context.Context, request GetUsersRequestObject) (GetUsersResponseObject, error)
@@ -1868,8 +1962,10 @@ func (sh *strictHandler) PostSkillrecords(ctx echo.Context) error {
 }
 
 // GetSkills operation middleware
-func (sh *strictHandler) GetSkills(ctx echo.Context) error {
+func (sh *strictHandler) GetSkills(ctx echo.Context, params GetSkillsParams) error {
 	var request GetSkillsRequestObject
+
+	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
 		return sh.ssi.GetSkills(ctx.Request().Context(), request.(GetSkillsRequestObject))
@@ -1891,8 +1987,10 @@ func (sh *strictHandler) GetSkills(ctx echo.Context) error {
 }
 
 // PostSkills operation middleware
-func (sh *strictHandler) PostSkills(ctx echo.Context) error {
+func (sh *strictHandler) PostSkills(ctx echo.Context, params PostSkillsParams) error {
 	var request PostSkillsRequestObject
+
+	request.Params = params
 
 	var body PostSkillsJSONRequestBody
 	if err := ctx.Bind(&body); err != nil {
@@ -1990,6 +2088,31 @@ func (sh *strictHandler) PostSkilltags(ctx echo.Context) error {
 		return err
 	} else if validResponse, ok := response.(PostSkilltagsResponseObject); ok {
 		return validResponse.VisitPostSkilltagsResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("Unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// GetSkilltagsBySkillTagId operation middleware
+func (sh *strictHandler) GetSkilltagsBySkillTagId(ctx echo.Context, bySkillTagId SkillTagId) error {
+	var request GetSkilltagsBySkillTagIdRequestObject
+
+	request.BySkillTagId = bySkillTagId
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetSkilltagsBySkillTagId(ctx.Request().Context(), request.(GetSkilltagsBySkillTagIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetSkilltagsBySkillTagId")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetSkilltagsBySkillTagIdResponseObject); ok {
+		return validResponse.VisitGetSkilltagsBySkillTagIdResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("Unexpected response type: %T", response)
 	}
@@ -2561,69 +2684,71 @@ func (sh *strictHandler) GetUsersByUserIdSkills(ctx echo.Context, byUserId UserI
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"vpk+mmIAAA==",
+	"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",
+	"9VT1XwEAAP//kQd5lRZmAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

@@ -229,11 +229,7 @@ func HasNote() predicate.UserNoteItem {
 // HasNoteWith applies the HasEdge predicate on the "note" edge with a given conditions (other predicates).
 func HasNoteWith(preds ...predicate.UserNote) predicate.UserNoteItem {
 	return predicate.UserNoteItem(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(NoteInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, NoteTable, NoteColumn),
-		)
+		step := newNoteStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

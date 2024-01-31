@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/sky0621/cv-admin/src/ent"
-	"github.com/sky0621/cv-admin/src/ent/skill"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 )
@@ -13,14 +12,8 @@ import (
 // スキル群取得
 // (GET /users/{byUserId}/skills)
 func (s *strictServerImpl) GetUsersByUserIdSkills(ctx context.Context, request GetUsersByUserIdSkillsRequestObject) (GetUsersByUserIdSkillsResponseObject, error) {
-	entSkillTags, err := s.dbClient.SkillTag.Query().All(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	var userSkillTags []UserSkillTag
-	for _, entSkillTag := range entSkillTags {
-		entSkills, err := s.dbClient.Skill.Query().Where(skill.TagKey(entSkillTag.Key)).WithCareerSkills(func(q *ent.CareerSkillQuery) {
+	entSkillTags, err := s.dbClient.SkillTag.Query().WithSkills(func(q *ent.SkillQuery) {
+		q.WithCareerSkills(func(q *ent.CareerSkillQuery) {
 			q.WithCareerSkillGroup(func(q *ent.CareerSkillGroupQuery) {
 				q.WithCareer(func(q *ent.UserCareerQuery) {
 					q.WithCareerGroup(func(q *ent.UserCareerGroupQuery) {
@@ -28,13 +21,16 @@ func (s *strictServerImpl) GetUsersByUserIdSkills(ctx context.Context, request G
 					})
 				})
 			})
-		}).All(ctx)
-		if err != nil {
-			return nil, err
-		}
+		})
+	}).All(ctx)
+	if err != nil {
+		return nil, err
+	}
 
+	var userSkillTags []UserSkillTag
+	for _, entSkillTag := range entSkillTags {
 		var userSkills []UserSkill
-		for _, entSkill := range entSkills {
+		for _, entSkill := range entSkillTag.Edges.Skills {
 			var versions []UserSkillVersion
 			for _, entCareerSkill := range entSkill.Edges.CareerSkills {
 				versions = append(versions, UserSkillVersion{
