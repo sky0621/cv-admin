@@ -35,7 +35,7 @@ func (s *strictServerImpl) PostSkillrecords(ctx context.Context, request PostSki
 		if slice.Contains(helper.PickupSkillName(entSkills), *skill_.Name) {
 			return PostSkillrecords400JSONResponse{n400("already registered under the same name")}, nil
 		}
-		if slice.Contains(helper.PickupSkillKey(entSkills), *skill_.Key) {
+		if slice.Contains(helper.PickupSkillCode(entSkills), *skill_.Code) {
 			return PostSkillrecords400JSONResponse{n400("already registered under the same key")}, nil
 		}
 	}

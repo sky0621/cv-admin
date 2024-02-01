@@ -34,9 +34,9 @@ func (stu *SkillTagUpdate) SetName(s string) *SkillTagUpdate {
 	return stu
 }
 
-// SetKey sets the "key" field.
-func (stu *SkillTagUpdate) SetKey(s string) *SkillTagUpdate {
-	stu.mutation.SetKey(s)
+// SetCode sets the "code" field.
+func (stu *SkillTagUpdate) SetCode(s string) *SkillTagUpdate {
+	stu.mutation.SetCode(s)
 	return stu
 }
 
@@ -115,9 +115,9 @@ func (stu *SkillTagUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SkillTag.name": %w`, err)}
 		}
 	}
-	if v, ok := stu.mutation.Key(); ok {
-		if err := skilltag.KeyValidator(v); err != nil {
-			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "SkillTag.key": %w`, err)}
+	if v, ok := stu.mutation.Code(); ok {
+		if err := skilltag.CodeValidator(v); err != nil {
+			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "SkillTag.code": %w`, err)}
 		}
 	}
 	return nil
@@ -138,8 +138,8 @@ func (stu *SkillTagUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := stu.mutation.Name(); ok {
 		_spec.SetField(skilltag.FieldName, field.TypeString, value)
 	}
-	if value, ok := stu.mutation.Key(); ok {
-		_spec.SetField(skilltag.FieldKey, field.TypeString, value)
+	if value, ok := stu.mutation.Code(); ok {
+		_spec.SetField(skilltag.FieldCode, field.TypeString, value)
 	}
 	if stu.mutation.SkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -212,9 +212,9 @@ func (stuo *SkillTagUpdateOne) SetName(s string) *SkillTagUpdateOne {
 	return stuo
 }
 
-// SetKey sets the "key" field.
-func (stuo *SkillTagUpdateOne) SetKey(s string) *SkillTagUpdateOne {
-	stuo.mutation.SetKey(s)
+// SetCode sets the "code" field.
+func (stuo *SkillTagUpdateOne) SetCode(s string) *SkillTagUpdateOne {
+	stuo.mutation.SetCode(s)
 	return stuo
 }
 
@@ -306,9 +306,9 @@ func (stuo *SkillTagUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SkillTag.name": %w`, err)}
 		}
 	}
-	if v, ok := stuo.mutation.Key(); ok {
-		if err := skilltag.KeyValidator(v); err != nil {
-			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "SkillTag.key": %w`, err)}
+	if v, ok := stuo.mutation.Code(); ok {
+		if err := skilltag.CodeValidator(v); err != nil {
+			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "SkillTag.code": %w`, err)}
 		}
 	}
 	return nil
@@ -346,8 +346,8 @@ func (stuo *SkillTagUpdateOne) sqlSave(ctx context.Context) (_node *SkillTag, er
 	if value, ok := stuo.mutation.Name(); ok {
 		_spec.SetField(skilltag.FieldName, field.TypeString, value)
 	}
-	if value, ok := stuo.mutation.Key(); ok {
-		_spec.SetField(skilltag.FieldKey, field.TypeString, value)
+	if value, ok := stuo.mutation.Code(); ok {
+		_spec.SetField(skilltag.FieldCode, field.TypeString, value)
 	}
 	if stuo.mutation.SkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{

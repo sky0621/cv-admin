@@ -107,7 +107,7 @@ var (
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString, Unique: true},
-		{Name: "key", Type: field.TypeString, Unique: true},
+		{Name: "code", Type: field.TypeString, Unique: true},
 		{Name: "url", Type: field.TypeString, Nullable: true},
 		{Name: "tag_id", Type: field.TypeInt},
 	}
@@ -129,7 +129,7 @@ var (
 	SkillTagsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString, Unique: true},
-		{Name: "key", Type: field.TypeString, Unique: true},
+		{Name: "code", Type: field.TypeString, Unique: true},
 	}
 	// SkillTagsTable holds the schema information for the "skill_tags" table.
 	SkillTagsTable = &schema.Table{

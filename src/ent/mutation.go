@@ -2209,7 +2209,7 @@ type SkillMutation struct {
 	create_time         *time.Time
 	update_time         *time.Time
 	name                *string
-	key                 *string
+	code                *string
 	url                 *string
 	clearedFields       map[string]struct{}
 	skillTag            *int
@@ -2428,40 +2428,40 @@ func (m *SkillMutation) ResetName() {
 	m.name = nil
 }
 
-// SetKey sets the "key" field.
-func (m *SkillMutation) SetKey(s string) {
-	m.key = &s
+// SetCode sets the "code" field.
+func (m *SkillMutation) SetCode(s string) {
+	m.code = &s
 }
 
-// Key returns the value of the "key" field in the mutation.
-func (m *SkillMutation) Key() (r string, exists bool) {
-	v := m.key
+// Code returns the value of the "code" field in the mutation.
+func (m *SkillMutation) Code() (r string, exists bool) {
+	v := m.code
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldKey returns the old "key" field's value of the Skill entity.
+// OldCode returns the old "code" field's value of the Skill entity.
 // If the Skill object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SkillMutation) OldKey(ctx context.Context) (v string, err error) {
+func (m *SkillMutation) OldCode(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldKey is only allowed on UpdateOne operations")
+		return v, errors.New("OldCode is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldKey requires an ID field in the mutation")
+		return v, errors.New("OldCode requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldKey: %w", err)
+		return v, fmt.Errorf("querying old value for OldCode: %w", err)
 	}
-	return oldValue.Key, nil
+	return oldValue.Code, nil
 }
 
-// ResetKey resets all changes to the "key" field.
-func (m *SkillMutation) ResetKey() {
-	m.key = nil
+// ResetCode resets all changes to the "code" field.
+func (m *SkillMutation) ResetCode() {
+	m.code = nil
 }
 
 // SetURL sets the "url" field.
@@ -2650,8 +2650,8 @@ func (m *SkillMutation) Fields() []string {
 	if m.name != nil {
 		fields = append(fields, skill.FieldName)
 	}
-	if m.key != nil {
-		fields = append(fields, skill.FieldKey)
+	if m.code != nil {
+		fields = append(fields, skill.FieldCode)
 	}
 	if m.url != nil {
 		fields = append(fields, skill.FieldURL)
@@ -2670,8 +2670,8 @@ func (m *SkillMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdateTime()
 	case skill.FieldName:
 		return m.Name()
-	case skill.FieldKey:
-		return m.Key()
+	case skill.FieldCode:
+		return m.Code()
 	case skill.FieldURL:
 		return m.URL()
 	}
@@ -2689,8 +2689,8 @@ func (m *SkillMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldUpdateTime(ctx)
 	case skill.FieldName:
 		return m.OldName(ctx)
-	case skill.FieldKey:
-		return m.OldKey(ctx)
+	case skill.FieldCode:
+		return m.OldCode(ctx)
 	case skill.FieldURL:
 		return m.OldURL(ctx)
 	}
@@ -2723,12 +2723,12 @@ func (m *SkillMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
-	case skill.FieldKey:
+	case skill.FieldCode:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetKey(v)
+		m.SetCode(v)
 		return nil
 	case skill.FieldURL:
 		v, ok := value.(string)
@@ -2804,8 +2804,8 @@ func (m *SkillMutation) ResetField(name string) error {
 	case skill.FieldName:
 		m.ResetName()
 		return nil
-	case skill.FieldKey:
-		m.ResetKey()
+	case skill.FieldCode:
+		m.ResetCode()
 		return nil
 	case skill.FieldURL:
 		m.ResetURL()
@@ -2923,7 +2923,7 @@ type SkillTagMutation struct {
 	typ           string
 	id            *int
 	name          *string
-	key           *string
+	code          *string
 	clearedFields map[string]struct{}
 	skills        map[int]struct{}
 	removedskills map[int]struct{}
@@ -3067,40 +3067,40 @@ func (m *SkillTagMutation) ResetName() {
 	m.name = nil
 }
 
-// SetKey sets the "key" field.
-func (m *SkillTagMutation) SetKey(s string) {
-	m.key = &s
+// SetCode sets the "code" field.
+func (m *SkillTagMutation) SetCode(s string) {
+	m.code = &s
 }
 
-// Key returns the value of the "key" field in the mutation.
-func (m *SkillTagMutation) Key() (r string, exists bool) {
-	v := m.key
+// Code returns the value of the "code" field in the mutation.
+func (m *SkillTagMutation) Code() (r string, exists bool) {
+	v := m.code
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldKey returns the old "key" field's value of the SkillTag entity.
+// OldCode returns the old "code" field's value of the SkillTag entity.
 // If the SkillTag object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SkillTagMutation) OldKey(ctx context.Context) (v string, err error) {
+func (m *SkillTagMutation) OldCode(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldKey is only allowed on UpdateOne operations")
+		return v, errors.New("OldCode is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldKey requires an ID field in the mutation")
+		return v, errors.New("OldCode requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldKey: %w", err)
+		return v, fmt.Errorf("querying old value for OldCode: %w", err)
 	}
-	return oldValue.Key, nil
+	return oldValue.Code, nil
 }
 
-// ResetKey resets all changes to the "key" field.
-func (m *SkillTagMutation) ResetKey() {
-	m.key = nil
+// ResetCode resets all changes to the "code" field.
+func (m *SkillTagMutation) ResetCode() {
+	m.code = nil
 }
 
 // AddSkillIDs adds the "skills" edge to the Skill entity by ids.
@@ -3195,8 +3195,8 @@ func (m *SkillTagMutation) Fields() []string {
 	if m.name != nil {
 		fields = append(fields, skilltag.FieldName)
 	}
-	if m.key != nil {
-		fields = append(fields, skilltag.FieldKey)
+	if m.code != nil {
+		fields = append(fields, skilltag.FieldCode)
 	}
 	return fields
 }
@@ -3208,8 +3208,8 @@ func (m *SkillTagMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case skilltag.FieldName:
 		return m.Name()
-	case skilltag.FieldKey:
-		return m.Key()
+	case skilltag.FieldCode:
+		return m.Code()
 	}
 	return nil, false
 }
@@ -3221,8 +3221,8 @@ func (m *SkillTagMutation) OldField(ctx context.Context, name string) (ent.Value
 	switch name {
 	case skilltag.FieldName:
 		return m.OldName(ctx)
-	case skilltag.FieldKey:
-		return m.OldKey(ctx)
+	case skilltag.FieldCode:
+		return m.OldCode(ctx)
 	}
 	return nil, fmt.Errorf("unknown SkillTag field %s", name)
 }
@@ -3239,12 +3239,12 @@ func (m *SkillTagMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
-	case skilltag.FieldKey:
+	case skilltag.FieldCode:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetKey(v)
+		m.SetCode(v)
 		return nil
 	}
 	return fmt.Errorf("unknown SkillTag field %s", name)
@@ -3298,8 +3298,8 @@ func (m *SkillTagMutation) ResetField(name string) error {
 	case skilltag.FieldName:
 		m.ResetName()
 		return nil
-	case skilltag.FieldKey:
-		m.ResetKey()
+	case skilltag.FieldCode:
+		m.ResetCode()
 		return nil
 	}
 	return fmt.Errorf("unknown SkillTag field %s", name)

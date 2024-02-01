@@ -41,7 +41,7 @@ func (s *strictServerImpl) GetUsersByUserIdSkills(ctx context.Context, request G
 			}
 			userSkills = append(userSkills, UserSkill{
 				Name:     &entSkill.Name,
-				Key:      &entSkill.Key,
+				Code:     &entSkill.Code,
 				Url:      entSkill.URL,
 				Versions: &versions,
 			})
@@ -49,7 +49,7 @@ func (s *strictServerImpl) GetUsersByUserIdSkills(ctx context.Context, request G
 
 		userSkillTags = append(userSkillTags, UserSkillTag{
 			TagName: &entSkillTag.Name,
-			TagKey:  &entSkillTag.Key,
+			TagCode: &entSkillTag.Code,
 			Skills:  &userSkills,
 		})
 	}

@@ -164,18 +164,18 @@ func init() {
 			return nil
 		}
 	}()
-	// skillDescKey is the schema descriptor for key field.
-	skillDescKey := skillFields[1].Descriptor()
-	// skill.KeyValidator is a validator for the "key" field. It is called by the builders before save.
-	skill.KeyValidator = func() func(string) error {
-		validators := skillDescKey.Validators
+	// skillDescCode is the schema descriptor for code field.
+	skillDescCode := skillFields[1].Descriptor()
+	// skill.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	skill.CodeValidator = func() func(string) error {
+		validators := skillDescCode.Validators
 		fns := [...]func(string) error{
 			validators[0].(func(string) error),
 			validators[1].(func(string) error),
 		}
-		return func(key string) error {
+		return func(code string) error {
 			for _, fn := range fns {
-				if err := fn(key); err != nil {
+				if err := fn(code); err != nil {
 					return err
 				}
 			}
@@ -206,18 +206,18 @@ func init() {
 			return nil
 		}
 	}()
-	// skilltagDescKey is the schema descriptor for key field.
-	skilltagDescKey := skilltagFields[1].Descriptor()
-	// skilltag.KeyValidator is a validator for the "key" field. It is called by the builders before save.
-	skilltag.KeyValidator = func() func(string) error {
-		validators := skilltagDescKey.Validators
+	// skilltagDescCode is the schema descriptor for code field.
+	skilltagDescCode := skilltagFields[1].Descriptor()
+	// skilltag.CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	skilltag.CodeValidator = func() func(string) error {
+		validators := skilltagDescCode.Validators
 		fns := [...]func(string) error{
 			validators[0].(func(string) error),
 			validators[1].(func(string) error),
 		}
-		return func(key string) error {
+		return func(code string) error {
 			for _, fn := range fns {
-				if err := fn(key); err != nil {
+				if err := fn(code); err != nil {
 					return err
 				}
 			}

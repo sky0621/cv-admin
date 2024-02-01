@@ -28,9 +28,9 @@ func (stc *SkillTagCreate) SetName(s string) *SkillTagCreate {
 	return stc
 }
 
-// SetKey sets the "key" field.
-func (stc *SkillTagCreate) SetKey(s string) *SkillTagCreate {
-	stc.mutation.SetKey(s)
+// SetCode sets the "code" field.
+func (stc *SkillTagCreate) SetCode(s string) *SkillTagCreate {
+	stc.mutation.SetCode(s)
 	return stc
 }
 
@@ -91,12 +91,12 @@ func (stc *SkillTagCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SkillTag.name": %w`, err)}
 		}
 	}
-	if _, ok := stc.mutation.Key(); !ok {
-		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "SkillTag.key"`)}
+	if _, ok := stc.mutation.Code(); !ok {
+		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "SkillTag.code"`)}
 	}
-	if v, ok := stc.mutation.Key(); ok {
-		if err := skilltag.KeyValidator(v); err != nil {
-			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "SkillTag.key": %w`, err)}
+	if v, ok := stc.mutation.Code(); ok {
+		if err := skilltag.CodeValidator(v); err != nil {
+			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "SkillTag.code": %w`, err)}
 		}
 	}
 	return nil
@@ -130,9 +130,9 @@ func (stc *SkillTagCreate) createSpec() (*SkillTag, *sqlgraph.CreateSpec) {
 		_spec.SetField(skilltag.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := stc.mutation.Key(); ok {
-		_spec.SetField(skilltag.FieldKey, field.TypeString, value)
-		_node.Key = value
+	if value, ok := stc.mutation.Code(); ok {
+		_spec.SetField(skilltag.FieldCode, field.TypeString, value)
+		_node.Code = value
 	}
 	if nodes := stc.mutation.SkillsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -214,15 +214,15 @@ func (u *SkillTagUpsert) UpdateName() *SkillTagUpsert {
 	return u
 }
 
-// SetKey sets the "key" field.
-func (u *SkillTagUpsert) SetKey(v string) *SkillTagUpsert {
-	u.Set(skilltag.FieldKey, v)
+// SetCode sets the "code" field.
+func (u *SkillTagUpsert) SetCode(v string) *SkillTagUpsert {
+	u.Set(skilltag.FieldCode, v)
 	return u
 }
 
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *SkillTagUpsert) UpdateKey() *SkillTagUpsert {
-	u.SetExcluded(skilltag.FieldKey)
+// UpdateCode sets the "code" field to the value that was provided on create.
+func (u *SkillTagUpsert) UpdateCode() *SkillTagUpsert {
+	u.SetExcluded(skilltag.FieldCode)
 	return u
 }
 
@@ -280,17 +280,17 @@ func (u *SkillTagUpsertOne) UpdateName() *SkillTagUpsertOne {
 	})
 }
 
-// SetKey sets the "key" field.
-func (u *SkillTagUpsertOne) SetKey(v string) *SkillTagUpsertOne {
+// SetCode sets the "code" field.
+func (u *SkillTagUpsertOne) SetCode(v string) *SkillTagUpsertOne {
 	return u.Update(func(s *SkillTagUpsert) {
-		s.SetKey(v)
+		s.SetCode(v)
 	})
 }
 
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *SkillTagUpsertOne) UpdateKey() *SkillTagUpsertOne {
+// UpdateCode sets the "code" field to the value that was provided on create.
+func (u *SkillTagUpsertOne) UpdateCode() *SkillTagUpsertOne {
 	return u.Update(func(s *SkillTagUpsert) {
-		s.UpdateKey()
+		s.UpdateCode()
 	})
 }
 
@@ -507,17 +507,17 @@ func (u *SkillTagUpsertBulk) UpdateName() *SkillTagUpsertBulk {
 	})
 }
 
-// SetKey sets the "key" field.
-func (u *SkillTagUpsertBulk) SetKey(v string) *SkillTagUpsertBulk {
+// SetCode sets the "code" field.
+func (u *SkillTagUpsertBulk) SetCode(v string) *SkillTagUpsertBulk {
 	return u.Update(func(s *SkillTagUpsert) {
-		s.SetKey(v)
+		s.SetCode(v)
 	})
 }
 
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *SkillTagUpsertBulk) UpdateKey() *SkillTagUpsertBulk {
+// UpdateCode sets the "code" field to the value that was provided on create.
+func (u *SkillTagUpsertBulk) UpdateCode() *SkillTagUpsertBulk {
 	return u.Update(func(s *SkillTagUpsert) {
-		s.UpdateKey()
+		s.UpdateCode()
 	})
 }
 

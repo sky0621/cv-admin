@@ -29,7 +29,7 @@ func (s *strictServerImpl) PostSkilltags(ctx context.Context, request PostSkillt
 	if slice.Contains(helper.PickupSkillTagName(entSkillTags), *skillTag.Name) {
 		return PostSkilltags400JSONResponse{n400("already registered under the same name")}, nil
 	}
-	if slice.Contains(helper.PickupSkillTagKey(entSkillTags), *skillTag.Key) {
+	if slice.Contains(helper.PickupSkillTagCode(entSkillTags), *skillTag.Code) {
 		return PostSkilltags400JSONResponse{n400("already registered under the same key")}, nil
 	}
 

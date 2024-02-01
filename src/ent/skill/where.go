@@ -70,9 +70,9 @@ func Name(v string) predicate.Skill {
 	return predicate.Skill(sql.FieldEQ(FieldName, v))
 }
 
-// Key applies equality check predicate on the "key" field. It's identical to KeyEQ.
-func Key(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEQ(FieldKey, v))
+// Code applies equality check predicate on the "code" field. It's identical to CodeEQ.
+func Code(v string) predicate.Skill {
+	return predicate.Skill(sql.FieldEQ(FieldCode, v))
 }
 
 // URL applies equality check predicate on the "url" field. It's identical to URLEQ.
@@ -225,69 +225,69 @@ func NameContainsFold(v string) predicate.Skill {
 	return predicate.Skill(sql.FieldContainsFold(FieldName, v))
 }
 
-// KeyEQ applies the EQ predicate on the "key" field.
-func KeyEQ(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEQ(FieldKey, v))
+// CodeEQ applies the EQ predicate on the "code" field.
+func CodeEQ(v string) predicate.Skill {
+	return predicate.Skill(sql.FieldEQ(FieldCode, v))
 }
 
-// KeyNEQ applies the NEQ predicate on the "key" field.
-func KeyNEQ(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldNEQ(FieldKey, v))
+// CodeNEQ applies the NEQ predicate on the "code" field.
+func CodeNEQ(v string) predicate.Skill {
+	return predicate.Skill(sql.FieldNEQ(FieldCode, v))
 }
 
-// KeyIn applies the In predicate on the "key" field.
-func KeyIn(vs ...string) predicate.Skill {
-	return predicate.Skill(sql.FieldIn(FieldKey, vs...))
+// CodeIn applies the In predicate on the "code" field.
+func CodeIn(vs ...string) predicate.Skill {
+	return predicate.Skill(sql.FieldIn(FieldCode, vs...))
 }
 
-// KeyNotIn applies the NotIn predicate on the "key" field.
-func KeyNotIn(vs ...string) predicate.Skill {
-	return predicate.Skill(sql.FieldNotIn(FieldKey, vs...))
+// CodeNotIn applies the NotIn predicate on the "code" field.
+func CodeNotIn(vs ...string) predicate.Skill {
+	return predicate.Skill(sql.FieldNotIn(FieldCode, vs...))
 }
 
-// KeyGT applies the GT predicate on the "key" field.
-func KeyGT(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldGT(FieldKey, v))
+// CodeGT applies the GT predicate on the "code" field.
+func CodeGT(v string) predicate.Skill {
+	return predicate.Skill(sql.FieldGT(FieldCode, v))
 }
 
-// KeyGTE applies the GTE predicate on the "key" field.
-func KeyGTE(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldGTE(FieldKey, v))
+// CodeGTE applies the GTE predicate on the "code" field.
+func CodeGTE(v string) predicate.Skill {
+	return predicate.Skill(sql.FieldGTE(FieldCode, v))
 }
 
-// KeyLT applies the LT predicate on the "key" field.
-func KeyLT(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldLT(FieldKey, v))
+// CodeLT applies the LT predicate on the "code" field.
+func CodeLT(v string) predicate.Skill {
+	return predicate.Skill(sql.FieldLT(FieldCode, v))
 }
 
-// KeyLTE applies the LTE predicate on the "key" field.
-func KeyLTE(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldLTE(FieldKey, v))
+// CodeLTE applies the LTE predicate on the "code" field.
+func CodeLTE(v string) predicate.Skill {
+	return predicate.Skill(sql.FieldLTE(FieldCode, v))
 }
 
-// KeyContains applies the Contains predicate on the "key" field.
-func KeyContains(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldContains(FieldKey, v))
+// CodeContains applies the Contains predicate on the "code" field.
+func CodeContains(v string) predicate.Skill {
+	return predicate.Skill(sql.FieldContains(FieldCode, v))
 }
 
-// KeyHasPrefix applies the HasPrefix predicate on the "key" field.
-func KeyHasPrefix(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldHasPrefix(FieldKey, v))
+// CodeHasPrefix applies the HasPrefix predicate on the "code" field.
+func CodeHasPrefix(v string) predicate.Skill {
+	return predicate.Skill(sql.FieldHasPrefix(FieldCode, v))
 }
 
-// KeyHasSuffix applies the HasSuffix predicate on the "key" field.
-func KeyHasSuffix(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldHasSuffix(FieldKey, v))
+// CodeHasSuffix applies the HasSuffix predicate on the "code" field.
+func CodeHasSuffix(v string) predicate.Skill {
+	return predicate.Skill(sql.FieldHasSuffix(FieldCode, v))
 }
 
-// KeyEqualFold applies the EqualFold predicate on the "key" field.
-func KeyEqualFold(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEqualFold(FieldKey, v))
+// CodeEqualFold applies the EqualFold predicate on the "code" field.
+func CodeEqualFold(v string) predicate.Skill {
+	return predicate.Skill(sql.FieldEqualFold(FieldCode, v))
 }
 
-// KeyContainsFold applies the ContainsFold predicate on the "key" field.
-func KeyContainsFold(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldContainsFold(FieldKey, v))
+// CodeContainsFold applies the ContainsFold predicate on the "code" field.
+func CodeContainsFold(v string) predicate.Skill {
+	return predicate.Skill(sql.FieldContainsFold(FieldCode, v))
 }
 
 // URLEQ applies the EQ predicate on the "url" field.

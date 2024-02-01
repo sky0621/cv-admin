@@ -20,8 +20,8 @@ const (
 	FieldUpdateTime = "update_time"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldKey holds the string denoting the key field in the database.
-	FieldKey = "key"
+	// FieldCode holds the string denoting the code field in the database.
+	FieldCode = "code"
 	// FieldURL holds the string denoting the url field in the database.
 	FieldURL = "url"
 	// EdgeSkillTag holds the string denoting the skilltag edge name in mutations.
@@ -52,7 +52,7 @@ var Columns = []string{
 	FieldCreateTime,
 	FieldUpdateTime,
 	FieldName,
-	FieldKey,
+	FieldCode,
 	FieldURL,
 }
 
@@ -86,8 +86,8 @@ var (
 	UpdateDefaultUpdateTime func() time.Time
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
-	// KeyValidator is a validator for the "key" field. It is called by the builders before save.
-	KeyValidator func(string) error
+	// CodeValidator is a validator for the "code" field. It is called by the builders before save.
+	CodeValidator func(string) error
 	// URLValidator is a validator for the "url" field. It is called by the builders before save.
 	URLValidator func(string) error
 )
@@ -115,9 +115,9 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
-// ByKey orders the results by the key field.
-func ByKey(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldKey, opts...).ToFunc()
+// ByCode orders the results by the code field.
+func ByCode(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCode, opts...).ToFunc()
 }
 
 // ByURL orders the results by the url field.

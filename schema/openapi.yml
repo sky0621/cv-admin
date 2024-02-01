@@ -582,8 +582,8 @@ components:
           $ref: "#/components/schemas/SkillTagId"
         name:
           $ref: "#/components/schemas/SkillTagName"
-        key:
-          $ref: "#/components/schemas/SkillTagKey"
+        code:
+          $ref: "#/components/schemas/SkillTagCode"
     Skill:
       type: object
       description: "１スキルの属性"
@@ -592,12 +592,12 @@ components:
           $ref: "#/components/schemas/SkillId"
         name:
           $ref: "#/components/schemas/SkillName"
-        key:
-          $ref: "#/components/schemas/SkillKey"
+        code:
+          $ref: "#/components/schemas/SkillCode"
         url:
           $ref: "#/components/schemas/Url"
-        tagKey:
-          $ref: "#/components/schemas/SkillTagKey"
+        tagCode:
+          $ref: "#/components/schemas/SkillTagCode"
     UserId:
       type: integer
       format: int
@@ -734,13 +734,13 @@ components:
       type: string
       description: "スキル名"
       example: "Golang"
-    SkillKey:
+    SkillCode:
       type: string
-      description: "スキルキー"
+      description: "スキルコード"
       example: "golang"
-    SkillTagKey:
+    SkillTagCode:
       type: string
-      description: "スキルタグキー"
+      description: "スキルタグコード"
       example: "aws"
     SkillVersion:
       type: string
@@ -925,8 +925,8 @@ components:
       properties:
         name:
           $ref: "#/components/schemas/SkillName"
-        key:
-          $ref: "#/components/schemas/SkillKey"
+        code:
+          $ref: "#/components/schemas/SkillCode"
         url:
           $ref: "#/components/schemas/Url"
         versions:
@@ -939,8 +939,8 @@ components:
       properties:
         tagName:
           $ref: "#/components/schemas/SkillTagName"
-        tagKey:
-          $ref: "#/components/schemas/SkillTagKey"
+        tagCode:
+          $ref: "#/components/schemas/SkillTagCode"
         skills:
           type: array
           items:

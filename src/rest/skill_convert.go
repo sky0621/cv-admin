@@ -9,14 +9,14 @@ import (
 func ToEntSkillTagCreate(s SkillTag, c *ent.SkillTagCreate) *ent.SkillTagCreate {
 	return c.
 		SetName(*s.Name).
-		SetKey(*s.Key)
+		SetCode(*s.Code)
 }
 
 func ToSwaggerSkillTag(entSkillTag *ent.SkillTag) SkillTag {
 	return SkillTag{
 		SkillTagID: &entSkillTag.ID,
 		Name:       &entSkillTag.Name,
-		Key:        &entSkillTag.Key,
+		Code:       &entSkillTag.Code,
 	}
 }
 
@@ -31,7 +31,7 @@ func ToSwaggerSkillTags(entSkillTags []*ent.SkillTag) []SkillTag {
 func ToEntSkillCreate(s Skill, c *ent.SkillCreate) *ent.SkillCreate {
 	return c.
 		SetName(*s.Name).
-		SetKey(*s.Key).
+		SetCode(*s.Code).
 		SetNillableURL(s.Url)
 }
 
@@ -39,7 +39,7 @@ func ToSwaggerSkill(entSkill *ent.Skill) Skill {
 	return Skill{
 		SkillID: ToPtr(entSkill.ID),
 		Name:    &entSkill.Name,
-		Key:     &entSkill.Key,
+		Code:    &entSkill.Code,
 		Url:     entSkill.URL,
 	}
 }
