@@ -6,6 +6,8 @@ package cmd
 import (
 	"log"
 
+	"github.com/sky0621/cv-admin/src/ent/migrate"
+
 	"github.com/spf13/cobra"
 
 	"github.com/sky0621/cv-admin/src/driver"
@@ -24,7 +26,11 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		client, closeFunc := driver.MustNewClient()
 		defer closeFunc()
-		if err := client.Schema.Create(cmd.Context()); err != nil {
+		if err := client.Schema.Create(
+			cmd.Context(),
+			migrate.WithDropIndex(true),
+			migrate.WithDropColumn(true),
+		); err != nil {
 			log.Fatalf("failed creating schema resources: %v", err)
 		}
 	},
