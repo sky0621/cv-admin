@@ -8,15 +8,13 @@ import (
 
 func ToEntSkillTagCreate(s SkillTag, c *ent.SkillTagCreate) *ent.SkillTagCreate {
 	return c.
-		SetName(*s.Name).
-		SetCode(*s.Code)
+		SetName(*s.Name)
 }
 
 func ToSwaggerSkillTag(entSkillTag *ent.SkillTag) SkillTag {
 	return SkillTag{
 		SkillTagID: &entSkillTag.ID,
 		Name:       &entSkillTag.Name,
-		Code:       &entSkillTag.Code,
 	}
 }
 
@@ -28,26 +26,33 @@ func ToSwaggerSkillTags(entSkillTags []*ent.SkillTag) []SkillTag {
 	return skillTags
 }
 
-func ToEntSkillCreate(s Skill, c *ent.SkillCreate) *ent.SkillCreate {
+func ToEntSkillCreate(s Skill, st *ent.SkillTag, c *ent.SkillCreate) *ent.SkillCreate {
 	return c.
 		SetName(*s.Name).
-		SetCode(*s.Code).
-		SetNillableURL(s.Url)
+		SetNillableURL(s.Url).
+		SetSkillTagID(*s.SkillTagID).
+		SetSkillTag(st)
 }
 
-func ToSwaggerSkill(entSkill *ent.Skill) Skill {
-	return Skill{
+func ToSwaggerSkill(entSkill ent.Skill) Skill {
+	s := Skill{
 		SkillID: ToPtr(entSkill.ID),
 		Name:    &entSkill.Name,
-		Code:    &entSkill.Code,
 		Url:     entSkill.URL,
 	}
+	if entSkill.Edges.SkillTag != nil {
+		s.SkillTagID = &entSkill.Edges.SkillTag.ID
+	}
+	return s
 }
 
 func ToSwaggerSkills(entSkills []*ent.Skill) []Skill {
 	var skills []Skill
 	for _, entSkill := range entSkills {
-		skills = append(skills, ToSwaggerSkill(entSkill))
+		if entSkill == nil {
+			continue
+		}
+		skills = append(skills, ToSwaggerSkill(*entSkill))
 	}
 	return skills
 }

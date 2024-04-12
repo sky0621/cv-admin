@@ -17,7 +17,6 @@ type SkillTag struct {
 func (SkillTag) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").NotEmpty().Validate(maxRuneCount(100)).Unique(),
-		field.String("code").NotEmpty().Validate(maxRuneCount(40)).Unique(),
 	}
 }
 

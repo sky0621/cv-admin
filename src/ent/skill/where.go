@@ -70,11 +70,6 @@ func Name(v string) predicate.Skill {
 	return predicate.Skill(sql.FieldEQ(FieldName, v))
 }
 
-// Code applies equality check predicate on the "code" field. It's identical to CodeEQ.
-func Code(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEQ(FieldCode, v))
-}
-
 // URL applies equality check predicate on the "url" field. It's identical to URLEQ.
 func URL(v string) predicate.Skill {
 	return predicate.Skill(sql.FieldEQ(FieldURL, v))
@@ -225,71 +220,6 @@ func NameContainsFold(v string) predicate.Skill {
 	return predicate.Skill(sql.FieldContainsFold(FieldName, v))
 }
 
-// CodeEQ applies the EQ predicate on the "code" field.
-func CodeEQ(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEQ(FieldCode, v))
-}
-
-// CodeNEQ applies the NEQ predicate on the "code" field.
-func CodeNEQ(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldNEQ(FieldCode, v))
-}
-
-// CodeIn applies the In predicate on the "code" field.
-func CodeIn(vs ...string) predicate.Skill {
-	return predicate.Skill(sql.FieldIn(FieldCode, vs...))
-}
-
-// CodeNotIn applies the NotIn predicate on the "code" field.
-func CodeNotIn(vs ...string) predicate.Skill {
-	return predicate.Skill(sql.FieldNotIn(FieldCode, vs...))
-}
-
-// CodeGT applies the GT predicate on the "code" field.
-func CodeGT(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldGT(FieldCode, v))
-}
-
-// CodeGTE applies the GTE predicate on the "code" field.
-func CodeGTE(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldGTE(FieldCode, v))
-}
-
-// CodeLT applies the LT predicate on the "code" field.
-func CodeLT(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldLT(FieldCode, v))
-}
-
-// CodeLTE applies the LTE predicate on the "code" field.
-func CodeLTE(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldLTE(FieldCode, v))
-}
-
-// CodeContains applies the Contains predicate on the "code" field.
-func CodeContains(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldContains(FieldCode, v))
-}
-
-// CodeHasPrefix applies the HasPrefix predicate on the "code" field.
-func CodeHasPrefix(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldHasPrefix(FieldCode, v))
-}
-
-// CodeHasSuffix applies the HasSuffix predicate on the "code" field.
-func CodeHasSuffix(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldHasSuffix(FieldCode, v))
-}
-
-// CodeEqualFold applies the EqualFold predicate on the "code" field.
-func CodeEqualFold(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEqualFold(FieldCode, v))
-}
-
-// CodeContainsFold applies the ContainsFold predicate on the "code" field.
-func CodeContainsFold(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldContainsFold(FieldCode, v))
-}
-
 // URLEQ applies the EQ predicate on the "url" field.
 func URLEQ(v string) predicate.Skill {
 	return predicate.Skill(sql.FieldEQ(FieldURL, v))
@@ -413,32 +343,15 @@ func HasCareerSkillsWith(preds ...predicate.CareerSkill) predicate.Skill {
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Skill) predicate.Skill {
-	return predicate.Skill(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.Skill(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.Skill) predicate.Skill {
-	return predicate.Skill(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.Skill(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.Skill) predicate.Skill {
-	return predicate.Skill(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.Skill(sql.NotPredicates(p))
 }

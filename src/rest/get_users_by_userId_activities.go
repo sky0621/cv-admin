@@ -2,7 +2,6 @@ package rest
 
 import (
 	"context"
-	"errors"
 
 	"github.com/sky0621/cv-admin/src/ent"
 )
@@ -15,9 +14,8 @@ func (s *strictServerImpl) GetUsersByUserIdActivities(ctx context.Context, reque
 		return q.WithActivities()
 	})
 	if err != nil {
-		switch {
-		case errors.As(err, &notFound):
-			return GetUsersByUserIdActivities404JSONResponse{n404("user is none")}, err
+		if ent.IsNotFound(err) {
+			return GetUsersByUserIdActivities404JSONResponse{n404("user is none")}, nil
 		}
 		return nil, err
 	}

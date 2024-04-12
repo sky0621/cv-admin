@@ -58,12 +58,6 @@ func (sc *SkillCreate) SetName(s string) *SkillCreate {
 	return sc
 }
 
-// SetCode sets the "code" field.
-func (sc *SkillCreate) SetCode(s string) *SkillCreate {
-	sc.mutation.SetCode(s)
-	return sc
-}
-
 // SetURL sets the "url" field.
 func (sc *SkillCreate) SetURL(s string) *SkillCreate {
 	sc.mutation.SetURL(s)
@@ -165,14 +159,6 @@ func (sc *SkillCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Skill.name": %w`, err)}
 		}
 	}
-	if _, ok := sc.mutation.Code(); !ok {
-		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "Skill.code"`)}
-	}
-	if v, ok := sc.mutation.Code(); ok {
-		if err := skill.CodeValidator(v); err != nil {
-			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "Skill.code": %w`, err)}
-		}
-	}
 	if v, ok := sc.mutation.URL(); ok {
 		if err := skill.URLValidator(v); err != nil {
 			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Skill.url": %w`, err)}
@@ -219,10 +205,6 @@ func (sc *SkillCreate) createSpec() (*Skill, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.Name(); ok {
 		_spec.SetField(skill.FieldName, field.TypeString, value)
 		_node.Name = value
-	}
-	if value, ok := sc.mutation.Code(); ok {
-		_spec.SetField(skill.FieldCode, field.TypeString, value)
-		_node.Code = value
 	}
 	if value, ok := sc.mutation.URL(); ok {
 		_spec.SetField(skill.FieldURL, field.TypeString, value)
@@ -337,18 +319,6 @@ func (u *SkillUpsert) UpdateName() *SkillUpsert {
 	return u
 }
 
-// SetCode sets the "code" field.
-func (u *SkillUpsert) SetCode(v string) *SkillUpsert {
-	u.Set(skill.FieldCode, v)
-	return u
-}
-
-// UpdateCode sets the "code" field to the value that was provided on create.
-func (u *SkillUpsert) UpdateCode() *SkillUpsert {
-	u.SetExcluded(skill.FieldCode)
-	return u
-}
-
 // SetURL sets the "url" field.
 func (u *SkillUpsert) SetURL(v string) *SkillUpsert {
 	u.Set(skill.FieldURL, v)
@@ -440,20 +410,6 @@ func (u *SkillUpsertOne) UpdateName() *SkillUpsertOne {
 	})
 }
 
-// SetCode sets the "code" field.
-func (u *SkillUpsertOne) SetCode(v string) *SkillUpsertOne {
-	return u.Update(func(s *SkillUpsert) {
-		s.SetCode(v)
-	})
-}
-
-// UpdateCode sets the "code" field to the value that was provided on create.
-func (u *SkillUpsertOne) UpdateCode() *SkillUpsertOne {
-	return u.Update(func(s *SkillUpsert) {
-		s.UpdateCode()
-	})
-}
-
 // SetURL sets the "url" field.
 func (u *SkillUpsertOne) SetURL(v string) *SkillUpsertOne {
 	return u.Update(func(s *SkillUpsert) {
@@ -511,12 +467,16 @@ func (u *SkillUpsertOne) IDX(ctx context.Context) int {
 // SkillCreateBulk is the builder for creating many Skill entities in bulk.
 type SkillCreateBulk struct {
 	config
+	err      error
 	builders []*SkillCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Skill entities in the database.
 func (scb *SkillCreateBulk) Save(ctx context.Context) ([]*Skill, error) {
+	if scb.err != nil {
+		return nil, scb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(scb.builders))
 	nodes := make([]*Skill, len(scb.builders))
 	mutators := make([]Mutator, len(scb.builders))
@@ -710,20 +670,6 @@ func (u *SkillUpsertBulk) UpdateName() *SkillUpsertBulk {
 	})
 }
 
-// SetCode sets the "code" field.
-func (u *SkillUpsertBulk) SetCode(v string) *SkillUpsertBulk {
-	return u.Update(func(s *SkillUpsert) {
-		s.SetCode(v)
-	})
-}
-
-// UpdateCode sets the "code" field to the value that was provided on create.
-func (u *SkillUpsertBulk) UpdateCode() *SkillUpsertBulk {
-	return u.Update(func(s *SkillUpsert) {
-		s.UpdateCode()
-	})
-}
-
 // SetURL sets the "url" field.
 func (u *SkillUpsertBulk) SetURL(v string) *SkillUpsertBulk {
 	return u.Update(func(s *SkillUpsert) {
@@ -747,6 +693,9 @@ func (u *SkillUpsertBulk) ClearURL() *SkillUpsertBulk {
 
 // Exec executes the query.
 func (u *SkillUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the SkillCreateBulk instead", i)

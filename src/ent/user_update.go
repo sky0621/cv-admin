@@ -44,6 +44,14 @@ func (uu *UserUpdate) SetName(s string) *UserUpdate {
 	return uu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableName(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetName(*s)
+	}
+	return uu
+}
+
 // SetNickname sets the "nickname" field.
 func (uu *UserUpdate) SetNickname(s string) *UserUpdate {
 	uu.mutation.SetNickname(s)
@@ -91,6 +99,14 @@ func (uu *UserUpdate) SetBirthdayYear(i int) *UserUpdate {
 	return uu
 }
 
+// SetNillableBirthdayYear sets the "birthday_year" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBirthdayYear(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetBirthdayYear(*i)
+	}
+	return uu
+}
+
 // AddBirthdayYear adds i to the "birthday_year" field.
 func (uu *UserUpdate) AddBirthdayYear(i int) *UserUpdate {
 	uu.mutation.AddBirthdayYear(i)
@@ -104,6 +120,14 @@ func (uu *UserUpdate) SetBirthdayMonth(i int) *UserUpdate {
 	return uu
 }
 
+// SetNillableBirthdayMonth sets the "birthday_month" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBirthdayMonth(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetBirthdayMonth(*i)
+	}
+	return uu
+}
+
 // AddBirthdayMonth adds i to the "birthday_month" field.
 func (uu *UserUpdate) AddBirthdayMonth(i int) *UserUpdate {
 	uu.mutation.AddBirthdayMonth(i)
@@ -114,6 +138,14 @@ func (uu *UserUpdate) AddBirthdayMonth(i int) *UserUpdate {
 func (uu *UserUpdate) SetBirthdayDay(i int) *UserUpdate {
 	uu.mutation.ResetBirthdayDay()
 	uu.mutation.SetBirthdayDay(i)
+	return uu
+}
+
+// SetNillableBirthdayDay sets the "birthday_day" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBirthdayDay(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetBirthdayDay(*i)
+	}
 	return uu
 }
 
@@ -696,6 +728,14 @@ func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableName(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetName(*s)
+	}
+	return uuo
+}
+
 // SetNickname sets the "nickname" field.
 func (uuo *UserUpdateOne) SetNickname(s string) *UserUpdateOne {
 	uuo.mutation.SetNickname(s)
@@ -743,6 +783,14 @@ func (uuo *UserUpdateOne) SetBirthdayYear(i int) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableBirthdayYear sets the "birthday_year" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBirthdayYear(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetBirthdayYear(*i)
+	}
+	return uuo
+}
+
 // AddBirthdayYear adds i to the "birthday_year" field.
 func (uuo *UserUpdateOne) AddBirthdayYear(i int) *UserUpdateOne {
 	uuo.mutation.AddBirthdayYear(i)
@@ -756,6 +804,14 @@ func (uuo *UserUpdateOne) SetBirthdayMonth(i int) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableBirthdayMonth sets the "birthday_month" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBirthdayMonth(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetBirthdayMonth(*i)
+	}
+	return uuo
+}
+
 // AddBirthdayMonth adds i to the "birthday_month" field.
 func (uuo *UserUpdateOne) AddBirthdayMonth(i int) *UserUpdateOne {
 	uuo.mutation.AddBirthdayMonth(i)
@@ -766,6 +822,14 @@ func (uuo *UserUpdateOne) AddBirthdayMonth(i int) *UserUpdateOne {
 func (uuo *UserUpdateOne) SetBirthdayDay(i int) *UserUpdateOne {
 	uuo.mutation.ResetBirthdayDay()
 	uuo.mutation.SetBirthdayDay(i)
+	return uuo
+}
+
+// SetNillableBirthdayDay sets the "birthday_day" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBirthdayDay(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetBirthdayDay(*i)
+	}
 	return uuo
 }
 

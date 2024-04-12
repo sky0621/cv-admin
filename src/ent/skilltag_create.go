@@ -28,12 +28,6 @@ func (stc *SkillTagCreate) SetName(s string) *SkillTagCreate {
 	return stc
 }
 
-// SetCode sets the "code" field.
-func (stc *SkillTagCreate) SetCode(s string) *SkillTagCreate {
-	stc.mutation.SetCode(s)
-	return stc
-}
-
 // AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
 func (stc *SkillTagCreate) AddSkillIDs(ids ...int) *SkillTagCreate {
 	stc.mutation.AddSkillIDs(ids...)
@@ -91,14 +85,6 @@ func (stc *SkillTagCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SkillTag.name": %w`, err)}
 		}
 	}
-	if _, ok := stc.mutation.Code(); !ok {
-		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "SkillTag.code"`)}
-	}
-	if v, ok := stc.mutation.Code(); ok {
-		if err := skilltag.CodeValidator(v); err != nil {
-			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "SkillTag.code": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -129,10 +115,6 @@ func (stc *SkillTagCreate) createSpec() (*SkillTag, *sqlgraph.CreateSpec) {
 	if value, ok := stc.mutation.Name(); ok {
 		_spec.SetField(skilltag.FieldName, field.TypeString, value)
 		_node.Name = value
-	}
-	if value, ok := stc.mutation.Code(); ok {
-		_spec.SetField(skilltag.FieldCode, field.TypeString, value)
-		_node.Code = value
 	}
 	if nodes := stc.mutation.SkillsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -214,18 +196,6 @@ func (u *SkillTagUpsert) UpdateName() *SkillTagUpsert {
 	return u
 }
 
-// SetCode sets the "code" field.
-func (u *SkillTagUpsert) SetCode(v string) *SkillTagUpsert {
-	u.Set(skilltag.FieldCode, v)
-	return u
-}
-
-// UpdateCode sets the "code" field to the value that was provided on create.
-func (u *SkillTagUpsert) UpdateCode() *SkillTagUpsert {
-	u.SetExcluded(skilltag.FieldCode)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -280,20 +250,6 @@ func (u *SkillTagUpsertOne) UpdateName() *SkillTagUpsertOne {
 	})
 }
 
-// SetCode sets the "code" field.
-func (u *SkillTagUpsertOne) SetCode(v string) *SkillTagUpsertOne {
-	return u.Update(func(s *SkillTagUpsert) {
-		s.SetCode(v)
-	})
-}
-
-// UpdateCode sets the "code" field to the value that was provided on create.
-func (u *SkillTagUpsertOne) UpdateCode() *SkillTagUpsertOne {
-	return u.Update(func(s *SkillTagUpsert) {
-		s.UpdateCode()
-	})
-}
-
 // Exec executes the query.
 func (u *SkillTagUpsertOne) Exec(ctx context.Context) error {
 	if len(u.create.conflict) == 0 {
@@ -330,12 +286,16 @@ func (u *SkillTagUpsertOne) IDX(ctx context.Context) int {
 // SkillTagCreateBulk is the builder for creating many SkillTag entities in bulk.
 type SkillTagCreateBulk struct {
 	config
+	err      error
 	builders []*SkillTagCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the SkillTag entities in the database.
 func (stcb *SkillTagCreateBulk) Save(ctx context.Context) ([]*SkillTag, error) {
+	if stcb.err != nil {
+		return nil, stcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(stcb.builders))
 	nodes := make([]*SkillTag, len(stcb.builders))
 	mutators := make([]Mutator, len(stcb.builders))
@@ -507,22 +467,11 @@ func (u *SkillTagUpsertBulk) UpdateName() *SkillTagUpsertBulk {
 	})
 }
 
-// SetCode sets the "code" field.
-func (u *SkillTagUpsertBulk) SetCode(v string) *SkillTagUpsertBulk {
-	return u.Update(func(s *SkillTagUpsert) {
-		s.SetCode(v)
-	})
-}
-
-// UpdateCode sets the "code" field to the value that was provided on create.
-func (u *SkillTagUpsertBulk) UpdateCode() *SkillTagUpsertBulk {
-	return u.Update(func(s *SkillTagUpsert) {
-		s.UpdateCode()
-	})
-}
-
 // Exec executes the query.
 func (u *SkillTagUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the SkillTagCreateBulk instead", i)

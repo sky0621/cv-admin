@@ -34,6 +34,14 @@ func (ucdu *UserCareerDescriptionUpdate) SetDescription(s string) *UserCareerDes
 	return ucdu
 }
 
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (ucdu *UserCareerDescriptionUpdate) SetNillableDescription(s *string) *UserCareerDescriptionUpdate {
+	if s != nil {
+		ucdu.SetDescription(*s)
+	}
+	return ucdu
+}
+
 // SetCareerID sets the "career" edge to the UserCareer entity by ID.
 func (ucdu *UserCareerDescriptionUpdate) SetCareerID(id int) *UserCareerDescriptionUpdate {
 	ucdu.mutation.SetCareerID(id)
@@ -163,6 +171,14 @@ type UserCareerDescriptionUpdateOne struct {
 // SetDescription sets the "description" field.
 func (ucduo *UserCareerDescriptionUpdateOne) SetDescription(s string) *UserCareerDescriptionUpdateOne {
 	ucduo.mutation.SetDescription(s)
+	return ucduo
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (ucduo *UserCareerDescriptionUpdateOne) SetNillableDescription(s *string) *UserCareerDescriptionUpdateOne {
+	if s != nil {
+		ucduo.SetDescription(*s)
+	}
 	return ucduo
 }
 

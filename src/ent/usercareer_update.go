@@ -44,9 +44,25 @@ func (ucu *UserCareerUpdate) SetName(s string) *UserCareerUpdate {
 	return ucu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ucu *UserCareerUpdate) SetNillableName(s *string) *UserCareerUpdate {
+	if s != nil {
+		ucu.SetName(*s)
+	}
+	return ucu
+}
+
 // SetFrom sets the "from" field.
 func (ucu *UserCareerUpdate) SetFrom(s string) *UserCareerUpdate {
 	ucu.mutation.SetFrom(s)
+	return ucu
+}
+
+// SetNillableFrom sets the "from" field if the given value is not nil.
+func (ucu *UserCareerUpdate) SetNillableFrom(s *string) *UserCareerUpdate {
+	if s != nil {
+		ucu.SetFrom(*s)
+	}
 	return ucu
 }
 
@@ -482,9 +498,25 @@ func (ucuo *UserCareerUpdateOne) SetName(s string) *UserCareerUpdateOne {
 	return ucuo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ucuo *UserCareerUpdateOne) SetNillableName(s *string) *UserCareerUpdateOne {
+	if s != nil {
+		ucuo.SetName(*s)
+	}
+	return ucuo
+}
+
 // SetFrom sets the "from" field.
 func (ucuo *UserCareerUpdateOne) SetFrom(s string) *UserCareerUpdateOne {
 	ucuo.mutation.SetFrom(s)
+	return ucuo
+}
+
+// SetNillableFrom sets the "from" field if the given value is not nil.
+func (ucuo *UserCareerUpdateOne) SetNillableFrom(s *string) *UserCareerUpdateOne {
+	if s != nil {
+		ucuo.SetFrom(*s)
+	}
 	return ucuo
 }
 

@@ -42,6 +42,14 @@ func (csgu *CareerSkillGroupUpdate) SetLabel(s string) *CareerSkillGroupUpdate {
 	return csgu
 }
 
+// SetNillableLabel sets the "label" field if the given value is not nil.
+func (csgu *CareerSkillGroupUpdate) SetNillableLabel(s *string) *CareerSkillGroupUpdate {
+	if s != nil {
+		csgu.SetLabel(*s)
+	}
+	return csgu
+}
+
 // SetCareerID sets the "career" edge to the UserCareer entity by ID.
 func (csgu *CareerSkillGroupUpdate) SetCareerID(id int) *CareerSkillGroupUpdate {
 	csgu.mutation.SetCareerID(id)
@@ -270,6 +278,14 @@ func (csguo *CareerSkillGroupUpdateOne) SetUpdateTime(t time.Time) *CareerSkillG
 // SetLabel sets the "label" field.
 func (csguo *CareerSkillGroupUpdateOne) SetLabel(s string) *CareerSkillGroupUpdateOne {
 	csguo.mutation.SetLabel(s)
+	return csguo
+}
+
+// SetNillableLabel sets the "label" field if the given value is not nil.
+func (csguo *CareerSkillGroupUpdateOne) SetNillableLabel(s *string) *CareerSkillGroupUpdateOne {
+	if s != nil {
+		csguo.SetLabel(*s)
+	}
 	return csguo
 }
 

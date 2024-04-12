@@ -41,6 +41,14 @@ func (uniu *UserNoteItemUpdate) SetText(s string) *UserNoteItemUpdate {
 	return uniu
 }
 
+// SetNillableText sets the "text" field if the given value is not nil.
+func (uniu *UserNoteItemUpdate) SetNillableText(s *string) *UserNoteItemUpdate {
+	if s != nil {
+		uniu.SetText(*s)
+	}
+	return uniu
+}
+
 // SetNoteID sets the "note" edge to the UserNote entity by ID.
 func (uniu *UserNoteItemUpdate) SetNoteID(id int) *UserNoteItemUpdate {
 	uniu.mutation.SetNoteID(id)
@@ -188,6 +196,14 @@ func (uniuo *UserNoteItemUpdateOne) SetUpdateTime(t time.Time) *UserNoteItemUpda
 // SetText sets the "text" field.
 func (uniuo *UserNoteItemUpdateOne) SetText(s string) *UserNoteItemUpdateOne {
 	uniuo.mutation.SetText(s)
+	return uniuo
+}
+
+// SetNillableText sets the "text" field if the given value is not nil.
+func (uniuo *UserNoteItemUpdateOne) SetNillableText(s *string) *UserNoteItemUpdateOne {
+	if s != nil {
+		uniuo.SetText(*s)
+	}
 	return uniuo
 }
 

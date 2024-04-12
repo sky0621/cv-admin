@@ -41,6 +41,14 @@ func (uqu *UserQualificationUpdate) SetName(s string) *UserQualificationUpdate {
 	return uqu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uqu *UserQualificationUpdate) SetNillableName(s *string) *UserQualificationUpdate {
+	if s != nil {
+		uqu.SetName(*s)
+	}
+	return uqu
+}
+
 // SetOrganization sets the "organization" field.
 func (uqu *UserQualificationUpdate) SetOrganization(s string) *UserQualificationUpdate {
 	uqu.mutation.SetOrganization(s)
@@ -312,6 +320,14 @@ func (uquo *UserQualificationUpdateOne) SetUpdateTime(t time.Time) *UserQualific
 // SetName sets the "name" field.
 func (uquo *UserQualificationUpdateOne) SetName(s string) *UserQualificationUpdateOne {
 	uquo.mutation.SetName(s)
+	return uquo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uquo *UserQualificationUpdateOne) SetNillableName(s *string) *UserQualificationUpdateOne {
+	if s != nil {
+		uquo.SetName(*s)
+	}
 	return uquo
 }
 

@@ -405,12 +405,16 @@ func (u *CareerTaskUpsertOne) IDX(ctx context.Context) int {
 // CareerTaskCreateBulk is the builder for creating many CareerTask entities in bulk.
 type CareerTaskCreateBulk struct {
 	config
+	err      error
 	builders []*CareerTaskCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the CareerTask entities in the database.
 func (ctcb *CareerTaskCreateBulk) Save(ctx context.Context) ([]*CareerTask, error) {
+	if ctcb.err != nil {
+		return nil, ctcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ctcb.builders))
 	nodes := make([]*CareerTask, len(ctcb.builders))
 	mutators := make([]Mutator, len(ctcb.builders))
@@ -606,6 +610,9 @@ func (u *CareerTaskUpsertBulk) UpdateName() *CareerTaskUpsertBulk {
 
 // Exec executes the query.
 func (u *CareerTaskUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the CareerTaskCreateBulk instead", i)

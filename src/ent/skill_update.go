@@ -42,9 +42,11 @@ func (su *SkillUpdate) SetName(s string) *SkillUpdate {
 	return su
 }
 
-// SetCode sets the "code" field.
-func (su *SkillUpdate) SetCode(s string) *SkillUpdate {
-	su.mutation.SetCode(s)
+// SetNillableName sets the "name" field if the given value is not nil.
+func (su *SkillUpdate) SetNillableName(s *string) *SkillUpdate {
+	if s != nil {
+		su.SetName(*s)
+	}
 	return su
 }
 
@@ -169,11 +171,6 @@ func (su *SkillUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Skill.name": %w`, err)}
 		}
 	}
-	if v, ok := su.mutation.Code(); ok {
-		if err := skill.CodeValidator(v); err != nil {
-			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "Skill.code": %w`, err)}
-		}
-	}
 	if v, ok := su.mutation.URL(); ok {
 		if err := skill.URLValidator(v); err != nil {
 			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Skill.url": %w`, err)}
@@ -202,9 +199,6 @@ func (su *SkillUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := su.mutation.Name(); ok {
 		_spec.SetField(skill.FieldName, field.TypeString, value)
-	}
-	if value, ok := su.mutation.Code(); ok {
-		_spec.SetField(skill.FieldCode, field.TypeString, value)
 	}
 	if value, ok := su.mutation.URL(); ok {
 		_spec.SetField(skill.FieldURL, field.TypeString, value)
@@ -318,9 +312,11 @@ func (suo *SkillUpdateOne) SetName(s string) *SkillUpdateOne {
 	return suo
 }
 
-// SetCode sets the "code" field.
-func (suo *SkillUpdateOne) SetCode(s string) *SkillUpdateOne {
-	suo.mutation.SetCode(s)
+// SetNillableName sets the "name" field if the given value is not nil.
+func (suo *SkillUpdateOne) SetNillableName(s *string) *SkillUpdateOne {
+	if s != nil {
+		suo.SetName(*s)
+	}
 	return suo
 }
 
@@ -458,11 +454,6 @@ func (suo *SkillUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Skill.name": %w`, err)}
 		}
 	}
-	if v, ok := suo.mutation.Code(); ok {
-		if err := skill.CodeValidator(v); err != nil {
-			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "Skill.code": %w`, err)}
-		}
-	}
 	if v, ok := suo.mutation.URL(); ok {
 		if err := skill.URLValidator(v); err != nil {
 			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Skill.url": %w`, err)}
@@ -508,9 +499,6 @@ func (suo *SkillUpdateOne) sqlSave(ctx context.Context) (_node *Skill, err error
 	}
 	if value, ok := suo.mutation.Name(); ok {
 		_spec.SetField(skill.FieldName, field.TypeString, value)
-	}
-	if value, ok := suo.mutation.Code(); ok {
-		_spec.SetField(skill.FieldCode, field.TypeString, value)
 	}
 	if value, ok := suo.mutation.URL(); ok {
 		_spec.SetField(skill.FieldURL, field.TypeString, value)

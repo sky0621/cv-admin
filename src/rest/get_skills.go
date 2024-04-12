@@ -16,9 +16,9 @@ func (s *strictServerImpl) GetSkills(ctx context.Context, request GetSkillsReque
 	var entSkills []*ent.Skill
 	var err error
 	if request.Params.Tag == nil {
-		entSkills, err = s.dbClient.Skill.Query().All(ctx)
+		entSkills, err = s.dbClient.Skill.Query().WithSkillTag().All(ctx)
 	} else {
-		entSkills, err = s.dbClient.Skill.Query().Where(skill.HasSkillTagWith(skilltag.ID(*request.Params.Tag))).All(ctx)
+		entSkills, err = s.dbClient.Skill.Query().Where(skill.HasSkillTagWith(skilltag.ID(*request.Params.Tag))).WithSkillTag().All(ctx)
 	}
 	if err != nil {
 		return nil, err

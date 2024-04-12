@@ -497,12 +497,16 @@ func (u *UserActivityUpsertOne) IDX(ctx context.Context) int {
 // UserActivityCreateBulk is the builder for creating many UserActivity entities in bulk.
 type UserActivityCreateBulk struct {
 	config
+	err      error
 	builders []*UserActivityCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the UserActivity entities in the database.
 func (uacb *UserActivityCreateBulk) Save(ctx context.Context) ([]*UserActivity, error) {
+	if uacb.err != nil {
+		return nil, uacb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(uacb.builders))
 	nodes := make([]*UserActivity, len(uacb.builders))
 	mutators := make([]Mutator, len(uacb.builders))
@@ -740,6 +744,9 @@ func (u *UserActivityUpsertBulk) ClearIcon() *UserActivityUpsertBulk {
 
 // Exec executes the query.
 func (u *UserActivityUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserActivityCreateBulk instead", i)

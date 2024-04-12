@@ -373,12 +373,16 @@ func (u *UserNoteItemUpsertOne) IDX(ctx context.Context) int {
 // UserNoteItemCreateBulk is the builder for creating many UserNoteItem entities in bulk.
 type UserNoteItemCreateBulk struct {
 	config
+	err      error
 	builders []*UserNoteItemCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the UserNoteItem entities in the database.
 func (unicb *UserNoteItemCreateBulk) Save(ctx context.Context) ([]*UserNoteItem, error) {
+	if unicb.err != nil {
+		return nil, unicb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(unicb.builders))
 	nodes := make([]*UserNoteItem, len(unicb.builders))
 	mutators := make([]Mutator, len(unicb.builders))
@@ -574,6 +578,9 @@ func (u *UserNoteItemUpsertBulk) UpdateText() *UserNoteItemUpsertBulk {
 
 // Exec executes the query.
 func (u *UserNoteItemUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserNoteItemCreateBulk instead", i)

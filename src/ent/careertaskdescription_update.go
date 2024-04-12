@@ -34,6 +34,14 @@ func (ctdu *CareerTaskDescriptionUpdate) SetDescription(s string) *CareerTaskDes
 	return ctdu
 }
 
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (ctdu *CareerTaskDescriptionUpdate) SetNillableDescription(s *string) *CareerTaskDescriptionUpdate {
+	if s != nil {
+		ctdu.SetDescription(*s)
+	}
+	return ctdu
+}
+
 // SetCareerTaskID sets the "careerTask" edge to the CareerTask entity by ID.
 func (ctdu *CareerTaskDescriptionUpdate) SetCareerTaskID(id int) *CareerTaskDescriptionUpdate {
 	ctdu.mutation.SetCareerTaskID(id)
@@ -163,6 +171,14 @@ type CareerTaskDescriptionUpdateOne struct {
 // SetDescription sets the "description" field.
 func (ctduo *CareerTaskDescriptionUpdateOne) SetDescription(s string) *CareerTaskDescriptionUpdateOne {
 	ctduo.mutation.SetDescription(s)
+	return ctduo
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (ctduo *CareerTaskDescriptionUpdateOne) SetNillableDescription(s *string) *CareerTaskDescriptionUpdateOne {
+	if s != nil {
+		ctduo.SetDescription(*s)
+	}
 	return ctduo
 }
 

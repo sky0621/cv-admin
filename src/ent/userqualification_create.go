@@ -621,12 +621,16 @@ func (u *UserQualificationUpsertOne) IDX(ctx context.Context) int {
 // UserQualificationCreateBulk is the builder for creating many UserQualification entities in bulk.
 type UserQualificationCreateBulk struct {
 	config
+	err      error
 	builders []*UserQualificationCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the UserQualification entities in the database.
 func (uqcb *UserQualificationCreateBulk) Save(ctx context.Context) ([]*UserQualification, error) {
+	if uqcb.err != nil {
+		return nil, uqcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(uqcb.builders))
 	nodes := make([]*UserQualification, len(uqcb.builders))
 	mutators := make([]Mutator, len(uqcb.builders))
@@ -906,6 +910,9 @@ func (u *UserQualificationUpsertBulk) ClearMemo() *UserQualificationUpsertBulk {
 
 // Exec executes the query.
 func (u *UserQualificationUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserQualificationCreateBulk instead", i)

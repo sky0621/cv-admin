@@ -2,7 +2,8 @@ package rest
 
 import (
 	"context"
-	"errors"
+
+	"github.com/sky0621/cv-admin/src/ent"
 
 	"github.com/sky0621/cv-admin/src/ent/skilltag"
 )
@@ -12,9 +13,8 @@ import (
 func (s *strictServerImpl) GetSkilltagsBySkillTagId(ctx context.Context, request GetSkilltagsBySkillTagIdRequestObject) (GetSkilltagsBySkillTagIdResponseObject, error) {
 	entSkillTag, err := s.dbClient.SkillTag.Query().Where(skilltag.ID(request.BySkillTagId)).Only(ctx)
 	if err != nil {
-		switch {
-		case errors.As(err, &notFound):
-			return GetSkilltagsBySkillTagId404JSONResponse{n404("skillTag is none")}, err
+		if ent.IsNotFound(err) {
+			return GetSkilltagsBySkillTagId404JSONResponse{n404("skillTag is none")}, nil
 		}
 		return nil, err
 	}

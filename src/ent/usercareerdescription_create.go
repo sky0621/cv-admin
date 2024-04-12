@@ -286,12 +286,16 @@ func (u *UserCareerDescriptionUpsertOne) IDX(ctx context.Context) int {
 // UserCareerDescriptionCreateBulk is the builder for creating many UserCareerDescription entities in bulk.
 type UserCareerDescriptionCreateBulk struct {
 	config
+	err      error
 	builders []*UserCareerDescriptionCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the UserCareerDescription entities in the database.
 func (ucdcb *UserCareerDescriptionCreateBulk) Save(ctx context.Context) ([]*UserCareerDescription, error) {
+	if ucdcb.err != nil {
+		return nil, ucdcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ucdcb.builders))
 	nodes := make([]*UserCareerDescription, len(ucdcb.builders))
 	mutators := make([]Mutator, len(ucdcb.builders))
@@ -465,6 +469,9 @@ func (u *UserCareerDescriptionUpsertBulk) UpdateDescription() *UserCareerDescrip
 
 // Exec executes the query.
 func (u *UserCareerDescriptionUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserCareerDescriptionCreateBulk instead", i)

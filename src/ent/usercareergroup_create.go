@@ -405,12 +405,16 @@ func (u *UserCareerGroupUpsertOne) IDX(ctx context.Context) int {
 // UserCareerGroupCreateBulk is the builder for creating many UserCareerGroup entities in bulk.
 type UserCareerGroupCreateBulk struct {
 	config
+	err      error
 	builders []*UserCareerGroupCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the UserCareerGroup entities in the database.
 func (ucgcb *UserCareerGroupCreateBulk) Save(ctx context.Context) ([]*UserCareerGroup, error) {
+	if ucgcb.err != nil {
+		return nil, ucgcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ucgcb.builders))
 	nodes := make([]*UserCareerGroup, len(ucgcb.builders))
 	mutators := make([]Mutator, len(ucgcb.builders))
@@ -606,6 +610,9 @@ func (u *UserCareerGroupUpsertBulk) UpdateLabel() *UserCareerGroupUpsertBulk {
 
 // Exec executes the query.
 func (u *UserCareerGroupUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserCareerGroupCreateBulk instead", i)

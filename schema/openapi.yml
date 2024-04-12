@@ -582,8 +582,6 @@ components:
           $ref: "#/components/schemas/SkillTagId"
         name:
           $ref: "#/components/schemas/SkillTagName"
-        code:
-          $ref: "#/components/schemas/SkillTagCode"
     Skill:
       type: object
       description: "１スキルの属性"
@@ -592,12 +590,10 @@ components:
           $ref: "#/components/schemas/SkillId"
         name:
           $ref: "#/components/schemas/SkillName"
-        code:
-          $ref: "#/components/schemas/SkillCode"
         url:
           $ref: "#/components/schemas/Url"
-        tagCode:
-          $ref: "#/components/schemas/SkillTagCode"
+        tagId:
+          $ref: "#/components/schemas/SkillTagId"
     UserId:
       type: integer
       format: int
@@ -734,14 +730,6 @@ components:
       type: string
       description: "スキル名"
       example: "Golang"
-    SkillCode:
-      type: string
-      description: "スキルコード"
-      example: "golang"
-    SkillTagCode:
-      type: string
-      description: "スキルタグコード"
-      example: "aws"
     SkillVersion:
       type: string
       description: "スキルバージョン"
@@ -925,8 +913,6 @@ components:
       properties:
         name:
           $ref: "#/components/schemas/SkillName"
-        code:
-          $ref: "#/components/schemas/SkillCode"
         url:
           $ref: "#/components/schemas/Url"
         versions:
@@ -939,8 +925,6 @@ components:
       properties:
         tagName:
           $ref: "#/components/schemas/SkillTagName"
-        tagCode:
-          $ref: "#/components/schemas/SkillTagCode"
         skills:
           type: array
           items:

@@ -41,6 +41,14 @@ func (uau *UserActivityUpdate) SetName(s string) *UserActivityUpdate {
 	return uau
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uau *UserActivityUpdate) SetNillableName(s *string) *UserActivityUpdate {
+	if s != nil {
+		uau.SetName(*s)
+	}
+	return uau
+}
+
 // SetURL sets the "url" field.
 func (uau *UserActivityUpdate) SetURL(s string) *UserActivityUpdate {
 	uau.mutation.SetURL(s)
@@ -250,6 +258,14 @@ func (uauo *UserActivityUpdateOne) SetUpdateTime(t time.Time) *UserActivityUpdat
 // SetName sets the "name" field.
 func (uauo *UserActivityUpdateOne) SetName(s string) *UserActivityUpdateOne {
 	uauo.mutation.SetName(s)
+	return uauo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uauo *UserActivityUpdateOne) SetNillableName(s *string) *UserActivityUpdateOne {
+	if s != nil {
+		uauo.SetName(*s)
+	}
 	return uauo
 }
 

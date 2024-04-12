@@ -35,16 +35,21 @@ func (s *strictServerImpl) PostSkillrecords(ctx context.Context, request PostSki
 		if slice.Contains(helper.PickupSkillName(entSkills), *skill_.Name) {
 			return PostSkillrecords400JSONResponse{n400("already registered under the same name")}, nil
 		}
-		if slice.Contains(helper.PickupSkillCode(entSkills), *skill_.Code) {
-			return PostSkillrecords400JSONResponse{n400("already registered under the same key")}, nil
-		}
 	}
 
 	var createdEntSkills []*ent.Skill
 	if err := helper.WithTransaction(ctx, s.dbClient, func(tx *ent.Tx) error {
 		var entSkillCreates []*ent.SkillCreate
 		for _, skill_ := range skills {
-			entSkillCreates = append(entSkillCreates, ToEntSkillCreate(skill_, s.dbClient.Skill.Create()))
+			entSkillTag, err := s.dbClient.SkillTag.Get(ctx, *skill_.SkillTagID)
+			if err != nil {
+				return err
+			}
+			if entSkillTag == nil {
+				return errors.New("no skill tag")
+			}
+
+			entSkillCreates = append(entSkillCreates, ToEntSkillCreate(skill_, entSkillTag, s.dbClient.Skill.Create()))
 		}
 		createdEntSkills, err = s.dbClient.Skill.CreateBulk(entSkillCreates...).Save(ctx)
 		if err != nil {

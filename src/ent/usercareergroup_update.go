@@ -42,6 +42,14 @@ func (ucgu *UserCareerGroupUpdate) SetLabel(s string) *UserCareerGroupUpdate {
 	return ucgu
 }
 
+// SetNillableLabel sets the "label" field if the given value is not nil.
+func (ucgu *UserCareerGroupUpdate) SetNillableLabel(s *string) *UserCareerGroupUpdate {
+	if s != nil {
+		ucgu.SetLabel(*s)
+	}
+	return ucgu
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (ucgu *UserCareerGroupUpdate) SetUserID(id int) *UserCareerGroupUpdate {
 	ucgu.mutation.SetUserID(id)
@@ -270,6 +278,14 @@ func (ucguo *UserCareerGroupUpdateOne) SetUpdateTime(t time.Time) *UserCareerGro
 // SetLabel sets the "label" field.
 func (ucguo *UserCareerGroupUpdateOne) SetLabel(s string) *UserCareerGroupUpdateOne {
 	ucguo.mutation.SetLabel(s)
+	return ucguo
+}
+
+// SetNillableLabel sets the "label" field if the given value is not nil.
+func (ucguo *UserCareerGroupUpdateOne) SetNillableLabel(s *string) *UserCareerGroupUpdateOne {
+	if s != nil {
+		ucguo.SetLabel(*s)
+	}
 	return ucguo
 }
 

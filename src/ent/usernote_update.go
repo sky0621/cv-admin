@@ -42,6 +42,14 @@ func (unu *UserNoteUpdate) SetLabel(s string) *UserNoteUpdate {
 	return unu
 }
 
+// SetNillableLabel sets the "label" field if the given value is not nil.
+func (unu *UserNoteUpdate) SetNillableLabel(s *string) *UserNoteUpdate {
+	if s != nil {
+		unu.SetLabel(*s)
+	}
+	return unu
+}
+
 // SetMemo sets the "memo" field.
 func (unu *UserNoteUpdate) SetMemo(s string) *UserNoteUpdate {
 	unu.mutation.SetMemo(s)
@@ -301,6 +309,14 @@ func (unuo *UserNoteUpdateOne) SetUpdateTime(t time.Time) *UserNoteUpdateOne {
 // SetLabel sets the "label" field.
 func (unuo *UserNoteUpdateOne) SetLabel(s string) *UserNoteUpdateOne {
 	unuo.mutation.SetLabel(s)
+	return unuo
+}
+
+// SetNillableLabel sets the "label" field if the given value is not nil.
+func (unuo *UserNoteUpdateOne) SetNillableLabel(s *string) *UserNoteUpdateOne {
+	if s != nil {
+		unuo.SetLabel(*s)
+	}
 	return unuo
 }
 

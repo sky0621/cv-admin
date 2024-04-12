@@ -58,26 +58,10 @@ func PickupSkillTagName(skillTags []*ent.SkillTag) []string {
 	return results
 }
 
-func PickupSkillTagCode(skillTags []*ent.SkillTag) []string {
-	results := make([]string, len(skillTags))
-	for _, s := range skillTags {
-		results = append(results, s.Code)
-	}
-	return results
-}
-
 func PickupSkillName(skills []*ent.Skill) []string {
 	results := make([]string, len(skills))
 	for _, s := range skills {
 		results = append(results, s.Name)
-	}
-	return results
-}
-
-func PickupSkillCode(skills []*ent.Skill) []string {
-	results := make([]string, len(skills))
-	for _, s := range skills {
-		results = append(results, s.Code)
 	}
 	return results
 }

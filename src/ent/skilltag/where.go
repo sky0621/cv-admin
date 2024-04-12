@@ -58,11 +58,6 @@ func Name(v string) predicate.SkillTag {
 	return predicate.SkillTag(sql.FieldEQ(FieldName, v))
 }
 
-// Code applies equality check predicate on the "code" field. It's identical to CodeEQ.
-func Code(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldEQ(FieldCode, v))
-}
-
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.SkillTag {
 	return predicate.SkillTag(sql.FieldEQ(FieldName, v))
@@ -128,71 +123,6 @@ func NameContainsFold(v string) predicate.SkillTag {
 	return predicate.SkillTag(sql.FieldContainsFold(FieldName, v))
 }
 
-// CodeEQ applies the EQ predicate on the "code" field.
-func CodeEQ(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldEQ(FieldCode, v))
-}
-
-// CodeNEQ applies the NEQ predicate on the "code" field.
-func CodeNEQ(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldNEQ(FieldCode, v))
-}
-
-// CodeIn applies the In predicate on the "code" field.
-func CodeIn(vs ...string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldIn(FieldCode, vs...))
-}
-
-// CodeNotIn applies the NotIn predicate on the "code" field.
-func CodeNotIn(vs ...string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldNotIn(FieldCode, vs...))
-}
-
-// CodeGT applies the GT predicate on the "code" field.
-func CodeGT(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldGT(FieldCode, v))
-}
-
-// CodeGTE applies the GTE predicate on the "code" field.
-func CodeGTE(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldGTE(FieldCode, v))
-}
-
-// CodeLT applies the LT predicate on the "code" field.
-func CodeLT(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldLT(FieldCode, v))
-}
-
-// CodeLTE applies the LTE predicate on the "code" field.
-func CodeLTE(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldLTE(FieldCode, v))
-}
-
-// CodeContains applies the Contains predicate on the "code" field.
-func CodeContains(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldContains(FieldCode, v))
-}
-
-// CodeHasPrefix applies the HasPrefix predicate on the "code" field.
-func CodeHasPrefix(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldHasPrefix(FieldCode, v))
-}
-
-// CodeHasSuffix applies the HasSuffix predicate on the "code" field.
-func CodeHasSuffix(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldHasSuffix(FieldCode, v))
-}
-
-// CodeEqualFold applies the EqualFold predicate on the "code" field.
-func CodeEqualFold(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldEqualFold(FieldCode, v))
-}
-
-// CodeContainsFold applies the ContainsFold predicate on the "code" field.
-func CodeContainsFold(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldContainsFold(FieldCode, v))
-}
-
 // HasSkills applies the HasEdge predicate on the "skills" edge.
 func HasSkills() predicate.SkillTag {
 	return predicate.SkillTag(func(s *sql.Selector) {
@@ -218,32 +148,15 @@ func HasSkillsWith(preds ...predicate.Skill) predicate.SkillTag {
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.SkillTag) predicate.SkillTag {
-	return predicate.SkillTag(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.SkillTag(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.SkillTag) predicate.SkillTag {
-	return predicate.SkillTag(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.SkillTag(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.SkillTag) predicate.SkillTag {
-	return predicate.SkillTag(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.SkillTag(sql.NotPredicates(p))
 }

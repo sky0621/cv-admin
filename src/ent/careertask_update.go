@@ -42,6 +42,14 @@ func (ctu *CareerTaskUpdate) SetName(s string) *CareerTaskUpdate {
 	return ctu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ctu *CareerTaskUpdate) SetNillableName(s *string) *CareerTaskUpdate {
+	if s != nil {
+		ctu.SetName(*s)
+	}
+	return ctu
+}
+
 // SetCareerID sets the "career" edge to the UserCareer entity by ID.
 func (ctu *CareerTaskUpdate) SetCareerID(id int) *CareerTaskUpdate {
 	ctu.mutation.SetCareerID(id)
@@ -270,6 +278,14 @@ func (ctuo *CareerTaskUpdateOne) SetUpdateTime(t time.Time) *CareerTaskUpdateOne
 // SetName sets the "name" field.
 func (ctuo *CareerTaskUpdateOne) SetName(s string) *CareerTaskUpdateOne {
 	ctuo.mutation.SetName(s)
+	return ctuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ctuo *CareerTaskUpdateOne) SetNillableName(s *string) *CareerTaskUpdateOne {
+	if s != nil {
+		ctuo.SetName(*s)
+	}
 	return ctuo
 }
 
