@@ -3,7 +3,7 @@ module github.com/sky0621/cv-admin
 go 1.22
 
 require (
-	entgo.io/ent v0.13.0
+	entgo.io/ent v0.13.1
 	github.com/deepmap/oapi-codegen v1.16.2
 	github.com/getkin/kin-openapi v0.123.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
