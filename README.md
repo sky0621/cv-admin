@@ -98,14 +98,14 @@ sample/skill_sheet.xlsx
 
 ```
 Mac Book Air M2 2022
-Ventura 13.2.1
+Sonoma 14.4.1
 ```
 
 ### go
 
 ```
 ❯ go version
-go version go1.20.2 darwin/arm64
+go version go1.22.0 darwin/arm64
 ```
 
 ## setup

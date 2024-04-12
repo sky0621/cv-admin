@@ -19,7 +19,9 @@ func (s *strictServerImpl) GetUsersByUserIdCareergroups(ctx context.Context, req
 		q.WithCareerDescriptions()
 		q.WithCareerSkillGroups(func(q *ent.CareerSkillGroupQuery) {
 			q.WithCareerSkills(func(q *ent.CareerSkillQuery) {
-				q.WithSkill()
+				q.WithSkill(func(q *ent.SkillQuery) {
+					q.WithSkillTag()
+				})
 			})
 		})
 		q.WithCareerTasks(func(q *ent.CareerTaskQuery) {
