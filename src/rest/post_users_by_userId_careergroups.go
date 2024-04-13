@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 
+	"github.com/sky0621/cv-admin/src/ent/skill"
+
 	pkgerrors "github.com/pkg/errors"
 	"github.com/sky0621/cv-admin/src/ent"
 	"github.com/sky0621/cv-admin/src/ent/helper"
@@ -139,7 +141,7 @@ func (s *strictServerImpl) PostUsersByUserIdCareergroups(ctx context.Context, re
 						}
 
 						for i, careerSkill := range careerSkills {
-							skill, err := tx.Skill.Get(ctx, skillIDs[i])
+							skill, err := tx.Skill.Query().Where(skill.ID(skillIDs[i])).WithSkillTag().Only(ctx)
 							if err != nil {
 								return err
 							}
