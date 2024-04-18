@@ -676,6 +676,12 @@ components:
       type: string
       description: "メモ"
       example: "期限切れ"
+    CareerId:
+      type: integer
+      format: int
+      description: "キャリアを一意に識別するID"
+      example: 1
+      x-go-name: CareerID
     CareerName:
       type: string
       description: "キャリア名"
@@ -836,6 +842,8 @@ components:
       type: object
       description: "１キャリアグループのキャリア"
       properties:
+        id:
+          $ref: "#/components/schemas/CareerId"
         name:
           $ref: "#/components/schemas/CareerName"
         description:
@@ -858,6 +866,8 @@ components:
       type: object
       description: "１ユーザーのキャリアグループ"
       properties:
+        id:
+          $ref: "#/components/schemas/CareerGroupId"
         label:
           $ref: "#/components/schemas/CareerGroupLabel"
         careers:
@@ -869,6 +879,8 @@ components:
       type: object
       description: "１ユーザーのキャリアグループ自身"
       properties:
+        id:
+          $ref: "#/components/schemas/CareerGroupId"
         label:
           $ref: "#/components/schemas/CareerGroupLabel"
     UserNoteItem:

@@ -139,6 +139,7 @@ func ToSwaggerCareerSkillGroups(entCareerSkillGroups []*ent.CareerSkillGroup) *[
 
 func ToSwaggerUserCareer(entCareer *ent.UserCareer) UserCareer {
 	return UserCareer{
+		CareerID:    &entCareer.ID,
 		Name:        &entCareer.Name,
 		Description: ToSwaggerUserCareerDescriptions(entCareer.Edges.CareerDescriptions),
 		From:        ToSwaggerUserCareerPeriodFrom(entCareer.From),
@@ -150,6 +151,7 @@ func ToSwaggerUserCareer(entCareer *ent.UserCareer) UserCareer {
 
 func ToSwaggerUserCareerGroup(entCareerGroup *ent.UserCareerGroup) UserCareerGroup {
 	careerGroup := UserCareerGroup{}
+	careerGroup.CareerGroupID = &entCareerGroup.ID
 	careerGroup.Label = &entCareerGroup.Label
 	careerGroup.Careers = &[]UserCareer{}
 	for _, entCareer := range entCareerGroup.Edges.Careers {
