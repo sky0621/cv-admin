@@ -374,6 +374,19 @@ paths:
     parameters:
       - $ref: "#/components/parameters/userId"
       - $ref: "#/components/parameters/careerGroupId"
+    get:
+      summary: "１キャリア取得"
+      description: "指定ユーザーの指定１キャリアを取得する。"
+      tags: ["users"]
+      responses:
+        "200":
+          description: "OK: 指定ユーザーの指定１キャリアを返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCareerGroup"
+        "404":
+          $ref: "#/components/responses/404-NotFound"
     put:
       summary: "【未実装】キャリアグループ更新"
       description: "１キャリアグループを更新する。"

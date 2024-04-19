@@ -507,6 +507,9 @@ type ServerInterface interface {
 	// 【未実装】キャリアグループ削除
 	// (DELETE /users/{byUserId}/careergroups/{byCareerGroupId})
 	DeleteUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error
+	// １キャリア取得
+	// (GET /users/{byUserId}/careergroups/{byCareerGroupId})
+	GetUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error
 	// 【未実装】キャリアグループ更新
 	// (PUT /users/{byUserId}/careergroups/{byCareerGroupId})
 	PutUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error
@@ -793,6 +796,30 @@ func (w *ServerInterfaceWrapper) DeleteUsersByUserIdCareergroupsByCareerGroupId(
 	return err
 }
 
+// GetUsersByUserIdCareergroupsByCareerGroupId converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "byUserId" -------------
+	var byUserId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserId", runtime.ParamLocationPath, ctx.Param("byUserId"), &byUserId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserId: %s", err))
+	}
+
+	// ------------- Path parameter "byCareerGroupId" -------------
+	var byCareerGroupId CareerGroupId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byCareerGroupId", runtime.ParamLocationPath, ctx.Param("byCareerGroupId"), &byCareerGroupId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byCareerGroupId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetUsersByUserIdCareergroupsByCareerGroupId(ctx, byUserId, byCareerGroupId)
+	return err
+}
+
 // PutUsersByUserIdCareergroupsByCareerGroupId converts echo context to params.
 func (w *ServerInterfaceWrapper) PutUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context) error {
 	var err error
@@ -1038,6 +1065,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/users/:byUserId/careergroups", wrapper.GetUsersByUserIdCareergroups)
 	router.POST(baseURL+"/users/:byUserId/careergroups", wrapper.PostUsersByUserIdCareergroups)
 	router.DELETE(baseURL+"/users/:byUserId/careergroups/:byCareerGroupId", wrapper.DeleteUsersByUserIdCareergroupsByCareerGroupId)
+	router.GET(baseURL+"/users/:byUserId/careergroups/:byCareerGroupId", wrapper.GetUsersByUserIdCareergroupsByCareerGroupId)
 	router.PUT(baseURL+"/users/:byUserId/careergroups/:byCareerGroupId", wrapper.PutUsersByUserIdCareergroupsByCareerGroupId)
 	router.PUT(baseURL+"/users/:byUserId/careergroups/:byCareerGroupId/careers", wrapper.PutUsersByUserIdCareergroupsByCareerGroupIdCareers)
 	router.GET(baseURL+"/users/:byUserId/notes", wrapper.GetUsersByUserIdNotes)
@@ -1504,6 +1532,33 @@ func (response DeleteUsersByUserIdCareergroupsByCareerGroupId404JSONResponse) Vi
 	return json.NewEncoder(w).Encode(response)
 }
 
+type GetUsersByUserIdCareergroupsByCareerGroupIdRequestObject struct {
+	ByUserId        UserId        `json:"byUserId"`
+	ByCareerGroupId CareerGroupId `json:"byCareerGroupId"`
+}
+
+type GetUsersByUserIdCareergroupsByCareerGroupIdResponseObject interface {
+	VisitGetUsersByUserIdCareergroupsByCareerGroupIdResponse(w http.ResponseWriter) error
+}
+
+type GetUsersByUserIdCareergroupsByCareerGroupId200JSONResponse UserCareerGroup
+
+func (response GetUsersByUserIdCareergroupsByCareerGroupId200JSONResponse) VisitGetUsersByUserIdCareergroupsByCareerGroupIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetUsersByUserIdCareergroupsByCareerGroupId404JSONResponse struct{ N404NotFoundJSONResponse }
+
+func (response GetUsersByUserIdCareergroupsByCareerGroupId404JSONResponse) VisitGetUsersByUserIdCareergroupsByCareerGroupIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type PutUsersByUserIdCareergroupsByCareerGroupIdRequestObject struct {
 	ByUserId        UserId        `json:"byUserId"`
 	ByCareerGroupId CareerGroupId `json:"byCareerGroupId"`
@@ -1881,6 +1936,9 @@ type StrictServerInterface interface {
 	// 【未実装】キャリアグループ削除
 	// (DELETE /users/{byUserId}/careergroups/{byCareerGroupId})
 	DeleteUsersByUserIdCareergroupsByCareerGroupId(ctx context.Context, request DeleteUsersByUserIdCareergroupsByCareerGroupIdRequestObject) (DeleteUsersByUserIdCareergroupsByCareerGroupIdResponseObject, error)
+	// １キャリア取得
+	// (GET /users/{byUserId}/careergroups/{byCareerGroupId})
+	GetUsersByUserIdCareergroupsByCareerGroupId(ctx context.Context, request GetUsersByUserIdCareergroupsByCareerGroupIdRequestObject) (GetUsersByUserIdCareergroupsByCareerGroupIdResponseObject, error)
 	// 【未実装】キャリアグループ更新
 	// (PUT /users/{byUserId}/careergroups/{byCareerGroupId})
 	PutUsersByUserIdCareergroupsByCareerGroupId(ctx context.Context, request PutUsersByUserIdCareergroupsByCareerGroupIdRequestObject) (PutUsersByUserIdCareergroupsByCareerGroupIdResponseObject, error)
@@ -2384,6 +2442,32 @@ func (sh *strictHandler) DeleteUsersByUserIdCareergroupsByCareerGroupId(ctx echo
 	return nil
 }
 
+// GetUsersByUserIdCareergroupsByCareerGroupId operation middleware
+func (sh *strictHandler) GetUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error {
+	var request GetUsersByUserIdCareergroupsByCareerGroupIdRequestObject
+
+	request.ByUserId = byUserId
+	request.ByCareerGroupId = byCareerGroupId
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetUsersByUserIdCareergroupsByCareerGroupId(ctx.Request().Context(), request.(GetUsersByUserIdCareergroupsByCareerGroupIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetUsersByUserIdCareergroupsByCareerGroupId")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetUsersByUserIdCareergroupsByCareerGroupIdResponseObject); ok {
+		return validResponse.VisitGetUsersByUserIdCareergroupsByCareerGroupIdResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("Unexpected response type: %T", response)
+	}
+	return nil
+}
+
 // PutUsersByUserIdCareergroupsByCareerGroupId operation middleware
 func (sh *strictHandler) PutUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error {
 	var request PutUsersByUserIdCareergroupsByCareerGroupIdRequestObject
@@ -2732,16 +2816,17 @@ var swaggerSpec = []string{
 	"NQL5q5Hu0VoqaOlYV8KDAUmcKoJeXBr6ZwqJFnJV9yLJcVjGBJfm3afn2KHTSd+JgdKh18X+ILY2CTV+",
 	"dFnSns3I2tuLdY585m+r5sxyAgTz2K0ntaxv4GOf3OwstmyHG20LYhCWiNlZwYGcUys4BwuTlFb0I1mt",
 	"VVf73Hz0Kpm4D/+1l0+iVNGVKiuUYFfAJ2SkGHq935xZ3nxyg7l5DnWC7oCQx+y9b6kD5JM01RFK/5xK",
-	"FzqTbrdoBaDQ556Dm5Hde9Qp8pb6drd7DlJ+PKqFlj786G93+nk4Nm3OLRhL9zYfjcOxUP10vKvnYp/0",
-	"/mJXaMkTbdSkJU+cRbuOP0d+KLNBUKbrHLSZ68h5zs8LhticvfWCKYhHade5/883UsixYN/lgg7OQiLC",
-	"ap+ln27OSHp5naLzsdsRlhiDuQUf+YcLbySIV4rEE5SypCYdPJND7q31QocxuV65Eb5a0Y4TuUXtxvar",
-	"vXzvOhvn905a7GOaBuxOAUFM1vvOpUk3ScviaPPzgQ7CUivtCIYC9AH5rZy4BsSRvYV2A3vRoPvXYpM3",
-	"GBb9HrUT1qWj3jcP1g/uRtVCzZhO2CMEzdC9oN6mdsBDOhHqf/5VvxXqiWp8f5CnnWS67Q5MyjJyna+z",
-	"RbvHzw9ggbt8jSH6nuU2VtbRTLHX1mEm+8yDxbg87nCbuFY+574dmLBodt+pbK10Pual3iuH8d4ebcdr",
-	"giroQkntI7K9+5VBiTuFaBRn6M7IwSdCkrlCYs8J0tomkOy5z28LQPp4SwyHMbfJQkasnjtTSTGwh1fB",
-	"PFeP29tBjb4m1ok9qYi7Ze0fWkS0BPm8/Z7/jPELLOwiIv/TsvFQB9Y9cvxzYdl0uijl+OKIpKjZixVJ",
-	"VmuAA+d5WeSHi4J1U1W2vOcMXy2qIAt2Z3ZnQOC8ln4XD70mGrcXjBtvAAeEcrWEJLQe/yKTySBXRRBt",
-	"CR9+U0RbNF5+JEbYd/zUUPN/i2E5Napro374I+x1ou3a6dr/BwAA///OzjS3xGUAAA==",
+	"FzqTbrdoBaDQ556Dm5Hde9Qp8pb6drd7DlJ+PKqFlj786G93+nk4Nm3OLRhL9zYfjcOxUP1EdPXsCYJ8",
+	"GLBCW6khVu2ZXoZqaEIIE70LqcBHpOPwz8U+6f2ttdBiNTockxarcU7R9cxx5IcyW/LIdJ2DNqsUchL3",
+	"80ogbDDVeqkbzCRp142NzzdSyIFu37WQDk6xIsJqn6Wfbk63enkRpvOx2xGWGIO5BR/5hwtvJIhXisSz",
+	"r7KkJt0yINcTWutiD2NyvXIjfCmmHSdyi9qNjXN7+d71pM4v1bTYgTYN2J0Cgpis9z1nk26SZtPR5ucD",
+	"HYSlVhpJDAXoA/IrR3GtoyN7C40i9qJB9+/8Jm8NLfo9agSt62Kd3syNL4msn0qOqoWaMZ2wRwiaoXtB",
+	"vU3tgId0ItT//Kt+K9QT1fj+IE87yXTbHZiUZeQiZmeLdo+fH8ACd/kCSvQN2W2srKOZYq+tw0z2mQeL",
+	"cXnc4TZxrXzOfa8zYdHsvg3bWul8zEu9Vw7jvffbjtcEVdCFktpHZHt3moMSdwrRKM7QnZGDT4Qkc4XE",
+	"nhOktU0g2XOf3xaA9PGWGA5j7gGGjFg9t92SYmAPL/F5Lo23t/cdfcGvE7uJEbcC2z9uimgJ8nn7Pf/p",
+	"8BdY2EVE/qdl46EOrF8AwD/0lk2ni1KOL45Iipq9WJFktQY4cJ6XRX64KFh3jGXLe87w1aIKsmB3ZncG",
+	"BE7a6Xfx0GuicXvBuPEGcEAoV0tIQuvxLzKZDHJVBNGW8OF3fLRF4+VHYoR9x08NNf+HJpZTo7o26idb",
+	"wl4n2q6drv1/AAAA//80HMl4fmcAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
