@@ -422,6 +422,25 @@ paths:
     parameters:
       - $ref: "#/components/parameters/userId"
       - $ref: "#/components/parameters/careerGroupId"
+    post:
+      summary: "１キャリアグループ内の１キャリア登録"
+      description: "１キャリアグループ内の１キャリアを登録する。"
+      tags: ["users"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCareer"
+      responses:
+        "201":
+          description: "Created: 作成した１キャリアを返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCareer"
+        "400":
+          $ref: "#/components/responses/400-BadRequest"
     put:
       summary: "【未実装】キャリアグループ内キャリア群最新化"
       description: "１キャリアグループ内のキャリア群を最新化（総洗い替え）する。"
