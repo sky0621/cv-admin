@@ -375,12 +375,12 @@ paths:
       - $ref: "#/components/parameters/userId"
       - $ref: "#/components/parameters/careerGroupId"
     get:
-      summary: "１キャリア取得"
-      description: "指定ユーザーの指定１キャリアを取得する。"
+      summary: "１キャリアグループ取得"
+      description: "指定ユーザーの指定１キャリアグループを取得する。"
       tags: ["users"]
       responses:
         "200":
-          description: "OK: 指定ユーザーの指定１キャリアを返却する。"
+          description: "OK: 指定ユーザーの指定１キャリアグループを返却する。"
           content:
             application/json:
               schema:
@@ -446,6 +446,25 @@ paths:
                   $ref: "#/components/schemas/UserCareer"
         "400":
           $ref: "#/components/responses/400-BadRequest"
+        "404":
+          $ref: "#/components/responses/404-NotFound"
+
+  "/users/{byUserId}/careergroups/{byCareerGroupId}/careers/{byCareerId}":
+    parameters:
+      - $ref: "#/components/parameters/userId"
+      - $ref: "#/components/parameters/careerGroupId"
+      - $ref: "#/components/parameters/careerId"
+    get:
+      summary: "１キャリア取得"
+      description: "指定ユーザーの指定１キャリアを取得する。"
+      tags: ["users"]
+      responses:
+        "200":
+          description: "OK: 指定ユーザーの指定１キャリアを返却する。"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCareer"
         "404":
           $ref: "#/components/responses/404-NotFound"
 
@@ -1003,6 +1022,12 @@ components:
       required: true
       schema:
         $ref: "#/components/schemas/CareerGroupId"
+    careerId:
+      name: "byCareerId"
+      in: "path"
+      required: true
+      schema:
+        $ref: "#/components/schemas/CareerId"
 
   responses:
     400-BadRequest:
