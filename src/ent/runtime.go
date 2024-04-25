@@ -20,6 +20,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
+	"github.com/sky0621/cv-admin/src/ent/usersolution"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -521,4 +522,23 @@ func init() {
 	userqualificationDescMemo := userqualificationFields[4].Descriptor()
 	// userqualification.MemoValidator is a validator for the "memo" field. It is called by the builders before save.
 	userqualification.MemoValidator = userqualificationDescMemo.Validators[0].(func(string) error)
+	usersolutionMixin := schema.UserSolution{}.Mixin()
+	usersolutionMixinFields0 := usersolutionMixin[0].Fields()
+	_ = usersolutionMixinFields0
+	usersolutionFields := schema.UserSolution{}.Fields()
+	_ = usersolutionFields
+	// usersolutionDescCreateTime is the schema descriptor for create_time field.
+	usersolutionDescCreateTime := usersolutionMixinFields0[0].Descriptor()
+	// usersolution.DefaultCreateTime holds the default value on creation for the create_time field.
+	usersolution.DefaultCreateTime = usersolutionDescCreateTime.Default.(func() time.Time)
+	// usersolutionDescUpdateTime is the schema descriptor for update_time field.
+	usersolutionDescUpdateTime := usersolutionMixinFields0[1].Descriptor()
+	// usersolution.DefaultUpdateTime holds the default value on creation for the update_time field.
+	usersolution.DefaultUpdateTime = usersolutionDescUpdateTime.Default.(func() time.Time)
+	// usersolution.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	usersolution.UpdateDefaultUpdateTime = usersolutionDescUpdateTime.UpdateDefault.(func() time.Time)
+	// usersolutionDescContent is the schema descriptor for content field.
+	usersolutionDescContent := usersolutionFields[0].Descriptor()
+	// usersolution.ContentValidator is a validator for the "content" field. It is called by the builders before save.
+	usersolution.ContentValidator = usersolutionDescContent.Validators[0].(func(string) error)
 }

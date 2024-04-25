@@ -47,3 +47,6 @@ type UserNoteItem func(*sql.Selector)
 
 // UserQualification is the predicate function for userqualification builders.
 type UserQualification func(*sql.Selector)
+
+// UserSolution is the predicate function for usersolution builders.
+type UserSolution func(*sql.Selector)

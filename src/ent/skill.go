@@ -47,12 +47,10 @@ type SkillEdges struct {
 // SkillTagOrErr returns the SkillTag value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e SkillEdges) SkillTagOrErr() (*SkillTag, error) {
-	if e.loadedTypes[0] {
-		if e.SkillTag == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: skilltag.Label}
-		}
+	if e.SkillTag != nil {
 		return e.SkillTag, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: skilltag.Label}
 	}
 	return nil, &NotLoadedError{edge: "skillTag"}
 }

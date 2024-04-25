@@ -40,6 +40,8 @@ type Tx struct {
 	UserNoteItem *UserNoteItemClient
 	// UserQualification is the client for interacting with the UserQualification builders.
 	UserQualification *UserQualificationClient
+	// UserSolution is the client for interacting with the UserSolution builders.
+	UserSolution *UserSolutionClient
 
 	// lazily loaded.
 	client     *Client
@@ -185,6 +187,7 @@ func (tx *Tx) init() {
 	tx.UserNote = NewUserNoteClient(tx.config)
 	tx.UserNoteItem = NewUserNoteItemClient(tx.config)
 	tx.UserQualification = NewUserQualificationClient(tx.config)
+	tx.UserSolution = NewUserSolutionClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

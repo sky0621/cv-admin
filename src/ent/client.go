@@ -29,6 +29,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
+	"github.com/sky0621/cv-admin/src/ent/usersolution"
 )
 
 // Client is the client that holds all ent builders.
@@ -64,6 +65,8 @@ type Client struct {
 	UserNoteItem *UserNoteItemClient
 	// UserQualification is the client for interacting with the UserQualification builders.
 	UserQualification *UserQualificationClient
+	// UserSolution is the client for interacting with the UserSolution builders.
+	UserSolution *UserSolutionClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -89,6 +92,7 @@ func (c *Client) init() {
 	c.UserNote = NewUserNoteClient(c.config)
 	c.UserNoteItem = NewUserNoteItemClient(c.config)
 	c.UserQualification = NewUserQualificationClient(c.config)
+	c.UserSolution = NewUserSolutionClient(c.config)
 }
 
 type (
@@ -195,6 +199,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		UserNote:              NewUserNoteClient(cfg),
 		UserNoteItem:          NewUserNoteItemClient(cfg),
 		UserQualification:     NewUserQualificationClient(cfg),
+		UserSolution:          NewUserSolutionClient(cfg),
 	}, nil
 }
 
@@ -228,6 +233,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		UserNote:              NewUserNoteClient(cfg),
 		UserNoteItem:          NewUserNoteItemClient(cfg),
 		UserQualification:     NewUserQualificationClient(cfg),
+		UserSolution:          NewUserSolutionClient(cfg),
 	}, nil
 }
 
@@ -260,7 +266,7 @@ func (c *Client) Use(hooks ...Hook) {
 		c.CareerSkill, c.CareerSkillGroup, c.CareerTask, c.CareerTaskDescription,
 		c.Skill, c.SkillTag, c.User, c.UserActivity, c.UserCareer,
 		c.UserCareerDescription, c.UserCareerGroup, c.UserNote, c.UserNoteItem,
-		c.UserQualification,
+		c.UserQualification, c.UserSolution,
 	} {
 		n.Use(hooks...)
 	}
@@ -273,7 +279,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.CareerSkill, c.CareerSkillGroup, c.CareerTask, c.CareerTaskDescription,
 		c.Skill, c.SkillTag, c.User, c.UserActivity, c.UserCareer,
 		c.UserCareerDescription, c.UserCareerGroup, c.UserNote, c.UserNoteItem,
-		c.UserQualification,
+		c.UserQualification, c.UserSolution,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -310,6 +316,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.UserNoteItem.mutate(ctx, m)
 	case *UserQualificationMutation:
 		return c.UserQualification.mutate(ctx, m)
+	case *UserSolutionMutation:
+		return c.UserSolution.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -1438,6 +1446,22 @@ func (c *UserClient) QueryNotes(u *User) *UserNoteQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(usernote.Table, usernote.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.NotesTable, user.NotesColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySolutions queries the solutions edge of a User.
+func (c *UserClient) QuerySolutions(u *User) *UserSolutionQuery {
+	query := (&UserSolutionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(usersolution.Table, usersolution.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.SolutionsTable, user.SolutionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -2593,16 +2617,167 @@ func (c *UserQualificationClient) mutate(ctx context.Context, m *UserQualificati
 	}
 }
 
+// UserSolutionClient is a client for the UserSolution schema.
+type UserSolutionClient struct {
+	config
+}
+
+// NewUserSolutionClient returns a client for the UserSolution from the given config.
+func NewUserSolutionClient(c config) *UserSolutionClient {
+	return &UserSolutionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `usersolution.Hooks(f(g(h())))`.
+func (c *UserSolutionClient) Use(hooks ...Hook) {
+	c.hooks.UserSolution = append(c.hooks.UserSolution, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `usersolution.Intercept(f(g(h())))`.
+func (c *UserSolutionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserSolution = append(c.inters.UserSolution, interceptors...)
+}
+
+// Create returns a builder for creating a UserSolution entity.
+func (c *UserSolutionClient) Create() *UserSolutionCreate {
+	mutation := newUserSolutionMutation(c.config, OpCreate)
+	return &UserSolutionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of UserSolution entities.
+func (c *UserSolutionClient) CreateBulk(builders ...*UserSolutionCreate) *UserSolutionCreateBulk {
+	return &UserSolutionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserSolutionClient) MapCreateBulk(slice any, setFunc func(*UserSolutionCreate, int)) *UserSolutionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserSolutionCreateBulk{err: fmt.Errorf("calling to UserSolutionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserSolutionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &UserSolutionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for UserSolution.
+func (c *UserSolutionClient) Update() *UserSolutionUpdate {
+	mutation := newUserSolutionMutation(c.config, OpUpdate)
+	return &UserSolutionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *UserSolutionClient) UpdateOne(us *UserSolution) *UserSolutionUpdateOne {
+	mutation := newUserSolutionMutation(c.config, OpUpdateOne, withUserSolution(us))
+	return &UserSolutionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *UserSolutionClient) UpdateOneID(id int) *UserSolutionUpdateOne {
+	mutation := newUserSolutionMutation(c.config, OpUpdateOne, withUserSolutionID(id))
+	return &UserSolutionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for UserSolution.
+func (c *UserSolutionClient) Delete() *UserSolutionDelete {
+	mutation := newUserSolutionMutation(c.config, OpDelete)
+	return &UserSolutionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *UserSolutionClient) DeleteOne(us *UserSolution) *UserSolutionDeleteOne {
+	return c.DeleteOneID(us.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *UserSolutionClient) DeleteOneID(id int) *UserSolutionDeleteOne {
+	builder := c.Delete().Where(usersolution.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &UserSolutionDeleteOne{builder}
+}
+
+// Query returns a query builder for UserSolution.
+func (c *UserSolutionClient) Query() *UserSolutionQuery {
+	return &UserSolutionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserSolution},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a UserSolution entity by its id.
+func (c *UserSolutionClient) Get(ctx context.Context, id int) (*UserSolution, error) {
+	return c.Query().Where(usersolution.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *UserSolutionClient) GetX(ctx context.Context, id int) *UserSolution {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a UserSolution.
+func (c *UserSolutionClient) QueryUser(us *UserSolution) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := us.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usersolution.Table, usersolution.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, usersolution.UserTable, usersolution.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(us.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *UserSolutionClient) Hooks() []Hook {
+	return c.hooks.UserSolution
+}
+
+// Interceptors returns the client interceptors.
+func (c *UserSolutionClient) Interceptors() []Interceptor {
+	return c.inters.UserSolution
+}
+
+func (c *UserSolutionClient) mutate(ctx context.Context, m *UserSolutionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserSolutionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserSolutionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserSolutionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserSolutionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserSolution mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
 		CareerSkill, CareerSkillGroup, CareerTask, CareerTaskDescription, Skill,
 		SkillTag, User, UserActivity, UserCareer, UserCareerDescription,
-		UserCareerGroup, UserNote, UserNoteItem, UserQualification []ent.Hook
+		UserCareerGroup, UserNote, UserNoteItem, UserQualification,
+		UserSolution []ent.Hook
 	}
 	inters struct {
 		CareerSkill, CareerSkillGroup, CareerTask, CareerTaskDescription, Skill,
 		SkillTag, User, UserActivity, UserCareer, UserCareerDescription,
-		UserCareerGroup, UserNote, UserNoteItem, UserQualification []ent.Interceptor
+		UserCareerGroup, UserNote, UserNoteItem, UserQualification,
+		UserSolution []ent.Interceptor
 	}
 )

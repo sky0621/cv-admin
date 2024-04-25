@@ -317,6 +317,28 @@ var (
 			},
 		},
 	}
+	// UserSolutionsColumns holds the columns for the "user_solutions" table.
+	UserSolutionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "content", Type: field.TypeString},
+		{Name: "user_id", Type: field.TypeInt},
+	}
+	// UserSolutionsTable holds the schema information for the "user_solutions" table.
+	UserSolutionsTable = &schema.Table{
+		Name:       "user_solutions",
+		Columns:    UserSolutionsColumns,
+		PrimaryKey: []*schema.Column{UserSolutionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_solutions_users_solutions",
+				Columns:    []*schema.Column{UserSolutionsColumns[4]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		CareerSkillsTable,
@@ -333,6 +355,7 @@ var (
 		UserNotesTable,
 		UserNoteItemsTable,
 		UserQualificationsTable,
+		UserSolutionsTable,
 	}
 )
 
@@ -350,4 +373,5 @@ func init() {
 	UserNotesTable.ForeignKeys[0].RefTable = UsersTable
 	UserNoteItemsTable.ForeignKeys[0].RefTable = UserNotesTable
 	UserQualificationsTable.ForeignKeys[0].RefTable = UsersTable
+	UserSolutionsTable.ForeignKeys[0].RefTable = UsersTable
 }

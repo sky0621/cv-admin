@@ -41,5 +41,6 @@ func (User) Edges() []ent.Edge {
 		edge.To(userQualificationsRef, UserQualification.Type).StorageKey(edge.Column("user_id")),
 		edge.To(userCareerGroupsRef, UserCareerGroup.Type).StorageKey(edge.Column("user_id")),
 		edge.To(userNotesRef, UserNote.Type).StorageKey(edge.Column("user_id")),
+		edge.To(userSolutionsRef, UserSolution.Type).StorageKey(edge.Column("user_id")),
 	}
 }

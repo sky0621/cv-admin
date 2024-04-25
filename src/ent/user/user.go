@@ -44,6 +44,8 @@ const (
 	EdgeCareerGroups = "careerGroups"
 	// EdgeNotes holds the string denoting the notes edge name in mutations.
 	EdgeNotes = "notes"
+	// EdgeSolutions holds the string denoting the solutions edge name in mutations.
+	EdgeSolutions = "solutions"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// ActivitiesTable is the table that holds the activities relation/edge.
@@ -74,6 +76,13 @@ const (
 	NotesInverseTable = "user_notes"
 	// NotesColumn is the table column denoting the notes relation/edge.
 	NotesColumn = "user_id"
+	// SolutionsTable is the table that holds the solutions relation/edge.
+	SolutionsTable = "user_solutions"
+	// SolutionsInverseTable is the table name for the UserSolution entity.
+	// It exists in this package in order to avoid circular dependency with the "usersolution" package.
+	SolutionsInverseTable = "user_solutions"
+	// SolutionsColumn is the table column denoting the solutions relation/edge.
+	SolutionsColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -247,6 +256,20 @@ func ByNotes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newNotesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// BySolutionsCount orders the results by solutions count.
+func BySolutionsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSolutionsStep(), opts...)
+	}
+}
+
+// BySolutions orders the results by solutions terms.
+func BySolutions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSolutionsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newActivitiesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -273,5 +296,12 @@ func newNotesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(NotesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, NotesTable, NotesColumn),
+	)
+}
+func newSolutionsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SolutionsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SolutionsTable, SolutionsColumn),
 	)
 }

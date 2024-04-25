@@ -43,12 +43,10 @@ type UserNoteItemEdges struct {
 // NoteOrErr returns the Note value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e UserNoteItemEdges) NoteOrErr() (*UserNote, error) {
-	if e.loadedTypes[0] {
-		if e.Note == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: usernote.Label}
-		}
+	if e.Note != nil {
 		return e.Note, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: usernote.Label}
 	}
 	return nil, &NotLoadedError{edge: "note"}
 }

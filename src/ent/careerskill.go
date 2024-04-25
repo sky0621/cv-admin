@@ -47,12 +47,10 @@ type CareerSkillEdges struct {
 // CareerSkillGroupOrErr returns the CareerSkillGroup value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CareerSkillEdges) CareerSkillGroupOrErr() (*CareerSkillGroup, error) {
-	if e.loadedTypes[0] {
-		if e.CareerSkillGroup == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: careerskillgroup.Label}
-		}
+	if e.CareerSkillGroup != nil {
 		return e.CareerSkillGroup, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: careerskillgroup.Label}
 	}
 	return nil, &NotLoadedError{edge: "careerSkillGroup"}
 }
@@ -60,12 +58,10 @@ func (e CareerSkillEdges) CareerSkillGroupOrErr() (*CareerSkillGroup, error) {
 // SkillOrErr returns the Skill value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CareerSkillEdges) SkillOrErr() (*Skill, error) {
-	if e.loadedTypes[1] {
-		if e.Skill == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: skill.Label}
-		}
+	if e.Skill != nil {
 		return e.Skill, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: skill.Label}
 	}
 	return nil, &NotLoadedError{edge: "skill"}
 }

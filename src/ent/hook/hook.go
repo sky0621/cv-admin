@@ -177,6 +177,18 @@ func (f UserQualificationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserQualificationMutation", m)
 }
 
+// The UserSolutionFunc type is an adapter to allow the use of ordinary
+// function as UserSolution mutator.
+type UserSolutionFunc func(context.Context, *ent.UserSolutionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f UserSolutionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.UserSolutionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserSolutionMutation", m)
+}
+
 // Condition is a hook condition function.
 type Condition func(context.Context, ent.Mutation) bool
 

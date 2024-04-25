@@ -842,6 +842,29 @@ func HasNotesWith(preds ...predicate.UserNote) predicate.User {
 	})
 }
 
+// HasSolutions applies the HasEdge predicate on the "solutions" edge.
+func HasSolutions() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SolutionsTable, SolutionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSolutionsWith applies the HasEdge predicate on the "solutions" edge with a given conditions (other predicates).
+func HasSolutionsWith(preds ...predicate.UserSolution) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newSolutionsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(sql.AndPredicates(predicates...))

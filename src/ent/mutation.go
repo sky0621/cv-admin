@@ -26,6 +26,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
+	"github.com/sky0621/cv-admin/src/ent/usersolution"
 )
 
 const (
@@ -51,6 +52,7 @@ const (
 	TypeUserNote              = "UserNote"
 	TypeUserNoteItem          = "UserNoteItem"
 	TypeUserQualification     = "UserQualification"
+	TypeUserSolution          = "UserSolution"
 )
 
 // CareerSkillMutation represents an operation that mutates the CareerSkill nodes in the graph.
@@ -3314,6 +3316,9 @@ type UserMutation struct {
 	notes                 map[int]struct{}
 	removednotes          map[int]struct{}
 	clearednotes          bool
+	solutions             map[int]struct{}
+	removedsolutions      map[int]struct{}
+	clearedsolutions      bool
 	done                  bool
 	oldValue              func(context.Context) (*User, error)
 	predicates            []predicate.User
@@ -4154,6 +4159,60 @@ func (m *UserMutation) ResetNotes() {
 	m.removednotes = nil
 }
 
+// AddSolutionIDs adds the "solutions" edge to the UserSolution entity by ids.
+func (m *UserMutation) AddSolutionIDs(ids ...int) {
+	if m.solutions == nil {
+		m.solutions = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.solutions[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSolutions clears the "solutions" edge to the UserSolution entity.
+func (m *UserMutation) ClearSolutions() {
+	m.clearedsolutions = true
+}
+
+// SolutionsCleared reports if the "solutions" edge to the UserSolution entity was cleared.
+func (m *UserMutation) SolutionsCleared() bool {
+	return m.clearedsolutions
+}
+
+// RemoveSolutionIDs removes the "solutions" edge to the UserSolution entity by IDs.
+func (m *UserMutation) RemoveSolutionIDs(ids ...int) {
+	if m.removedsolutions == nil {
+		m.removedsolutions = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.solutions, ids[i])
+		m.removedsolutions[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSolutions returns the removed IDs of the "solutions" edge to the UserSolution entity.
+func (m *UserMutation) RemovedSolutionsIDs() (ids []int) {
+	for id := range m.removedsolutions {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SolutionsIDs returns the "solutions" edge IDs in the mutation.
+func (m *UserMutation) SolutionsIDs() (ids []int) {
+	for id := range m.solutions {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSolutions resets all changes to the "solutions" edge.
+func (m *UserMutation) ResetSolutions() {
+	m.solutions = nil
+	m.clearedsolutions = false
+	m.removedsolutions = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -4529,7 +4588,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.activities != nil {
 		edges = append(edges, user.EdgeActivities)
 	}
@@ -4541,6 +4600,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.notes != nil {
 		edges = append(edges, user.EdgeNotes)
+	}
+	if m.solutions != nil {
+		edges = append(edges, user.EdgeSolutions)
 	}
 	return edges
 }
@@ -4573,13 +4635,19 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeSolutions:
+		ids := make([]ent.Value, 0, len(m.solutions))
+		for id := range m.solutions {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedactivities != nil {
 		edges = append(edges, user.EdgeActivities)
 	}
@@ -4591,6 +4659,9 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removednotes != nil {
 		edges = append(edges, user.EdgeNotes)
+	}
+	if m.removedsolutions != nil {
+		edges = append(edges, user.EdgeSolutions)
 	}
 	return edges
 }
@@ -4623,13 +4694,19 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeSolutions:
+		ids := make([]ent.Value, 0, len(m.removedsolutions))
+		for id := range m.removedsolutions {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedactivities {
 		edges = append(edges, user.EdgeActivities)
 	}
@@ -4641,6 +4718,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	}
 	if m.clearednotes {
 		edges = append(edges, user.EdgeNotes)
+	}
+	if m.clearedsolutions {
+		edges = append(edges, user.EdgeSolutions)
 	}
 	return edges
 }
@@ -4657,6 +4737,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedcareerGroups
 	case user.EdgeNotes:
 		return m.clearednotes
+	case user.EdgeSolutions:
+		return m.clearedsolutions
 	}
 	return false
 }
@@ -4684,6 +4766,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeNotes:
 		m.ResetNotes()
+		return nil
+	case user.EdgeSolutions:
+		m.ResetSolutions()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)
@@ -9157,4 +9242,505 @@ func (m *UserQualificationMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown UserQualification edge %s", name)
+}
+
+// UserSolutionMutation represents an operation that mutates the UserSolution nodes in the graph.
+type UserSolutionMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int
+	create_time   *time.Time
+	update_time   *time.Time
+	content       *string
+	clearedFields map[string]struct{}
+	user          *int
+	cleareduser   bool
+	done          bool
+	oldValue      func(context.Context) (*UserSolution, error)
+	predicates    []predicate.UserSolution
+}
+
+var _ ent.Mutation = (*UserSolutionMutation)(nil)
+
+// usersolutionOption allows management of the mutation configuration using functional options.
+type usersolutionOption func(*UserSolutionMutation)
+
+// newUserSolutionMutation creates new mutation for the UserSolution entity.
+func newUserSolutionMutation(c config, op Op, opts ...usersolutionOption) *UserSolutionMutation {
+	m := &UserSolutionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeUserSolution,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withUserSolutionID sets the ID field of the mutation.
+func withUserSolutionID(id int) usersolutionOption {
+	return func(m *UserSolutionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *UserSolution
+		)
+		m.oldValue = func(ctx context.Context) (*UserSolution, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().UserSolution.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withUserSolution sets the old UserSolution of the mutation.
+func withUserSolution(node *UserSolution) usersolutionOption {
+	return func(m *UserSolutionMutation) {
+		m.oldValue = func(context.Context) (*UserSolution, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m UserSolutionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m UserSolutionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *UserSolutionMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *UserSolutionMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().UserSolution.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreateTime sets the "create_time" field.
+func (m *UserSolutionMutation) SetCreateTime(t time.Time) {
+	m.create_time = &t
+}
+
+// CreateTime returns the value of the "create_time" field in the mutation.
+func (m *UserSolutionMutation) CreateTime() (r time.Time, exists bool) {
+	v := m.create_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreateTime returns the old "create_time" field's value of the UserSolution entity.
+// If the UserSolution object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserSolutionMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
+	}
+	return oldValue.CreateTime, nil
+}
+
+// ResetCreateTime resets all changes to the "create_time" field.
+func (m *UserSolutionMutation) ResetCreateTime() {
+	m.create_time = nil
+}
+
+// SetUpdateTime sets the "update_time" field.
+func (m *UserSolutionMutation) SetUpdateTime(t time.Time) {
+	m.update_time = &t
+}
+
+// UpdateTime returns the value of the "update_time" field in the mutation.
+func (m *UserSolutionMutation) UpdateTime() (r time.Time, exists bool) {
+	v := m.update_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdateTime returns the old "update_time" field's value of the UserSolution entity.
+// If the UserSolution object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserSolutionMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdateTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdateTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
+	}
+	return oldValue.UpdateTime, nil
+}
+
+// ResetUpdateTime resets all changes to the "update_time" field.
+func (m *UserSolutionMutation) ResetUpdateTime() {
+	m.update_time = nil
+}
+
+// SetContent sets the "content" field.
+func (m *UserSolutionMutation) SetContent(s string) {
+	m.content = &s
+}
+
+// Content returns the value of the "content" field in the mutation.
+func (m *UserSolutionMutation) Content() (r string, exists bool) {
+	v := m.content
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContent returns the old "content" field's value of the UserSolution entity.
+// If the UserSolution object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserSolutionMutation) OldContent(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldContent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldContent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContent: %w", err)
+	}
+	return oldValue.Content, nil
+}
+
+// ResetContent resets all changes to the "content" field.
+func (m *UserSolutionMutation) ResetContent() {
+	m.content = nil
+}
+
+// SetUserID sets the "user" edge to the User entity by id.
+func (m *UserSolutionMutation) SetUserID(id int) {
+	m.user = &id
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *UserSolutionMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *UserSolutionMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserID returns the "user" edge ID in the mutation.
+func (m *UserSolutionMutation) UserID() (id int, exists bool) {
+	if m.user != nil {
+		return *m.user, true
+	}
+	return
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *UserSolutionMutation) UserIDs() (ids []int) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *UserSolutionMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// Where appends a list predicates to the UserSolutionMutation builder.
+func (m *UserSolutionMutation) Where(ps ...predicate.UserSolution) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the UserSolutionMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *UserSolutionMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.UserSolution, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *UserSolutionMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *UserSolutionMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (UserSolution).
+func (m *UserSolutionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *UserSolutionMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.create_time != nil {
+		fields = append(fields, usersolution.FieldCreateTime)
+	}
+	if m.update_time != nil {
+		fields = append(fields, usersolution.FieldUpdateTime)
+	}
+	if m.content != nil {
+		fields = append(fields, usersolution.FieldContent)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *UserSolutionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case usersolution.FieldCreateTime:
+		return m.CreateTime()
+	case usersolution.FieldUpdateTime:
+		return m.UpdateTime()
+	case usersolution.FieldContent:
+		return m.Content()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *UserSolutionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case usersolution.FieldCreateTime:
+		return m.OldCreateTime(ctx)
+	case usersolution.FieldUpdateTime:
+		return m.OldUpdateTime(ctx)
+	case usersolution.FieldContent:
+		return m.OldContent(ctx)
+	}
+	return nil, fmt.Errorf("unknown UserSolution field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *UserSolutionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case usersolution.FieldCreateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreateTime(v)
+		return nil
+	case usersolution.FieldUpdateTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdateTime(v)
+		return nil
+	case usersolution.FieldContent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContent(v)
+		return nil
+	}
+	return fmt.Errorf("unknown UserSolution field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *UserSolutionMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *UserSolutionMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *UserSolutionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown UserSolution numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *UserSolutionMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *UserSolutionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *UserSolutionMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown UserSolution nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *UserSolutionMutation) ResetField(name string) error {
+	switch name {
+	case usersolution.FieldCreateTime:
+		m.ResetCreateTime()
+		return nil
+	case usersolution.FieldUpdateTime:
+		m.ResetUpdateTime()
+		return nil
+	case usersolution.FieldContent:
+		m.ResetContent()
+		return nil
+	}
+	return fmt.Errorf("unknown UserSolution field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *UserSolutionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.user != nil {
+		edges = append(edges, usersolution.EdgeUser)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *UserSolutionMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case usersolution.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *UserSolutionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *UserSolutionMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *UserSolutionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.cleareduser {
+		edges = append(edges, usersolution.EdgeUser)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *UserSolutionMutation) EdgeCleared(name string) bool {
+	switch name {
+	case usersolution.EdgeUser:
+		return m.cleareduser
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *UserSolutionMutation) ClearEdge(name string) error {
+	switch name {
+	case usersolution.EdgeUser:
+		m.ClearUser()
+		return nil
+	}
+	return fmt.Errorf("unknown UserSolution unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *UserSolutionMutation) ResetEdge(name string) error {
+	switch name {
+	case usersolution.EdgeUser:
+		m.ResetUser()
+		return nil
+	}
+	return fmt.Errorf("unknown UserSolution edge %s", name)
 }

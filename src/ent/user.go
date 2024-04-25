@@ -55,9 +55,11 @@ type UserEdges struct {
 	CareerGroups []*UserCareerGroup `json:"careerGroups,omitempty"`
 	// Notes holds the value of the notes edge.
 	Notes []*UserNote `json:"notes,omitempty"`
+	// Solutions holds the value of the solutions edge.
+	Solutions []*UserSolution `json:"solutions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // ActivitiesOrErr returns the Activities value or an error if the edge
@@ -94,6 +96,15 @@ func (e UserEdges) NotesOrErr() ([]*UserNote, error) {
 		return e.Notes, nil
 	}
 	return nil, &NotLoadedError{edge: "notes"}
+}
+
+// SolutionsOrErr returns the Solutions value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) SolutionsOrErr() ([]*UserSolution, error) {
+	if e.loadedTypes[4] {
+		return e.Solutions, nil
+	}
+	return nil, &NotLoadedError{edge: "solutions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -230,6 +241,11 @@ func (u *User) QueryCareerGroups() *UserCareerGroupQuery {
 // QueryNotes queries the "notes" edge of the User entity.
 func (u *User) QueryNotes() *UserNoteQuery {
 	return NewUserClient(u.config).QueryNotes(u)
+}
+
+// QuerySolutions queries the "solutions" edge of the User entity.
+func (u *User) QuerySolutions() *UserSolutionQuery {
+	return NewUserClient(u.config).QuerySolutions(u)
 }
 
 // Update returns a builder for updating this User.

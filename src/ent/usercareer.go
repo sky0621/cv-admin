@@ -53,12 +53,10 @@ type UserCareerEdges struct {
 // CareerGroupOrErr returns the CareerGroup value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e UserCareerEdges) CareerGroupOrErr() (*UserCareerGroup, error) {
-	if e.loadedTypes[0] {
-		if e.CareerGroup == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: usercareergroup.Label}
-		}
+	if e.CareerGroup != nil {
 		return e.CareerGroup, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: usercareergroup.Label}
 	}
 	return nil, &NotLoadedError{edge: "careerGroup"}
 }

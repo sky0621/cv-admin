@@ -26,6 +26,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
+	"github.com/sky0621/cv-admin/src/ent/usersolution"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -100,6 +101,7 @@ func checkColumn(table, column string) error {
 			usernote.Table:              usernote.ValidColumn,
 			usernoteitem.Table:          usernoteitem.ValidColumn,
 			userqualification.Table:     userqualification.ValidColumn,
+			usersolution.Table:          usersolution.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

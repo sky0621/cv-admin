@@ -16,6 +16,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
+	"github.com/sky0621/cv-admin/src/ent/usersolution"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -206,6 +207,21 @@ func (uc *UserCreate) AddNotes(u ...*UserNote) *UserCreate {
 		ids[i] = u[i].ID
 	}
 	return uc.AddNoteIDs(ids...)
+}
+
+// AddSolutionIDs adds the "solutions" edge to the UserSolution entity by IDs.
+func (uc *UserCreate) AddSolutionIDs(ids ...int) *UserCreate {
+	uc.mutation.AddSolutionIDs(ids...)
+	return uc
+}
+
+// AddSolutions adds the "solutions" edges to the UserSolution entity.
+func (uc *UserCreate) AddSolutions(u ...*UserSolution) *UserCreate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uc.AddSolutionIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -446,6 +462,22 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(usernote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.SolutionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SolutionsTable,
+			Columns: []string{user.SolutionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(usersolution.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
