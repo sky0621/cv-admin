@@ -28,6 +28,8 @@ type Tx struct {
 	User *UserClient
 	// UserActivity is the client for interacting with the UserActivity builders.
 	UserActivity *UserActivityClient
+	// UserAppeal is the client for interacting with the UserAppeal builders.
+	UserAppeal *UserAppealClient
 	// UserCareer is the client for interacting with the UserCareer builders.
 	UserCareer *UserCareerClient
 	// UserCareerDescription is the client for interacting with the UserCareerDescription builders.
@@ -181,6 +183,7 @@ func (tx *Tx) init() {
 	tx.SkillTag = NewSkillTagClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserActivity = NewUserActivityClient(tx.config)
+	tx.UserAppeal = NewUserAppealClient(tx.config)
 	tx.UserCareer = NewUserCareerClient(tx.config)
 	tx.UserCareerDescription = NewUserCareerDescriptionClient(tx.config)
 	tx.UserCareerGroup = NewUserCareerGroupClient(tx.config)

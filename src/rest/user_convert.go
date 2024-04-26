@@ -137,9 +137,9 @@ func ToEntUserSolutionCreate(ua UserSolution, userID int, c *ent.UserSolutionCre
 }
 
 func ToSwaggerUserSolution(entSolution *ent.UserSolution) UserSolution {
-	var qualification UserSolution
-	qualification.Content = &entSolution.Content
-	return qualification
+	var solution UserSolution
+	solution.Content = &entSolution.Content
+	return solution
 }
 
 func ToSwaggerUserSolutions(entSolutions []*ent.UserSolution) []UserSolution {
@@ -148,4 +148,24 @@ func ToSwaggerUserSolutions(entSolutions []*ent.UserSolution) []UserSolution {
 		solutions = append(solutions, ToSwaggerUserSolution(entSolution))
 	}
 	return solutions
+}
+
+func ToEntUserAppealCreate(ua UserAppeal, userID int, c *ent.UserAppealCreate) *ent.UserAppealCreate {
+	return c.
+		SetContent(*ua.Content).
+		SetUserID(userID)
+}
+
+func ToSwaggerUserAppeal(entAppeal *ent.UserAppeal) UserAppeal {
+	var appeal UserAppeal
+	appeal.Content = &entAppeal.Content
+	return appeal
+}
+
+func ToSwaggerUserAppeals(entAppeals []*ent.UserAppeal) []UserAppeal {
+	var appeals []UserAppeal
+	for _, entAppeal := range entAppeals {
+		appeals = append(appeals, ToSwaggerUserAppeal(entAppeal))
+	}
+	return appeals
 }

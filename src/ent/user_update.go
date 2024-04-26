@@ -14,6 +14,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
+	"github.com/sky0621/cv-admin/src/ent/userappeal"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
@@ -276,6 +277,21 @@ func (uu *UserUpdate) AddNotes(u ...*UserNote) *UserUpdate {
 	return uu.AddNoteIDs(ids...)
 }
 
+// AddAppealIDs adds the "appeals" edge to the UserAppeal entity by IDs.
+func (uu *UserUpdate) AddAppealIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddAppealIDs(ids...)
+	return uu
+}
+
+// AddAppeals adds the "appeals" edges to the UserAppeal entity.
+func (uu *UserUpdate) AddAppeals(u ...*UserAppeal) *UserUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.AddAppealIDs(ids...)
+}
+
 // AddSolutionIDs adds the "solutions" edge to the UserSolution entity by IDs.
 func (uu *UserUpdate) AddSolutionIDs(ids ...int) *UserUpdate {
 	uu.mutation.AddSolutionIDs(ids...)
@@ -378,6 +394,27 @@ func (uu *UserUpdate) RemoveNotes(u ...*UserNote) *UserUpdate {
 		ids[i] = u[i].ID
 	}
 	return uu.RemoveNoteIDs(ids...)
+}
+
+// ClearAppeals clears all "appeals" edges to the UserAppeal entity.
+func (uu *UserUpdate) ClearAppeals() *UserUpdate {
+	uu.mutation.ClearAppeals()
+	return uu
+}
+
+// RemoveAppealIDs removes the "appeals" edge to UserAppeal entities by IDs.
+func (uu *UserUpdate) RemoveAppealIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveAppealIDs(ids...)
+	return uu
+}
+
+// RemoveAppeals removes "appeals" edges to UserAppeal entities.
+func (uu *UserUpdate) RemoveAppeals(u ...*UserAppeal) *UserUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.RemoveAppealIDs(ids...)
 }
 
 // ClearSolutions clears all "solutions" edges to the UserSolution entity.
@@ -733,6 +770,51 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.AppealsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppealsTable,
+			Columns: []string{user.AppealsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userappeal.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedAppealsIDs(); len(nodes) > 0 && !uu.mutation.AppealsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppealsTable,
+			Columns: []string{user.AppealsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userappeal.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.AppealsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppealsTable,
+			Columns: []string{user.AppealsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userappeal.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if uu.mutation.SolutionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -1041,6 +1123,21 @@ func (uuo *UserUpdateOne) AddNotes(u ...*UserNote) *UserUpdateOne {
 	return uuo.AddNoteIDs(ids...)
 }
 
+// AddAppealIDs adds the "appeals" edge to the UserAppeal entity by IDs.
+func (uuo *UserUpdateOne) AddAppealIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddAppealIDs(ids...)
+	return uuo
+}
+
+// AddAppeals adds the "appeals" edges to the UserAppeal entity.
+func (uuo *UserUpdateOne) AddAppeals(u ...*UserAppeal) *UserUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.AddAppealIDs(ids...)
+}
+
 // AddSolutionIDs adds the "solutions" edge to the UserSolution entity by IDs.
 func (uuo *UserUpdateOne) AddSolutionIDs(ids ...int) *UserUpdateOne {
 	uuo.mutation.AddSolutionIDs(ids...)
@@ -1143,6 +1240,27 @@ func (uuo *UserUpdateOne) RemoveNotes(u ...*UserNote) *UserUpdateOne {
 		ids[i] = u[i].ID
 	}
 	return uuo.RemoveNoteIDs(ids...)
+}
+
+// ClearAppeals clears all "appeals" edges to the UserAppeal entity.
+func (uuo *UserUpdateOne) ClearAppeals() *UserUpdateOne {
+	uuo.mutation.ClearAppeals()
+	return uuo
+}
+
+// RemoveAppealIDs removes the "appeals" edge to UserAppeal entities by IDs.
+func (uuo *UserUpdateOne) RemoveAppealIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveAppealIDs(ids...)
+	return uuo
+}
+
+// RemoveAppeals removes "appeals" edges to UserAppeal entities.
+func (uuo *UserUpdateOne) RemoveAppeals(u ...*UserAppeal) *UserUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.RemoveAppealIDs(ids...)
 }
 
 // ClearSolutions clears all "solutions" edges to the UserSolution entity.
@@ -1521,6 +1639,51 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(usernote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.AppealsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppealsTable,
+			Columns: []string{user.AppealsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userappeal.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedAppealsIDs(); len(nodes) > 0 && !uuo.mutation.AppealsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppealsTable,
+			Columns: []string{user.AppealsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userappeal.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.AppealsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppealsTable,
+			Columns: []string{user.AppealsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userappeal.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

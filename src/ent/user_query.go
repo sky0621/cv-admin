@@ -14,6 +14,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
+	"github.com/sky0621/cv-admin/src/ent/userappeal"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
@@ -31,6 +32,7 @@ type UserQuery struct {
 	withQualifications *UserQualificationQuery
 	withCareerGroups   *UserCareerGroupQuery
 	withNotes          *UserNoteQuery
+	withAppeals        *UserAppealQuery
 	withSolutions      *UserSolutionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -149,6 +151,28 @@ func (uq *UserQuery) QueryNotes() *UserNoteQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(usernote.Table, usernote.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.NotesTable, user.NotesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAppeals chains the current query on the "appeals" edge.
+func (uq *UserQuery) QueryAppeals() *UserAppealQuery {
+	query := (&UserAppealClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(userappeal.Table, userappeal.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.AppealsTable, user.AppealsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -374,6 +398,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withQualifications: uq.withQualifications.Clone(),
 		withCareerGroups:   uq.withCareerGroups.Clone(),
 		withNotes:          uq.withNotes.Clone(),
+		withAppeals:        uq.withAppeals.Clone(),
 		withSolutions:      uq.withSolutions.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
@@ -422,6 +447,17 @@ func (uq *UserQuery) WithNotes(opts ...func(*UserNoteQuery)) *UserQuery {
 		opt(query)
 	}
 	uq.withNotes = query
+	return uq
+}
+
+// WithAppeals tells the query-builder to eager-load the nodes that are connected to
+// the "appeals" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithAppeals(opts ...func(*UserAppealQuery)) *UserQuery {
+	query := (&UserAppealClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withAppeals = query
 	return uq
 }
 
@@ -514,11 +550,12 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			uq.withActivities != nil,
 			uq.withQualifications != nil,
 			uq.withCareerGroups != nil,
 			uq.withNotes != nil,
+			uq.withAppeals != nil,
 			uq.withSolutions != nil,
 		}
 	)
@@ -565,6 +602,13 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := uq.loadNotes(ctx, query, nodes,
 			func(n *User) { n.Edges.Notes = []*UserNote{} },
 			func(n *User, e *UserNote) { n.Edges.Notes = append(n.Edges.Notes, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withAppeals; query != nil {
+		if err := uq.loadAppeals(ctx, query, nodes,
+			func(n *User) { n.Edges.Appeals = []*UserAppeal{} },
+			func(n *User, e *UserAppeal) { n.Edges.Appeals = append(n.Edges.Appeals, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -684,6 +728,37 @@ func (uq *UserQuery) loadNotes(ctx context.Context, query *UserNoteQuery, nodes 
 	query.withFKs = true
 	query.Where(predicate.UserNote(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(user.NotesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_id
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadAppeals(ctx context.Context, query *UserAppealQuery, nodes []*User, init func(*User), assign func(*User, *UserAppeal)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.UserAppeal(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.AppealsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

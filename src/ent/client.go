@@ -23,6 +23,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/skilltag"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
+	"github.com/sky0621/cv-admin/src/ent/userappeal"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
 	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
@@ -53,6 +54,8 @@ type Client struct {
 	User *UserClient
 	// UserActivity is the client for interacting with the UserActivity builders.
 	UserActivity *UserActivityClient
+	// UserAppeal is the client for interacting with the UserAppeal builders.
+	UserAppeal *UserAppealClient
 	// UserCareer is the client for interacting with the UserCareer builders.
 	UserCareer *UserCareerClient
 	// UserCareerDescription is the client for interacting with the UserCareerDescription builders.
@@ -86,6 +89,7 @@ func (c *Client) init() {
 	c.SkillTag = NewSkillTagClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserActivity = NewUserActivityClient(c.config)
+	c.UserAppeal = NewUserAppealClient(c.config)
 	c.UserCareer = NewUserCareerClient(c.config)
 	c.UserCareerDescription = NewUserCareerDescriptionClient(c.config)
 	c.UserCareerGroup = NewUserCareerGroupClient(c.config)
@@ -193,6 +197,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		SkillTag:              NewSkillTagClient(cfg),
 		User:                  NewUserClient(cfg),
 		UserActivity:          NewUserActivityClient(cfg),
+		UserAppeal:            NewUserAppealClient(cfg),
 		UserCareer:            NewUserCareerClient(cfg),
 		UserCareerDescription: NewUserCareerDescriptionClient(cfg),
 		UserCareerGroup:       NewUserCareerGroupClient(cfg),
@@ -227,6 +232,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		SkillTag:              NewSkillTagClient(cfg),
 		User:                  NewUserClient(cfg),
 		UserActivity:          NewUserActivityClient(cfg),
+		UserAppeal:            NewUserAppealClient(cfg),
 		UserCareer:            NewUserCareerClient(cfg),
 		UserCareerDescription: NewUserCareerDescriptionClient(cfg),
 		UserCareerGroup:       NewUserCareerGroupClient(cfg),
@@ -264,7 +270,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.CareerSkill, c.CareerSkillGroup, c.CareerTask, c.CareerTaskDescription,
-		c.Skill, c.SkillTag, c.User, c.UserActivity, c.UserCareer,
+		c.Skill, c.SkillTag, c.User, c.UserActivity, c.UserAppeal, c.UserCareer,
 		c.UserCareerDescription, c.UserCareerGroup, c.UserNote, c.UserNoteItem,
 		c.UserQualification, c.UserSolution,
 	} {
@@ -277,7 +283,7 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.CareerSkill, c.CareerSkillGroup, c.CareerTask, c.CareerTaskDescription,
-		c.Skill, c.SkillTag, c.User, c.UserActivity, c.UserCareer,
+		c.Skill, c.SkillTag, c.User, c.UserActivity, c.UserAppeal, c.UserCareer,
 		c.UserCareerDescription, c.UserCareerGroup, c.UserNote, c.UserNoteItem,
 		c.UserQualification, c.UserSolution,
 	} {
@@ -304,6 +310,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.User.mutate(ctx, m)
 	case *UserActivityMutation:
 		return c.UserActivity.mutate(ctx, m)
+	case *UserAppealMutation:
+		return c.UserAppeal.mutate(ctx, m)
 	case *UserCareerMutation:
 		return c.UserCareer.mutate(ctx, m)
 	case *UserCareerDescriptionMutation:
@@ -1453,6 +1461,22 @@ func (c *UserClient) QueryNotes(u *User) *UserNoteQuery {
 	return query
 }
 
+// QueryAppeals queries the appeals edge of a User.
+func (c *UserClient) QueryAppeals(u *User) *UserAppealQuery {
+	query := (&UserAppealClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(userappeal.Table, userappeal.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.AppealsTable, user.AppealsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QuerySolutions queries the solutions edge of a User.
 func (c *UserClient) QuerySolutions(u *User) *UserSolutionQuery {
 	query := (&UserSolutionClient{config: c.config}).Query()
@@ -1640,6 +1664,155 @@ func (c *UserActivityClient) mutate(ctx context.Context, m *UserActivityMutation
 		return (&UserActivityDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown UserActivity mutation op: %q", m.Op())
+	}
+}
+
+// UserAppealClient is a client for the UserAppeal schema.
+type UserAppealClient struct {
+	config
+}
+
+// NewUserAppealClient returns a client for the UserAppeal from the given config.
+func NewUserAppealClient(c config) *UserAppealClient {
+	return &UserAppealClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `userappeal.Hooks(f(g(h())))`.
+func (c *UserAppealClient) Use(hooks ...Hook) {
+	c.hooks.UserAppeal = append(c.hooks.UserAppeal, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `userappeal.Intercept(f(g(h())))`.
+func (c *UserAppealClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserAppeal = append(c.inters.UserAppeal, interceptors...)
+}
+
+// Create returns a builder for creating a UserAppeal entity.
+func (c *UserAppealClient) Create() *UserAppealCreate {
+	mutation := newUserAppealMutation(c.config, OpCreate)
+	return &UserAppealCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of UserAppeal entities.
+func (c *UserAppealClient) CreateBulk(builders ...*UserAppealCreate) *UserAppealCreateBulk {
+	return &UserAppealCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserAppealClient) MapCreateBulk(slice any, setFunc func(*UserAppealCreate, int)) *UserAppealCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserAppealCreateBulk{err: fmt.Errorf("calling to UserAppealClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserAppealCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &UserAppealCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for UserAppeal.
+func (c *UserAppealClient) Update() *UserAppealUpdate {
+	mutation := newUserAppealMutation(c.config, OpUpdate)
+	return &UserAppealUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *UserAppealClient) UpdateOne(ua *UserAppeal) *UserAppealUpdateOne {
+	mutation := newUserAppealMutation(c.config, OpUpdateOne, withUserAppeal(ua))
+	return &UserAppealUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *UserAppealClient) UpdateOneID(id int) *UserAppealUpdateOne {
+	mutation := newUserAppealMutation(c.config, OpUpdateOne, withUserAppealID(id))
+	return &UserAppealUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for UserAppeal.
+func (c *UserAppealClient) Delete() *UserAppealDelete {
+	mutation := newUserAppealMutation(c.config, OpDelete)
+	return &UserAppealDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *UserAppealClient) DeleteOne(ua *UserAppeal) *UserAppealDeleteOne {
+	return c.DeleteOneID(ua.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *UserAppealClient) DeleteOneID(id int) *UserAppealDeleteOne {
+	builder := c.Delete().Where(userappeal.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &UserAppealDeleteOne{builder}
+}
+
+// Query returns a query builder for UserAppeal.
+func (c *UserAppealClient) Query() *UserAppealQuery {
+	return &UserAppealQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserAppeal},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a UserAppeal entity by its id.
+func (c *UserAppealClient) Get(ctx context.Context, id int) (*UserAppeal, error) {
+	return c.Query().Where(userappeal.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *UserAppealClient) GetX(ctx context.Context, id int) *UserAppeal {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a UserAppeal.
+func (c *UserAppealClient) QueryUser(ua *UserAppeal) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ua.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(userappeal.Table, userappeal.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, userappeal.UserTable, userappeal.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(ua.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *UserAppealClient) Hooks() []Hook {
+	return c.hooks.UserAppeal
+}
+
+// Interceptors returns the client interceptors.
+func (c *UserAppealClient) Interceptors() []Interceptor {
+	return c.inters.UserAppeal
+}
+
+func (c *UserAppealClient) mutate(ctx context.Context, m *UserAppealMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserAppealCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserAppealUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserAppealUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserAppealDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserAppeal mutation op: %q", m.Op())
 	}
 }
 
@@ -2770,13 +2943,13 @@ func (c *UserSolutionClient) mutate(ctx context.Context, m *UserSolutionMutation
 type (
 	hooks struct {
 		CareerSkill, CareerSkillGroup, CareerTask, CareerTaskDescription, Skill,
-		SkillTag, User, UserActivity, UserCareer, UserCareerDescription,
+		SkillTag, User, UserActivity, UserAppeal, UserCareer, UserCareerDescription,
 		UserCareerGroup, UserNote, UserNoteItem, UserQualification,
 		UserSolution []ent.Hook
 	}
 	inters struct {
 		CareerSkill, CareerSkillGroup, CareerTask, CareerTaskDescription, Skill,
-		SkillTag, User, UserActivity, UserCareer, UserCareerDescription,
+		SkillTag, User, UserActivity, UserAppeal, UserCareer, UserCareerDescription,
 		UserCareerGroup, UserNote, UserNoteItem, UserQualification,
 		UserSolution []ent.Interceptor
 	}

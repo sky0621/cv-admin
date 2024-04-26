@@ -991,6 +991,114 @@
 					"response": []
 				},
 				{
+					"name": "get user appeals",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}/appeals",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"appeals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update user appeals",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n    {\n        \"content\": \"20年以上、多様なプロジェクトに参画してきたので、大抵の現場には順応できます。\"\n    },\n    {\n        \"content\": \"ある程度放置されても、適宜、聞くべき人を探して確認しながら作業を進めることができます。\"\n    },\n    {\n        \"content\": \"画面数10に満たない規模（PoCレベル）のWebアプリは１人で要件を詰めるところからリリースまで持っていけます。\"\n    },\n    {\n        \"content\": \"フロントエンドで React（Next.js）／ Vue.js（Nuxt.js）あたりはレクチャー無しでタスクをこなせます。\"\n    },\n    {\n        \"content\": \"バックエンドで Golang はレクチャー無しでタスクをこなせます。（ブランクはありますが Java も同様です。）\"\n    },\n    {\n        \"content\": \"小規模ながら、GitHub Actions ／ Terraform で CI/CD 環境構築経験があります。\"\n    }\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}/appeals",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"appeals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user solutions",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}/solutions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"solutions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "update user solutions",
 					"request": {
 						"method": "PUT",

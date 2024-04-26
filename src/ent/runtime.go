@@ -14,6 +14,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/skilltag"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
+	"github.com/sky0621/cv-admin/src/ent/userappeal"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
 	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
@@ -295,6 +296,25 @@ func init() {
 	useractivityDescIcon := useractivityFields[2].Descriptor()
 	// useractivity.IconValidator is a validator for the "icon" field. It is called by the builders before save.
 	useractivity.IconValidator = useractivityDescIcon.Validators[0].(func(string) error)
+	userappealMixin := schema.UserAppeal{}.Mixin()
+	userappealMixinFields0 := userappealMixin[0].Fields()
+	_ = userappealMixinFields0
+	userappealFields := schema.UserAppeal{}.Fields()
+	_ = userappealFields
+	// userappealDescCreateTime is the schema descriptor for create_time field.
+	userappealDescCreateTime := userappealMixinFields0[0].Descriptor()
+	// userappeal.DefaultCreateTime holds the default value on creation for the create_time field.
+	userappeal.DefaultCreateTime = userappealDescCreateTime.Default.(func() time.Time)
+	// userappealDescUpdateTime is the schema descriptor for update_time field.
+	userappealDescUpdateTime := userappealMixinFields0[1].Descriptor()
+	// userappeal.DefaultUpdateTime holds the default value on creation for the update_time field.
+	userappeal.DefaultUpdateTime = userappealDescUpdateTime.Default.(func() time.Time)
+	// userappeal.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	userappeal.UpdateDefaultUpdateTime = userappealDescUpdateTime.UpdateDefault.(func() time.Time)
+	// userappealDescContent is the schema descriptor for content field.
+	userappealDescContent := userappealFields[0].Descriptor()
+	// userappeal.ContentValidator is a validator for the "content" field. It is called by the builders before save.
+	userappeal.ContentValidator = userappealDescContent.Validators[0].(func(string) error)
 	usercareerMixin := schema.UserCareer{}.Mixin()
 	usercareerMixinFields0 := usercareerMixin[0].Fields()
 	_ = usercareerMixinFields0

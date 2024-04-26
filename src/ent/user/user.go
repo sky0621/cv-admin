@@ -44,6 +44,8 @@ const (
 	EdgeCareerGroups = "careerGroups"
 	// EdgeNotes holds the string denoting the notes edge name in mutations.
 	EdgeNotes = "notes"
+	// EdgeAppeals holds the string denoting the appeals edge name in mutations.
+	EdgeAppeals = "appeals"
 	// EdgeSolutions holds the string denoting the solutions edge name in mutations.
 	EdgeSolutions = "solutions"
 	// Table holds the table name of the user in the database.
@@ -76,6 +78,13 @@ const (
 	NotesInverseTable = "user_notes"
 	// NotesColumn is the table column denoting the notes relation/edge.
 	NotesColumn = "user_id"
+	// AppealsTable is the table that holds the appeals relation/edge.
+	AppealsTable = "user_appeals"
+	// AppealsInverseTable is the table name for the UserAppeal entity.
+	// It exists in this package in order to avoid circular dependency with the "userappeal" package.
+	AppealsInverseTable = "user_appeals"
+	// AppealsColumn is the table column denoting the appeals relation/edge.
+	AppealsColumn = "user_id"
 	// SolutionsTable is the table that holds the solutions relation/edge.
 	SolutionsTable = "user_solutions"
 	// SolutionsInverseTable is the table name for the UserSolution entity.
@@ -257,6 +266,20 @@ func ByNotes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByAppealsCount orders the results by appeals count.
+func ByAppealsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAppealsStep(), opts...)
+	}
+}
+
+// ByAppeals orders the results by appeals terms.
+func ByAppeals(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAppealsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // BySolutionsCount orders the results by solutions count.
 func BySolutionsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -296,6 +319,13 @@ func newNotesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(NotesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, NotesTable, NotesColumn),
+	)
+}
+func newAppealsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AppealsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AppealsTable, AppealsColumn),
 	)
 }
 func newSolutionsStep() *sqlgraph.Step {

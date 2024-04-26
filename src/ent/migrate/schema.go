@@ -180,6 +180,28 @@ var (
 			},
 		},
 	}
+	// UserAppealsColumns holds the columns for the "user_appeals" table.
+	UserAppealsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "content", Type: field.TypeString},
+		{Name: "user_id", Type: field.TypeInt},
+	}
+	// UserAppealsTable holds the schema information for the "user_appeals" table.
+	UserAppealsTable = &schema.Table{
+		Name:       "user_appeals",
+		Columns:    UserAppealsColumns,
+		PrimaryKey: []*schema.Column{UserAppealsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_appeals_users_appeals",
+				Columns:    []*schema.Column{UserAppealsColumns[4]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// UserCareersColumns holds the columns for the "user_careers" table.
 	UserCareersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -349,6 +371,7 @@ var (
 		SkillTagsTable,
 		UsersTable,
 		UserActivitiesTable,
+		UserAppealsTable,
 		UserCareersTable,
 		UserCareerDescriptionsTable,
 		UserCareerGroupsTable,
@@ -367,6 +390,7 @@ func init() {
 	CareerTaskDescriptionsTable.ForeignKeys[0].RefTable = CareerTasksTable
 	SkillsTable.ForeignKeys[0].RefTable = SkillTagsTable
 	UserActivitiesTable.ForeignKeys[0].RefTable = UsersTable
+	UserAppealsTable.ForeignKeys[0].RefTable = UsersTable
 	UserCareersTable.ForeignKeys[0].RefTable = UserCareerGroupsTable
 	UserCareerDescriptionsTable.ForeignKeys[0].RefTable = UserCareersTable
 	UserCareerGroupsTable.ForeignKeys[0].RefTable = UsersTable

@@ -20,6 +20,7 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/skilltag"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
+	"github.com/sky0621/cv-admin/src/ent/userappeal"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
 	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
@@ -95,6 +96,7 @@ func checkColumn(table, column string) error {
 			skilltag.Table:              skilltag.ValidColumn,
 			user.Table:                  user.ValidColumn,
 			useractivity.Table:          useractivity.ValidColumn,
+			userappeal.Table:            userappeal.ValidColumn,
 			usercareer.Table:            usercareer.ValidColumn,
 			usercareerdescription.Table: usercareerdescription.ValidColumn,
 			usercareergroup.Table:       usercareergroup.ValidColumn,

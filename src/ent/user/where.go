@@ -842,6 +842,29 @@ func HasNotesWith(preds ...predicate.UserNote) predicate.User {
 	})
 }
 
+// HasAppeals applies the HasEdge predicate on the "appeals" edge.
+func HasAppeals() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AppealsTable, AppealsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAppealsWith applies the HasEdge predicate on the "appeals" edge with a given conditions (other predicates).
+func HasAppealsWith(preds ...predicate.UserAppeal) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newAppealsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasSolutions applies the HasEdge predicate on the "solutions" edge.
 func HasSolutions() predicate.User {
 	return predicate.User(func(s *sql.Selector) {

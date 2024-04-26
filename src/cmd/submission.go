@@ -69,12 +69,18 @@ to quickly create a Cobra application.`,
 		}
 
 		var avatarImgBytes []byte
-		if attribute != nil {
+		if attribute != nil && attribute.AvatarUrl != nil {
 			avatarImgBytes, err = requestAvatarImage(cli, *attribute.AvatarUrl)
 			if err != nil {
 				os.Exit(1)
 			}
 		}
+
+		solutions, err := requestUserInfo(cli, fmt.Sprintf("users/%d/solutions", targetUserID), &[]rest.UserSolution{})
+		if err != nil {
+			os.Exit(1)
+		}
+		fmt.Println(solutions)
 
 		qualifications, err := requestUserInfo(cli, fmt.Sprintf("users/%d/qualifications", targetUserID), &[]rest.UserQualification{})
 		if err != nil {
@@ -511,8 +517,8 @@ to quickly create a Cobra application.`,
 		/*
 		 * PRラベル
 		 */
+		rowNo += 2
 		{
-			rowNo += 2
 			w.Height(rowNo, s.RowBaseHeight)
 
 			prLabelCell := s.Cell(s.StartCol, rowNo)
