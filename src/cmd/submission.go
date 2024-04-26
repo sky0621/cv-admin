@@ -76,11 +76,15 @@ to quickly create a Cobra application.`,
 			}
 		}
 
+		appeals, err := requestUserInfo(cli, fmt.Sprintf("users/%d/appeals", targetUserID), &[]rest.UserAppeal{})
+		if err != nil {
+			os.Exit(1)
+		}
+
 		solutions, err := requestUserInfo(cli, fmt.Sprintf("users/%d/solutions", targetUserID), &[]rest.UserSolution{})
 		if err != nil {
 			os.Exit(1)
 		}
-		fmt.Println(solutions)
 
 		qualifications, err := requestUserInfo(cli, fmt.Sprintf("users/%d/qualifications", targetUserID), &[]rest.UserQualification{})
 		if err != nil {
@@ -531,15 +535,57 @@ to quickly create a Cobra application.`,
 		 * PR
 		 */
 		{
-			rowNo += 1
-			w.Height(rowNo, s.RowMaxHeight) // TODO: PR行数に応じて（高さが収まらない場合があるので）セルを分ける対応が必要
+			if appeals != nil {
+				for _, appeal := range *appeals {
+					rowNo += 1
+					w.Height(rowNo, s.RowBaseHeight)
 
-			prCell := s.Cell(s.StartCol, rowNo)
-			w.Set(prCell, *attribute.Pr)
-			w.Merge(prCell, s.Cell(s.EndCol, rowNo))
-			w.ValueCellRangeStyle(prCell, s.Cell(s.EndCol, rowNo))
+					prCell := s.Cell(s.StartCol, rowNo)
+					w.Set(prCell, *appeal.Content)
+					w.Merge(prCell, s.Cell(s.EndCol, rowNo))
+					w.ValueCellRangeStyle(prCell, s.Cell(s.EndCol, rowNo))
+				}
+			}
+		}
 
-			w.InsertPageBreak(s.Cell("AB", rowNo+1))
+		/*
+		 * 課題解決事例ラベル
+		 */
+		rowNo += 2
+		{
+			w.Height(rowNo, s.RowBaseHeight)
+
+			prLabelCell := s.Cell(s.StartCol, rowNo)
+			w.Set(prLabelCell, "課題解決事例")
+			w.Merge(prLabelCell, s.Cell(s.EndCol, rowNo))
+			w.HeaderCellRangeStyle(prLabelCell, s.Cell(s.EndCol, rowNo))
+		}
+
+		/*
+		 * 課題解決事例
+		 */
+		{
+			if solutions != nil {
+				for idx, solution := range *solutions {
+					rowNo += 1
+					w.Height(rowNo, s.RowSolutionHeight)
+
+					/*
+					 * 「No」
+					 */
+					noCell := s.Cell(s.StartCol, rowNo)
+					w.Set(noCell, idx+1)
+					w.ValueCellRangeStyle(noCell, s.Cell(s.StartCol, rowNo))
+
+					/*
+					 * 「事例」
+					 */
+					solutionCell := s.Cell("B", rowNo)
+					w.Set(solutionCell, *solution.Content)
+					w.Merge(solutionCell, s.Cell(s.EndCol, rowNo))
+					w.ValueCellRangeStyle(solutionCell, s.Cell(s.EndCol, rowNo))
+				}
+			}
 		}
 
 		/*
