@@ -190,6 +190,12 @@ func init() {
 			return nil
 		}
 	}()
+	// skilltagDescOrder is the schema descriptor for order field.
+	skilltagDescOrder := skilltagFields[1].Descriptor()
+	// skilltag.DefaultOrder holds the default value on creation for the order field.
+	skilltag.DefaultOrder = skilltagDescOrder.Default.(int)
+	// skilltag.OrderValidator is a validator for the "order" field. It is called by the builders before save.
+	skilltag.OrderValidator = skilltagDescOrder.Validators[0].(func(int) error)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0

@@ -42,6 +42,27 @@ func (stu *SkillTagUpdate) SetNillableName(s *string) *SkillTagUpdate {
 	return stu
 }
 
+// SetOrder sets the "order" field.
+func (stu *SkillTagUpdate) SetOrder(i int) *SkillTagUpdate {
+	stu.mutation.ResetOrder()
+	stu.mutation.SetOrder(i)
+	return stu
+}
+
+// SetNillableOrder sets the "order" field if the given value is not nil.
+func (stu *SkillTagUpdate) SetNillableOrder(i *int) *SkillTagUpdate {
+	if i != nil {
+		stu.SetOrder(*i)
+	}
+	return stu
+}
+
+// AddOrder adds i to the "order" field.
+func (stu *SkillTagUpdate) AddOrder(i int) *SkillTagUpdate {
+	stu.mutation.AddOrder(i)
+	return stu
+}
+
 // AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
 func (stu *SkillTagUpdate) AddSkillIDs(ids ...int) *SkillTagUpdate {
 	stu.mutation.AddSkillIDs(ids...)
@@ -117,6 +138,11 @@ func (stu *SkillTagUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SkillTag.name": %w`, err)}
 		}
 	}
+	if v, ok := stu.mutation.Order(); ok {
+		if err := skilltag.OrderValidator(v); err != nil {
+			return &ValidationError{Name: "order", err: fmt.Errorf(`ent: validator failed for field "SkillTag.order": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -134,6 +160,12 @@ func (stu *SkillTagUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := stu.mutation.Name(); ok {
 		_spec.SetField(skilltag.FieldName, field.TypeString, value)
+	}
+	if value, ok := stu.mutation.Order(); ok {
+		_spec.SetField(skilltag.FieldOrder, field.TypeInt, value)
+	}
+	if value, ok := stu.mutation.AddedOrder(); ok {
+		_spec.AddField(skilltag.FieldOrder, field.TypeInt, value)
 	}
 	if stu.mutation.SkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -211,6 +243,27 @@ func (stuo *SkillTagUpdateOne) SetNillableName(s *string) *SkillTagUpdateOne {
 	if s != nil {
 		stuo.SetName(*s)
 	}
+	return stuo
+}
+
+// SetOrder sets the "order" field.
+func (stuo *SkillTagUpdateOne) SetOrder(i int) *SkillTagUpdateOne {
+	stuo.mutation.ResetOrder()
+	stuo.mutation.SetOrder(i)
+	return stuo
+}
+
+// SetNillableOrder sets the "order" field if the given value is not nil.
+func (stuo *SkillTagUpdateOne) SetNillableOrder(i *int) *SkillTagUpdateOne {
+	if i != nil {
+		stuo.SetOrder(*i)
+	}
+	return stuo
+}
+
+// AddOrder adds i to the "order" field.
+func (stuo *SkillTagUpdateOne) AddOrder(i int) *SkillTagUpdateOne {
+	stuo.mutation.AddOrder(i)
 	return stuo
 }
 
@@ -302,6 +355,11 @@ func (stuo *SkillTagUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SkillTag.name": %w`, err)}
 		}
 	}
+	if v, ok := stuo.mutation.Order(); ok {
+		if err := skilltag.OrderValidator(v); err != nil {
+			return &ValidationError{Name: "order", err: fmt.Errorf(`ent: validator failed for field "SkillTag.order": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -336,6 +394,12 @@ func (stuo *SkillTagUpdateOne) sqlSave(ctx context.Context) (_node *SkillTag, er
 	}
 	if value, ok := stuo.mutation.Name(); ok {
 		_spec.SetField(skilltag.FieldName, field.TypeString, value)
+	}
+	if value, ok := stuo.mutation.Order(); ok {
+		_spec.SetField(skilltag.FieldOrder, field.TypeInt, value)
+	}
+	if value, ok := stuo.mutation.AddedOrder(); ok {
+		_spec.AddField(skilltag.FieldOrder, field.TypeInt, value)
 	}
 	if stuo.mutation.SkillsCleared() {
 		edge := &sqlgraph.EdgeSpec{

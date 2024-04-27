@@ -128,6 +128,7 @@ var (
 	SkillTagsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "order", Type: field.TypeInt, Default: 0},
 	}
 	// SkillTagsTable holds the schema information for the "skill_tags" table.
 	SkillTagsTable = &schema.Table{

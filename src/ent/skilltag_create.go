@@ -28,6 +28,20 @@ func (stc *SkillTagCreate) SetName(s string) *SkillTagCreate {
 	return stc
 }
 
+// SetOrder sets the "order" field.
+func (stc *SkillTagCreate) SetOrder(i int) *SkillTagCreate {
+	stc.mutation.SetOrder(i)
+	return stc
+}
+
+// SetNillableOrder sets the "order" field if the given value is not nil.
+func (stc *SkillTagCreate) SetNillableOrder(i *int) *SkillTagCreate {
+	if i != nil {
+		stc.SetOrder(*i)
+	}
+	return stc
+}
+
 // AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
 func (stc *SkillTagCreate) AddSkillIDs(ids ...int) *SkillTagCreate {
 	stc.mutation.AddSkillIDs(ids...)
@@ -50,6 +64,7 @@ func (stc *SkillTagCreate) Mutation() *SkillTagMutation {
 
 // Save creates the SkillTag in the database.
 func (stc *SkillTagCreate) Save(ctx context.Context) (*SkillTag, error) {
+	stc.defaults()
 	return withHooks(ctx, stc.sqlSave, stc.mutation, stc.hooks)
 }
 
@@ -75,6 +90,14 @@ func (stc *SkillTagCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (stc *SkillTagCreate) defaults() {
+	if _, ok := stc.mutation.Order(); !ok {
+		v := skilltag.DefaultOrder
+		stc.mutation.SetOrder(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (stc *SkillTagCreate) check() error {
 	if _, ok := stc.mutation.Name(); !ok {
@@ -83,6 +106,14 @@ func (stc *SkillTagCreate) check() error {
 	if v, ok := stc.mutation.Name(); ok {
 		if err := skilltag.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SkillTag.name": %w`, err)}
+		}
+	}
+	if _, ok := stc.mutation.Order(); !ok {
+		return &ValidationError{Name: "order", err: errors.New(`ent: missing required field "SkillTag.order"`)}
+	}
+	if v, ok := stc.mutation.Order(); ok {
+		if err := skilltag.OrderValidator(v); err != nil {
+			return &ValidationError{Name: "order", err: fmt.Errorf(`ent: validator failed for field "SkillTag.order": %w`, err)}
 		}
 	}
 	return nil
@@ -115,6 +146,10 @@ func (stc *SkillTagCreate) createSpec() (*SkillTag, *sqlgraph.CreateSpec) {
 	if value, ok := stc.mutation.Name(); ok {
 		_spec.SetField(skilltag.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := stc.mutation.Order(); ok {
+		_spec.SetField(skilltag.FieldOrder, field.TypeInt, value)
+		_node.Order = value
 	}
 	if nodes := stc.mutation.SkillsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -196,6 +231,24 @@ func (u *SkillTagUpsert) UpdateName() *SkillTagUpsert {
 	return u
 }
 
+// SetOrder sets the "order" field.
+func (u *SkillTagUpsert) SetOrder(v int) *SkillTagUpsert {
+	u.Set(skilltag.FieldOrder, v)
+	return u
+}
+
+// UpdateOrder sets the "order" field to the value that was provided on create.
+func (u *SkillTagUpsert) UpdateOrder() *SkillTagUpsert {
+	u.SetExcluded(skilltag.FieldOrder)
+	return u
+}
+
+// AddOrder adds v to the "order" field.
+func (u *SkillTagUpsert) AddOrder(v int) *SkillTagUpsert {
+	u.Add(skilltag.FieldOrder, v)
+	return u
+}
+
 // UpdateNewValues updates the mutable fields using the new values that were set on create.
 // Using this option is equivalent to using:
 //
@@ -247,6 +300,27 @@ func (u *SkillTagUpsertOne) SetName(v string) *SkillTagUpsertOne {
 func (u *SkillTagUpsertOne) UpdateName() *SkillTagUpsertOne {
 	return u.Update(func(s *SkillTagUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetOrder sets the "order" field.
+func (u *SkillTagUpsertOne) SetOrder(v int) *SkillTagUpsertOne {
+	return u.Update(func(s *SkillTagUpsert) {
+		s.SetOrder(v)
+	})
+}
+
+// AddOrder adds v to the "order" field.
+func (u *SkillTagUpsertOne) AddOrder(v int) *SkillTagUpsertOne {
+	return u.Update(func(s *SkillTagUpsert) {
+		s.AddOrder(v)
+	})
+}
+
+// UpdateOrder sets the "order" field to the value that was provided on create.
+func (u *SkillTagUpsertOne) UpdateOrder() *SkillTagUpsertOne {
+	return u.Update(func(s *SkillTagUpsert) {
+		s.UpdateOrder()
 	})
 }
 
@@ -302,6 +376,7 @@ func (stcb *SkillTagCreateBulk) Save(ctx context.Context) ([]*SkillTag, error) {
 	for i := range stcb.builders {
 		func(i int, root context.Context) {
 			builder := stcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*SkillTagMutation)
 				if !ok {
@@ -464,6 +539,27 @@ func (u *SkillTagUpsertBulk) SetName(v string) *SkillTagUpsertBulk {
 func (u *SkillTagUpsertBulk) UpdateName() *SkillTagUpsertBulk {
 	return u.Update(func(s *SkillTagUpsert) {
 		s.UpdateName()
+	})
+}
+
+// SetOrder sets the "order" field.
+func (u *SkillTagUpsertBulk) SetOrder(v int) *SkillTagUpsertBulk {
+	return u.Update(func(s *SkillTagUpsert) {
+		s.SetOrder(v)
+	})
+}
+
+// AddOrder adds v to the "order" field.
+func (u *SkillTagUpsertBulk) AddOrder(v int) *SkillTagUpsertBulk {
+	return u.Update(func(s *SkillTagUpsert) {
+		s.AddOrder(v)
+	})
+}
+
+// UpdateOrder sets the "order" field to the value that was provided on create.
+func (u *SkillTagUpsertBulk) UpdateOrder() *SkillTagUpsertBulk {
+	return u.Update(func(s *SkillTagUpsert) {
+		s.UpdateOrder()
 	})
 }
 

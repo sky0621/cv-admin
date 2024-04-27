@@ -3,6 +3,8 @@ package rest
 import (
 	"context"
 
+	"github.com/sky0621/cv-admin/src/ent/skilltag"
+
 	"github.com/sky0621/cv-admin/src/ent"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
@@ -12,7 +14,7 @@ import (
 // スキル群取得
 // (GET /users/{byUserId}/skills)
 func (s *strictServerImpl) GetUsersByUserIdSkills(ctx context.Context, request GetUsersByUserIdSkillsRequestObject) (GetUsersByUserIdSkillsResponseObject, error) {
-	entSkillTags, err := s.dbClient.SkillTag.Query().WithSkills(func(q *ent.SkillQuery) {
+	entSkillTags, err := s.dbClient.SkillTag.Query().Order(ent.Asc(skilltag.FieldOrder)).WithSkills(func(q *ent.SkillQuery) {
 		q.WithCareerSkills(func(q *ent.CareerSkillQuery) {
 			q.WithCareerSkillGroup(func(q *ent.CareerSkillGroupQuery) {
 				q.WithCareer(func(q *ent.UserCareerQuery) {

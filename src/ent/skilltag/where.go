@@ -58,6 +58,11 @@ func Name(v string) predicate.SkillTag {
 	return predicate.SkillTag(sql.FieldEQ(FieldName, v))
 }
 
+// Order applies equality check predicate on the "order" field. It's identical to OrderEQ.
+func Order(v int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldEQ(FieldOrder, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.SkillTag {
 	return predicate.SkillTag(sql.FieldEQ(FieldName, v))
@@ -121,6 +126,46 @@ func NameEqualFold(v string) predicate.SkillTag {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.SkillTag {
 	return predicate.SkillTag(sql.FieldContainsFold(FieldName, v))
+}
+
+// OrderEQ applies the EQ predicate on the "order" field.
+func OrderEQ(v int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldEQ(FieldOrder, v))
+}
+
+// OrderNEQ applies the NEQ predicate on the "order" field.
+func OrderNEQ(v int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldNEQ(FieldOrder, v))
+}
+
+// OrderIn applies the In predicate on the "order" field.
+func OrderIn(vs ...int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldIn(FieldOrder, vs...))
+}
+
+// OrderNotIn applies the NotIn predicate on the "order" field.
+func OrderNotIn(vs ...int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldNotIn(FieldOrder, vs...))
+}
+
+// OrderGT applies the GT predicate on the "order" field.
+func OrderGT(v int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldGT(FieldOrder, v))
+}
+
+// OrderGTE applies the GTE predicate on the "order" field.
+func OrderGTE(v int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldGTE(FieldOrder, v))
+}
+
+// OrderLT applies the LT predicate on the "order" field.
+func OrderLT(v int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldLT(FieldOrder, v))
+}
+
+// OrderLTE applies the LTE predicate on the "order" field.
+func OrderLTE(v int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldLTE(FieldOrder, v))
 }
 
 // HasSkills applies the HasEdge predicate on the "skills" edge.

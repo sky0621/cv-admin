@@ -14,6 +14,8 @@ const (
 	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldOrder holds the string denoting the order field in the database.
+	FieldOrder = "order"
 	// EdgeSkills holds the string denoting the skills edge name in mutations.
 	EdgeSkills = "skills"
 	// Table holds the table name of the skilltag in the database.
@@ -31,6 +33,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldName,
+	FieldOrder,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -46,6 +49,10 @@ func ValidColumn(column string) bool {
 var (
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
+	// DefaultOrder holds the default value on creation for the "order" field.
+	DefaultOrder int
+	// OrderValidator is a validator for the "order" field. It is called by the builders before save.
+	OrderValidator func(int) error
 )
 
 // OrderOption defines the ordering options for the SkillTag queries.
@@ -59,6 +66,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByOrder orders the results by the order field.
+func ByOrder(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOrder, opts...).ToFunc()
 }
 
 // BySkillsCount orders the results by skills count.

@@ -18,6 +18,8 @@ type SkillTag struct {
 	ID int `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// Order holds the value of the "order" field.
+	Order int `json:"order,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SkillTagQuery when eager-loading is set.
 	Edges        SkillTagEdges `json:"edges"`
@@ -47,7 +49,7 @@ func (*SkillTag) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case skilltag.FieldID:
+		case skilltag.FieldID, skilltag.FieldOrder:
 			values[i] = new(sql.NullInt64)
 		case skilltag.FieldName:
 			values[i] = new(sql.NullString)
@@ -77,6 +79,12 @@ func (st *SkillTag) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				st.Name = value.String
+			}
+		case skilltag.FieldOrder:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field order", values[i])
+			} else if value.Valid {
+				st.Order = int(value.Int64)
 			}
 		default:
 			st.selectValues.Set(columns[i], values[i])
@@ -121,6 +129,9 @@ func (st *SkillTag) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", st.ID))
 	builder.WriteString("name=")
 	builder.WriteString(st.Name)
+	builder.WriteString(", ")
+	builder.WriteString("order=")
+	builder.WriteString(fmt.Sprintf("%v", st.Order))
 	builder.WriteByte(')')
 	return builder.String()
 }
