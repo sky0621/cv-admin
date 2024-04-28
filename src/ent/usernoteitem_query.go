@@ -19,7 +19,7 @@ import (
 type UserNoteItemQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []usernoteitem.OrderOption
 	inters     []Interceptor
 	predicates []predicate.UserNoteItem
 	withNote   *UserNoteQuery
@@ -55,7 +55,7 @@ func (uniq *UserNoteItemQuery) Unique(unique bool) *UserNoteItemQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (uniq *UserNoteItemQuery) Order(o ...OrderFunc) *UserNoteItemQuery {
+func (uniq *UserNoteItemQuery) Order(o ...usernoteitem.OrderOption) *UserNoteItemQuery {
 	uniq.order = append(uniq.order, o...)
 	return uniq
 }
@@ -271,7 +271,7 @@ func (uniq *UserNoteItemQuery) Clone() *UserNoteItemQuery {
 	return &UserNoteItemQuery{
 		config:     uniq.config,
 		ctx:        uniq.ctx.Clone(),
-		order:      append([]OrderFunc{}, uniq.order...),
+		order:      append([]usernoteitem.OrderOption{}, uniq.order...),
 		inters:     append([]Interceptor{}, uniq.inters...),
 		predicates: append([]predicate.UserNoteItem{}, uniq.predicates...),
 		withNote:   uniq.withNote.Clone(),

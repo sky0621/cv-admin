@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"reflect"
 
 	"github.com/sky0621/cv-admin/src/ent/migrate"
 
@@ -22,12 +23,14 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/skilltag"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
+	"github.com/sky0621/cv-admin/src/ent/userappeal"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
 	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
+	"github.com/sky0621/cv-admin/src/ent/usersolution"
 )
 
 // Client is the client that holds all ent builders.
@@ -51,6 +54,8 @@ type Client struct {
 	User *UserClient
 	// UserActivity is the client for interacting with the UserActivity builders.
 	UserActivity *UserActivityClient
+	// UserAppeal is the client for interacting with the UserAppeal builders.
+	UserAppeal *UserAppealClient
 	// UserCareer is the client for interacting with the UserCareer builders.
 	UserCareer *UserCareerClient
 	// UserCareerDescription is the client for interacting with the UserCareerDescription builders.
@@ -63,13 +68,13 @@ type Client struct {
 	UserNoteItem *UserNoteItemClient
 	// UserQualification is the client for interacting with the UserQualification builders.
 	UserQualification *UserQualificationClient
+	// UserSolution is the client for interacting with the UserSolution builders.
+	UserSolution *UserSolutionClient
 }
 
 // NewClient creates a new client configured with the given options.
 func NewClient(opts ...Option) *Client {
-	cfg := config{log: log.Println, hooks: &hooks{}, inters: &inters{}}
-	cfg.options(opts...)
-	client := &Client{config: cfg}
+	client := &Client{config: newConfig(opts...)}
 	client.init()
 	return client
 }
@@ -84,12 +89,14 @@ func (c *Client) init() {
 	c.SkillTag = NewSkillTagClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserActivity = NewUserActivityClient(c.config)
+	c.UserAppeal = NewUserAppealClient(c.config)
 	c.UserCareer = NewUserCareerClient(c.config)
 	c.UserCareerDescription = NewUserCareerDescriptionClient(c.config)
 	c.UserCareerGroup = NewUserCareerGroupClient(c.config)
 	c.UserNote = NewUserNoteClient(c.config)
 	c.UserNoteItem = NewUserNoteItemClient(c.config)
 	c.UserQualification = NewUserQualificationClient(c.config)
+	c.UserSolution = NewUserSolutionClient(c.config)
 }
 
 type (
@@ -109,6 +116,13 @@ type (
 	// Option function to configure the client.
 	Option func(*config)
 )
+
+// newConfig creates a new config for the client.
+func newConfig(opts ...Option) config {
+	cfg := config{log: log.Println, hooks: &hooks{}, inters: &inters{}}
+	cfg.options(opts...)
+	return cfg
+}
 
 // options applies the options on the config object.
 func (c *config) options(opts ...Option) {
@@ -157,11 +171,14 @@ func Open(driverName, dataSourceName string, options ...Option) (*Client, error)
 	}
 }
 
+// ErrTxStarted is returned when trying to start a new transaction from a transactional client.
+var ErrTxStarted = errors.New("ent: cannot start a transaction within a transaction")
+
 // Tx returns a new transactional client. The provided context
 // is used until the transaction is committed or rolled back.
 func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	if _, ok := c.driver.(*txDriver); ok {
-		return nil, errors.New("ent: cannot start a transaction within a transaction")
+		return nil, ErrTxStarted
 	}
 	tx, err := newTx(ctx, c.driver)
 	if err != nil {
@@ -180,12 +197,14 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		SkillTag:              NewSkillTagClient(cfg),
 		User:                  NewUserClient(cfg),
 		UserActivity:          NewUserActivityClient(cfg),
+		UserAppeal:            NewUserAppealClient(cfg),
 		UserCareer:            NewUserCareerClient(cfg),
 		UserCareerDescription: NewUserCareerDescriptionClient(cfg),
 		UserCareerGroup:       NewUserCareerGroupClient(cfg),
 		UserNote:              NewUserNoteClient(cfg),
 		UserNoteItem:          NewUserNoteItemClient(cfg),
 		UserQualification:     NewUserQualificationClient(cfg),
+		UserSolution:          NewUserSolutionClient(cfg),
 	}, nil
 }
 
@@ -213,12 +232,14 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		SkillTag:              NewSkillTagClient(cfg),
 		User:                  NewUserClient(cfg),
 		UserActivity:          NewUserActivityClient(cfg),
+		UserAppeal:            NewUserAppealClient(cfg),
 		UserCareer:            NewUserCareerClient(cfg),
 		UserCareerDescription: NewUserCareerDescriptionClient(cfg),
 		UserCareerGroup:       NewUserCareerGroupClient(cfg),
 		UserNote:              NewUserNoteClient(cfg),
 		UserNoteItem:          NewUserNoteItemClient(cfg),
 		UserQualification:     NewUserQualificationClient(cfg),
+		UserSolution:          NewUserSolutionClient(cfg),
 	}, nil
 }
 
@@ -249,9 +270,9 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.CareerSkill, c.CareerSkillGroup, c.CareerTask, c.CareerTaskDescription,
-		c.Skill, c.SkillTag, c.User, c.UserActivity, c.UserCareer,
+		c.Skill, c.SkillTag, c.User, c.UserActivity, c.UserAppeal, c.UserCareer,
 		c.UserCareerDescription, c.UserCareerGroup, c.UserNote, c.UserNoteItem,
-		c.UserQualification,
+		c.UserQualification, c.UserSolution,
 	} {
 		n.Use(hooks...)
 	}
@@ -262,9 +283,9 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.CareerSkill, c.CareerSkillGroup, c.CareerTask, c.CareerTaskDescription,
-		c.Skill, c.SkillTag, c.User, c.UserActivity, c.UserCareer,
+		c.Skill, c.SkillTag, c.User, c.UserActivity, c.UserAppeal, c.UserCareer,
 		c.UserCareerDescription, c.UserCareerGroup, c.UserNote, c.UserNoteItem,
-		c.UserQualification,
+		c.UserQualification, c.UserSolution,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -289,6 +310,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.User.mutate(ctx, m)
 	case *UserActivityMutation:
 		return c.UserActivity.mutate(ctx, m)
+	case *UserAppealMutation:
+		return c.UserAppeal.mutate(ctx, m)
 	case *UserCareerMutation:
 		return c.UserCareer.mutate(ctx, m)
 	case *UserCareerDescriptionMutation:
@@ -301,6 +324,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.UserNoteItem.mutate(ctx, m)
 	case *UserQualificationMutation:
 		return c.UserQualification.mutate(ctx, m)
+	case *UserSolutionMutation:
+		return c.UserSolution.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -336,6 +361,21 @@ func (c *CareerSkillClient) Create() *CareerSkillCreate {
 
 // CreateBulk returns a builder for creating a bulk of CareerSkill entities.
 func (c *CareerSkillClient) CreateBulk(builders ...*CareerSkillCreate) *CareerSkillCreateBulk {
+	return &CareerSkillCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CareerSkillClient) MapCreateBulk(slice any, setFunc func(*CareerSkillCreate, int)) *CareerSkillCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CareerSkillCreateBulk{err: fmt.Errorf("calling to CareerSkillClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CareerSkillCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &CareerSkillCreateBulk{config: c.config, builders: builders}
 }
 
@@ -489,6 +529,21 @@ func (c *CareerSkillGroupClient) CreateBulk(builders ...*CareerSkillGroupCreate)
 	return &CareerSkillGroupCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CareerSkillGroupClient) MapCreateBulk(slice any, setFunc func(*CareerSkillGroupCreate, int)) *CareerSkillGroupCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CareerSkillGroupCreateBulk{err: fmt.Errorf("calling to CareerSkillGroupClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CareerSkillGroupCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CareerSkillGroupCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for CareerSkillGroup.
 func (c *CareerSkillGroupClient) Update() *CareerSkillGroupUpdate {
 	mutation := newCareerSkillGroupMutation(c.config, OpUpdate)
@@ -636,6 +691,21 @@ func (c *CareerTaskClient) Create() *CareerTaskCreate {
 
 // CreateBulk returns a builder for creating a bulk of CareerTask entities.
 func (c *CareerTaskClient) CreateBulk(builders ...*CareerTaskCreate) *CareerTaskCreateBulk {
+	return &CareerTaskCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CareerTaskClient) MapCreateBulk(slice any, setFunc func(*CareerTaskCreate, int)) *CareerTaskCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CareerTaskCreateBulk{err: fmt.Errorf("calling to CareerTaskClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CareerTaskCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &CareerTaskCreateBulk{config: c.config, builders: builders}
 }
 
@@ -789,6 +859,21 @@ func (c *CareerTaskDescriptionClient) CreateBulk(builders ...*CareerTaskDescript
 	return &CareerTaskDescriptionCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CareerTaskDescriptionClient) MapCreateBulk(slice any, setFunc func(*CareerTaskDescriptionCreate, int)) *CareerTaskDescriptionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CareerTaskDescriptionCreateBulk{err: fmt.Errorf("calling to CareerTaskDescriptionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CareerTaskDescriptionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CareerTaskDescriptionCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for CareerTaskDescription.
 func (c *CareerTaskDescriptionClient) Update() *CareerTaskDescriptionUpdate {
 	mutation := newCareerTaskDescriptionMutation(c.config, OpUpdate)
@@ -923,6 +1008,21 @@ func (c *SkillClient) CreateBulk(builders ...*SkillCreate) *SkillCreateBulk {
 	return &SkillCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SkillClient) MapCreateBulk(slice any, setFunc func(*SkillCreate, int)) *SkillCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SkillCreateBulk{err: fmt.Errorf("calling to SkillClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SkillCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SkillCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for Skill.
 func (c *SkillClient) Update() *SkillUpdate {
 	mutation := newSkillMutation(c.config, OpUpdate)
@@ -981,6 +1081,22 @@ func (c *SkillClient) GetX(ctx context.Context, id int) *Skill {
 		panic(err)
 	}
 	return obj
+}
+
+// QuerySkillTag queries the skillTag edge of a Skill.
+func (c *SkillClient) QuerySkillTag(s *Skill) *SkillTagQuery {
+	query := (&SkillTagClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(skill.Table, skill.FieldID, id),
+			sqlgraph.To(skilltag.Table, skilltag.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, skill.SkillTagTable, skill.SkillTagColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // QueryCareerSkills queries the careerSkills edge of a Skill.
@@ -1057,6 +1173,21 @@ func (c *SkillTagClient) CreateBulk(builders ...*SkillTagCreate) *SkillTagCreate
 	return &SkillTagCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SkillTagClient) MapCreateBulk(slice any, setFunc func(*SkillTagCreate, int)) *SkillTagCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SkillTagCreateBulk{err: fmt.Errorf("calling to SkillTagClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SkillTagCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SkillTagCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for SkillTag.
 func (c *SkillTagClient) Update() *SkillTagUpdate {
 	mutation := newSkillTagMutation(c.config, OpUpdate)
@@ -1117,6 +1248,22 @@ func (c *SkillTagClient) GetX(ctx context.Context, id int) *SkillTag {
 	return obj
 }
 
+// QuerySkills queries the skills edge of a SkillTag.
+func (c *SkillTagClient) QuerySkills(st *SkillTag) *SkillQuery {
+	query := (&SkillClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := st.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(skilltag.Table, skilltag.FieldID, id),
+			sqlgraph.To(skill.Table, skill.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, skilltag.SkillsTable, skilltag.SkillsColumn),
+		)
+		fromV = sqlgraph.Neighbors(st.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *SkillTagClient) Hooks() []Hook {
 	return c.hooks.SkillTag
@@ -1172,6 +1319,21 @@ func (c *UserClient) Create() *UserCreate {
 
 // CreateBulk returns a builder for creating a bulk of User entities.
 func (c *UserClient) CreateBulk(builders ...*UserCreate) *UserCreateBulk {
+	return &UserCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserClient) MapCreateBulk(slice any, setFunc func(*UserCreate, int)) *UserCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserCreateBulk{err: fmt.Errorf("calling to UserClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &UserCreateBulk{config: c.config, builders: builders}
 }
 
@@ -1299,6 +1461,38 @@ func (c *UserClient) QueryNotes(u *User) *UserNoteQuery {
 	return query
 }
 
+// QueryAppeals queries the appeals edge of a User.
+func (c *UserClient) QueryAppeals(u *User) *UserAppealQuery {
+	query := (&UserAppealClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(userappeal.Table, userappeal.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.AppealsTable, user.AppealsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySolutions queries the solutions edge of a User.
+func (c *UserClient) QuerySolutions(u *User) *UserSolutionQuery {
+	query := (&UserSolutionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(usersolution.Table, usersolution.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.SolutionsTable, user.SolutionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -1354,6 +1548,21 @@ func (c *UserActivityClient) Create() *UserActivityCreate {
 
 // CreateBulk returns a builder for creating a bulk of UserActivity entities.
 func (c *UserActivityClient) CreateBulk(builders ...*UserActivityCreate) *UserActivityCreateBulk {
+	return &UserActivityCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserActivityClient) MapCreateBulk(slice any, setFunc func(*UserActivityCreate, int)) *UserActivityCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserActivityCreateBulk{err: fmt.Errorf("calling to UserActivityClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserActivityCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &UserActivityCreateBulk{config: c.config, builders: builders}
 }
 
@@ -1458,6 +1667,155 @@ func (c *UserActivityClient) mutate(ctx context.Context, m *UserActivityMutation
 	}
 }
 
+// UserAppealClient is a client for the UserAppeal schema.
+type UserAppealClient struct {
+	config
+}
+
+// NewUserAppealClient returns a client for the UserAppeal from the given config.
+func NewUserAppealClient(c config) *UserAppealClient {
+	return &UserAppealClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `userappeal.Hooks(f(g(h())))`.
+func (c *UserAppealClient) Use(hooks ...Hook) {
+	c.hooks.UserAppeal = append(c.hooks.UserAppeal, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `userappeal.Intercept(f(g(h())))`.
+func (c *UserAppealClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserAppeal = append(c.inters.UserAppeal, interceptors...)
+}
+
+// Create returns a builder for creating a UserAppeal entity.
+func (c *UserAppealClient) Create() *UserAppealCreate {
+	mutation := newUserAppealMutation(c.config, OpCreate)
+	return &UserAppealCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of UserAppeal entities.
+func (c *UserAppealClient) CreateBulk(builders ...*UserAppealCreate) *UserAppealCreateBulk {
+	return &UserAppealCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserAppealClient) MapCreateBulk(slice any, setFunc func(*UserAppealCreate, int)) *UserAppealCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserAppealCreateBulk{err: fmt.Errorf("calling to UserAppealClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserAppealCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &UserAppealCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for UserAppeal.
+func (c *UserAppealClient) Update() *UserAppealUpdate {
+	mutation := newUserAppealMutation(c.config, OpUpdate)
+	return &UserAppealUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *UserAppealClient) UpdateOne(ua *UserAppeal) *UserAppealUpdateOne {
+	mutation := newUserAppealMutation(c.config, OpUpdateOne, withUserAppeal(ua))
+	return &UserAppealUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *UserAppealClient) UpdateOneID(id int) *UserAppealUpdateOne {
+	mutation := newUserAppealMutation(c.config, OpUpdateOne, withUserAppealID(id))
+	return &UserAppealUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for UserAppeal.
+func (c *UserAppealClient) Delete() *UserAppealDelete {
+	mutation := newUserAppealMutation(c.config, OpDelete)
+	return &UserAppealDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *UserAppealClient) DeleteOne(ua *UserAppeal) *UserAppealDeleteOne {
+	return c.DeleteOneID(ua.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *UserAppealClient) DeleteOneID(id int) *UserAppealDeleteOne {
+	builder := c.Delete().Where(userappeal.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &UserAppealDeleteOne{builder}
+}
+
+// Query returns a query builder for UserAppeal.
+func (c *UserAppealClient) Query() *UserAppealQuery {
+	return &UserAppealQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserAppeal},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a UserAppeal entity by its id.
+func (c *UserAppealClient) Get(ctx context.Context, id int) (*UserAppeal, error) {
+	return c.Query().Where(userappeal.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *UserAppealClient) GetX(ctx context.Context, id int) *UserAppeal {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a UserAppeal.
+func (c *UserAppealClient) QueryUser(ua *UserAppeal) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ua.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(userappeal.Table, userappeal.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, userappeal.UserTable, userappeal.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(ua.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *UserAppealClient) Hooks() []Hook {
+	return c.hooks.UserAppeal
+}
+
+// Interceptors returns the client interceptors.
+func (c *UserAppealClient) Interceptors() []Interceptor {
+	return c.inters.UserAppeal
+}
+
+func (c *UserAppealClient) mutate(ctx context.Context, m *UserAppealMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserAppealCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserAppealUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserAppealUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserAppealDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserAppeal mutation op: %q", m.Op())
+	}
+}
+
 // UserCareerClient is a client for the UserCareer schema.
 type UserCareerClient struct {
 	config
@@ -1488,6 +1846,21 @@ func (c *UserCareerClient) Create() *UserCareerCreate {
 
 // CreateBulk returns a builder for creating a bulk of UserCareer entities.
 func (c *UserCareerClient) CreateBulk(builders ...*UserCareerCreate) *UserCareerCreateBulk {
+	return &UserCareerCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserCareerClient) MapCreateBulk(slice any, setFunc func(*UserCareerCreate, int)) *UserCareerCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserCareerCreateBulk{err: fmt.Errorf("calling to UserCareerClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserCareerCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &UserCareerCreateBulk{config: c.config, builders: builders}
 }
 
@@ -1673,6 +2046,21 @@ func (c *UserCareerDescriptionClient) CreateBulk(builders ...*UserCareerDescript
 	return &UserCareerDescriptionCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserCareerDescriptionClient) MapCreateBulk(slice any, setFunc func(*UserCareerDescriptionCreate, int)) *UserCareerDescriptionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserCareerDescriptionCreateBulk{err: fmt.Errorf("calling to UserCareerDescriptionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserCareerDescriptionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &UserCareerDescriptionCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for UserCareerDescription.
 func (c *UserCareerDescriptionClient) Update() *UserCareerDescriptionUpdate {
 	mutation := newUserCareerDescriptionMutation(c.config, OpUpdate)
@@ -1804,6 +2192,21 @@ func (c *UserCareerGroupClient) Create() *UserCareerGroupCreate {
 
 // CreateBulk returns a builder for creating a bulk of UserCareerGroup entities.
 func (c *UserCareerGroupClient) CreateBulk(builders ...*UserCareerGroupCreate) *UserCareerGroupCreateBulk {
+	return &UserCareerGroupCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserCareerGroupClient) MapCreateBulk(slice any, setFunc func(*UserCareerGroupCreate, int)) *UserCareerGroupCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserCareerGroupCreateBulk{err: fmt.Errorf("calling to UserCareerGroupClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserCareerGroupCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &UserCareerGroupCreateBulk{config: c.config, builders: builders}
 }
 
@@ -1957,6 +2360,21 @@ func (c *UserNoteClient) CreateBulk(builders ...*UserNoteCreate) *UserNoteCreate
 	return &UserNoteCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserNoteClient) MapCreateBulk(slice any, setFunc func(*UserNoteCreate, int)) *UserNoteCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserNoteCreateBulk{err: fmt.Errorf("calling to UserNoteClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserNoteCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &UserNoteCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for UserNote.
 func (c *UserNoteClient) Update() *UserNoteUpdate {
 	mutation := newUserNoteMutation(c.config, OpUpdate)
@@ -2107,6 +2525,21 @@ func (c *UserNoteItemClient) CreateBulk(builders ...*UserNoteItemCreate) *UserNo
 	return &UserNoteItemCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserNoteItemClient) MapCreateBulk(slice any, setFunc func(*UserNoteItemCreate, int)) *UserNoteItemCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserNoteItemCreateBulk{err: fmt.Errorf("calling to UserNoteItemClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserNoteItemCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &UserNoteItemCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for UserNoteItem.
 func (c *UserNoteItemClient) Update() *UserNoteItemUpdate {
 	mutation := newUserNoteItemMutation(c.config, OpUpdate)
@@ -2241,6 +2674,21 @@ func (c *UserQualificationClient) CreateBulk(builders ...*UserQualificationCreat
 	return &UserQualificationCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserQualificationClient) MapCreateBulk(slice any, setFunc func(*UserQualificationCreate, int)) *UserQualificationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserQualificationCreateBulk{err: fmt.Errorf("calling to UserQualificationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserQualificationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &UserQualificationCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for UserQualification.
 func (c *UserQualificationClient) Update() *UserQualificationUpdate {
 	mutation := newUserQualificationMutation(c.config, OpUpdate)
@@ -2342,16 +2790,167 @@ func (c *UserQualificationClient) mutate(ctx context.Context, m *UserQualificati
 	}
 }
 
+// UserSolutionClient is a client for the UserSolution schema.
+type UserSolutionClient struct {
+	config
+}
+
+// NewUserSolutionClient returns a client for the UserSolution from the given config.
+func NewUserSolutionClient(c config) *UserSolutionClient {
+	return &UserSolutionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `usersolution.Hooks(f(g(h())))`.
+func (c *UserSolutionClient) Use(hooks ...Hook) {
+	c.hooks.UserSolution = append(c.hooks.UserSolution, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `usersolution.Intercept(f(g(h())))`.
+func (c *UserSolutionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserSolution = append(c.inters.UserSolution, interceptors...)
+}
+
+// Create returns a builder for creating a UserSolution entity.
+func (c *UserSolutionClient) Create() *UserSolutionCreate {
+	mutation := newUserSolutionMutation(c.config, OpCreate)
+	return &UserSolutionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of UserSolution entities.
+func (c *UserSolutionClient) CreateBulk(builders ...*UserSolutionCreate) *UserSolutionCreateBulk {
+	return &UserSolutionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *UserSolutionClient) MapCreateBulk(slice any, setFunc func(*UserSolutionCreate, int)) *UserSolutionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &UserSolutionCreateBulk{err: fmt.Errorf("calling to UserSolutionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*UserSolutionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &UserSolutionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for UserSolution.
+func (c *UserSolutionClient) Update() *UserSolutionUpdate {
+	mutation := newUserSolutionMutation(c.config, OpUpdate)
+	return &UserSolutionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *UserSolutionClient) UpdateOne(us *UserSolution) *UserSolutionUpdateOne {
+	mutation := newUserSolutionMutation(c.config, OpUpdateOne, withUserSolution(us))
+	return &UserSolutionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *UserSolutionClient) UpdateOneID(id int) *UserSolutionUpdateOne {
+	mutation := newUserSolutionMutation(c.config, OpUpdateOne, withUserSolutionID(id))
+	return &UserSolutionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for UserSolution.
+func (c *UserSolutionClient) Delete() *UserSolutionDelete {
+	mutation := newUserSolutionMutation(c.config, OpDelete)
+	return &UserSolutionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *UserSolutionClient) DeleteOne(us *UserSolution) *UserSolutionDeleteOne {
+	return c.DeleteOneID(us.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *UserSolutionClient) DeleteOneID(id int) *UserSolutionDeleteOne {
+	builder := c.Delete().Where(usersolution.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &UserSolutionDeleteOne{builder}
+}
+
+// Query returns a query builder for UserSolution.
+func (c *UserSolutionClient) Query() *UserSolutionQuery {
+	return &UserSolutionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserSolution},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a UserSolution entity by its id.
+func (c *UserSolutionClient) Get(ctx context.Context, id int) (*UserSolution, error) {
+	return c.Query().Where(usersolution.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *UserSolutionClient) GetX(ctx context.Context, id int) *UserSolution {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a UserSolution.
+func (c *UserSolutionClient) QueryUser(us *UserSolution) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := us.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usersolution.Table, usersolution.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, usersolution.UserTable, usersolution.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(us.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *UserSolutionClient) Hooks() []Hook {
+	return c.hooks.UserSolution
+}
+
+// Interceptors returns the client interceptors.
+func (c *UserSolutionClient) Interceptors() []Interceptor {
+	return c.inters.UserSolution
+}
+
+func (c *UserSolutionClient) mutate(ctx context.Context, m *UserSolutionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserSolutionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserSolutionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserSolutionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserSolutionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserSolution mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
 		CareerSkill, CareerSkillGroup, CareerTask, CareerTaskDescription, Skill,
-		SkillTag, User, UserActivity, UserCareer, UserCareerDescription,
-		UserCareerGroup, UserNote, UserNoteItem, UserQualification []ent.Hook
+		SkillTag, User, UserActivity, UserAppeal, UserCareer, UserCareerDescription,
+		UserCareerGroup, UserNote, UserNoteItem, UserQualification,
+		UserSolution []ent.Hook
 	}
 	inters struct {
 		CareerSkill, CareerSkillGroup, CareerTask, CareerTaskDescription, Skill,
-		SkillTag, User, UserActivity, UserCareer, UserCareerDescription,
-		UserCareerGroup, UserNote, UserNoteItem, UserQualification []ent.Interceptor
+		SkillTag, User, UserActivity, UserAppeal, UserCareer, UserCareerDescription,
+		UserCareerGroup, UserNote, UserNoteItem, UserQualification,
+		UserSolution []ent.Interceptor
 	}
 )

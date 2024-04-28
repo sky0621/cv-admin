@@ -44,9 +44,25 @@ func (ucu *UserCareerUpdate) SetName(s string) *UserCareerUpdate {
 	return ucu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ucu *UserCareerUpdate) SetNillableName(s *string) *UserCareerUpdate {
+	if s != nil {
+		ucu.SetName(*s)
+	}
+	return ucu
+}
+
 // SetFrom sets the "from" field.
 func (ucu *UserCareerUpdate) SetFrom(s string) *UserCareerUpdate {
 	ucu.mutation.SetFrom(s)
+	return ucu
+}
+
+// SetNillableFrom sets the "from" field if the given value is not nil.
+func (ucu *UserCareerUpdate) SetNillableFrom(s *string) *UserCareerUpdate {
+	if s != nil {
+		ucu.SetFrom(*s)
+	}
 	return ucu
 }
 
@@ -203,7 +219,7 @@ func (ucu *UserCareerUpdate) RemoveCareerSkillGroups(c ...*CareerSkillGroup) *Us
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ucu *UserCareerUpdate) Save(ctx context.Context) (int, error) {
 	ucu.defaults()
-	return withHooks[int, UserCareerMutation](ctx, ucu.sqlSave, ucu.mutation, ucu.hooks)
+	return withHooks(ctx, ucu.sqlSave, ucu.mutation, ucu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -482,9 +498,25 @@ func (ucuo *UserCareerUpdateOne) SetName(s string) *UserCareerUpdateOne {
 	return ucuo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ucuo *UserCareerUpdateOne) SetNillableName(s *string) *UserCareerUpdateOne {
+	if s != nil {
+		ucuo.SetName(*s)
+	}
+	return ucuo
+}
+
 // SetFrom sets the "from" field.
 func (ucuo *UserCareerUpdateOne) SetFrom(s string) *UserCareerUpdateOne {
 	ucuo.mutation.SetFrom(s)
+	return ucuo
+}
+
+// SetNillableFrom sets the "from" field if the given value is not nil.
+func (ucuo *UserCareerUpdateOne) SetNillableFrom(s *string) *UserCareerUpdateOne {
+	if s != nil {
+		ucuo.SetFrom(*s)
+	}
 	return ucuo
 }
 
@@ -654,7 +686,7 @@ func (ucuo *UserCareerUpdateOne) Select(field string, fields ...string) *UserCar
 // Save executes the query and returns the updated UserCareer entity.
 func (ucuo *UserCareerUpdateOne) Save(ctx context.Context) (*UserCareer, error) {
 	ucuo.defaults()
-	return withHooks[*UserCareer, UserCareerMutation](ctx, ucuo.sqlSave, ucuo.mutation, ucuo.hooks)
+	return withHooks(ctx, ucuo.sqlSave, ucuo.mutation, ucuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

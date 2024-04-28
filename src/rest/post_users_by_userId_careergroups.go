@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 
+	"github.com/sky0621/cv-admin/src/ent/skill"
+
 	pkgerrors "github.com/pkg/errors"
 	"github.com/sky0621/cv-admin/src/ent"
 	"github.com/sky0621/cv-admin/src/ent/helper"
-	eskill "github.com/sky0621/cv-admin/src/ent/skill"
 )
 
 // PostUsersByUserIdCareergroups キャリアグループ新規登録
@@ -120,19 +121,19 @@ func (s *strictServerImpl) PostUsersByUserIdCareergroups(ctx context.Context, re
 					 * スキルグループ配下のスキル群の登録
 					 */
 					if skillGroup.Skills != nil {
-						var keys []string
+						var skillIDs []int
 						var careerSkillCreates []*ent.CareerSkillCreate
 						for _, skill := range *skillGroup.Skills {
-							entSkill, err := tx.Skill.Query().Where(eskill.Key(*skill.Skill.Key)).Only(ctx)
+							entSkill, err := tx.Skill.Get(ctx, *skill.Skill.SkillID)
 							if err != nil {
-								return pkgerrors.WithMessagef(err, "Key: %v", *skill.Skill.Key)
+								return pkgerrors.WithMessagef(err, "Skill.SkillID: %v", *skill.Skill.SkillID)
 							}
 							if entSkill == nil {
 								return errors.New("no skill")
 							}
 							careerSkillCreates = append(careerSkillCreates, ToEntCareerSkillCreate(skill, entCareerSkillGroup.ID, entSkill.ID, tx.CareerSkill.Create()))
 
-							keys = append(keys, *skill.Skill.Key)
+							skillIDs = append(skillIDs, *skill.Skill.SkillID)
 						}
 						careerSkills, err := tx.CareerSkill.CreateBulk(careerSkillCreates...).Save(ctx)
 						if err != nil {
@@ -140,7 +141,7 @@ func (s *strictServerImpl) PostUsersByUserIdCareergroups(ctx context.Context, re
 						}
 
 						for i, careerSkill := range careerSkills {
-							skill, err := tx.Skill.Query().Where(eskill.Key(keys[i])).Only(ctx)
+							skill, err := tx.Skill.Query().Where(skill.ID(skillIDs[i])).WithSkillTag().Only(ctx)
 							if err != nil {
 								return err
 							}

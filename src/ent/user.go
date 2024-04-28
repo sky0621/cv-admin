@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/user"
 )
@@ -40,7 +41,8 @@ type User struct {
 	Pr *string `json:"pr,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
-	Edges UserEdges `json:"edges"`
+	Edges        UserEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // UserEdges holds the relations/edges for other nodes in the graph.
@@ -53,9 +55,13 @@ type UserEdges struct {
 	CareerGroups []*UserCareerGroup `json:"careerGroups,omitempty"`
 	// Notes holds the value of the notes edge.
 	Notes []*UserNote `json:"notes,omitempty"`
+	// Appeals holds the value of the appeals edge.
+	Appeals []*UserAppeal `json:"appeals,omitempty"`
+	// Solutions holds the value of the solutions edge.
+	Solutions []*UserSolution `json:"solutions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [6]bool
 }
 
 // ActivitiesOrErr returns the Activities value or an error if the edge
@@ -94,6 +100,24 @@ func (e UserEdges) NotesOrErr() ([]*UserNote, error) {
 	return nil, &NotLoadedError{edge: "notes"}
 }
 
+// AppealsOrErr returns the Appeals value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) AppealsOrErr() ([]*UserAppeal, error) {
+	if e.loadedTypes[4] {
+		return e.Appeals, nil
+	}
+	return nil, &NotLoadedError{edge: "appeals"}
+}
+
+// SolutionsOrErr returns the Solutions value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) SolutionsOrErr() ([]*UserSolution, error) {
+	if e.loadedTypes[5] {
+		return e.Solutions, nil
+	}
+	return nil, &NotLoadedError{edge: "solutions"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -106,7 +130,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		case user.FieldCreateTime, user.FieldUpdateTime:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type User", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -197,9 +221,17 @@ func (u *User) assignValues(columns []string, values []any) error {
 				u.Pr = new(string)
 				*u.Pr = value.String
 			}
+		default:
+			u.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the User.
+// This includes values selected through modifiers, order, etc.
+func (u *User) Value(name string) (ent.Value, error) {
+	return u.selectValues.Get(name)
 }
 
 // QueryActivities queries the "activities" edge of the User entity.
@@ -220,6 +252,16 @@ func (u *User) QueryCareerGroups() *UserCareerGroupQuery {
 // QueryNotes queries the "notes" edge of the User entity.
 func (u *User) QueryNotes() *UserNoteQuery {
 	return NewUserClient(u.config).QueryNotes(u)
+}
+
+// QueryAppeals queries the "appeals" edge of the User entity.
+func (u *User) QueryAppeals() *UserAppealQuery {
+	return NewUserClient(u.config).QueryAppeals(u)
+}
+
+// QuerySolutions queries the "solutions" edge of the User entity.
+func (u *User) QuerySolutions() *UserSolutionQuery {
+	return NewUserClient(u.config).QuerySolutions(u)
 }
 
 // Update returns a builder for updating this User.

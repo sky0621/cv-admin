@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
@@ -33,8 +34,9 @@ type UserQualification struct {
 	Memo *string `json:"memo,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQualificationQuery when eager-loading is set.
-	Edges   UserQualificationEdges `json:"edges"`
-	user_id *int
+	Edges        UserQualificationEdges `json:"edges"`
+	user_id      *int
+	selectValues sql.SelectValues
 }
 
 // UserQualificationEdges holds the relations/edges for other nodes in the graph.
@@ -49,12 +51,10 @@ type UserQualificationEdges struct {
 // UserOrErr returns the User value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e UserQualificationEdges) UserOrErr() (*User, error) {
-	if e.loadedTypes[0] {
-		if e.User == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: user.Label}
-		}
+	if e.User != nil {
 		return e.User, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: user.Label}
 	}
 	return nil, &NotLoadedError{edge: "user"}
 }
@@ -73,7 +73,7 @@ func (*UserQualification) scanValues(columns []string) ([]any, error) {
 		case userqualification.ForeignKeys[0]: // user_id
 			values[i] = new(sql.NullInt64)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type UserQualification", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -146,9 +146,17 @@ func (uq *UserQualification) assignValues(columns []string, values []any) error 
 				uq.user_id = new(int)
 				*uq.user_id = int(value.Int64)
 			}
+		default:
+			uq.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the UserQualification.
+// This includes values selected through modifiers, order, etc.
+func (uq *UserQualification) Value(name string) (ent.Value, error) {
+	return uq.selectValues.Get(name)
 }
 
 // QueryUser queries the "user" edge of the UserQualification entity.

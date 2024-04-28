@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
@@ -27,6 +28,7 @@ type UserNoteItem struct {
 	// The values are being populated by the UserNoteItemQuery when eager-loading is set.
 	Edges        UserNoteItemEdges `json:"edges"`
 	user_note_id *int
+	selectValues sql.SelectValues
 }
 
 // UserNoteItemEdges holds the relations/edges for other nodes in the graph.
@@ -41,12 +43,10 @@ type UserNoteItemEdges struct {
 // NoteOrErr returns the Note value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e UserNoteItemEdges) NoteOrErr() (*UserNote, error) {
-	if e.loadedTypes[0] {
-		if e.Note == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: usernote.Label}
-		}
+	if e.Note != nil {
 		return e.Note, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: usernote.Label}
 	}
 	return nil, &NotLoadedError{edge: "note"}
 }
@@ -65,7 +65,7 @@ func (*UserNoteItem) scanValues(columns []string) ([]any, error) {
 		case usernoteitem.ForeignKeys[0]: // user_note_id
 			values[i] = new(sql.NullInt64)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type UserNoteItem", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -110,9 +110,17 @@ func (uni *UserNoteItem) assignValues(columns []string, values []any) error {
 				uni.user_note_id = new(int)
 				*uni.user_note_id = int(value.Int64)
 			}
+		default:
+			uni.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the UserNoteItem.
+// This includes values selected through modifiers, order, etc.
+func (uni *UserNoteItem) Value(name string) (ent.Value, error) {
+	return uni.selectValues.Get(name)
 }
 
 // QueryNote queries the "note" edge of the UserNoteItem entity.

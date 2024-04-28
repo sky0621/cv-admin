@@ -14,9 +14,11 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
+	"github.com/sky0621/cv-admin/src/ent/userappeal"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
+	"github.com/sky0621/cv-admin/src/ent/usersolution"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -41,6 +43,14 @@ func (uu *UserUpdate) SetUpdateTime(t time.Time) *UserUpdate {
 // SetName sets the "name" field.
 func (uu *UserUpdate) SetName(s string) *UserUpdate {
 	uu.mutation.SetName(s)
+	return uu
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableName(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetName(*s)
+	}
 	return uu
 }
 
@@ -91,6 +101,14 @@ func (uu *UserUpdate) SetBirthdayYear(i int) *UserUpdate {
 	return uu
 }
 
+// SetNillableBirthdayYear sets the "birthday_year" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBirthdayYear(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetBirthdayYear(*i)
+	}
+	return uu
+}
+
 // AddBirthdayYear adds i to the "birthday_year" field.
 func (uu *UserUpdate) AddBirthdayYear(i int) *UserUpdate {
 	uu.mutation.AddBirthdayYear(i)
@@ -104,6 +122,14 @@ func (uu *UserUpdate) SetBirthdayMonth(i int) *UserUpdate {
 	return uu
 }
 
+// SetNillableBirthdayMonth sets the "birthday_month" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBirthdayMonth(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetBirthdayMonth(*i)
+	}
+	return uu
+}
+
 // AddBirthdayMonth adds i to the "birthday_month" field.
 func (uu *UserUpdate) AddBirthdayMonth(i int) *UserUpdate {
 	uu.mutation.AddBirthdayMonth(i)
@@ -114,6 +140,14 @@ func (uu *UserUpdate) AddBirthdayMonth(i int) *UserUpdate {
 func (uu *UserUpdate) SetBirthdayDay(i int) *UserUpdate {
 	uu.mutation.ResetBirthdayDay()
 	uu.mutation.SetBirthdayDay(i)
+	return uu
+}
+
+// SetNillableBirthdayDay sets the "birthday_day" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBirthdayDay(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetBirthdayDay(*i)
+	}
 	return uu
 }
 
@@ -243,6 +277,36 @@ func (uu *UserUpdate) AddNotes(u ...*UserNote) *UserUpdate {
 	return uu.AddNoteIDs(ids...)
 }
 
+// AddAppealIDs adds the "appeals" edge to the UserAppeal entity by IDs.
+func (uu *UserUpdate) AddAppealIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddAppealIDs(ids...)
+	return uu
+}
+
+// AddAppeals adds the "appeals" edges to the UserAppeal entity.
+func (uu *UserUpdate) AddAppeals(u ...*UserAppeal) *UserUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.AddAppealIDs(ids...)
+}
+
+// AddSolutionIDs adds the "solutions" edge to the UserSolution entity by IDs.
+func (uu *UserUpdate) AddSolutionIDs(ids ...int) *UserUpdate {
+	uu.mutation.AddSolutionIDs(ids...)
+	return uu
+}
+
+// AddSolutions adds the "solutions" edges to the UserSolution entity.
+func (uu *UserUpdate) AddSolutions(u ...*UserSolution) *UserUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.AddSolutionIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -332,10 +396,52 @@ func (uu *UserUpdate) RemoveNotes(u ...*UserNote) *UserUpdate {
 	return uu.RemoveNoteIDs(ids...)
 }
 
+// ClearAppeals clears all "appeals" edges to the UserAppeal entity.
+func (uu *UserUpdate) ClearAppeals() *UserUpdate {
+	uu.mutation.ClearAppeals()
+	return uu
+}
+
+// RemoveAppealIDs removes the "appeals" edge to UserAppeal entities by IDs.
+func (uu *UserUpdate) RemoveAppealIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveAppealIDs(ids...)
+	return uu
+}
+
+// RemoveAppeals removes "appeals" edges to UserAppeal entities.
+func (uu *UserUpdate) RemoveAppeals(u ...*UserAppeal) *UserUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.RemoveAppealIDs(ids...)
+}
+
+// ClearSolutions clears all "solutions" edges to the UserSolution entity.
+func (uu *UserUpdate) ClearSolutions() *UserUpdate {
+	uu.mutation.ClearSolutions()
+	return uu
+}
+
+// RemoveSolutionIDs removes the "solutions" edge to UserSolution entities by IDs.
+func (uu *UserUpdate) RemoveSolutionIDs(ids ...int) *UserUpdate {
+	uu.mutation.RemoveSolutionIDs(ids...)
+	return uu
+}
+
+// RemoveSolutions removes "solutions" edges to UserSolution entities.
+func (uu *UserUpdate) RemoveSolutions(u ...*UserSolution) *UserUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.RemoveSolutionIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uu *UserUpdate) Save(ctx context.Context) (int, error) {
 	uu.defaults()
-	return withHooks[int, UserMutation](ctx, uu.sqlSave, uu.mutation, uu.hooks)
+	return withHooks(ctx, uu.sqlSave, uu.mutation, uu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -664,6 +770,96 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.AppealsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppealsTable,
+			Columns: []string{user.AppealsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userappeal.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedAppealsIDs(); len(nodes) > 0 && !uu.mutation.AppealsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppealsTable,
+			Columns: []string{user.AppealsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userappeal.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.AppealsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppealsTable,
+			Columns: []string{user.AppealsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userappeal.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.SolutionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SolutionsTable,
+			Columns: []string{user.SolutionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(usersolution.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedSolutionsIDs(); len(nodes) > 0 && !uu.mutation.SolutionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SolutionsTable,
+			Columns: []string{user.SolutionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(usersolution.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.SolutionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SolutionsTable,
+			Columns: []string{user.SolutionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(usersolution.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -693,6 +889,14 @@ func (uuo *UserUpdateOne) SetUpdateTime(t time.Time) *UserUpdateOne {
 // SetName sets the "name" field.
 func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
 	uuo.mutation.SetName(s)
+	return uuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableName(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetName(*s)
+	}
 	return uuo
 }
 
@@ -743,6 +947,14 @@ func (uuo *UserUpdateOne) SetBirthdayYear(i int) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableBirthdayYear sets the "birthday_year" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBirthdayYear(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetBirthdayYear(*i)
+	}
+	return uuo
+}
+
 // AddBirthdayYear adds i to the "birthday_year" field.
 func (uuo *UserUpdateOne) AddBirthdayYear(i int) *UserUpdateOne {
 	uuo.mutation.AddBirthdayYear(i)
@@ -756,6 +968,14 @@ func (uuo *UserUpdateOne) SetBirthdayMonth(i int) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableBirthdayMonth sets the "birthday_month" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBirthdayMonth(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetBirthdayMonth(*i)
+	}
+	return uuo
+}
+
 // AddBirthdayMonth adds i to the "birthday_month" field.
 func (uuo *UserUpdateOne) AddBirthdayMonth(i int) *UserUpdateOne {
 	uuo.mutation.AddBirthdayMonth(i)
@@ -766,6 +986,14 @@ func (uuo *UserUpdateOne) AddBirthdayMonth(i int) *UserUpdateOne {
 func (uuo *UserUpdateOne) SetBirthdayDay(i int) *UserUpdateOne {
 	uuo.mutation.ResetBirthdayDay()
 	uuo.mutation.SetBirthdayDay(i)
+	return uuo
+}
+
+// SetNillableBirthdayDay sets the "birthday_day" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBirthdayDay(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetBirthdayDay(*i)
+	}
 	return uuo
 }
 
@@ -895,6 +1123,36 @@ func (uuo *UserUpdateOne) AddNotes(u ...*UserNote) *UserUpdateOne {
 	return uuo.AddNoteIDs(ids...)
 }
 
+// AddAppealIDs adds the "appeals" edge to the UserAppeal entity by IDs.
+func (uuo *UserUpdateOne) AddAppealIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddAppealIDs(ids...)
+	return uuo
+}
+
+// AddAppeals adds the "appeals" edges to the UserAppeal entity.
+func (uuo *UserUpdateOne) AddAppeals(u ...*UserAppeal) *UserUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.AddAppealIDs(ids...)
+}
+
+// AddSolutionIDs adds the "solutions" edge to the UserSolution entity by IDs.
+func (uuo *UserUpdateOne) AddSolutionIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.AddSolutionIDs(ids...)
+	return uuo
+}
+
+// AddSolutions adds the "solutions" edges to the UserSolution entity.
+func (uuo *UserUpdateOne) AddSolutions(u ...*UserSolution) *UserUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.AddSolutionIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -984,6 +1242,48 @@ func (uuo *UserUpdateOne) RemoveNotes(u ...*UserNote) *UserUpdateOne {
 	return uuo.RemoveNoteIDs(ids...)
 }
 
+// ClearAppeals clears all "appeals" edges to the UserAppeal entity.
+func (uuo *UserUpdateOne) ClearAppeals() *UserUpdateOne {
+	uuo.mutation.ClearAppeals()
+	return uuo
+}
+
+// RemoveAppealIDs removes the "appeals" edge to UserAppeal entities by IDs.
+func (uuo *UserUpdateOne) RemoveAppealIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveAppealIDs(ids...)
+	return uuo
+}
+
+// RemoveAppeals removes "appeals" edges to UserAppeal entities.
+func (uuo *UserUpdateOne) RemoveAppeals(u ...*UserAppeal) *UserUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.RemoveAppealIDs(ids...)
+}
+
+// ClearSolutions clears all "solutions" edges to the UserSolution entity.
+func (uuo *UserUpdateOne) ClearSolutions() *UserUpdateOne {
+	uuo.mutation.ClearSolutions()
+	return uuo
+}
+
+// RemoveSolutionIDs removes the "solutions" edge to UserSolution entities by IDs.
+func (uuo *UserUpdateOne) RemoveSolutionIDs(ids ...int) *UserUpdateOne {
+	uuo.mutation.RemoveSolutionIDs(ids...)
+	return uuo
+}
+
+// RemoveSolutions removes "solutions" edges to UserSolution entities.
+func (uuo *UserUpdateOne) RemoveSolutions(u ...*UserSolution) *UserUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.RemoveSolutionIDs(ids...)
+}
+
 // Where appends a list predicates to the UserUpdate builder.
 func (uuo *UserUpdateOne) Where(ps ...predicate.User) *UserUpdateOne {
 	uuo.mutation.Where(ps...)
@@ -1000,7 +1300,7 @@ func (uuo *UserUpdateOne) Select(field string, fields ...string) *UserUpdateOne 
 // Save executes the query and returns the updated User entity.
 func (uuo *UserUpdateOne) Save(ctx context.Context) (*User, error) {
 	uuo.defaults()
-	return withHooks[*User, UserMutation](ctx, uuo.sqlSave, uuo.mutation, uuo.hooks)
+	return withHooks(ctx, uuo.sqlSave, uuo.mutation, uuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -1339,6 +1639,96 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(usernote.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.AppealsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppealsTable,
+			Columns: []string{user.AppealsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userappeal.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedAppealsIDs(); len(nodes) > 0 && !uuo.mutation.AppealsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppealsTable,
+			Columns: []string{user.AppealsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userappeal.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.AppealsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.AppealsTable,
+			Columns: []string{user.AppealsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userappeal.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.SolutionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SolutionsTable,
+			Columns: []string{user.SolutionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(usersolution.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedSolutionsIDs(); len(nodes) > 0 && !uuo.mutation.SolutionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SolutionsTable,
+			Columns: []string{user.SolutionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(usersolution.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.SolutionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.SolutionsTable,
+			Columns: []string{user.SolutionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(usersolution.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

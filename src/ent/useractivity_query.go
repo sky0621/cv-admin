@@ -19,7 +19,7 @@ import (
 type UserActivityQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []useractivity.OrderOption
 	inters     []Interceptor
 	predicates []predicate.UserActivity
 	withUser   *UserQuery
@@ -55,7 +55,7 @@ func (uaq *UserActivityQuery) Unique(unique bool) *UserActivityQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (uaq *UserActivityQuery) Order(o ...OrderFunc) *UserActivityQuery {
+func (uaq *UserActivityQuery) Order(o ...useractivity.OrderOption) *UserActivityQuery {
 	uaq.order = append(uaq.order, o...)
 	return uaq
 }
@@ -271,7 +271,7 @@ func (uaq *UserActivityQuery) Clone() *UserActivityQuery {
 	return &UserActivityQuery{
 		config:     uaq.config,
 		ctx:        uaq.ctx.Clone(),
-		order:      append([]OrderFunc{}, uaq.order...),
+		order:      append([]useractivity.OrderOption{}, uaq.order...),
 		inters:     append([]Interceptor{}, uaq.inters...),
 		predicates: append([]predicate.UserActivity{}, uaq.predicates...),
 		withUser:   uaq.withUser.Clone(),

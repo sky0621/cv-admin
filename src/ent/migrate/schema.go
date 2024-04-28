@@ -107,21 +107,28 @@ var (
 		{Name: "create_time", Type: field.TypeTime},
 		{Name: "update_time", Type: field.TypeTime},
 		{Name: "name", Type: field.TypeString, Unique: true},
-		{Name: "key", Type: field.TypeString, Unique: true},
 		{Name: "url", Type: field.TypeString, Nullable: true},
-		{Name: "tag_key", Type: field.TypeString, Nullable: true},
+		{Name: "tag_id", Type: field.TypeInt},
 	}
 	// SkillsTable holds the schema information for the "skills" table.
 	SkillsTable = &schema.Table{
 		Name:       "skills",
 		Columns:    SkillsColumns,
 		PrimaryKey: []*schema.Column{SkillsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "skills_skill_tags_skills",
+				Columns:    []*schema.Column{SkillsColumns[5]},
+				RefColumns: []*schema.Column{SkillTagsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 	}
 	// SkillTagsColumns holds the columns for the "skill_tags" table.
 	SkillTagsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString, Unique: true},
-		{Name: "key", Type: field.TypeString, Unique: true},
+		{Name: "order", Type: field.TypeInt, Default: 0},
 	}
 	// SkillTagsTable holds the schema information for the "skill_tags" table.
 	SkillTagsTable = &schema.Table{
@@ -169,6 +176,28 @@ var (
 			{
 				Symbol:     "user_activities_users_activities",
 				Columns:    []*schema.Column{UserActivitiesColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// UserAppealsColumns holds the columns for the "user_appeals" table.
+	UserAppealsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "content", Type: field.TypeString},
+		{Name: "user_id", Type: field.TypeInt},
+	}
+	// UserAppealsTable holds the schema information for the "user_appeals" table.
+	UserAppealsTable = &schema.Table{
+		Name:       "user_appeals",
+		Columns:    UserAppealsColumns,
+		PrimaryKey: []*schema.Column{UserAppealsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_appeals_users_appeals",
+				Columns:    []*schema.Column{UserAppealsColumns[4]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -311,6 +340,28 @@ var (
 			},
 		},
 	}
+	// UserSolutionsColumns holds the columns for the "user_solutions" table.
+	UserSolutionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "create_time", Type: field.TypeTime},
+		{Name: "update_time", Type: field.TypeTime},
+		{Name: "content", Type: field.TypeString},
+		{Name: "user_id", Type: field.TypeInt},
+	}
+	// UserSolutionsTable holds the schema information for the "user_solutions" table.
+	UserSolutionsTable = &schema.Table{
+		Name:       "user_solutions",
+		Columns:    UserSolutionsColumns,
+		PrimaryKey: []*schema.Column{UserSolutionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_solutions_users_solutions",
+				Columns:    []*schema.Column{UserSolutionsColumns[4]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		CareerSkillsTable,
@@ -321,12 +372,14 @@ var (
 		SkillTagsTable,
 		UsersTable,
 		UserActivitiesTable,
+		UserAppealsTable,
 		UserCareersTable,
 		UserCareerDescriptionsTable,
 		UserCareerGroupsTable,
 		UserNotesTable,
 		UserNoteItemsTable,
 		UserQualificationsTable,
+		UserSolutionsTable,
 	}
 )
 
@@ -336,11 +389,14 @@ func init() {
 	CareerSkillGroupsTable.ForeignKeys[0].RefTable = UserCareersTable
 	CareerTasksTable.ForeignKeys[0].RefTable = UserCareersTable
 	CareerTaskDescriptionsTable.ForeignKeys[0].RefTable = CareerTasksTable
+	SkillsTable.ForeignKeys[0].RefTable = SkillTagsTable
 	UserActivitiesTable.ForeignKeys[0].RefTable = UsersTable
+	UserAppealsTable.ForeignKeys[0].RefTable = UsersTable
 	UserCareersTable.ForeignKeys[0].RefTable = UserCareerGroupsTable
 	UserCareerDescriptionsTable.ForeignKeys[0].RefTable = UserCareersTable
 	UserCareerGroupsTable.ForeignKeys[0].RefTable = UsersTable
 	UserNotesTable.ForeignKeys[0].RefTable = UsersTable
 	UserNoteItemsTable.ForeignKeys[0].RefTable = UserNotesTable
 	UserQualificationsTable.ForeignKeys[0].RefTable = UsersTable
+	UserSolutionsTable.ForeignKeys[0].RefTable = UsersTable
 }

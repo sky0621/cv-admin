@@ -4,6 +4,9 @@ package usercareer
 
 import (
 	"time"
+
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -106,3 +109,113 @@ var (
 	// ToValidator is a validator for the "to" field. It is called by the builders before save.
 	ToValidator func(string) error
 )
+
+// OrderOption defines the ordering options for the UserCareer queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreateTime orders the results by the create_time field.
+func ByCreateTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreateTime, opts...).ToFunc()
+}
+
+// ByUpdateTime orders the results by the update_time field.
+func ByUpdateTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdateTime, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByFrom orders the results by the from field.
+func ByFrom(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFrom, opts...).ToFunc()
+}
+
+// ByTo orders the results by the to field.
+func ByTo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTo, opts...).ToFunc()
+}
+
+// ByCareerGroupField orders the results by careerGroup field.
+func ByCareerGroupField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCareerGroupStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByCareerDescriptionsCount orders the results by careerDescriptions count.
+func ByCareerDescriptionsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCareerDescriptionsStep(), opts...)
+	}
+}
+
+// ByCareerDescriptions orders the results by careerDescriptions terms.
+func ByCareerDescriptions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCareerDescriptionsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByCareerTasksCount orders the results by careerTasks count.
+func ByCareerTasksCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCareerTasksStep(), opts...)
+	}
+}
+
+// ByCareerTasks orders the results by careerTasks terms.
+func ByCareerTasks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCareerTasksStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByCareerSkillGroupsCount orders the results by careerSkillGroups count.
+func ByCareerSkillGroupsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCareerSkillGroupsStep(), opts...)
+	}
+}
+
+// ByCareerSkillGroups orders the results by careerSkillGroups terms.
+func ByCareerSkillGroups(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCareerSkillGroupsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newCareerGroupStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CareerGroupInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, CareerGroupTable, CareerGroupColumn),
+	)
+}
+func newCareerDescriptionsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CareerDescriptionsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CareerDescriptionsTable, CareerDescriptionsColumn),
+	)
+}
+func newCareerTasksStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CareerTasksInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CareerTasksTable, CareerTasksColumn),
+	)
+}
+func newCareerSkillGroupsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CareerSkillGroupsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CareerSkillGroupsTable, CareerSkillGroupsColumn),
+	)
+}

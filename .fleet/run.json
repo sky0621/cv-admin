@@ -4,10 +4,49 @@
             "type": "go",
             "name": "server",
             "goExecPath": "/usr/local/go/bin/go",
-            "buildParams": ["$PROJECT_DIR$/src/main.go"],
+            "buildParams": [
+                "$PROJECT_DIR$/src/main.go"
+            ],
             "environment": {},
-            "runParams": ["server"],
+            "runParams": [
+                "server"
+            ],
         },
-
+        {
+            "type": "go",
+            "name": "export",
+            "goExecPath": "/usr/local/go/bin/go",
+            "buildParams": [
+                "$PROJECT_DIR$/src/main.go"
+            ],
+            "environment": {},
+            "runParams": [
+                "export"
+            ],
+        },
+        {
+            "type": "go",
+            "name": "submission",
+            "goExecPath": "/usr/local/go/bin/go",
+            "buildParams": [
+                "$PROJECT_DIR$/src/main.go"
+            ],
+            "environment": {},
+            "runParams": [
+                "submission"
+            ],
+        },
+        {
+            "type": "go",
+            "name": "migrate",
+            "goExecPath": "/usr/local/go/bin/go",
+            "buildParams": [
+                "$PROJECT_DIR$/src/main.go"
+            ],
+            "environment": {},
+            "runParams": [
+                "migrate"
+            ],
+        },
     ]
 }

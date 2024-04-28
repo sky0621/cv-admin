@@ -20,7 +20,7 @@ import (
 type CareerSkillQuery struct {
 	config
 	ctx                  *QueryContext
-	order                []OrderFunc
+	order                []careerskill.OrderOption
 	inters               []Interceptor
 	predicates           []predicate.CareerSkill
 	withCareerSkillGroup *CareerSkillGroupQuery
@@ -57,7 +57,7 @@ func (csq *CareerSkillQuery) Unique(unique bool) *CareerSkillQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (csq *CareerSkillQuery) Order(o ...OrderFunc) *CareerSkillQuery {
+func (csq *CareerSkillQuery) Order(o ...careerskill.OrderOption) *CareerSkillQuery {
 	csq.order = append(csq.order, o...)
 	return csq
 }
@@ -295,7 +295,7 @@ func (csq *CareerSkillQuery) Clone() *CareerSkillQuery {
 	return &CareerSkillQuery{
 		config:               csq.config,
 		ctx:                  csq.ctx.Clone(),
-		order:                append([]OrderFunc{}, csq.order...),
+		order:                append([]careerskill.OrderOption{}, csq.order...),
 		inters:               append([]Interceptor{}, csq.inters...),
 		predicates:           append([]predicate.CareerSkill{}, csq.predicates...),
 		withCareerSkillGroup: csq.withCareerSkillGroup.Clone(),

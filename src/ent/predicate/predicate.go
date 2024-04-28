@@ -30,6 +30,9 @@ type User func(*sql.Selector)
 // UserActivity is the predicate function for useractivity builders.
 type UserActivity func(*sql.Selector)
 
+// UserAppeal is the predicate function for userappeal builders.
+type UserAppeal func(*sql.Selector)
+
 // UserCareer is the predicate function for usercareer builders.
 type UserCareer func(*sql.Selector)
 
@@ -47,3 +50,6 @@ type UserNoteItem func(*sql.Selector)
 
 // UserQualification is the predicate function for userqualification builders.
 type UserQualification func(*sql.Selector)
+
+// UserSolution is the predicate function for usersolution builders.
+type UserSolution func(*sql.Selector)

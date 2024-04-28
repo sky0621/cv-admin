@@ -14,12 +14,14 @@ import (
 	"github.com/sky0621/cv-admin/src/ent/skilltag"
 	"github.com/sky0621/cv-admin/src/ent/user"
 	"github.com/sky0621/cv-admin/src/ent/useractivity"
+	"github.com/sky0621/cv-admin/src/ent/userappeal"
 	"github.com/sky0621/cv-admin/src/ent/usercareer"
 	"github.com/sky0621/cv-admin/src/ent/usercareerdescription"
 	"github.com/sky0621/cv-admin/src/ent/usercareergroup"
 	"github.com/sky0621/cv-admin/src/ent/usernote"
 	"github.com/sky0621/cv-admin/src/ent/usernoteitem"
 	"github.com/sky0621/cv-admin/src/ent/userqualification"
+	"github.com/sky0621/cv-admin/src/ent/usersolution"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -164,32 +166,10 @@ func init() {
 			return nil
 		}
 	}()
-	// skillDescKey is the schema descriptor for key field.
-	skillDescKey := skillFields[1].Descriptor()
-	// skill.KeyValidator is a validator for the "key" field. It is called by the builders before save.
-	skill.KeyValidator = func() func(string) error {
-		validators := skillDescKey.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(key string) error {
-			for _, fn := range fns {
-				if err := fn(key); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
 	// skillDescURL is the schema descriptor for url field.
-	skillDescURL := skillFields[2].Descriptor()
+	skillDescURL := skillFields[1].Descriptor()
 	// skill.URLValidator is a validator for the "url" field. It is called by the builders before save.
 	skill.URLValidator = skillDescURL.Validators[0].(func(string) error)
-	// skillDescTagKey is the schema descriptor for tag_key field.
-	skillDescTagKey := skillFields[3].Descriptor()
-	// skill.TagKeyValidator is a validator for the "tag_key" field. It is called by the builders before save.
-	skill.TagKeyValidator = skillDescTagKey.Validators[0].(func(string) error)
 	skilltagFields := schema.SkillTag{}.Fields()
 	_ = skilltagFields
 	// skilltagDescName is the schema descriptor for name field.
@@ -210,24 +190,12 @@ func init() {
 			return nil
 		}
 	}()
-	// skilltagDescKey is the schema descriptor for key field.
-	skilltagDescKey := skilltagFields[1].Descriptor()
-	// skilltag.KeyValidator is a validator for the "key" field. It is called by the builders before save.
-	skilltag.KeyValidator = func() func(string) error {
-		validators := skilltagDescKey.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(key string) error {
-			for _, fn := range fns {
-				if err := fn(key); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	// skilltagDescOrder is the schema descriptor for order field.
+	skilltagDescOrder := skilltagFields[1].Descriptor()
+	// skilltag.DefaultOrder holds the default value on creation for the order field.
+	skilltag.DefaultOrder = skilltagDescOrder.Default.(int)
+	// skilltag.OrderValidator is a validator for the "order" field. It is called by the builders before save.
+	skilltag.OrderValidator = skilltagDescOrder.Validators[0].(func(int) error)
 	userMixin := schema.User{}.Mixin()
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0
@@ -334,6 +302,25 @@ func init() {
 	useractivityDescIcon := useractivityFields[2].Descriptor()
 	// useractivity.IconValidator is a validator for the "icon" field. It is called by the builders before save.
 	useractivity.IconValidator = useractivityDescIcon.Validators[0].(func(string) error)
+	userappealMixin := schema.UserAppeal{}.Mixin()
+	userappealMixinFields0 := userappealMixin[0].Fields()
+	_ = userappealMixinFields0
+	userappealFields := schema.UserAppeal{}.Fields()
+	_ = userappealFields
+	// userappealDescCreateTime is the schema descriptor for create_time field.
+	userappealDescCreateTime := userappealMixinFields0[0].Descriptor()
+	// userappeal.DefaultCreateTime holds the default value on creation for the create_time field.
+	userappeal.DefaultCreateTime = userappealDescCreateTime.Default.(func() time.Time)
+	// userappealDescUpdateTime is the schema descriptor for update_time field.
+	userappealDescUpdateTime := userappealMixinFields0[1].Descriptor()
+	// userappeal.DefaultUpdateTime holds the default value on creation for the update_time field.
+	userappeal.DefaultUpdateTime = userappealDescUpdateTime.Default.(func() time.Time)
+	// userappeal.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	userappeal.UpdateDefaultUpdateTime = userappealDescUpdateTime.UpdateDefault.(func() time.Time)
+	// userappealDescContent is the schema descriptor for content field.
+	userappealDescContent := userappealFields[0].Descriptor()
+	// userappeal.ContentValidator is a validator for the "content" field. It is called by the builders before save.
+	userappeal.ContentValidator = userappealDescContent.Validators[0].(func(string) error)
 	usercareerMixin := schema.UserCareer{}.Mixin()
 	usercareerMixinFields0 := usercareerMixin[0].Fields()
 	_ = usercareerMixinFields0
@@ -561,4 +548,23 @@ func init() {
 	userqualificationDescMemo := userqualificationFields[4].Descriptor()
 	// userqualification.MemoValidator is a validator for the "memo" field. It is called by the builders before save.
 	userqualification.MemoValidator = userqualificationDescMemo.Validators[0].(func(string) error)
+	usersolutionMixin := schema.UserSolution{}.Mixin()
+	usersolutionMixinFields0 := usersolutionMixin[0].Fields()
+	_ = usersolutionMixinFields0
+	usersolutionFields := schema.UserSolution{}.Fields()
+	_ = usersolutionFields
+	// usersolutionDescCreateTime is the schema descriptor for create_time field.
+	usersolutionDescCreateTime := usersolutionMixinFields0[0].Descriptor()
+	// usersolution.DefaultCreateTime holds the default value on creation for the create_time field.
+	usersolution.DefaultCreateTime = usersolutionDescCreateTime.Default.(func() time.Time)
+	// usersolutionDescUpdateTime is the schema descriptor for update_time field.
+	usersolutionDescUpdateTime := usersolutionMixinFields0[1].Descriptor()
+	// usersolution.DefaultUpdateTime holds the default value on creation for the update_time field.
+	usersolution.DefaultUpdateTime = usersolutionDescUpdateTime.Default.(func() time.Time)
+	// usersolution.UpdateDefaultUpdateTime holds the default value on update for the update_time field.
+	usersolution.UpdateDefaultUpdateTime = usersolutionDescUpdateTime.UpdateDefault.(func() time.Time)
+	// usersolutionDescContent is the schema descriptor for content field.
+	usersolutionDescContent := usersolutionFields[0].Descriptor()
+	// usersolution.ContentValidator is a validator for the "content" field. It is called by the builders before save.
+	usersolution.ContentValidator = usersolutionDescContent.Validators[0].(func(string) error)
 }

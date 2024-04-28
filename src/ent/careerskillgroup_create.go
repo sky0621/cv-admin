@@ -92,7 +92,7 @@ func (csgc *CareerSkillGroupCreate) Mutation() *CareerSkillGroupMutation {
 // Save creates the CareerSkillGroup in the database.
 func (csgc *CareerSkillGroupCreate) Save(ctx context.Context) (*CareerSkillGroup, error) {
 	csgc.defaults()
-	return withHooks[*CareerSkillGroup, CareerSkillGroupMutation](ctx, csgc.sqlSave, csgc.mutation, csgc.hooks)
+	return withHooks(ctx, csgc.sqlSave, csgc.mutation, csgc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -405,12 +405,16 @@ func (u *CareerSkillGroupUpsertOne) IDX(ctx context.Context) int {
 // CareerSkillGroupCreateBulk is the builder for creating many CareerSkillGroup entities in bulk.
 type CareerSkillGroupCreateBulk struct {
 	config
+	err      error
 	builders []*CareerSkillGroupCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the CareerSkillGroup entities in the database.
 func (csgcb *CareerSkillGroupCreateBulk) Save(ctx context.Context) ([]*CareerSkillGroup, error) {
+	if csgcb.err != nil {
+		return nil, csgcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(csgcb.builders))
 	nodes := make([]*CareerSkillGroup, len(csgcb.builders))
 	mutators := make([]Mutator, len(csgcb.builders))
@@ -427,8 +431,8 @@ func (csgcb *CareerSkillGroupCreateBulk) Save(ctx context.Context) ([]*CareerSki
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, csgcb.builders[i+1].mutation)
 				} else {
@@ -606,6 +610,9 @@ func (u *CareerSkillGroupUpsertBulk) UpdateLabel() *CareerSkillGroupUpsertBulk {
 
 // Exec executes the query.
 func (u *CareerSkillGroupUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the CareerSkillGroupCreateBulk instead", i)

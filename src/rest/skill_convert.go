@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"github.com/sky0621/cv-admin/src/converter"
 	"github.com/sky0621/cv-admin/src/ent"
 )
 
@@ -9,14 +8,13 @@ import (
 
 func ToEntSkillTagCreate(s SkillTag, c *ent.SkillTagCreate) *ent.SkillTagCreate {
 	return c.
-		SetName(*s.Name).
-		SetKey(*s.Key)
+		SetName(*s.Name)
 }
 
 func ToSwaggerSkillTag(entSkillTag *ent.SkillTag) SkillTag {
 	return SkillTag{
-		Name: &entSkillTag.Name,
-		Key:  &entSkillTag.Key,
+		SkillTagID: &entSkillTag.ID,
+		Name:       &entSkillTag.Name,
 	}
 }
 
@@ -28,28 +26,33 @@ func ToSwaggerSkillTags(entSkillTags []*ent.SkillTag) []SkillTag {
 	return skillTags
 }
 
-func ToEntSkillCreate(s Skill, c *ent.SkillCreate) *ent.SkillCreate {
+func ToEntSkillCreate(s Skill, st *ent.SkillTag, c *ent.SkillCreate) *ent.SkillCreate {
 	return c.
 		SetName(*s.Name).
-		SetKey(*s.Key).
 		SetNillableURL(s.Url).
-		SetNillableTagKey(s.TagKey)
+		SetSkillTagID(*s.SkillTagID).
+		SetSkillTag(st)
 }
 
-func ToSwaggerSkill(entSkill *ent.Skill) Skill {
-	return Skill{
-		SkillID: converter.ToPtr(entSkill.ID),
+func ToSwaggerSkill(entSkill ent.Skill) Skill {
+	s := Skill{
+		SkillID: ToPtr(entSkill.ID),
 		Name:    &entSkill.Name,
-		Key:     &entSkill.Key,
 		Url:     entSkill.URL,
-		TagKey:  entSkill.TagKey,
 	}
+	if entSkill.Edges.SkillTag != nil {
+		s.SkillTagID = &entSkill.Edges.SkillTag.ID
+	}
+	return s
 }
 
 func ToSwaggerSkills(entSkills []*ent.Skill) []Skill {
 	var skills []Skill
 	for _, entSkill := range entSkills {
-		skills = append(skills, ToSwaggerSkill(entSkill))
+		if entSkill == nil {
+			continue
+		}
+		skills = append(skills, ToSwaggerSkill(*entSkill))
 	}
 	return skills
 }

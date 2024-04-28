@@ -42,6 +42,14 @@ func (csgu *CareerSkillGroupUpdate) SetLabel(s string) *CareerSkillGroupUpdate {
 	return csgu
 }
 
+// SetNillableLabel sets the "label" field if the given value is not nil.
+func (csgu *CareerSkillGroupUpdate) SetNillableLabel(s *string) *CareerSkillGroupUpdate {
+	if s != nil {
+		csgu.SetLabel(*s)
+	}
+	return csgu
+}
+
 // SetCareerID sets the "career" edge to the UserCareer entity by ID.
 func (csgu *CareerSkillGroupUpdate) SetCareerID(id int) *CareerSkillGroupUpdate {
 	csgu.mutation.SetCareerID(id)
@@ -103,7 +111,7 @@ func (csgu *CareerSkillGroupUpdate) RemoveCareerSkills(c ...*CareerSkill) *Caree
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (csgu *CareerSkillGroupUpdate) Save(ctx context.Context) (int, error) {
 	csgu.defaults()
-	return withHooks[int, CareerSkillGroupMutation](ctx, csgu.sqlSave, csgu.mutation, csgu.hooks)
+	return withHooks(ctx, csgu.sqlSave, csgu.mutation, csgu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -273,6 +281,14 @@ func (csguo *CareerSkillGroupUpdateOne) SetLabel(s string) *CareerSkillGroupUpda
 	return csguo
 }
 
+// SetNillableLabel sets the "label" field if the given value is not nil.
+func (csguo *CareerSkillGroupUpdateOne) SetNillableLabel(s *string) *CareerSkillGroupUpdateOne {
+	if s != nil {
+		csguo.SetLabel(*s)
+	}
+	return csguo
+}
+
 // SetCareerID sets the "career" edge to the UserCareer entity by ID.
 func (csguo *CareerSkillGroupUpdateOne) SetCareerID(id int) *CareerSkillGroupUpdateOne {
 	csguo.mutation.SetCareerID(id)
@@ -347,7 +363,7 @@ func (csguo *CareerSkillGroupUpdateOne) Select(field string, fields ...string) *
 // Save executes the query and returns the updated CareerSkillGroup entity.
 func (csguo *CareerSkillGroupUpdateOne) Save(ctx context.Context) (*CareerSkillGroup, error) {
 	csguo.defaults()
-	return withHooks[*CareerSkillGroup, CareerSkillGroupMutation](ctx, csguo.sqlSave, csguo.mutation, csguo.hooks)
+	return withHooks(ctx, csguo.sqlSave, csguo.mutation, csguo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

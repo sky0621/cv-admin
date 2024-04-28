@@ -3,8 +3,9 @@ package submission
 import "github.com/xuri/excelize/v2"
 
 const (
-	RowBaseHeight float64 = 25.0
-	RowMaxHeight  float64 = 409.0
+	RowBaseHeight     float64 = 25.0
+	RowSolutionHeight float64 = 110.0
+	RowMaxHeight      float64 = 409.0
 )
 
 const (

@@ -19,7 +19,7 @@ import (
 type CareerTaskDescriptionQuery struct {
 	config
 	ctx            *QueryContext
-	order          []OrderFunc
+	order          []careertaskdescription.OrderOption
 	inters         []Interceptor
 	predicates     []predicate.CareerTaskDescription
 	withCareerTask *CareerTaskQuery
@@ -55,7 +55,7 @@ func (ctdq *CareerTaskDescriptionQuery) Unique(unique bool) *CareerTaskDescripti
 }
 
 // Order specifies how the records should be ordered.
-func (ctdq *CareerTaskDescriptionQuery) Order(o ...OrderFunc) *CareerTaskDescriptionQuery {
+func (ctdq *CareerTaskDescriptionQuery) Order(o ...careertaskdescription.OrderOption) *CareerTaskDescriptionQuery {
 	ctdq.order = append(ctdq.order, o...)
 	return ctdq
 }
@@ -271,7 +271,7 @@ func (ctdq *CareerTaskDescriptionQuery) Clone() *CareerTaskDescriptionQuery {
 	return &CareerTaskDescriptionQuery{
 		config:         ctdq.config,
 		ctx:            ctdq.ctx.Clone(),
-		order:          append([]OrderFunc{}, ctdq.order...),
+		order:          append([]careertaskdescription.OrderOption{}, ctdq.order...),
 		inters:         append([]Interceptor{}, ctdq.inters...),
 		predicates:     append([]predicate.CareerTaskDescription{}, ctdq.predicates...),
 		withCareerTask: ctdq.withCareerTask.Clone(),

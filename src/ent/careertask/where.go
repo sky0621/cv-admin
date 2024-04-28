@@ -229,11 +229,7 @@ func HasCareer() predicate.CareerTask {
 // HasCareerWith applies the HasEdge predicate on the "career" edge with a given conditions (other predicates).
 func HasCareerWith(preds ...predicate.UserCareer) predicate.CareerTask {
 	return predicate.CareerTask(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareerInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, CareerTable, CareerColumn),
-		)
+		step := newCareerStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -256,11 +252,7 @@ func HasCareerTaskDescriptions() predicate.CareerTask {
 // HasCareerTaskDescriptionsWith applies the HasEdge predicate on the "careerTaskDescriptions" edge with a given conditions (other predicates).
 func HasCareerTaskDescriptionsWith(preds ...predicate.CareerTaskDescription) predicate.CareerTask {
 	return predicate.CareerTask(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareerTaskDescriptionsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CareerTaskDescriptionsTable, CareerTaskDescriptionsColumn),
-		)
+		step := newCareerTaskDescriptionsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -271,32 +263,15 @@ func HasCareerTaskDescriptionsWith(preds ...predicate.CareerTaskDescription) pre
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.CareerTask) predicate.CareerTask {
-	return predicate.CareerTask(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.CareerTask(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.CareerTask) predicate.CareerTask {
-	return predicate.CareerTask(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.CareerTask(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.CareerTask) predicate.CareerTask {
-	return predicate.CareerTask(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.CareerTask(sql.NotPredicates(p))
 }

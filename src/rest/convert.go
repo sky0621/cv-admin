@@ -1,4 +1,4 @@
-package converter
+package rest
 
 func ToPtr[T any](v T) *T {
 	return &v

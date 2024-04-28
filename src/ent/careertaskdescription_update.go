@@ -34,6 +34,14 @@ func (ctdu *CareerTaskDescriptionUpdate) SetDescription(s string) *CareerTaskDes
 	return ctdu
 }
 
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (ctdu *CareerTaskDescriptionUpdate) SetNillableDescription(s *string) *CareerTaskDescriptionUpdate {
+	if s != nil {
+		ctdu.SetDescription(*s)
+	}
+	return ctdu
+}
+
 // SetCareerTaskID sets the "careerTask" edge to the CareerTask entity by ID.
 func (ctdu *CareerTaskDescriptionUpdate) SetCareerTaskID(id int) *CareerTaskDescriptionUpdate {
 	ctdu.mutation.SetCareerTaskID(id)
@@ -58,7 +66,7 @@ func (ctdu *CareerTaskDescriptionUpdate) ClearCareerTask() *CareerTaskDescriptio
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ctdu *CareerTaskDescriptionUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks[int, CareerTaskDescriptionMutation](ctx, ctdu.sqlSave, ctdu.mutation, ctdu.hooks)
+	return withHooks(ctx, ctdu.sqlSave, ctdu.mutation, ctdu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -166,6 +174,14 @@ func (ctduo *CareerTaskDescriptionUpdateOne) SetDescription(s string) *CareerTas
 	return ctduo
 }
 
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (ctduo *CareerTaskDescriptionUpdateOne) SetNillableDescription(s *string) *CareerTaskDescriptionUpdateOne {
+	if s != nil {
+		ctduo.SetDescription(*s)
+	}
+	return ctduo
+}
+
 // SetCareerTaskID sets the "careerTask" edge to the CareerTask entity by ID.
 func (ctduo *CareerTaskDescriptionUpdateOne) SetCareerTaskID(id int) *CareerTaskDescriptionUpdateOne {
 	ctduo.mutation.SetCareerTaskID(id)
@@ -203,7 +219,7 @@ func (ctduo *CareerTaskDescriptionUpdateOne) Select(field string, fields ...stri
 
 // Save executes the query and returns the updated CareerTaskDescription entity.
 func (ctduo *CareerTaskDescriptionUpdateOne) Save(ctx context.Context) (*CareerTaskDescription, error) {
-	return withHooks[*CareerTaskDescription, CareerTaskDescriptionMutation](ctx, ctduo.sqlSave, ctduo.mutation, ctduo.hooks)
+	return withHooks(ctx, ctduo.sqlSave, ctduo.mutation, ctduo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

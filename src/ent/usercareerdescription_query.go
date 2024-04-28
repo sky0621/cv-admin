@@ -19,7 +19,7 @@ import (
 type UserCareerDescriptionQuery struct {
 	config
 	ctx        *QueryContext
-	order      []OrderFunc
+	order      []usercareerdescription.OrderOption
 	inters     []Interceptor
 	predicates []predicate.UserCareerDescription
 	withCareer *UserCareerQuery
@@ -55,7 +55,7 @@ func (ucdq *UserCareerDescriptionQuery) Unique(unique bool) *UserCareerDescripti
 }
 
 // Order specifies how the records should be ordered.
-func (ucdq *UserCareerDescriptionQuery) Order(o ...OrderFunc) *UserCareerDescriptionQuery {
+func (ucdq *UserCareerDescriptionQuery) Order(o ...usercareerdescription.OrderOption) *UserCareerDescriptionQuery {
 	ucdq.order = append(ucdq.order, o...)
 	return ucdq
 }
@@ -271,7 +271,7 @@ func (ucdq *UserCareerDescriptionQuery) Clone() *UserCareerDescriptionQuery {
 	return &UserCareerDescriptionQuery{
 		config:     ucdq.config,
 		ctx:        ucdq.ctx.Clone(),
-		order:      append([]OrderFunc{}, ucdq.order...),
+		order:      append([]usercareerdescription.OrderOption{}, ucdq.order...),
 		inters:     append([]Interceptor{}, ucdq.inters...),
 		predicates: append([]predicate.UserCareerDescription{}, ucdq.predicates...),
 		withCareer: ucdq.withCareer.Clone(),

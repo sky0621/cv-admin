@@ -41,6 +41,14 @@ func (uau *UserActivityUpdate) SetName(s string) *UserActivityUpdate {
 	return uau
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uau *UserActivityUpdate) SetNillableName(s *string) *UserActivityUpdate {
+	if s != nil {
+		uau.SetName(*s)
+	}
+	return uau
+}
+
 // SetURL sets the "url" field.
 func (uau *UserActivityUpdate) SetURL(s string) *UserActivityUpdate {
 	uau.mutation.SetURL(s)
@@ -106,7 +114,7 @@ func (uau *UserActivityUpdate) ClearUser() *UserActivityUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uau *UserActivityUpdate) Save(ctx context.Context) (int, error) {
 	uau.defaults()
-	return withHooks[int, UserActivityMutation](ctx, uau.sqlSave, uau.mutation, uau.hooks)
+	return withHooks(ctx, uau.sqlSave, uau.mutation, uau.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -253,6 +261,14 @@ func (uauo *UserActivityUpdateOne) SetName(s string) *UserActivityUpdateOne {
 	return uauo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uauo *UserActivityUpdateOne) SetNillableName(s *string) *UserActivityUpdateOne {
+	if s != nil {
+		uauo.SetName(*s)
+	}
+	return uauo
+}
+
 // SetURL sets the "url" field.
 func (uauo *UserActivityUpdateOne) SetURL(s string) *UserActivityUpdateOne {
 	uauo.mutation.SetURL(s)
@@ -331,7 +347,7 @@ func (uauo *UserActivityUpdateOne) Select(field string, fields ...string) *UserA
 // Save executes the query and returns the updated UserActivity entity.
 func (uauo *UserActivityUpdateOne) Save(ctx context.Context) (*UserActivity, error) {
 	uauo.defaults()
-	return withHooks[*UserActivity, UserActivityMutation](ctx, uauo.sqlSave, uauo.mutation, uauo.hooks)
+	return withHooks(ctx, uauo.sqlSave, uauo.mutation, uauo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
