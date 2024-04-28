@@ -535,7 +535,7 @@ to quickly create a Cobra application.`,
 		 * PR
 		 */
 		{
-			if appeals != nil {
+			if *appeals != nil {
 				for _, appeal := range *appeals {
 					rowNo += 1
 					w.Height(rowNo, s.RowBaseHeight)
@@ -622,9 +622,19 @@ to quickly create a Cobra application.`,
 					if t.Skills != nil {
 						builder := util.NewBuilder()
 						for idx, sk := range *t.Skills {
+							/*
+							 * フィルタ
+							 */
+							if *t.TagName == "クラウド(GCP)" || *t.TagName == "ライブラリ" {
+								if *sk.Period < 6 {
+									continue
+								}
+							}
+
 							if idx != 0 {
 								builder.Append(", ")
 							}
+
 							builder.Append(*sk.Name)
 
 							if sk.Versions != nil {
