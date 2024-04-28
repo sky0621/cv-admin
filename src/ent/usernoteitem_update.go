@@ -41,6 +41,14 @@ func (uniu *UserNoteItemUpdate) SetText(s string) *UserNoteItemUpdate {
 	return uniu
 }
 
+// SetNillableText sets the "text" field if the given value is not nil.
+func (uniu *UserNoteItemUpdate) SetNillableText(s *string) *UserNoteItemUpdate {
+	if s != nil {
+		uniu.SetText(*s)
+	}
+	return uniu
+}
+
 // SetNoteID sets the "note" edge to the UserNote entity by ID.
 func (uniu *UserNoteItemUpdate) SetNoteID(id int) *UserNoteItemUpdate {
 	uniu.mutation.SetNoteID(id)
@@ -66,7 +74,7 @@ func (uniu *UserNoteItemUpdate) ClearNote() *UserNoteItemUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uniu *UserNoteItemUpdate) Save(ctx context.Context) (int, error) {
 	uniu.defaults()
-	return withHooks[int, UserNoteItemMutation](ctx, uniu.sqlSave, uniu.mutation, uniu.hooks)
+	return withHooks(ctx, uniu.sqlSave, uniu.mutation, uniu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -191,6 +199,14 @@ func (uniuo *UserNoteItemUpdateOne) SetText(s string) *UserNoteItemUpdateOne {
 	return uniuo
 }
 
+// SetNillableText sets the "text" field if the given value is not nil.
+func (uniuo *UserNoteItemUpdateOne) SetNillableText(s *string) *UserNoteItemUpdateOne {
+	if s != nil {
+		uniuo.SetText(*s)
+	}
+	return uniuo
+}
+
 // SetNoteID sets the "note" edge to the UserNote entity by ID.
 func (uniuo *UserNoteItemUpdateOne) SetNoteID(id int) *UserNoteItemUpdateOne {
 	uniuo.mutation.SetNoteID(id)
@@ -229,7 +245,7 @@ func (uniuo *UserNoteItemUpdateOne) Select(field string, fields ...string) *User
 // Save executes the query and returns the updated UserNoteItem entity.
 func (uniuo *UserNoteItemUpdateOne) Save(ctx context.Context) (*UserNoteItem, error) {
 	uniuo.defaults()
-	return withHooks[*UserNoteItem, UserNoteItemMutation](ctx, uniuo.sqlSave, uniuo.mutation, uniuo.hooks)
+	return withHooks(ctx, uniuo.sqlSave, uniuo.mutation, uniuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

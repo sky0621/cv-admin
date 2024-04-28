@@ -4,6 +4,7 @@ package skilltag
 
 import (
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/sky0621/cv-admin/src/ent/predicate"
 )
 
@@ -57,9 +58,9 @@ func Name(v string) predicate.SkillTag {
 	return predicate.SkillTag(sql.FieldEQ(FieldName, v))
 }
 
-// Key applies equality check predicate on the "key" field. It's identical to KeyEQ.
-func Key(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldEQ(FieldKey, v))
+// Order applies equality check predicate on the "order" field. It's identical to OrderEQ.
+func Order(v int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldEQ(FieldOrder, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -127,99 +128,80 @@ func NameContainsFold(v string) predicate.SkillTag {
 	return predicate.SkillTag(sql.FieldContainsFold(FieldName, v))
 }
 
-// KeyEQ applies the EQ predicate on the "key" field.
-func KeyEQ(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldEQ(FieldKey, v))
+// OrderEQ applies the EQ predicate on the "order" field.
+func OrderEQ(v int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldEQ(FieldOrder, v))
 }
 
-// KeyNEQ applies the NEQ predicate on the "key" field.
-func KeyNEQ(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldNEQ(FieldKey, v))
+// OrderNEQ applies the NEQ predicate on the "order" field.
+func OrderNEQ(v int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldNEQ(FieldOrder, v))
 }
 
-// KeyIn applies the In predicate on the "key" field.
-func KeyIn(vs ...string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldIn(FieldKey, vs...))
+// OrderIn applies the In predicate on the "order" field.
+func OrderIn(vs ...int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldIn(FieldOrder, vs...))
 }
 
-// KeyNotIn applies the NotIn predicate on the "key" field.
-func KeyNotIn(vs ...string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldNotIn(FieldKey, vs...))
+// OrderNotIn applies the NotIn predicate on the "order" field.
+func OrderNotIn(vs ...int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldNotIn(FieldOrder, vs...))
 }
 
-// KeyGT applies the GT predicate on the "key" field.
-func KeyGT(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldGT(FieldKey, v))
+// OrderGT applies the GT predicate on the "order" field.
+func OrderGT(v int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldGT(FieldOrder, v))
 }
 
-// KeyGTE applies the GTE predicate on the "key" field.
-func KeyGTE(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldGTE(FieldKey, v))
+// OrderGTE applies the GTE predicate on the "order" field.
+func OrderGTE(v int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldGTE(FieldOrder, v))
 }
 
-// KeyLT applies the LT predicate on the "key" field.
-func KeyLT(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldLT(FieldKey, v))
+// OrderLT applies the LT predicate on the "order" field.
+func OrderLT(v int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldLT(FieldOrder, v))
 }
 
-// KeyLTE applies the LTE predicate on the "key" field.
-func KeyLTE(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldLTE(FieldKey, v))
+// OrderLTE applies the LTE predicate on the "order" field.
+func OrderLTE(v int) predicate.SkillTag {
+	return predicate.SkillTag(sql.FieldLTE(FieldOrder, v))
 }
 
-// KeyContains applies the Contains predicate on the "key" field.
-func KeyContains(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldContains(FieldKey, v))
+// HasSkills applies the HasEdge predicate on the "skills" edge.
+func HasSkills() predicate.SkillTag {
+	return predicate.SkillTag(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SkillsTable, SkillsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
 }
 
-// KeyHasPrefix applies the HasPrefix predicate on the "key" field.
-func KeyHasPrefix(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldHasPrefix(FieldKey, v))
-}
-
-// KeyHasSuffix applies the HasSuffix predicate on the "key" field.
-func KeyHasSuffix(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldHasSuffix(FieldKey, v))
-}
-
-// KeyEqualFold applies the EqualFold predicate on the "key" field.
-func KeyEqualFold(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldEqualFold(FieldKey, v))
-}
-
-// KeyContainsFold applies the ContainsFold predicate on the "key" field.
-func KeyContainsFold(v string) predicate.SkillTag {
-	return predicate.SkillTag(sql.FieldContainsFold(FieldKey, v))
+// HasSkillsWith applies the HasEdge predicate on the "skills" edge with a given conditions (other predicates).
+func HasSkillsWith(preds ...predicate.Skill) predicate.SkillTag {
+	return predicate.SkillTag(func(s *sql.Selector) {
+		step := newSkillsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.SkillTag) predicate.SkillTag {
-	return predicate.SkillTag(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.SkillTag(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.SkillTag) predicate.SkillTag {
-	return predicate.SkillTag(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.SkillTag(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.SkillTag) predicate.SkillTag {
-	return predicate.SkillTag(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.SkillTag(sql.NotPredicates(p))
 }

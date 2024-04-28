@@ -2,6 +2,11 @@
 
 package careertaskdescription
 
+import (
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
+)
+
 const (
 	// Label holds the string label denoting the careertaskdescription type in the database.
 	Label = "career_task_description"
@@ -53,3 +58,30 @@ var (
 	// DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	DescriptionValidator func(string) error
 )
+
+// OrderOption defines the ordering options for the CareerTaskDescription queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByCareerTaskField orders the results by careerTask field.
+func ByCareerTaskField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCareerTaskStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newCareerTaskStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CareerTaskInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, CareerTaskTable, CareerTaskColumn),
+	)
+}

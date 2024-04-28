@@ -13,6 +13,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/sky0621/cv-admin/src/ent/careerskill"
 	"github.com/sky0621/cv-admin/src/ent/skill"
+	"github.com/sky0621/cv-admin/src/ent/skilltag"
 )
 
 // SkillCreate is the builder for creating a Skill entity.
@@ -57,12 +58,6 @@ func (sc *SkillCreate) SetName(s string) *SkillCreate {
 	return sc
 }
 
-// SetKey sets the "key" field.
-func (sc *SkillCreate) SetKey(s string) *SkillCreate {
-	sc.mutation.SetKey(s)
-	return sc
-}
-
 // SetURL sets the "url" field.
 func (sc *SkillCreate) SetURL(s string) *SkillCreate {
 	sc.mutation.SetURL(s)
@@ -77,18 +72,15 @@ func (sc *SkillCreate) SetNillableURL(s *string) *SkillCreate {
 	return sc
 }
 
-// SetTagKey sets the "tag_key" field.
-func (sc *SkillCreate) SetTagKey(s string) *SkillCreate {
-	sc.mutation.SetTagKey(s)
+// SetSkillTagID sets the "skillTag" edge to the SkillTag entity by ID.
+func (sc *SkillCreate) SetSkillTagID(id int) *SkillCreate {
+	sc.mutation.SetSkillTagID(id)
 	return sc
 }
 
-// SetNillableTagKey sets the "tag_key" field if the given value is not nil.
-func (sc *SkillCreate) SetNillableTagKey(s *string) *SkillCreate {
-	if s != nil {
-		sc.SetTagKey(*s)
-	}
-	return sc
+// SetSkillTag sets the "skillTag" edge to the SkillTag entity.
+func (sc *SkillCreate) SetSkillTag(s *SkillTag) *SkillCreate {
+	return sc.SetSkillTagID(s.ID)
 }
 
 // AddCareerSkillIDs adds the "careerSkills" edge to the CareerSkill entity by IDs.
@@ -114,7 +106,7 @@ func (sc *SkillCreate) Mutation() *SkillMutation {
 // Save creates the Skill in the database.
 func (sc *SkillCreate) Save(ctx context.Context) (*Skill, error) {
 	sc.defaults()
-	return withHooks[*Skill, SkillMutation](ctx, sc.sqlSave, sc.mutation, sc.hooks)
+	return withHooks(ctx, sc.sqlSave, sc.mutation, sc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -167,23 +159,13 @@ func (sc *SkillCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Skill.name": %w`, err)}
 		}
 	}
-	if _, ok := sc.mutation.Key(); !ok {
-		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "Skill.key"`)}
-	}
-	if v, ok := sc.mutation.Key(); ok {
-		if err := skill.KeyValidator(v); err != nil {
-			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "Skill.key": %w`, err)}
-		}
-	}
 	if v, ok := sc.mutation.URL(); ok {
 		if err := skill.URLValidator(v); err != nil {
 			return &ValidationError{Name: "url", err: fmt.Errorf(`ent: validator failed for field "Skill.url": %w`, err)}
 		}
 	}
-	if v, ok := sc.mutation.TagKey(); ok {
-		if err := skill.TagKeyValidator(v); err != nil {
-			return &ValidationError{Name: "tag_key", err: fmt.Errorf(`ent: validator failed for field "Skill.tag_key": %w`, err)}
-		}
+	if _, ok := sc.mutation.SkillTagID(); !ok {
+		return &ValidationError{Name: "skillTag", err: errors.New(`ent: missing required edge "Skill.skillTag"`)}
 	}
 	return nil
 }
@@ -224,17 +206,26 @@ func (sc *SkillCreate) createSpec() (*Skill, *sqlgraph.CreateSpec) {
 		_spec.SetField(skill.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := sc.mutation.Key(); ok {
-		_spec.SetField(skill.FieldKey, field.TypeString, value)
-		_node.Key = value
-	}
 	if value, ok := sc.mutation.URL(); ok {
 		_spec.SetField(skill.FieldURL, field.TypeString, value)
 		_node.URL = &value
 	}
-	if value, ok := sc.mutation.TagKey(); ok {
-		_spec.SetField(skill.FieldTagKey, field.TypeString, value)
-		_node.TagKey = &value
+	if nodes := sc.mutation.SkillTagIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   skill.SkillTagTable,
+			Columns: []string{skill.SkillTagColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(skilltag.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.tag_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sc.mutation.CareerSkillsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -328,18 +319,6 @@ func (u *SkillUpsert) UpdateName() *SkillUpsert {
 	return u
 }
 
-// SetKey sets the "key" field.
-func (u *SkillUpsert) SetKey(v string) *SkillUpsert {
-	u.Set(skill.FieldKey, v)
-	return u
-}
-
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *SkillUpsert) UpdateKey() *SkillUpsert {
-	u.SetExcluded(skill.FieldKey)
-	return u
-}
-
 // SetURL sets the "url" field.
 func (u *SkillUpsert) SetURL(v string) *SkillUpsert {
 	u.Set(skill.FieldURL, v)
@@ -355,24 +334,6 @@ func (u *SkillUpsert) UpdateURL() *SkillUpsert {
 // ClearURL clears the value of the "url" field.
 func (u *SkillUpsert) ClearURL() *SkillUpsert {
 	u.SetNull(skill.FieldURL)
-	return u
-}
-
-// SetTagKey sets the "tag_key" field.
-func (u *SkillUpsert) SetTagKey(v string) *SkillUpsert {
-	u.Set(skill.FieldTagKey, v)
-	return u
-}
-
-// UpdateTagKey sets the "tag_key" field to the value that was provided on create.
-func (u *SkillUpsert) UpdateTagKey() *SkillUpsert {
-	u.SetExcluded(skill.FieldTagKey)
-	return u
-}
-
-// ClearTagKey clears the value of the "tag_key" field.
-func (u *SkillUpsert) ClearTagKey() *SkillUpsert {
-	u.SetNull(skill.FieldTagKey)
 	return u
 }
 
@@ -449,20 +410,6 @@ func (u *SkillUpsertOne) UpdateName() *SkillUpsertOne {
 	})
 }
 
-// SetKey sets the "key" field.
-func (u *SkillUpsertOne) SetKey(v string) *SkillUpsertOne {
-	return u.Update(func(s *SkillUpsert) {
-		s.SetKey(v)
-	})
-}
-
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *SkillUpsertOne) UpdateKey() *SkillUpsertOne {
-	return u.Update(func(s *SkillUpsert) {
-		s.UpdateKey()
-	})
-}
-
 // SetURL sets the "url" field.
 func (u *SkillUpsertOne) SetURL(v string) *SkillUpsertOne {
 	return u.Update(func(s *SkillUpsert) {
@@ -481,27 +428,6 @@ func (u *SkillUpsertOne) UpdateURL() *SkillUpsertOne {
 func (u *SkillUpsertOne) ClearURL() *SkillUpsertOne {
 	return u.Update(func(s *SkillUpsert) {
 		s.ClearURL()
-	})
-}
-
-// SetTagKey sets the "tag_key" field.
-func (u *SkillUpsertOne) SetTagKey(v string) *SkillUpsertOne {
-	return u.Update(func(s *SkillUpsert) {
-		s.SetTagKey(v)
-	})
-}
-
-// UpdateTagKey sets the "tag_key" field to the value that was provided on create.
-func (u *SkillUpsertOne) UpdateTagKey() *SkillUpsertOne {
-	return u.Update(func(s *SkillUpsert) {
-		s.UpdateTagKey()
-	})
-}
-
-// ClearTagKey clears the value of the "tag_key" field.
-func (u *SkillUpsertOne) ClearTagKey() *SkillUpsertOne {
-	return u.Update(func(s *SkillUpsert) {
-		s.ClearTagKey()
 	})
 }
 
@@ -541,12 +467,16 @@ func (u *SkillUpsertOne) IDX(ctx context.Context) int {
 // SkillCreateBulk is the builder for creating many Skill entities in bulk.
 type SkillCreateBulk struct {
 	config
+	err      error
 	builders []*SkillCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the Skill entities in the database.
 func (scb *SkillCreateBulk) Save(ctx context.Context) ([]*Skill, error) {
+	if scb.err != nil {
+		return nil, scb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(scb.builders))
 	nodes := make([]*Skill, len(scb.builders))
 	mutators := make([]Mutator, len(scb.builders))
@@ -563,8 +493,8 @@ func (scb *SkillCreateBulk) Save(ctx context.Context) ([]*Skill, error) {
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, scb.builders[i+1].mutation)
 				} else {
@@ -740,20 +670,6 @@ func (u *SkillUpsertBulk) UpdateName() *SkillUpsertBulk {
 	})
 }
 
-// SetKey sets the "key" field.
-func (u *SkillUpsertBulk) SetKey(v string) *SkillUpsertBulk {
-	return u.Update(func(s *SkillUpsert) {
-		s.SetKey(v)
-	})
-}
-
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *SkillUpsertBulk) UpdateKey() *SkillUpsertBulk {
-	return u.Update(func(s *SkillUpsert) {
-		s.UpdateKey()
-	})
-}
-
 // SetURL sets the "url" field.
 func (u *SkillUpsertBulk) SetURL(v string) *SkillUpsertBulk {
 	return u.Update(func(s *SkillUpsert) {
@@ -775,29 +691,11 @@ func (u *SkillUpsertBulk) ClearURL() *SkillUpsertBulk {
 	})
 }
 
-// SetTagKey sets the "tag_key" field.
-func (u *SkillUpsertBulk) SetTagKey(v string) *SkillUpsertBulk {
-	return u.Update(func(s *SkillUpsert) {
-		s.SetTagKey(v)
-	})
-}
-
-// UpdateTagKey sets the "tag_key" field to the value that was provided on create.
-func (u *SkillUpsertBulk) UpdateTagKey() *SkillUpsertBulk {
-	return u.Update(func(s *SkillUpsert) {
-		s.UpdateTagKey()
-	})
-}
-
-// ClearTagKey clears the value of the "tag_key" field.
-func (u *SkillUpsertBulk) ClearTagKey() *SkillUpsertBulk {
-	return u.Update(func(s *SkillUpsert) {
-		s.ClearTagKey()
-	})
-}
-
 // Exec executes the query.
 func (u *SkillUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the SkillCreateBulk instead", i)

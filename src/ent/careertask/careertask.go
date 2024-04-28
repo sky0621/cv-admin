@@ -4,6 +4,9 @@ package careertask
 
 import (
 	"time"
+
+	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -78,3 +81,61 @@ var (
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 )
+
+// OrderOption defines the ordering options for the CareerTask queries.
+type OrderOption func(*sql.Selector)
+
+// ByID orders the results by the id field.
+func ByID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByCreateTime orders the results by the create_time field.
+func ByCreateTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreateTime, opts...).ToFunc()
+}
+
+// ByUpdateTime orders the results by the update_time field.
+func ByUpdateTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdateTime, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByCareerField orders the results by career field.
+func ByCareerField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCareerStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByCareerTaskDescriptionsCount orders the results by careerTaskDescriptions count.
+func ByCareerTaskDescriptionsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCareerTaskDescriptionsStep(), opts...)
+	}
+}
+
+// ByCareerTaskDescriptions orders the results by careerTaskDescriptions terms.
+func ByCareerTaskDescriptions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCareerTaskDescriptionsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newCareerStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CareerInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, CareerTable, CareerColumn),
+	)
+}
+func newCareerTaskDescriptionsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CareerTaskDescriptionsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CareerTaskDescriptionsTable, CareerTaskDescriptionsColumn),
+	)
+}

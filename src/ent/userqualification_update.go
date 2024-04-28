@@ -41,6 +41,14 @@ func (uqu *UserQualificationUpdate) SetName(s string) *UserQualificationUpdate {
 	return uqu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uqu *UserQualificationUpdate) SetNillableName(s *string) *UserQualificationUpdate {
+	if s != nil {
+		uqu.SetName(*s)
+	}
+	return uqu
+}
+
 // SetOrganization sets the "organization" field.
 func (uqu *UserQualificationUpdate) SetOrganization(s string) *UserQualificationUpdate {
 	uqu.mutation.SetOrganization(s)
@@ -146,7 +154,7 @@ func (uqu *UserQualificationUpdate) ClearUser() *UserQualificationUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uqu *UserQualificationUpdate) Save(ctx context.Context) (int, error) {
 	uqu.defaults()
-	return withHooks[int, UserQualificationMutation](ctx, uqu.sqlSave, uqu.mutation, uqu.hooks)
+	return withHooks(ctx, uqu.sqlSave, uqu.mutation, uqu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -315,6 +323,14 @@ func (uquo *UserQualificationUpdateOne) SetName(s string) *UserQualificationUpda
 	return uquo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uquo *UserQualificationUpdateOne) SetNillableName(s *string) *UserQualificationUpdateOne {
+	if s != nil {
+		uquo.SetName(*s)
+	}
+	return uquo
+}
+
 // SetOrganization sets the "organization" field.
 func (uquo *UserQualificationUpdateOne) SetOrganization(s string) *UserQualificationUpdateOne {
 	uquo.mutation.SetOrganization(s)
@@ -433,7 +449,7 @@ func (uquo *UserQualificationUpdateOne) Select(field string, fields ...string) *
 // Save executes the query and returns the updated UserQualification entity.
 func (uquo *UserQualificationUpdateOne) Save(ctx context.Context) (*UserQualification, error) {
 	uquo.defaults()
-	return withHooks[*UserQualification, UserQualificationMutation](ctx, uquo.sqlSave, uquo.mutation, uquo.hooks)
+	return withHooks(ctx, uquo.sqlSave, uquo.mutation, uquo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

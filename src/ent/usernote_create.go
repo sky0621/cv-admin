@@ -106,7 +106,7 @@ func (unc *UserNoteCreate) Mutation() *UserNoteMutation {
 // Save creates the UserNote in the database.
 func (unc *UserNoteCreate) Save(ctx context.Context) (*UserNote, error) {
 	unc.defaults()
-	return withHooks[*UserNote, UserNoteMutation](ctx, unc.sqlSave, unc.mutation, unc.hooks)
+	return withHooks(ctx, unc.sqlSave, unc.mutation, unc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -467,12 +467,16 @@ func (u *UserNoteUpsertOne) IDX(ctx context.Context) int {
 // UserNoteCreateBulk is the builder for creating many UserNote entities in bulk.
 type UserNoteCreateBulk struct {
 	config
+	err      error
 	builders []*UserNoteCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the UserNote entities in the database.
 func (uncb *UserNoteCreateBulk) Save(ctx context.Context) ([]*UserNote, error) {
+	if uncb.err != nil {
+		return nil, uncb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(uncb.builders))
 	nodes := make([]*UserNote, len(uncb.builders))
 	mutators := make([]Mutator, len(uncb.builders))
@@ -489,8 +493,8 @@ func (uncb *UserNoteCreateBulk) Save(ctx context.Context) ([]*UserNote, error) {
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, uncb.builders[i+1].mutation)
 				} else {
@@ -689,6 +693,9 @@ func (u *UserNoteUpsertBulk) ClearMemo() *UserNoteUpsertBulk {
 
 // Exec executes the query.
 func (u *UserNoteUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserNoteCreateBulk instead", i)

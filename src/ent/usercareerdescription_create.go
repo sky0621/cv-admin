@@ -46,7 +46,7 @@ func (ucdc *UserCareerDescriptionCreate) Mutation() *UserCareerDescriptionMutati
 
 // Save creates the UserCareerDescription in the database.
 func (ucdc *UserCareerDescriptionCreate) Save(ctx context.Context) (*UserCareerDescription, error) {
-	return withHooks[*UserCareerDescription, UserCareerDescriptionMutation](ctx, ucdc.sqlSave, ucdc.mutation, ucdc.hooks)
+	return withHooks(ctx, ucdc.sqlSave, ucdc.mutation, ucdc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -286,12 +286,16 @@ func (u *UserCareerDescriptionUpsertOne) IDX(ctx context.Context) int {
 // UserCareerDescriptionCreateBulk is the builder for creating many UserCareerDescription entities in bulk.
 type UserCareerDescriptionCreateBulk struct {
 	config
+	err      error
 	builders []*UserCareerDescriptionCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the UserCareerDescription entities in the database.
 func (ucdcb *UserCareerDescriptionCreateBulk) Save(ctx context.Context) ([]*UserCareerDescription, error) {
+	if ucdcb.err != nil {
+		return nil, ucdcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ucdcb.builders))
 	nodes := make([]*UserCareerDescription, len(ucdcb.builders))
 	mutators := make([]Mutator, len(ucdcb.builders))
@@ -307,8 +311,8 @@ func (ucdcb *UserCareerDescriptionCreateBulk) Save(ctx context.Context) ([]*User
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, ucdcb.builders[i+1].mutation)
 				} else {
@@ -465,6 +469,9 @@ func (u *UserCareerDescriptionUpsertBulk) UpdateDescription() *UserCareerDescrip
 
 // Exec executes the query.
 func (u *UserCareerDescriptionUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserCareerDescriptionCreateBulk instead", i)

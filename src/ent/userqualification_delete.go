@@ -27,7 +27,7 @@ func (uqd *UserQualificationDelete) Where(ps ...predicate.UserQualification) *Us
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (uqd *UserQualificationDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, UserQualificationMutation](ctx, uqd.sqlExec, uqd.mutation, uqd.hooks)
+	return withHooks(ctx, uqd.sqlExec, uqd.mutation, uqd.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

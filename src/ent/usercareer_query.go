@@ -23,7 +23,7 @@ import (
 type UserCareerQuery struct {
 	config
 	ctx                    *QueryContext
-	order                  []OrderFunc
+	order                  []usercareer.OrderOption
 	inters                 []Interceptor
 	predicates             []predicate.UserCareer
 	withCareerGroup        *UserCareerGroupQuery
@@ -62,7 +62,7 @@ func (ucq *UserCareerQuery) Unique(unique bool) *UserCareerQuery {
 }
 
 // Order specifies how the records should be ordered.
-func (ucq *UserCareerQuery) Order(o ...OrderFunc) *UserCareerQuery {
+func (ucq *UserCareerQuery) Order(o ...usercareer.OrderOption) *UserCareerQuery {
 	ucq.order = append(ucq.order, o...)
 	return ucq
 }
@@ -344,7 +344,7 @@ func (ucq *UserCareerQuery) Clone() *UserCareerQuery {
 	return &UserCareerQuery{
 		config:                 ucq.config,
 		ctx:                    ucq.ctx.Clone(),
-		order:                  append([]OrderFunc{}, ucq.order...),
+		order:                  append([]usercareer.OrderOption{}, ucq.order...),
 		inters:                 append([]Interceptor{}, ucq.inters...),
 		predicates:             append([]predicate.UserCareer{}, ucq.predicates...),
 		withCareerGroup:        ucq.withCareerGroup.Clone(),
@@ -589,7 +589,7 @@ func (ucq *UserCareerQuery) loadCareerDescriptions(ctx context.Context, query *U
 	}
 	query.withFKs = true
 	query.Where(predicate.UserCareerDescription(func(s *sql.Selector) {
-		s.Where(sql.InValues(usercareer.CareerDescriptionsColumn, fks...))
+		s.Where(sql.InValues(s.C(usercareer.CareerDescriptionsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -602,7 +602,7 @@ func (ucq *UserCareerQuery) loadCareerDescriptions(ctx context.Context, query *U
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "career_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "career_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -620,7 +620,7 @@ func (ucq *UserCareerQuery) loadCareerTasks(ctx context.Context, query *CareerTa
 	}
 	query.withFKs = true
 	query.Where(predicate.CareerTask(func(s *sql.Selector) {
-		s.Where(sql.InValues(usercareer.CareerTasksColumn, fks...))
+		s.Where(sql.InValues(s.C(usercareer.CareerTasksColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -633,7 +633,7 @@ func (ucq *UserCareerQuery) loadCareerTasks(ctx context.Context, query *CareerTa
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "career_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "career_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -651,7 +651,7 @@ func (ucq *UserCareerQuery) loadCareerSkillGroups(ctx context.Context, query *Ca
 	}
 	query.withFKs = true
 	query.Where(predicate.CareerSkillGroup(func(s *sql.Selector) {
-		s.Where(sql.InValues(usercareer.CareerSkillGroupsColumn, fks...))
+		s.Where(sql.InValues(s.C(usercareer.CareerSkillGroupsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -664,7 +664,7 @@ func (ucq *UserCareerQuery) loadCareerSkillGroups(ctx context.Context, query *Ca
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "career_id" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "career_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

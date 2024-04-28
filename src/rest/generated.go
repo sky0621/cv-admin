@@ -27,6 +27,9 @@ type ActivityIcon = string
 // ActivityName アクティビティ名
 type ActivityName = string
 
+// AppealContent アピール事項
+type AppealContent = string
+
 // BelongTo 所属
 type BelongTo = string
 
@@ -51,6 +54,9 @@ type CareerGroupID = int
 // CareerGroupLabel キャリアグループラベル
 type CareerGroupLabel = string
 
+// CareerID キャリアを一意に識別するID
+type CareerID = int
+
 // CareerName キャリア名
 type CareerName = string
 
@@ -62,6 +68,9 @@ type CareerPeriodFrom struct {
 	// Year 生年月日の「年」
 	Year *Year `json:"year,omitempty"`
 }
+
+// CareerPeriodMonth キャリア期間(月)
+type CareerPeriodMonth = int
 
 // CareerPeriodTo キャリア期間年月To
 type CareerPeriodTo struct {
@@ -141,14 +150,11 @@ type Skill struct {
 	// Id スキルを一意に識別するキー
 	SkillID *SkillID `json:"id,omitempty"`
 
-	// Key スキルキー
-	Key *SkillKey `json:"key,omitempty"`
-
 	// Name スキル名
 	Name *SkillName `json:"name,omitempty"`
 
-	// TagKey スキルタグキー
-	TagKey *SkillTagKey `json:"tagKey,omitempty"`
+	// TagId スキルタグを一意に識別するキー
+	SkillTagID *SkillTagID `json:"tagId,omitempty"`
 
 	// Url URL
 	Url *Url `json:"url,omitempty"`
@@ -160,9 +166,6 @@ type SkillGroupLabel = string
 // SkillID スキルを一意に識別するキー
 type SkillID = int
 
-// SkillKey スキルキー
-type SkillKey = string
-
 // SkillName スキル名
 type SkillName = string
 
@@ -171,9 +174,6 @@ type SkillTag struct {
 	// Id スキルタグを一意に識別するキー
 	SkillTagID *SkillTagID `json:"id,omitempty"`
 
-	// Key スキルタグキー
-	Key *SkillTagKey `json:"key,omitempty"`
-
 	// Name スキルタグ名
 	Name *SkillTagName `json:"name,omitempty"`
 }
@@ -181,14 +181,14 @@ type SkillTag struct {
 // SkillTagID スキルタグを一意に識別するキー
 type SkillTagID = int
 
-// SkillTagKey スキルタグキー
-type SkillTagKey = string
-
 // SkillTagName スキルタグ名
 type SkillTagName = string
 
 // SkillVersion スキルバージョン
 type SkillVersion = string
+
+// SolutionContent 課題解決事例
+type SolutionContent = string
 
 // TaskDescription タスク説明
 type TaskDescription = []string
@@ -209,6 +209,12 @@ type UserActivity struct {
 
 	// Url URL
 	Url *Url `json:"url,omitempty"`
+}
+
+// UserAppeal １ユーザーのアピール事項
+type UserAppeal struct {
+	// Content アピール事項
+	Content *AppealContent `json:"content,omitempty"`
 }
 
 // UserAttribute １ユーザーの属性
@@ -246,6 +252,9 @@ type UserCareer struct {
 	// From キャリア期間年月From
 	From *CareerPeriodFrom `json:"from,omitempty"`
 
+	// Id キャリアを一意に識別するID
+	CareerID *CareerID `json:"id,omitempty"`
+
 	// Name キャリア名
 	Name *CareerName `json:"name,omitempty"`
 
@@ -264,12 +273,18 @@ type UserCareerGroup struct {
 	// Careers １ユーザーのキャリアグループのキャリア群
 	Careers *[]UserCareer `json:"careers,omitempty"`
 
+	// Id キャリアグループを一意に識別するID
+	CareerGroupID *CareerGroupID `json:"id,omitempty"`
+
 	// Label キャリアグループラベル
 	Label *CareerGroupLabel `json:"label,omitempty"`
 }
 
 // UserCareerGroupOwn １ユーザーのキャリアグループ自身
 type UserCareerGroupOwn struct {
+	// Id キャリアグループを一意に識別するID
+	CareerGroupID *CareerGroupID `json:"id,omitempty"`
+
 	// Label キャリアグループラベル
 	Label *CareerGroupLabel `json:"label,omitempty"`
 }
@@ -329,11 +344,11 @@ type UserQualification struct {
 
 // UserSkill １ユーザーのスキルを使用Version・使用期間別に保持したもの
 type UserSkill struct {
-	// Key スキルキー
-	Key *SkillKey `json:"key,omitempty"`
-
 	// Name スキル名
 	Name *SkillName `json:"name,omitempty"`
+
+	// Period キャリア期間(月)
+	Period *CareerPeriodMonth `json:"period,omitempty"`
 
 	// Url URL
 	Url      *Url                `json:"url,omitempty"`
@@ -344,9 +359,6 @@ type UserSkill struct {
 type UserSkillTag struct {
 	Skills *[]UserSkill `json:"skills,omitempty"`
 
-	// TagKey スキルタグキー
-	TagKey *SkillTagKey `json:"tagKey,omitempty"`
-
 	// TagName スキルタグ名
 	TagName *SkillTagName `json:"tagName,omitempty"`
 }
@@ -356,11 +368,20 @@ type UserSkillVersion struct {
 	// From キャリア期間年月From
 	From *CareerPeriodFrom `json:"from,omitempty"`
 
+	// Period キャリア期間(月)
+	Period *CareerPeriodMonth `json:"period,omitempty"`
+
 	// To キャリア期間年月To
 	To *CareerPeriodTo `json:"to,omitempty"`
 
 	// Version スキルバージョン
 	Version *SkillVersion `json:"version,omitempty"`
+}
+
+// UserSolution １ユーザーの課題解決事例
+type UserSolution struct {
+	// Content 課題解決事例
+	Content *SolutionContent `json:"content,omitempty"`
 }
 
 // Year 生年月日の「年」
@@ -369,11 +390,20 @@ type Year = int
 // CareerGroupId キャリアグループを一意に識別するID
 type CareerGroupId = CareerGroupID
 
+// CareerId キャリアを一意に識別するID
+type CareerId = CareerID
+
 // NoteId 注釈を一意に識別するID
 type NoteId = NoteID
 
 // SkillId スキルを一意に識別するキー
 type SkillId = SkillID
+
+// SkillTagId スキルタグを一意に識別するキー
+type SkillTagId = SkillTagID
+
+// SkillTagIdQuery スキルタグを一意に識別するキー
+type SkillTagIdQuery = SkillTagID
 
 // UserId ユーザーを一意に識別するキー
 type UserId = UserID
@@ -393,8 +423,21 @@ type N404NotFound struct {
 // PostSkillrecordsJSONBody defines parameters for PostSkillrecords.
 type PostSkillrecordsJSONBody = []Skill
 
+// GetSkillsParams defines parameters for GetSkills.
+type GetSkillsParams struct {
+	Tag *SkillTagIdQuery `form:"tag,omitempty" json:"tag,omitempty"`
+}
+
+// PostSkillsParams defines parameters for PostSkills.
+type PostSkillsParams struct {
+	Tag *SkillTagIdQuery `form:"tag,omitempty" json:"tag,omitempty"`
+}
+
 // PutUsersByUserIdActivitiesJSONBody defines parameters for PutUsersByUserIdActivities.
 type PutUsersByUserIdActivitiesJSONBody = []UserActivity
+
+// PutUsersByUserIdAppealsJSONBody defines parameters for PutUsersByUserIdAppeals.
+type PutUsersByUserIdAppealsJSONBody = []UserAppeal
 
 // PutUsersByUserIdCareergroupsByCareerGroupIdCareersJSONBody defines parameters for PutUsersByUserIdCareergroupsByCareerGroupIdCareers.
 type PutUsersByUserIdCareergroupsByCareerGroupIdCareersJSONBody = []UserCareer
@@ -404,6 +447,9 @@ type PutUsersByUserIdNotesByNoteIdItemsJSONBody = []UserNoteItem
 
 // PutUsersByUserIdQualificationsJSONBody defines parameters for PutUsersByUserIdQualifications.
 type PutUsersByUserIdQualificationsJSONBody = []UserQualification
+
+// PutUsersByUserIdSolutionsJSONBody defines parameters for PutUsersByUserIdSolutions.
+type PutUsersByUserIdSolutionsJSONBody = []UserSolution
 
 // PostSkillrecordsJSONRequestBody defines body for PostSkillrecords for application/json ContentType.
 type PostSkillrecordsJSONRequestBody = PostSkillrecordsJSONBody
@@ -420,6 +466,9 @@ type PostUsersJSONRequestBody = UserAttribute
 // PutUsersByUserIdActivitiesJSONRequestBody defines body for PutUsersByUserIdActivities for application/json ContentType.
 type PutUsersByUserIdActivitiesJSONRequestBody = PutUsersByUserIdActivitiesJSONBody
 
+// PutUsersByUserIdAppealsJSONRequestBody defines body for PutUsersByUserIdAppeals for application/json ContentType.
+type PutUsersByUserIdAppealsJSONRequestBody = PutUsersByUserIdAppealsJSONBody
+
 // PutUsersByUserIdAttributeJSONRequestBody defines body for PutUsersByUserIdAttribute for application/json ContentType.
 type PutUsersByUserIdAttributeJSONRequestBody = UserAttribute
 
@@ -428,6 +477,9 @@ type PostUsersByUserIdCareergroupsJSONRequestBody = UserCareerGroup
 
 // PutUsersByUserIdCareergroupsByCareerGroupIdJSONRequestBody defines body for PutUsersByUserIdCareergroupsByCareerGroupId for application/json ContentType.
 type PutUsersByUserIdCareergroupsByCareerGroupIdJSONRequestBody = UserCareerGroupOwn
+
+// PostUsersByUserIdCareergroupsByCareerGroupIdCareersJSONRequestBody defines body for PostUsersByUserIdCareergroupsByCareerGroupIdCareers for application/json ContentType.
+type PostUsersByUserIdCareergroupsByCareerGroupIdCareersJSONRequestBody = UserCareer
 
 // PutUsersByUserIdCareergroupsByCareerGroupIdCareersJSONRequestBody defines body for PutUsersByUserIdCareergroupsByCareerGroupIdCareers for application/json ContentType.
 type PutUsersByUserIdCareergroupsByCareerGroupIdCareersJSONRequestBody = PutUsersByUserIdCareergroupsByCareerGroupIdCareersJSONBody
@@ -444,18 +496,21 @@ type PutUsersByUserIdNotesByNoteIdItemsJSONRequestBody = PutUsersByUserIdNotesBy
 // PutUsersByUserIdQualificationsJSONRequestBody defines body for PutUsersByUserIdQualifications for application/json ContentType.
 type PutUsersByUserIdQualificationsJSONRequestBody = PutUsersByUserIdQualificationsJSONBody
 
+// PutUsersByUserIdSolutionsJSONRequestBody defines body for PutUsersByUserIdSolutions for application/json ContentType.
+type PutUsersByUserIdSolutionsJSONRequestBody = PutUsersByUserIdSolutionsJSONBody
+
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// スキル一括登録
 	// (POST /skillrecords)
 	PostSkillrecords(ctx echo.Context) error
-	// 全スキル取得
+	// スキル群取得
 	// (GET /skills)
-	GetSkills(ctx echo.Context) error
+	GetSkills(ctx echo.Context, params GetSkillsParams) error
 	// スキル登録
 	// (POST /skills)
-	PostSkills(ctx echo.Context) error
-	// 【未実装】指定スキル取得
+	PostSkills(ctx echo.Context, params PostSkillsParams) error
+	// 指定スキル取得
 	// (GET /skills/{bySkillId})
 	GetSkillsBySkillId(ctx echo.Context, bySkillId SkillId) error
 	// 全スキルタグ取得
@@ -464,6 +519,9 @@ type ServerInterface interface {
 	// スキルタグ登録
 	// (POST /skilltags)
 	PostSkilltags(ctx echo.Context) error
+	// 指定スキルタグ取得
+	// (GET /skilltags/{bySkillTagId})
+	GetSkilltagsBySkillTagId(ctx echo.Context, bySkillTagId SkillTagId) error
 	// ユーザー一覧取得
 	// (GET /users)
 	GetUsers(ctx echo.Context) error
@@ -479,6 +537,12 @@ type ServerInterface interface {
 	// アクティビティ群最新化
 	// (PUT /users/{byUserId}/activities)
 	PutUsersByUserIdActivities(ctx echo.Context, byUserId UserId) error
+	// アピール事項群取得
+	// (GET /users/{byUserId}/appeals)
+	GetUsersByUserIdAppeals(ctx echo.Context, byUserId UserId) error
+	// アピール事項群最新化
+	// (PUT /users/{byUserId}/appeals)
+	PutUsersByUserIdAppeals(ctx echo.Context, byUserId UserId) error
 	// 属性取得
 	// (GET /users/{byUserId}/attribute)
 	GetUsersByUserIdAttribute(ctx echo.Context, byUserId UserId) error
@@ -494,12 +558,21 @@ type ServerInterface interface {
 	// 【未実装】キャリアグループ削除
 	// (DELETE /users/{byUserId}/careergroups/{byCareerGroupId})
 	DeleteUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error
+	// １キャリアグループ取得
+	// (GET /users/{byUserId}/careergroups/{byCareerGroupId})
+	GetUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error
 	// 【未実装】キャリアグループ更新
 	// (PUT /users/{byUserId}/careergroups/{byCareerGroupId})
 	PutUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error
+	// １キャリアグループ内の１キャリア登録
+	// (POST /users/{byUserId}/careergroups/{byCareerGroupId}/careers)
+	PostUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error
 	// 【未実装】キャリアグループ内キャリア群最新化
 	// (PUT /users/{byUserId}/careergroups/{byCareerGroupId}/careers)
 	PutUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error
+	// １キャリア取得
+	// (GET /users/{byUserId}/careergroups/{byCareerGroupId}/careers/{byCareerId})
+	GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerId(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId, byCareerId CareerId) error
 	// 注釈群取得
 	// (GET /users/{byUserId}/notes)
 	GetUsersByUserIdNotes(ctx echo.Context, byUserId UserId) error
@@ -524,6 +597,12 @@ type ServerInterface interface {
 	// スキル群取得
 	// (GET /users/{byUserId}/skills)
 	GetUsersByUserIdSkills(ctx echo.Context, byUserId UserId) error
+	// 課題解決事例群取得
+	// (GET /users/{byUserId}/solutions)
+	GetUsersByUserIdSolutions(ctx echo.Context, byUserId UserId) error
+	// 課題解決事例群最新化
+	// (PUT /users/{byUserId}/solutions)
+	PutUsersByUserIdSolutions(ctx echo.Context, byUserId UserId) error
 }
 
 // ServerInterfaceWrapper converts echo contexts to parameters.
@@ -544,8 +623,17 @@ func (w *ServerInterfaceWrapper) PostSkillrecords(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) GetSkills(ctx echo.Context) error {
 	var err error
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetSkillsParams
+	// ------------- Optional query parameter "tag" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "tag", ctx.QueryParams(), &params.Tag)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter tag: %s", err))
+	}
+
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.GetSkills(ctx)
+	err = w.Handler.GetSkills(ctx, params)
 	return err
 }
 
@@ -553,8 +641,17 @@ func (w *ServerInterfaceWrapper) GetSkills(ctx echo.Context) error {
 func (w *ServerInterfaceWrapper) PostSkills(ctx echo.Context) error {
 	var err error
 
+	// Parameter object where we will unmarshal all parameters from the context
+	var params PostSkillsParams
+	// ------------- Optional query parameter "tag" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "tag", ctx.QueryParams(), &params.Tag)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter tag: %s", err))
+	}
+
 	// Invoke the callback with all the unmarshalled arguments
-	err = w.Handler.PostSkills(ctx)
+	err = w.Handler.PostSkills(ctx, params)
 	return err
 }
 
@@ -589,6 +686,22 @@ func (w *ServerInterfaceWrapper) PostSkilltags(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.PostSkilltags(ctx)
+	return err
+}
+
+// GetSkilltagsBySkillTagId converts echo context to params.
+func (w *ServerInterfaceWrapper) GetSkilltagsBySkillTagId(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "bySkillTagId" -------------
+	var bySkillTagId SkillTagId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "bySkillTagId", runtime.ParamLocationPath, ctx.Param("bySkillTagId"), &bySkillTagId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter bySkillTagId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetSkilltagsBySkillTagId(ctx, bySkillTagId)
 	return err
 }
 
@@ -655,6 +768,38 @@ func (w *ServerInterfaceWrapper) PutUsersByUserIdActivities(ctx echo.Context) er
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.PutUsersByUserIdActivities(ctx, byUserId)
+	return err
+}
+
+// GetUsersByUserIdAppeals converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersByUserIdAppeals(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "byUserId" -------------
+	var byUserId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserId", runtime.ParamLocationPath, ctx.Param("byUserId"), &byUserId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetUsersByUserIdAppeals(ctx, byUserId)
+	return err
+}
+
+// PutUsersByUserIdAppeals converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersByUserIdAppeals(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "byUserId" -------------
+	var byUserId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserId", runtime.ParamLocationPath, ctx.Param("byUserId"), &byUserId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PutUsersByUserIdAppeals(ctx, byUserId)
 	return err
 }
 
@@ -746,6 +891,30 @@ func (w *ServerInterfaceWrapper) DeleteUsersByUserIdCareergroupsByCareerGroupId(
 	return err
 }
 
+// GetUsersByUserIdCareergroupsByCareerGroupId converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "byUserId" -------------
+	var byUserId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserId", runtime.ParamLocationPath, ctx.Param("byUserId"), &byUserId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserId: %s", err))
+	}
+
+	// ------------- Path parameter "byCareerGroupId" -------------
+	var byCareerGroupId CareerGroupId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byCareerGroupId", runtime.ParamLocationPath, ctx.Param("byCareerGroupId"), &byCareerGroupId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byCareerGroupId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetUsersByUserIdCareergroupsByCareerGroupId(ctx, byUserId, byCareerGroupId)
+	return err
+}
+
 // PutUsersByUserIdCareergroupsByCareerGroupId converts echo context to params.
 func (w *ServerInterfaceWrapper) PutUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context) error {
 	var err error
@@ -770,6 +939,30 @@ func (w *ServerInterfaceWrapper) PutUsersByUserIdCareergroupsByCareerGroupId(ctx
 	return err
 }
 
+// PostUsersByUserIdCareergroupsByCareerGroupIdCareers converts echo context to params.
+func (w *ServerInterfaceWrapper) PostUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "byUserId" -------------
+	var byUserId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserId", runtime.ParamLocationPath, ctx.Param("byUserId"), &byUserId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserId: %s", err))
+	}
+
+	// ------------- Path parameter "byCareerGroupId" -------------
+	var byCareerGroupId CareerGroupId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byCareerGroupId", runtime.ParamLocationPath, ctx.Param("byCareerGroupId"), &byCareerGroupId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byCareerGroupId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PostUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx, byUserId, byCareerGroupId)
+	return err
+}
+
 // PutUsersByUserIdCareergroupsByCareerGroupIdCareers converts echo context to params.
 func (w *ServerInterfaceWrapper) PutUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx echo.Context) error {
 	var err error
@@ -791,6 +984,38 @@ func (w *ServerInterfaceWrapper) PutUsersByUserIdCareergroupsByCareerGroupIdCare
 
 	// Invoke the callback with all the unmarshalled arguments
 	err = w.Handler.PutUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx, byUserId, byCareerGroupId)
+	return err
+}
+
+// GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerId converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerId(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "byUserId" -------------
+	var byUserId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserId", runtime.ParamLocationPath, ctx.Param("byUserId"), &byUserId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserId: %s", err))
+	}
+
+	// ------------- Path parameter "byCareerGroupId" -------------
+	var byCareerGroupId CareerGroupId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byCareerGroupId", runtime.ParamLocationPath, ctx.Param("byCareerGroupId"), &byCareerGroupId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byCareerGroupId: %s", err))
+	}
+
+	// ------------- Path parameter "byCareerId" -------------
+	var byCareerId CareerId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byCareerId", runtime.ParamLocationPath, ctx.Param("byCareerId"), &byCareerId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byCareerId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerId(ctx, byUserId, byCareerGroupId, byCareerId)
 	return err
 }
 
@@ -946,6 +1171,38 @@ func (w *ServerInterfaceWrapper) GetUsersByUserIdSkills(ctx echo.Context) error 
 	return err
 }
 
+// GetUsersByUserIdSolutions converts echo context to params.
+func (w *ServerInterfaceWrapper) GetUsersByUserIdSolutions(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "byUserId" -------------
+	var byUserId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserId", runtime.ParamLocationPath, ctx.Param("byUserId"), &byUserId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetUsersByUserIdSolutions(ctx, byUserId)
+	return err
+}
+
+// PutUsersByUserIdSolutions converts echo context to params.
+func (w *ServerInterfaceWrapper) PutUsersByUserIdSolutions(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "byUserId" -------------
+	var byUserId UserId
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "byUserId", runtime.ParamLocationPath, ctx.Param("byUserId"), &byUserId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter byUserId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.PutUsersByUserIdSolutions(ctx, byUserId)
+	return err
+}
+
 // This is a simple interface which specifies echo.Route addition functions which
 // are present on both echo.Echo and echo.Group, since we want to allow using
 // either of them for path registration
@@ -980,18 +1237,24 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/skills/:bySkillId", wrapper.GetSkillsBySkillId)
 	router.GET(baseURL+"/skilltags", wrapper.GetSkilltags)
 	router.POST(baseURL+"/skilltags", wrapper.PostSkilltags)
+	router.GET(baseURL+"/skilltags/:bySkillTagId", wrapper.GetSkilltagsBySkillTagId)
 	router.GET(baseURL+"/users", wrapper.GetUsers)
 	router.POST(baseURL+"/users", wrapper.PostUsers)
 	router.DELETE(baseURL+"/users/:byUserId", wrapper.DeleteUsersByUserId)
 	router.GET(baseURL+"/users/:byUserId/activities", wrapper.GetUsersByUserIdActivities)
 	router.PUT(baseURL+"/users/:byUserId/activities", wrapper.PutUsersByUserIdActivities)
+	router.GET(baseURL+"/users/:byUserId/appeals", wrapper.GetUsersByUserIdAppeals)
+	router.PUT(baseURL+"/users/:byUserId/appeals", wrapper.PutUsersByUserIdAppeals)
 	router.GET(baseURL+"/users/:byUserId/attribute", wrapper.GetUsersByUserIdAttribute)
 	router.PUT(baseURL+"/users/:byUserId/attribute", wrapper.PutUsersByUserIdAttribute)
 	router.GET(baseURL+"/users/:byUserId/careergroups", wrapper.GetUsersByUserIdCareergroups)
 	router.POST(baseURL+"/users/:byUserId/careergroups", wrapper.PostUsersByUserIdCareergroups)
 	router.DELETE(baseURL+"/users/:byUserId/careergroups/:byCareerGroupId", wrapper.DeleteUsersByUserIdCareergroupsByCareerGroupId)
+	router.GET(baseURL+"/users/:byUserId/careergroups/:byCareerGroupId", wrapper.GetUsersByUserIdCareergroupsByCareerGroupId)
 	router.PUT(baseURL+"/users/:byUserId/careergroups/:byCareerGroupId", wrapper.PutUsersByUserIdCareergroupsByCareerGroupId)
+	router.POST(baseURL+"/users/:byUserId/careergroups/:byCareerGroupId/careers", wrapper.PostUsersByUserIdCareergroupsByCareerGroupIdCareers)
 	router.PUT(baseURL+"/users/:byUserId/careergroups/:byCareerGroupId/careers", wrapper.PutUsersByUserIdCareergroupsByCareerGroupIdCareers)
+	router.GET(baseURL+"/users/:byUserId/careergroups/:byCareerGroupId/careers/:byCareerId", wrapper.GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerId)
 	router.GET(baseURL+"/users/:byUserId/notes", wrapper.GetUsersByUserIdNotes)
 	router.POST(baseURL+"/users/:byUserId/notes", wrapper.PostUsersByUserIdNotes)
 	router.DELETE(baseURL+"/users/:byUserId/notes/:byNoteId", wrapper.DeleteUsersByUserIdNotesByNoteId)
@@ -1000,6 +1263,8 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.GET(baseURL+"/users/:byUserId/qualifications", wrapper.GetUsersByUserIdQualifications)
 	router.PUT(baseURL+"/users/:byUserId/qualifications", wrapper.PutUsersByUserIdQualifications)
 	router.GET(baseURL+"/users/:byUserId/skills", wrapper.GetUsersByUserIdSkills)
+	router.GET(baseURL+"/users/:byUserId/solutions", wrapper.GetUsersByUserIdSolutions)
+	router.PUT(baseURL+"/users/:byUserId/solutions", wrapper.PutUsersByUserIdSolutions)
 
 }
 
@@ -1040,6 +1305,7 @@ func (response PostSkillrecords400JSONResponse) VisitPostSkillrecordsResponse(w 
 }
 
 type GetSkillsRequestObject struct {
+	Params GetSkillsParams
 }
 
 type GetSkillsResponseObject interface {
@@ -1056,7 +1322,8 @@ func (response GetSkills200JSONResponse) VisitGetSkillsResponse(w http.ResponseW
 }
 
 type PostSkillsRequestObject struct {
-	Body *PostSkillsJSONRequestBody
+	Params PostSkillsParams
+	Body   *PostSkillsJSONRequestBody
 }
 
 type PostSkillsResponseObject interface {
@@ -1094,6 +1361,15 @@ type GetSkillsBySkillId200JSONResponse Skill
 func (response GetSkillsBySkillId200JSONResponse) VisitGetSkillsBySkillIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSkillsBySkillId404JSONResponse struct{ N404NotFoundJSONResponse }
+
+func (response GetSkillsBySkillId404JSONResponse) VisitGetSkillsBySkillIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response)
 }
@@ -1136,6 +1412,32 @@ type PostSkilltags400JSONResponse struct{ N400BadRequestJSONResponse }
 func (response PostSkilltags400JSONResponse) VisitPostSkilltagsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSkilltagsBySkillTagIdRequestObject struct {
+	BySkillTagId SkillTagId `json:"bySkillTagId"`
+}
+
+type GetSkilltagsBySkillTagIdResponseObject interface {
+	VisitGetSkilltagsBySkillTagIdResponse(w http.ResponseWriter) error
+}
+
+type GetSkilltagsBySkillTagId200JSONResponse SkillTag
+
+func (response GetSkilltagsBySkillTagId200JSONResponse) VisitGetSkilltagsBySkillTagIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetSkilltagsBySkillTagId404JSONResponse struct{ N404NotFoundJSONResponse }
+
+func (response GetSkilltagsBySkillTagId404JSONResponse) VisitGetSkilltagsBySkillTagIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
 
 	return json.NewEncoder(w).Encode(response)
 }
@@ -1263,6 +1565,68 @@ func (response PutUsersByUserIdActivities400JSONResponse) VisitPutUsersByUserIdA
 type PutUsersByUserIdActivities404JSONResponse struct{ N404NotFoundJSONResponse }
 
 func (response PutUsersByUserIdActivities404JSONResponse) VisitPutUsersByUserIdActivitiesResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetUsersByUserIdAppealsRequestObject struct {
+	ByUserId UserId `json:"byUserId"`
+}
+
+type GetUsersByUserIdAppealsResponseObject interface {
+	VisitGetUsersByUserIdAppealsResponse(w http.ResponseWriter) error
+}
+
+type GetUsersByUserIdAppeals200JSONResponse []UserAppeal
+
+func (response GetUsersByUserIdAppeals200JSONResponse) VisitGetUsersByUserIdAppealsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetUsersByUserIdAppeals404JSONResponse struct{ N404NotFoundJSONResponse }
+
+func (response GetUsersByUserIdAppeals404JSONResponse) VisitGetUsersByUserIdAppealsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PutUsersByUserIdAppealsRequestObject struct {
+	ByUserId UserId `json:"byUserId"`
+	Body     *PutUsersByUserIdAppealsJSONRequestBody
+}
+
+type PutUsersByUserIdAppealsResponseObject interface {
+	VisitPutUsersByUserIdAppealsResponse(w http.ResponseWriter) error
+}
+
+type PutUsersByUserIdAppeals200JSONResponse []UserAppeal
+
+func (response PutUsersByUserIdAppeals200JSONResponse) VisitPutUsersByUserIdAppealsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PutUsersByUserIdAppeals400JSONResponse struct{ N400BadRequestJSONResponse }
+
+func (response PutUsersByUserIdAppeals400JSONResponse) VisitPutUsersByUserIdAppealsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PutUsersByUserIdAppeals404JSONResponse struct{ N404NotFoundJSONResponse }
+
+func (response PutUsersByUserIdAppeals404JSONResponse) VisitPutUsersByUserIdAppealsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(404)
 
@@ -1419,6 +1783,33 @@ func (response DeleteUsersByUserIdCareergroupsByCareerGroupId404JSONResponse) Vi
 	return json.NewEncoder(w).Encode(response)
 }
 
+type GetUsersByUserIdCareergroupsByCareerGroupIdRequestObject struct {
+	ByUserId        UserId        `json:"byUserId"`
+	ByCareerGroupId CareerGroupId `json:"byCareerGroupId"`
+}
+
+type GetUsersByUserIdCareergroupsByCareerGroupIdResponseObject interface {
+	VisitGetUsersByUserIdCareergroupsByCareerGroupIdResponse(w http.ResponseWriter) error
+}
+
+type GetUsersByUserIdCareergroupsByCareerGroupId200JSONResponse UserCareerGroup
+
+func (response GetUsersByUserIdCareergroupsByCareerGroupId200JSONResponse) VisitGetUsersByUserIdCareergroupsByCareerGroupIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetUsersByUserIdCareergroupsByCareerGroupId404JSONResponse struct{ N404NotFoundJSONResponse }
+
+func (response GetUsersByUserIdCareergroupsByCareerGroupId404JSONResponse) VisitGetUsersByUserIdCareergroupsByCareerGroupIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type PutUsersByUserIdCareergroupsByCareerGroupIdRequestObject struct {
 	ByUserId        UserId        `json:"byUserId"`
 	ByCareerGroupId CareerGroupId `json:"byCareerGroupId"`
@@ -1456,6 +1847,34 @@ func (response PutUsersByUserIdCareergroupsByCareerGroupId404JSONResponse) Visit
 	return json.NewEncoder(w).Encode(response)
 }
 
+type PostUsersByUserIdCareergroupsByCareerGroupIdCareersRequestObject struct {
+	ByUserId        UserId        `json:"byUserId"`
+	ByCareerGroupId CareerGroupId `json:"byCareerGroupId"`
+	Body            *PostUsersByUserIdCareergroupsByCareerGroupIdCareersJSONRequestBody
+}
+
+type PostUsersByUserIdCareergroupsByCareerGroupIdCareersResponseObject interface {
+	VisitPostUsersByUserIdCareergroupsByCareerGroupIdCareersResponse(w http.ResponseWriter) error
+}
+
+type PostUsersByUserIdCareergroupsByCareerGroupIdCareers201JSONResponse UserCareer
+
+func (response PostUsersByUserIdCareergroupsByCareerGroupIdCareers201JSONResponse) VisitPostUsersByUserIdCareergroupsByCareerGroupIdCareersResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PostUsersByUserIdCareergroupsByCareerGroupIdCareers400JSONResponse struct{ N400BadRequestJSONResponse }
+
+func (response PostUsersByUserIdCareergroupsByCareerGroupIdCareers400JSONResponse) VisitPostUsersByUserIdCareergroupsByCareerGroupIdCareersResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type PutUsersByUserIdCareergroupsByCareerGroupIdCareersRequestObject struct {
 	ByUserId        UserId        `json:"byUserId"`
 	ByCareerGroupId CareerGroupId `json:"byCareerGroupId"`
@@ -1487,6 +1906,34 @@ func (response PutUsersByUserIdCareergroupsByCareerGroupIdCareers400JSONResponse
 type PutUsersByUserIdCareergroupsByCareerGroupIdCareers404JSONResponse struct{ N404NotFoundJSONResponse }
 
 func (response PutUsersByUserIdCareergroupsByCareerGroupIdCareers404JSONResponse) VisitPutUsersByUserIdCareergroupsByCareerGroupIdCareersResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerIdRequestObject struct {
+	ByUserId        UserId        `json:"byUserId"`
+	ByCareerGroupId CareerGroupId `json:"byCareerGroupId"`
+	ByCareerId      CareerId      `json:"byCareerId"`
+}
+
+type GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerIdResponseObject interface {
+	VisitGetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerIdResponse(w http.ResponseWriter) error
+}
+
+type GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerId200JSONResponse UserCareer
+
+func (response GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerId200JSONResponse) VisitGetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerIdResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerId404JSONResponse struct{ N404NotFoundJSONResponse }
+
+func (response GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerId404JSONResponse) VisitGetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerIdResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(404)
 
@@ -1743,18 +2190,80 @@ func (response GetUsersByUserIdSkills404JSONResponse) VisitGetUsersByUserIdSkill
 	return json.NewEncoder(w).Encode(response)
 }
 
+type GetUsersByUserIdSolutionsRequestObject struct {
+	ByUserId UserId `json:"byUserId"`
+}
+
+type GetUsersByUserIdSolutionsResponseObject interface {
+	VisitGetUsersByUserIdSolutionsResponse(w http.ResponseWriter) error
+}
+
+type GetUsersByUserIdSolutions200JSONResponse []UserSolution
+
+func (response GetUsersByUserIdSolutions200JSONResponse) VisitGetUsersByUserIdSolutionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetUsersByUserIdSolutions404JSONResponse struct{ N404NotFoundJSONResponse }
+
+func (response GetUsersByUserIdSolutions404JSONResponse) VisitGetUsersByUserIdSolutionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PutUsersByUserIdSolutionsRequestObject struct {
+	ByUserId UserId `json:"byUserId"`
+	Body     *PutUsersByUserIdSolutionsJSONRequestBody
+}
+
+type PutUsersByUserIdSolutionsResponseObject interface {
+	VisitPutUsersByUserIdSolutionsResponse(w http.ResponseWriter) error
+}
+
+type PutUsersByUserIdSolutions200JSONResponse []UserSolution
+
+func (response PutUsersByUserIdSolutions200JSONResponse) VisitPutUsersByUserIdSolutionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PutUsersByUserIdSolutions400JSONResponse struct{ N400BadRequestJSONResponse }
+
+func (response PutUsersByUserIdSolutions400JSONResponse) VisitPutUsersByUserIdSolutionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(400)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type PutUsersByUserIdSolutions404JSONResponse struct{ N404NotFoundJSONResponse }
+
+func (response PutUsersByUserIdSolutions404JSONResponse) VisitPutUsersByUserIdSolutionsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(404)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
 	// スキル一括登録
 	// (POST /skillrecords)
 	PostSkillrecords(ctx context.Context, request PostSkillrecordsRequestObject) (PostSkillrecordsResponseObject, error)
-	// 全スキル取得
+	// スキル群取得
 	// (GET /skills)
 	GetSkills(ctx context.Context, request GetSkillsRequestObject) (GetSkillsResponseObject, error)
 	// スキル登録
 	// (POST /skills)
 	PostSkills(ctx context.Context, request PostSkillsRequestObject) (PostSkillsResponseObject, error)
-	// 【未実装】指定スキル取得
+	// 指定スキル取得
 	// (GET /skills/{bySkillId})
 	GetSkillsBySkillId(ctx context.Context, request GetSkillsBySkillIdRequestObject) (GetSkillsBySkillIdResponseObject, error)
 	// 全スキルタグ取得
@@ -1763,6 +2272,9 @@ type StrictServerInterface interface {
 	// スキルタグ登録
 	// (POST /skilltags)
 	PostSkilltags(ctx context.Context, request PostSkilltagsRequestObject) (PostSkilltagsResponseObject, error)
+	// 指定スキルタグ取得
+	// (GET /skilltags/{bySkillTagId})
+	GetSkilltagsBySkillTagId(ctx context.Context, request GetSkilltagsBySkillTagIdRequestObject) (GetSkilltagsBySkillTagIdResponseObject, error)
 	// ユーザー一覧取得
 	// (GET /users)
 	GetUsers(ctx context.Context, request GetUsersRequestObject) (GetUsersResponseObject, error)
@@ -1778,6 +2290,12 @@ type StrictServerInterface interface {
 	// アクティビティ群最新化
 	// (PUT /users/{byUserId}/activities)
 	PutUsersByUserIdActivities(ctx context.Context, request PutUsersByUserIdActivitiesRequestObject) (PutUsersByUserIdActivitiesResponseObject, error)
+	// アピール事項群取得
+	// (GET /users/{byUserId}/appeals)
+	GetUsersByUserIdAppeals(ctx context.Context, request GetUsersByUserIdAppealsRequestObject) (GetUsersByUserIdAppealsResponseObject, error)
+	// アピール事項群最新化
+	// (PUT /users/{byUserId}/appeals)
+	PutUsersByUserIdAppeals(ctx context.Context, request PutUsersByUserIdAppealsRequestObject) (PutUsersByUserIdAppealsResponseObject, error)
 	// 属性取得
 	// (GET /users/{byUserId}/attribute)
 	GetUsersByUserIdAttribute(ctx context.Context, request GetUsersByUserIdAttributeRequestObject) (GetUsersByUserIdAttributeResponseObject, error)
@@ -1793,12 +2311,21 @@ type StrictServerInterface interface {
 	// 【未実装】キャリアグループ削除
 	// (DELETE /users/{byUserId}/careergroups/{byCareerGroupId})
 	DeleteUsersByUserIdCareergroupsByCareerGroupId(ctx context.Context, request DeleteUsersByUserIdCareergroupsByCareerGroupIdRequestObject) (DeleteUsersByUserIdCareergroupsByCareerGroupIdResponseObject, error)
+	// １キャリアグループ取得
+	// (GET /users/{byUserId}/careergroups/{byCareerGroupId})
+	GetUsersByUserIdCareergroupsByCareerGroupId(ctx context.Context, request GetUsersByUserIdCareergroupsByCareerGroupIdRequestObject) (GetUsersByUserIdCareergroupsByCareerGroupIdResponseObject, error)
 	// 【未実装】キャリアグループ更新
 	// (PUT /users/{byUserId}/careergroups/{byCareerGroupId})
 	PutUsersByUserIdCareergroupsByCareerGroupId(ctx context.Context, request PutUsersByUserIdCareergroupsByCareerGroupIdRequestObject) (PutUsersByUserIdCareergroupsByCareerGroupIdResponseObject, error)
+	// １キャリアグループ内の１キャリア登録
+	// (POST /users/{byUserId}/careergroups/{byCareerGroupId}/careers)
+	PostUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx context.Context, request PostUsersByUserIdCareergroupsByCareerGroupIdCareersRequestObject) (PostUsersByUserIdCareergroupsByCareerGroupIdCareersResponseObject, error)
 	// 【未実装】キャリアグループ内キャリア群最新化
 	// (PUT /users/{byUserId}/careergroups/{byCareerGroupId}/careers)
 	PutUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx context.Context, request PutUsersByUserIdCareergroupsByCareerGroupIdCareersRequestObject) (PutUsersByUserIdCareergroupsByCareerGroupIdCareersResponseObject, error)
+	// １キャリア取得
+	// (GET /users/{byUserId}/careergroups/{byCareerGroupId}/careers/{byCareerId})
+	GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerId(ctx context.Context, request GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerIdRequestObject) (GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerIdResponseObject, error)
 	// 注釈群取得
 	// (GET /users/{byUserId}/notes)
 	GetUsersByUserIdNotes(ctx context.Context, request GetUsersByUserIdNotesRequestObject) (GetUsersByUserIdNotesResponseObject, error)
@@ -1823,6 +2350,12 @@ type StrictServerInterface interface {
 	// スキル群取得
 	// (GET /users/{byUserId}/skills)
 	GetUsersByUserIdSkills(ctx context.Context, request GetUsersByUserIdSkillsRequestObject) (GetUsersByUserIdSkillsResponseObject, error)
+	// 課題解決事例群取得
+	// (GET /users/{byUserId}/solutions)
+	GetUsersByUserIdSolutions(ctx context.Context, request GetUsersByUserIdSolutionsRequestObject) (GetUsersByUserIdSolutionsResponseObject, error)
+	// 課題解決事例群最新化
+	// (PUT /users/{byUserId}/solutions)
+	PutUsersByUserIdSolutions(ctx context.Context, request PutUsersByUserIdSolutionsRequestObject) (PutUsersByUserIdSolutionsResponseObject, error)
 }
 
 type StrictHandlerFunc func(ctx echo.Context, args interface{}) (interface{}, error)
@@ -1868,8 +2401,10 @@ func (sh *strictHandler) PostSkillrecords(ctx echo.Context) error {
 }
 
 // GetSkills operation middleware
-func (sh *strictHandler) GetSkills(ctx echo.Context) error {
+func (sh *strictHandler) GetSkills(ctx echo.Context, params GetSkillsParams) error {
 	var request GetSkillsRequestObject
+
+	request.Params = params
 
 	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
 		return sh.ssi.GetSkills(ctx.Request().Context(), request.(GetSkillsRequestObject))
@@ -1891,8 +2426,10 @@ func (sh *strictHandler) GetSkills(ctx echo.Context) error {
 }
 
 // PostSkills operation middleware
-func (sh *strictHandler) PostSkills(ctx echo.Context) error {
+func (sh *strictHandler) PostSkills(ctx echo.Context, params PostSkillsParams) error {
 	var request PostSkillsRequestObject
+
+	request.Params = params
 
 	var body PostSkillsJSONRequestBody
 	if err := ctx.Bind(&body); err != nil {
@@ -1990,6 +2527,31 @@ func (sh *strictHandler) PostSkilltags(ctx echo.Context) error {
 		return err
 	} else if validResponse, ok := response.(PostSkilltagsResponseObject); ok {
 		return validResponse.VisitPostSkilltagsResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("Unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// GetSkilltagsBySkillTagId operation middleware
+func (sh *strictHandler) GetSkilltagsBySkillTagId(ctx echo.Context, bySkillTagId SkillTagId) error {
+	var request GetSkilltagsBySkillTagIdRequestObject
+
+	request.BySkillTagId = bySkillTagId
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetSkilltagsBySkillTagId(ctx.Request().Context(), request.(GetSkilltagsBySkillTagIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetSkilltagsBySkillTagId")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetSkilltagsBySkillTagIdResponseObject); ok {
+		return validResponse.VisitGetSkilltagsBySkillTagIdResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("Unexpected response type: %T", response)
 	}
@@ -2123,6 +2685,62 @@ func (sh *strictHandler) PutUsersByUserIdActivities(ctx echo.Context, byUserId U
 		return err
 	} else if validResponse, ok := response.(PutUsersByUserIdActivitiesResponseObject); ok {
 		return validResponse.VisitPutUsersByUserIdActivitiesResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("Unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// GetUsersByUserIdAppeals operation middleware
+func (sh *strictHandler) GetUsersByUserIdAppeals(ctx echo.Context, byUserId UserId) error {
+	var request GetUsersByUserIdAppealsRequestObject
+
+	request.ByUserId = byUserId
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetUsersByUserIdAppeals(ctx.Request().Context(), request.(GetUsersByUserIdAppealsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetUsersByUserIdAppeals")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetUsersByUserIdAppealsResponseObject); ok {
+		return validResponse.VisitGetUsersByUserIdAppealsResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("Unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// PutUsersByUserIdAppeals operation middleware
+func (sh *strictHandler) PutUsersByUserIdAppeals(ctx echo.Context, byUserId UserId) error {
+	var request PutUsersByUserIdAppealsRequestObject
+
+	request.ByUserId = byUserId
+
+	var body PutUsersByUserIdAppealsJSONRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.PutUsersByUserIdAppeals(ctx.Request().Context(), request.(PutUsersByUserIdAppealsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PutUsersByUserIdAppeals")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(PutUsersByUserIdAppealsResponseObject); ok {
+		return validResponse.VisitPutUsersByUserIdAppealsResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("Unexpected response type: %T", response)
 	}
@@ -2267,6 +2885,32 @@ func (sh *strictHandler) DeleteUsersByUserIdCareergroupsByCareerGroupId(ctx echo
 	return nil
 }
 
+// GetUsersByUserIdCareergroupsByCareerGroupId operation middleware
+func (sh *strictHandler) GetUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error {
+	var request GetUsersByUserIdCareergroupsByCareerGroupIdRequestObject
+
+	request.ByUserId = byUserId
+	request.ByCareerGroupId = byCareerGroupId
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetUsersByUserIdCareergroupsByCareerGroupId(ctx.Request().Context(), request.(GetUsersByUserIdCareergroupsByCareerGroupIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetUsersByUserIdCareergroupsByCareerGroupId")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetUsersByUserIdCareergroupsByCareerGroupIdResponseObject); ok {
+		return validResponse.VisitGetUsersByUserIdCareergroupsByCareerGroupIdResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("Unexpected response type: %T", response)
+	}
+	return nil
+}
+
 // PutUsersByUserIdCareergroupsByCareerGroupId operation middleware
 func (sh *strictHandler) PutUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error {
 	var request PutUsersByUserIdCareergroupsByCareerGroupIdRequestObject
@@ -2299,6 +2943,38 @@ func (sh *strictHandler) PutUsersByUserIdCareergroupsByCareerGroupId(ctx echo.Co
 	return nil
 }
 
+// PostUsersByUserIdCareergroupsByCareerGroupIdCareers operation middleware
+func (sh *strictHandler) PostUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error {
+	var request PostUsersByUserIdCareergroupsByCareerGroupIdCareersRequestObject
+
+	request.ByUserId = byUserId
+	request.ByCareerGroupId = byCareerGroupId
+
+	var body PostUsersByUserIdCareergroupsByCareerGroupIdCareersJSONRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.PostUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx.Request().Context(), request.(PostUsersByUserIdCareergroupsByCareerGroupIdCareersRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PostUsersByUserIdCareergroupsByCareerGroupIdCareers")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(PostUsersByUserIdCareergroupsByCareerGroupIdCareersResponseObject); ok {
+		return validResponse.VisitPostUsersByUserIdCareergroupsByCareerGroupIdCareersResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("Unexpected response type: %T", response)
+	}
+	return nil
+}
+
 // PutUsersByUserIdCareergroupsByCareerGroupIdCareers operation middleware
 func (sh *strictHandler) PutUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId) error {
 	var request PutUsersByUserIdCareergroupsByCareerGroupIdCareersRequestObject
@@ -2325,6 +3001,33 @@ func (sh *strictHandler) PutUsersByUserIdCareergroupsByCareerGroupIdCareers(ctx 
 		return err
 	} else if validResponse, ok := response.(PutUsersByUserIdCareergroupsByCareerGroupIdCareersResponseObject); ok {
 		return validResponse.VisitPutUsersByUserIdCareergroupsByCareerGroupIdCareersResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("Unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerId operation middleware
+func (sh *strictHandler) GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerId(ctx echo.Context, byUserId UserId, byCareerGroupId CareerGroupId, byCareerId CareerId) error {
+	var request GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerIdRequestObject
+
+	request.ByUserId = byUserId
+	request.ByCareerGroupId = byCareerGroupId
+	request.ByCareerId = byCareerId
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerId(ctx.Request().Context(), request.(GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerIdRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerId")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerIdResponseObject); ok {
+		return validResponse.VisitGetUsersByUserIdCareergroupsByCareerGroupIdCareersByCareerIdResponse(ctx.Response())
 	} else if response != nil {
 		return fmt.Errorf("Unexpected response type: %T", response)
 	}
@@ -2558,72 +3261,138 @@ func (sh *strictHandler) GetUsersByUserIdSkills(ctx echo.Context, byUserId UserI
 	return nil
 }
 
+// GetUsersByUserIdSolutions operation middleware
+func (sh *strictHandler) GetUsersByUserIdSolutions(ctx echo.Context, byUserId UserId) error {
+	var request GetUsersByUserIdSolutionsRequestObject
+
+	request.ByUserId = byUserId
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetUsersByUserIdSolutions(ctx.Request().Context(), request.(GetUsersByUserIdSolutionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetUsersByUserIdSolutions")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(GetUsersByUserIdSolutionsResponseObject); ok {
+		return validResponse.VisitGetUsersByUserIdSolutionsResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("Unexpected response type: %T", response)
+	}
+	return nil
+}
+
+// PutUsersByUserIdSolutions operation middleware
+func (sh *strictHandler) PutUsersByUserIdSolutions(ctx echo.Context, byUserId UserId) error {
+	var request PutUsersByUserIdSolutionsRequestObject
+
+	request.ByUserId = byUserId
+
+	var body PutUsersByUserIdSolutionsJSONRequestBody
+	if err := ctx.Bind(&body); err != nil {
+		return err
+	}
+	request.Body = &body
+
+	handler := func(ctx echo.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.PutUsersByUserIdSolutions(ctx.Request().Context(), request.(PutUsersByUserIdSolutionsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "PutUsersByUserIdSolutions")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		return err
+	} else if validResponse, ok := response.(PutUsersByUserIdSolutionsResponseObject); ok {
+		return validResponse.VisitPutUsersByUserIdSolutionsResponse(ctx.Response())
+	} else if response != nil {
+		return fmt.Errorf("Unexpected response type: %T", response)
+	}
+	return nil
+}
+
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
-	"vpk+mmIAAA==",
+	"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",
+	"4cI/6M2wfrfrRqteqv5fAAAA///0da5vzXoAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

@@ -27,7 +27,7 @@ func (unid *UserNoteItemDelete) Where(ps ...predicate.UserNoteItem) *UserNoteIte
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (unid *UserNoteItemDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, UserNoteItemMutation](ctx, unid.sqlExec, unid.mutation, unid.hooks)
+	return withHooks(ctx, unid.sqlExec, unid.mutation, unid.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/careerskill"
 	"github.com/sky0621/cv-admin/src/ent/careerskillgroup"
@@ -29,6 +30,7 @@ type CareerSkill struct {
 	Edges                 CareerSkillEdges `json:"edges"`
 	career_skill_group_id *int
 	skill_id              *int
+	selectValues          sql.SelectValues
 }
 
 // CareerSkillEdges holds the relations/edges for other nodes in the graph.
@@ -45,12 +47,10 @@ type CareerSkillEdges struct {
 // CareerSkillGroupOrErr returns the CareerSkillGroup value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CareerSkillEdges) CareerSkillGroupOrErr() (*CareerSkillGroup, error) {
-	if e.loadedTypes[0] {
-		if e.CareerSkillGroup == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: careerskillgroup.Label}
-		}
+	if e.CareerSkillGroup != nil {
 		return e.CareerSkillGroup, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: careerskillgroup.Label}
 	}
 	return nil, &NotLoadedError{edge: "careerSkillGroup"}
 }
@@ -58,12 +58,10 @@ func (e CareerSkillEdges) CareerSkillGroupOrErr() (*CareerSkillGroup, error) {
 // SkillOrErr returns the Skill value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CareerSkillEdges) SkillOrErr() (*Skill, error) {
-	if e.loadedTypes[1] {
-		if e.Skill == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: skill.Label}
-		}
+	if e.Skill != nil {
 		return e.Skill, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: skill.Label}
 	}
 	return nil, &NotLoadedError{edge: "skill"}
 }
@@ -84,7 +82,7 @@ func (*CareerSkill) scanValues(columns []string) ([]any, error) {
 		case careerskill.ForeignKeys[1]: // skill_id
 			values[i] = new(sql.NullInt64)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type CareerSkill", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -137,9 +135,17 @@ func (cs *CareerSkill) assignValues(columns []string, values []any) error {
 				cs.skill_id = new(int)
 				*cs.skill_id = int(value.Int64)
 			}
+		default:
+			cs.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the CareerSkill.
+// This includes values selected through modifiers, order, etc.
+func (cs *CareerSkill) Value(name string) (ent.Value, error) {
+	return cs.selectValues.Get(name)
 }
 
 // QueryCareerSkillGroup queries the "careerSkillGroup" edge of the CareerSkill entity.

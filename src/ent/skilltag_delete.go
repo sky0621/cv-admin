@@ -27,7 +27,7 @@ func (std *SkillTagDelete) Where(ps ...predicate.SkillTag) *SkillTagDelete {
 
 // Exec executes the deletion query and returns how many vertices were deleted.
 func (std *SkillTagDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks[int, SkillTagMutation](ctx, std.sqlExec, std.mutation, std.hooks)
+	return withHooks(ctx, std.sqlExec, std.mutation, std.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.

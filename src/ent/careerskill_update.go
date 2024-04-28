@@ -98,7 +98,7 @@ func (csu *CareerSkillUpdate) ClearSkill() *CareerSkillUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (csu *CareerSkillUpdate) Save(ctx context.Context) (int, error) {
 	csu.defaults()
-	return withHooks[int, CareerSkillMutation](ctx, csu.sqlSave, csu.mutation, csu.hooks)
+	return withHooks(ctx, csu.sqlSave, csu.mutation, csu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -327,7 +327,7 @@ func (csuo *CareerSkillUpdateOne) Select(field string, fields ...string) *Career
 // Save executes the query and returns the updated CareerSkill entity.
 func (csuo *CareerSkillUpdateOne) Save(ctx context.Context) (*CareerSkill, error) {
 	csuo.defaults()
-	return withHooks[*CareerSkill, CareerSkillMutation](ctx, csuo.sqlSave, csuo.mutation, csuo.hooks)
+	return withHooks(ctx, csuo.sqlSave, csuo.mutation, csuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

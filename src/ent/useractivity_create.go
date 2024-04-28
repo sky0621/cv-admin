@@ -104,7 +104,7 @@ func (uac *UserActivityCreate) Mutation() *UserActivityMutation {
 // Save creates the UserActivity in the database.
 func (uac *UserActivityCreate) Save(ctx context.Context) (*UserActivity, error) {
 	uac.defaults()
-	return withHooks[*UserActivity, UserActivityMutation](ctx, uac.sqlSave, uac.mutation, uac.hooks)
+	return withHooks(ctx, uac.sqlSave, uac.mutation, uac.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -497,12 +497,16 @@ func (u *UserActivityUpsertOne) IDX(ctx context.Context) int {
 // UserActivityCreateBulk is the builder for creating many UserActivity entities in bulk.
 type UserActivityCreateBulk struct {
 	config
+	err      error
 	builders []*UserActivityCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the UserActivity entities in the database.
 func (uacb *UserActivityCreateBulk) Save(ctx context.Context) ([]*UserActivity, error) {
+	if uacb.err != nil {
+		return nil, uacb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(uacb.builders))
 	nodes := make([]*UserActivity, len(uacb.builders))
 	mutators := make([]Mutator, len(uacb.builders))
@@ -519,8 +523,8 @@ func (uacb *UserActivityCreateBulk) Save(ctx context.Context) ([]*UserActivity, 
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, uacb.builders[i+1].mutation)
 				} else {
@@ -740,6 +744,9 @@ func (u *UserActivityUpsertBulk) ClearIcon() *UserActivityUpsertBulk {
 
 // Exec executes the query.
 func (u *UserActivityUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserActivityCreateBulk instead", i)

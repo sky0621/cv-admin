@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/sky0621/cv-admin/src/ent/skill"
 	"github.com/sky0621/cv-admin/src/ent/skilltag"
 )
 
@@ -27,10 +28,33 @@ func (stc *SkillTagCreate) SetName(s string) *SkillTagCreate {
 	return stc
 }
 
-// SetKey sets the "key" field.
-func (stc *SkillTagCreate) SetKey(s string) *SkillTagCreate {
-	stc.mutation.SetKey(s)
+// SetOrder sets the "order" field.
+func (stc *SkillTagCreate) SetOrder(i int) *SkillTagCreate {
+	stc.mutation.SetOrder(i)
 	return stc
+}
+
+// SetNillableOrder sets the "order" field if the given value is not nil.
+func (stc *SkillTagCreate) SetNillableOrder(i *int) *SkillTagCreate {
+	if i != nil {
+		stc.SetOrder(*i)
+	}
+	return stc
+}
+
+// AddSkillIDs adds the "skills" edge to the Skill entity by IDs.
+func (stc *SkillTagCreate) AddSkillIDs(ids ...int) *SkillTagCreate {
+	stc.mutation.AddSkillIDs(ids...)
+	return stc
+}
+
+// AddSkills adds the "skills" edges to the Skill entity.
+func (stc *SkillTagCreate) AddSkills(s ...*Skill) *SkillTagCreate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return stc.AddSkillIDs(ids...)
 }
 
 // Mutation returns the SkillTagMutation object of the builder.
@@ -40,7 +64,8 @@ func (stc *SkillTagCreate) Mutation() *SkillTagMutation {
 
 // Save creates the SkillTag in the database.
 func (stc *SkillTagCreate) Save(ctx context.Context) (*SkillTag, error) {
-	return withHooks[*SkillTag, SkillTagMutation](ctx, stc.sqlSave, stc.mutation, stc.hooks)
+	stc.defaults()
+	return withHooks(ctx, stc.sqlSave, stc.mutation, stc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -65,6 +90,14 @@ func (stc *SkillTagCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (stc *SkillTagCreate) defaults() {
+	if _, ok := stc.mutation.Order(); !ok {
+		v := skilltag.DefaultOrder
+		stc.mutation.SetOrder(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (stc *SkillTagCreate) check() error {
 	if _, ok := stc.mutation.Name(); !ok {
@@ -75,12 +108,12 @@ func (stc *SkillTagCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SkillTag.name": %w`, err)}
 		}
 	}
-	if _, ok := stc.mutation.Key(); !ok {
-		return &ValidationError{Name: "key", err: errors.New(`ent: missing required field "SkillTag.key"`)}
+	if _, ok := stc.mutation.Order(); !ok {
+		return &ValidationError{Name: "order", err: errors.New(`ent: missing required field "SkillTag.order"`)}
 	}
-	if v, ok := stc.mutation.Key(); ok {
-		if err := skilltag.KeyValidator(v); err != nil {
-			return &ValidationError{Name: "key", err: fmt.Errorf(`ent: validator failed for field "SkillTag.key": %w`, err)}
+	if v, ok := stc.mutation.Order(); ok {
+		if err := skilltag.OrderValidator(v); err != nil {
+			return &ValidationError{Name: "order", err: fmt.Errorf(`ent: validator failed for field "SkillTag.order": %w`, err)}
 		}
 	}
 	return nil
@@ -114,9 +147,25 @@ func (stc *SkillTagCreate) createSpec() (*SkillTag, *sqlgraph.CreateSpec) {
 		_spec.SetField(skilltag.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := stc.mutation.Key(); ok {
-		_spec.SetField(skilltag.FieldKey, field.TypeString, value)
-		_node.Key = value
+	if value, ok := stc.mutation.Order(); ok {
+		_spec.SetField(skilltag.FieldOrder, field.TypeInt, value)
+		_node.Order = value
+	}
+	if nodes := stc.mutation.SkillsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   skilltag.SkillsTable,
+			Columns: []string{skilltag.SkillsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(skill.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -182,15 +231,21 @@ func (u *SkillTagUpsert) UpdateName() *SkillTagUpsert {
 	return u
 }
 
-// SetKey sets the "key" field.
-func (u *SkillTagUpsert) SetKey(v string) *SkillTagUpsert {
-	u.Set(skilltag.FieldKey, v)
+// SetOrder sets the "order" field.
+func (u *SkillTagUpsert) SetOrder(v int) *SkillTagUpsert {
+	u.Set(skilltag.FieldOrder, v)
 	return u
 }
 
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *SkillTagUpsert) UpdateKey() *SkillTagUpsert {
-	u.SetExcluded(skilltag.FieldKey)
+// UpdateOrder sets the "order" field to the value that was provided on create.
+func (u *SkillTagUpsert) UpdateOrder() *SkillTagUpsert {
+	u.SetExcluded(skilltag.FieldOrder)
+	return u
+}
+
+// AddOrder adds v to the "order" field.
+func (u *SkillTagUpsert) AddOrder(v int) *SkillTagUpsert {
+	u.Add(skilltag.FieldOrder, v)
 	return u
 }
 
@@ -248,17 +303,24 @@ func (u *SkillTagUpsertOne) UpdateName() *SkillTagUpsertOne {
 	})
 }
 
-// SetKey sets the "key" field.
-func (u *SkillTagUpsertOne) SetKey(v string) *SkillTagUpsertOne {
+// SetOrder sets the "order" field.
+func (u *SkillTagUpsertOne) SetOrder(v int) *SkillTagUpsertOne {
 	return u.Update(func(s *SkillTagUpsert) {
-		s.SetKey(v)
+		s.SetOrder(v)
 	})
 }
 
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *SkillTagUpsertOne) UpdateKey() *SkillTagUpsertOne {
+// AddOrder adds v to the "order" field.
+func (u *SkillTagUpsertOne) AddOrder(v int) *SkillTagUpsertOne {
 	return u.Update(func(s *SkillTagUpsert) {
-		s.UpdateKey()
+		s.AddOrder(v)
+	})
+}
+
+// UpdateOrder sets the "order" field to the value that was provided on create.
+func (u *SkillTagUpsertOne) UpdateOrder() *SkillTagUpsertOne {
+	return u.Update(func(s *SkillTagUpsert) {
+		s.UpdateOrder()
 	})
 }
 
@@ -298,18 +360,23 @@ func (u *SkillTagUpsertOne) IDX(ctx context.Context) int {
 // SkillTagCreateBulk is the builder for creating many SkillTag entities in bulk.
 type SkillTagCreateBulk struct {
 	config
+	err      error
 	builders []*SkillTagCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the SkillTag entities in the database.
 func (stcb *SkillTagCreateBulk) Save(ctx context.Context) ([]*SkillTag, error) {
+	if stcb.err != nil {
+		return nil, stcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(stcb.builders))
 	nodes := make([]*SkillTag, len(stcb.builders))
 	mutators := make([]Mutator, len(stcb.builders))
 	for i := range stcb.builders {
 		func(i int, root context.Context) {
 			builder := stcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*SkillTagMutation)
 				if !ok {
@@ -319,8 +386,8 @@ func (stcb *SkillTagCreateBulk) Save(ctx context.Context) ([]*SkillTag, error) {
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, stcb.builders[i+1].mutation)
 				} else {
@@ -475,22 +542,32 @@ func (u *SkillTagUpsertBulk) UpdateName() *SkillTagUpsertBulk {
 	})
 }
 
-// SetKey sets the "key" field.
-func (u *SkillTagUpsertBulk) SetKey(v string) *SkillTagUpsertBulk {
+// SetOrder sets the "order" field.
+func (u *SkillTagUpsertBulk) SetOrder(v int) *SkillTagUpsertBulk {
 	return u.Update(func(s *SkillTagUpsert) {
-		s.SetKey(v)
+		s.SetOrder(v)
 	})
 }
 
-// UpdateKey sets the "key" field to the value that was provided on create.
-func (u *SkillTagUpsertBulk) UpdateKey() *SkillTagUpsertBulk {
+// AddOrder adds v to the "order" field.
+func (u *SkillTagUpsertBulk) AddOrder(v int) *SkillTagUpsertBulk {
 	return u.Update(func(s *SkillTagUpsert) {
-		s.UpdateKey()
+		s.AddOrder(v)
+	})
+}
+
+// UpdateOrder sets the "order" field to the value that was provided on create.
+func (u *SkillTagUpsertBulk) UpdateOrder() *SkillTagUpsertBulk {
+	return u.Update(func(s *SkillTagUpsert) {
+		s.UpdateOrder()
 	})
 }
 
 // Exec executes the query.
 func (u *SkillTagUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the SkillTagCreateBulk instead", i)

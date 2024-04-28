@@ -42,6 +42,14 @@ func (unu *UserNoteUpdate) SetLabel(s string) *UserNoteUpdate {
 	return unu
 }
 
+// SetNillableLabel sets the "label" field if the given value is not nil.
+func (unu *UserNoteUpdate) SetNillableLabel(s *string) *UserNoteUpdate {
+	if s != nil {
+		unu.SetLabel(*s)
+	}
+	return unu
+}
+
 // SetMemo sets the "memo" field.
 func (unu *UserNoteUpdate) SetMemo(s string) *UserNoteUpdate {
 	unu.mutation.SetMemo(s)
@@ -123,7 +131,7 @@ func (unu *UserNoteUpdate) RemoveNoteItems(u ...*UserNoteItem) *UserNoteUpdate {
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (unu *UserNoteUpdate) Save(ctx context.Context) (int, error) {
 	unu.defaults()
-	return withHooks[int, UserNoteMutation](ctx, unu.sqlSave, unu.mutation, unu.hooks)
+	return withHooks(ctx, unu.sqlSave, unu.mutation, unu.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
@@ -304,6 +312,14 @@ func (unuo *UserNoteUpdateOne) SetLabel(s string) *UserNoteUpdateOne {
 	return unuo
 }
 
+// SetNillableLabel sets the "label" field if the given value is not nil.
+func (unuo *UserNoteUpdateOne) SetNillableLabel(s *string) *UserNoteUpdateOne {
+	if s != nil {
+		unuo.SetLabel(*s)
+	}
+	return unuo
+}
+
 // SetMemo sets the "memo" field.
 func (unuo *UserNoteUpdateOne) SetMemo(s string) *UserNoteUpdateOne {
 	unuo.mutation.SetMemo(s)
@@ -398,7 +414,7 @@ func (unuo *UserNoteUpdateOne) Select(field string, fields ...string) *UserNoteU
 // Save executes the query and returns the updated UserNote entity.
 func (unuo *UserNoteUpdateOne) Save(ctx context.Context) (*UserNote, error) {
 	unuo.defaults()
-	return withHooks[*UserNote, UserNoteMutation](ctx, unuo.sqlSave, unuo.mutation, unuo.hooks)
+	return withHooks(ctx, unuo.sqlSave, unuo.mutation, unuo.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/sky0621/cv-admin/src/ent/careertask"
 	"github.com/sky0621/cv-admin/src/ent/careertaskdescription"
@@ -22,6 +23,7 @@ type CareerTaskDescription struct {
 	// The values are being populated by the CareerTaskDescriptionQuery when eager-loading is set.
 	Edges          CareerTaskDescriptionEdges `json:"edges"`
 	career_task_id *int
+	selectValues   sql.SelectValues
 }
 
 // CareerTaskDescriptionEdges holds the relations/edges for other nodes in the graph.
@@ -36,12 +38,10 @@ type CareerTaskDescriptionEdges struct {
 // CareerTaskOrErr returns the CareerTask value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e CareerTaskDescriptionEdges) CareerTaskOrErr() (*CareerTask, error) {
-	if e.loadedTypes[0] {
-		if e.CareerTask == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: careertask.Label}
-		}
+	if e.CareerTask != nil {
 		return e.CareerTask, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: careertask.Label}
 	}
 	return nil, &NotLoadedError{edge: "careerTask"}
 }
@@ -58,7 +58,7 @@ func (*CareerTaskDescription) scanValues(columns []string) ([]any, error) {
 		case careertaskdescription.ForeignKeys[0]: // career_task_id
 			values[i] = new(sql.NullInt64)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type CareerTaskDescription", columns[i])
+			values[i] = new(sql.UnknownType)
 		}
 	}
 	return values, nil
@@ -91,9 +91,17 @@ func (ctd *CareerTaskDescription) assignValues(columns []string, values []any) e
 				ctd.career_task_id = new(int)
 				*ctd.career_task_id = int(value.Int64)
 			}
+		default:
+			ctd.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
+}
+
+// Value returns the ent.Value that was dynamically selected and assigned to the CareerTaskDescription.
+// This includes values selected through modifiers, order, etc.
+func (ctd *CareerTaskDescription) Value(name string) (ent.Value, error) {
+	return ctd.selectValues.Get(name)
 }
 
 // QueryCareerTask queries the "careerTask" edge of the CareerTaskDescription entity.

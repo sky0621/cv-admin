@@ -70,19 +70,9 @@ func Name(v string) predicate.Skill {
 	return predicate.Skill(sql.FieldEQ(FieldName, v))
 }
 
-// Key applies equality check predicate on the "key" field. It's identical to KeyEQ.
-func Key(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEQ(FieldKey, v))
-}
-
 // URL applies equality check predicate on the "url" field. It's identical to URLEQ.
 func URL(v string) predicate.Skill {
 	return predicate.Skill(sql.FieldEQ(FieldURL, v))
-}
-
-// TagKey applies equality check predicate on the "tag_key" field. It's identical to TagKeyEQ.
-func TagKey(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEQ(FieldTagKey, v))
 }
 
 // CreateTimeEQ applies the EQ predicate on the "create_time" field.
@@ -230,71 +220,6 @@ func NameContainsFold(v string) predicate.Skill {
 	return predicate.Skill(sql.FieldContainsFold(FieldName, v))
 }
 
-// KeyEQ applies the EQ predicate on the "key" field.
-func KeyEQ(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEQ(FieldKey, v))
-}
-
-// KeyNEQ applies the NEQ predicate on the "key" field.
-func KeyNEQ(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldNEQ(FieldKey, v))
-}
-
-// KeyIn applies the In predicate on the "key" field.
-func KeyIn(vs ...string) predicate.Skill {
-	return predicate.Skill(sql.FieldIn(FieldKey, vs...))
-}
-
-// KeyNotIn applies the NotIn predicate on the "key" field.
-func KeyNotIn(vs ...string) predicate.Skill {
-	return predicate.Skill(sql.FieldNotIn(FieldKey, vs...))
-}
-
-// KeyGT applies the GT predicate on the "key" field.
-func KeyGT(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldGT(FieldKey, v))
-}
-
-// KeyGTE applies the GTE predicate on the "key" field.
-func KeyGTE(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldGTE(FieldKey, v))
-}
-
-// KeyLT applies the LT predicate on the "key" field.
-func KeyLT(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldLT(FieldKey, v))
-}
-
-// KeyLTE applies the LTE predicate on the "key" field.
-func KeyLTE(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldLTE(FieldKey, v))
-}
-
-// KeyContains applies the Contains predicate on the "key" field.
-func KeyContains(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldContains(FieldKey, v))
-}
-
-// KeyHasPrefix applies the HasPrefix predicate on the "key" field.
-func KeyHasPrefix(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldHasPrefix(FieldKey, v))
-}
-
-// KeyHasSuffix applies the HasSuffix predicate on the "key" field.
-func KeyHasSuffix(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldHasSuffix(FieldKey, v))
-}
-
-// KeyEqualFold applies the EqualFold predicate on the "key" field.
-func KeyEqualFold(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEqualFold(FieldKey, v))
-}
-
-// KeyContainsFold applies the ContainsFold predicate on the "key" field.
-func KeyContainsFold(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldContainsFold(FieldKey, v))
-}
-
 // URLEQ applies the EQ predicate on the "url" field.
 func URLEQ(v string) predicate.Skill {
 	return predicate.Skill(sql.FieldEQ(FieldURL, v))
@@ -370,79 +295,27 @@ func URLContainsFold(v string) predicate.Skill {
 	return predicate.Skill(sql.FieldContainsFold(FieldURL, v))
 }
 
-// TagKeyEQ applies the EQ predicate on the "tag_key" field.
-func TagKeyEQ(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEQ(FieldTagKey, v))
+// HasSkillTag applies the HasEdge predicate on the "skillTag" edge.
+func HasSkillTag() predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, SkillTagTable, SkillTagColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
 }
 
-// TagKeyNEQ applies the NEQ predicate on the "tag_key" field.
-func TagKeyNEQ(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldNEQ(FieldTagKey, v))
-}
-
-// TagKeyIn applies the In predicate on the "tag_key" field.
-func TagKeyIn(vs ...string) predicate.Skill {
-	return predicate.Skill(sql.FieldIn(FieldTagKey, vs...))
-}
-
-// TagKeyNotIn applies the NotIn predicate on the "tag_key" field.
-func TagKeyNotIn(vs ...string) predicate.Skill {
-	return predicate.Skill(sql.FieldNotIn(FieldTagKey, vs...))
-}
-
-// TagKeyGT applies the GT predicate on the "tag_key" field.
-func TagKeyGT(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldGT(FieldTagKey, v))
-}
-
-// TagKeyGTE applies the GTE predicate on the "tag_key" field.
-func TagKeyGTE(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldGTE(FieldTagKey, v))
-}
-
-// TagKeyLT applies the LT predicate on the "tag_key" field.
-func TagKeyLT(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldLT(FieldTagKey, v))
-}
-
-// TagKeyLTE applies the LTE predicate on the "tag_key" field.
-func TagKeyLTE(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldLTE(FieldTagKey, v))
-}
-
-// TagKeyContains applies the Contains predicate on the "tag_key" field.
-func TagKeyContains(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldContains(FieldTagKey, v))
-}
-
-// TagKeyHasPrefix applies the HasPrefix predicate on the "tag_key" field.
-func TagKeyHasPrefix(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldHasPrefix(FieldTagKey, v))
-}
-
-// TagKeyHasSuffix applies the HasSuffix predicate on the "tag_key" field.
-func TagKeyHasSuffix(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldHasSuffix(FieldTagKey, v))
-}
-
-// TagKeyIsNil applies the IsNil predicate on the "tag_key" field.
-func TagKeyIsNil() predicate.Skill {
-	return predicate.Skill(sql.FieldIsNull(FieldTagKey))
-}
-
-// TagKeyNotNil applies the NotNil predicate on the "tag_key" field.
-func TagKeyNotNil() predicate.Skill {
-	return predicate.Skill(sql.FieldNotNull(FieldTagKey))
-}
-
-// TagKeyEqualFold applies the EqualFold predicate on the "tag_key" field.
-func TagKeyEqualFold(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldEqualFold(FieldTagKey, v))
-}
-
-// TagKeyContainsFold applies the ContainsFold predicate on the "tag_key" field.
-func TagKeyContainsFold(v string) predicate.Skill {
-	return predicate.Skill(sql.FieldContainsFold(FieldTagKey, v))
+// HasSkillTagWith applies the HasEdge predicate on the "skillTag" edge with a given conditions (other predicates).
+func HasSkillTagWith(preds ...predicate.SkillTag) predicate.Skill {
+	return predicate.Skill(func(s *sql.Selector) {
+		step := newSkillTagStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // HasCareerSkills applies the HasEdge predicate on the "careerSkills" edge.
@@ -459,11 +332,7 @@ func HasCareerSkills() predicate.Skill {
 // HasCareerSkillsWith applies the HasEdge predicate on the "careerSkills" edge with a given conditions (other predicates).
 func HasCareerSkillsWith(preds ...predicate.CareerSkill) predicate.Skill {
 	return predicate.Skill(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareerSkillsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CareerSkillsTable, CareerSkillsColumn),
-		)
+		step := newCareerSkillsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -474,32 +343,15 @@ func HasCareerSkillsWith(preds ...predicate.CareerSkill) predicate.Skill {
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Skill) predicate.Skill {
-	return predicate.Skill(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.Skill(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.Skill) predicate.Skill {
-	return predicate.Skill(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.Skill(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.Skill) predicate.Skill {
-	return predicate.Skill(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.Skill(sql.NotPredicates(p))
 }

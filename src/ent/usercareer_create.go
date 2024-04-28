@@ -144,7 +144,7 @@ func (ucc *UserCareerCreate) Mutation() *UserCareerMutation {
 // Save creates the UserCareer in the database.
 func (ucc *UserCareerCreate) Save(ctx context.Context) (*UserCareer, error) {
 	ucc.defaults()
-	return withHooks[*UserCareer, UserCareerMutation](ctx, ucc.sqlSave, ucc.mutation, ucc.hooks)
+	return withHooks(ctx, ucc.sqlSave, ucc.mutation, ucc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
@@ -575,12 +575,16 @@ func (u *UserCareerUpsertOne) IDX(ctx context.Context) int {
 // UserCareerCreateBulk is the builder for creating many UserCareer entities in bulk.
 type UserCareerCreateBulk struct {
 	config
+	err      error
 	builders []*UserCareerCreate
 	conflict []sql.ConflictOption
 }
 
 // Save creates the UserCareer entities in the database.
 func (uccb *UserCareerCreateBulk) Save(ctx context.Context) ([]*UserCareer, error) {
+	if uccb.err != nil {
+		return nil, uccb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(uccb.builders))
 	nodes := make([]*UserCareer, len(uccb.builders))
 	mutators := make([]Mutator, len(uccb.builders))
@@ -597,8 +601,8 @@ func (uccb *UserCareerCreateBulk) Save(ctx context.Context) ([]*UserCareer, erro
 					return nil, err
 				}
 				builder.mutation = mutation
-				nodes[i], specs[i] = builder.createSpec()
 				var err error
+				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
 					_, err = mutators[i+1].Mutate(root, uccb.builders[i+1].mutation)
 				} else {
@@ -811,6 +815,9 @@ func (u *UserCareerUpsertBulk) ClearTo() *UserCareerUpsertBulk {
 
 // Exec executes the query.
 func (u *UserCareerUpsertBulk) Exec(ctx context.Context) error {
+	if u.create.err != nil {
+		return u.create.err
+	}
 	for i, b := range u.create.builders {
 		if len(b.conflict) != 0 {
 			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the UserCareerCreateBulk instead", i)

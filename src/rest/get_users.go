@@ -1,6 +1,8 @@
 package rest
 
-import "context"
+import (
+	"context"
+)
 
 func (s *strictServerImpl) GetUsers(ctx context.Context, _ GetUsersRequestObject) (GetUsersResponseObject, error) {
 	users, err := s.dbClient.User.Query().All(ctx)

@@ -29,14 +29,22 @@ func (s *strictServerImpl) PostSkills(ctx context.Context, request PostSkillsReq
 	if slice.Contains(helper.PickupSkillName(entSkills), *skill_.Name) {
 		return PostSkills400JSONResponse{n400("already registered under the same name")}, nil
 	}
-	if slice.Contains(helper.PickupSkillKey(entSkills), *skill_.Key) {
-		return PostSkills400JSONResponse{n400("already registered under the same key")}, nil
-	}
 
-	entSkill, err := ToEntSkillCreate(skill_, s.dbClient.Skill.Create()).Save(ctx)
+	entSkillTag, err := s.dbClient.SkillTag.Get(ctx, *skill_.SkillTagID)
 	if err != nil {
 		return nil, err
 	}
+	if entSkillTag == nil {
+		return PostSkills400JSONResponse{n400("no skill tag")}, nil
+	}
 
-	return PostSkills201JSONResponse(ToSwaggerSkill(entSkill)), nil
+	entSkill, err := ToEntSkillCreate(skill_, entSkillTag, s.dbClient.Skill.Create()).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if entSkill == nil {
+		return nil, errors.New("saved skill but return nil")
+	}
+
+	return PostSkills201JSONResponse(ToSwaggerSkill(*entSkill)), nil
 }

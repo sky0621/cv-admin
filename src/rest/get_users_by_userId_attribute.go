@@ -2,7 +2,8 @@ package rest
 
 import (
 	"context"
-	"errors"
+
+	"github.com/sky0621/cv-admin/src/ent"
 )
 
 // GetUsersByUserIdAttribute 属性取得
@@ -11,9 +12,8 @@ import (
 func (s *strictServerImpl) GetUsersByUserIdAttribute(ctx context.Context, request GetUsersByUserIdAttributeRequestObject) (GetUsersByUserIdAttributeResponseObject, error) {
 	entUser, err := s.getUserByUserId(ctx, request.ByUserId)
 	if err != nil {
-		switch {
-		case errors.As(err, &notFound):
-			return GetUsersByUserIdAttribute404JSONResponse{n404("user is none")}, err
+		if ent.IsNotFound(err) {
+			return GetUsersByUserIdAttribute404JSONResponse{n404("user is none")}, nil
 		}
 		return nil, err
 	}

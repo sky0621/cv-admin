@@ -764,11 +764,7 @@ func HasActivities() predicate.User {
 // HasActivitiesWith applies the HasEdge predicate on the "activities" edge with a given conditions (other predicates).
 func HasActivitiesWith(preds ...predicate.UserActivity) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ActivitiesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ActivitiesTable, ActivitiesColumn),
-		)
+		step := newActivitiesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -791,11 +787,7 @@ func HasQualifications() predicate.User {
 // HasQualificationsWith applies the HasEdge predicate on the "qualifications" edge with a given conditions (other predicates).
 func HasQualificationsWith(preds ...predicate.UserQualification) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(QualificationsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, QualificationsTable, QualificationsColumn),
-		)
+		step := newQualificationsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -818,11 +810,7 @@ func HasCareerGroups() predicate.User {
 // HasCareerGroupsWith applies the HasEdge predicate on the "careerGroups" edge with a given conditions (other predicates).
 func HasCareerGroupsWith(preds ...predicate.UserCareerGroup) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(CareerGroupsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CareerGroupsTable, CareerGroupsColumn),
-		)
+		step := newCareerGroupsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -845,11 +833,53 @@ func HasNotes() predicate.User {
 // HasNotesWith applies the HasEdge predicate on the "notes" edge with a given conditions (other predicates).
 func HasNotesWith(preds ...predicate.UserNote) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
+		step := newNotesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAppeals applies the HasEdge predicate on the "appeals" edge.
+func HasAppeals() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(NotesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, NotesTable, NotesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, AppealsTable, AppealsColumn),
 		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAppealsWith applies the HasEdge predicate on the "appeals" edge with a given conditions (other predicates).
+func HasAppealsWith(preds ...predicate.UserAppeal) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newAppealsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSolutions applies the HasEdge predicate on the "solutions" edge.
+func HasSolutions() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SolutionsTable, SolutionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSolutionsWith applies the HasEdge predicate on the "solutions" edge with a given conditions (other predicates).
+func HasSolutionsWith(preds ...predicate.UserSolution) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newSolutionsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -860,32 +890,15 @@ func HasNotesWith(preds ...predicate.UserNote) predicate.User {
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.User(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.User) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.User(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.User) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.User(sql.NotPredicates(p))
 }
