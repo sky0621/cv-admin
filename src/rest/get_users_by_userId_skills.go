@@ -1,7 +1,9 @@
 package rest
 
 import (
+	"cmp"
 	"context"
+	"slices"
 
 	"github.com/sky0621/cv-admin/src/ent/skilltag"
 
@@ -48,8 +50,12 @@ func (s *strictServerImpl) GetUsersByUserIdSkills(ctx context.Context, request G
 				Name:     &entSkill.Name,
 				Url:      entSkill.URL,
 				Versions: &versions,
+				Period:   sumPeriodMonth(versions),
 			})
 		}
+		slices.SortStableFunc(userSkills, func(a, b UserSkill) int {
+			return cmp.Compare(*b.Period, *a.Period)
+		})
 
 		userSkillTags = append(userSkillTags, UserSkillTag{
 			TagName: &entSkillTag.Name,
@@ -68,4 +74,12 @@ func toPeriodMonth(from *CareerPeriodFrom, to *CareerPeriodTo) *CareerPeriodMont
 	t := int(*to.Year)*12 + *to.Month
 	r := t - f + 1
 	return &r
+}
+
+func sumPeriodMonth(versions []UserSkillVersion) *CareerPeriodMonth {
+	sum := 0
+	for _, version := range versions {
+		sum += *version.Period
+	}
+	return &sum
 }
