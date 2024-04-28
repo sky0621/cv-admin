@@ -863,6 +863,11 @@ components:
           $ref: "#/components/schemas/Year"
         month:
           $ref: "#/components/schemas/Month"
+    CareerPeriodMonth:
+      type: integer
+      format: int
+      description: "キャリア期間(月)"
+      example: 6
     CareerGroupLabel:
       type: string
       description: "キャリアグループラベル"
@@ -1082,6 +1087,8 @@ components:
           $ref: "#/components/schemas/CareerPeriodFrom"
         to:
           $ref: "#/components/schemas/CareerPeriodTo"
+        period:
+          $ref: "#/components/schemas/CareerPeriodMonth"
     UserSkill:
       type: object
       description: "１ユーザーのスキルを使用Version・使用期間別に保持したもの"
@@ -1094,6 +1101,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/UserSkillVersion"
+        period:
+          $ref: "#/components/schemas/CareerPeriodMonth"
     UserSkillTag:
       type: object
       description: "１ユーザーのスキルタグ及び配下のスキル群を使用Version・使用期間別に保持したもの"

@@ -35,10 +35,13 @@ func (s *strictServerImpl) GetUsersByUserIdSkills(ctx context.Context, request G
 		for _, entSkill := range entSkillTag.Edges.Skills {
 			var versions []UserSkillVersion
 			for _, entCareerSkill := range entSkill.Edges.CareerSkills {
+				from := ToSwaggerUserCareerPeriodFrom(entCareerSkill.Edges.CareerSkillGroup.Edges.Career.From)
+				to := ToSwaggerUserCareerPeriodTo(entCareerSkill.Edges.CareerSkillGroup.Edges.Career.To)
 				versions = append(versions, UserSkillVersion{
 					Version: entCareerSkill.Version,
-					From:    ToSwaggerUserCareerPeriodFrom(entCareerSkill.Edges.CareerSkillGroup.Edges.Career.From),
-					To:      ToSwaggerUserCareerPeriodTo(entCareerSkill.Edges.CareerSkillGroup.Edges.Career.To),
+					From:    from,
+					To:      to,
+					Period:  toPeriodMonth(from, to),
 				})
 			}
 			userSkills = append(userSkills, UserSkill{
@@ -55,4 +58,14 @@ func (s *strictServerImpl) GetUsersByUserIdSkills(ctx context.Context, request G
 	}
 
 	return GetUsersByUserIdSkills200JSONResponse(userSkillTags), nil
+}
+
+func toPeriodMonth(from *CareerPeriodFrom, to *CareerPeriodTo) *CareerPeriodMonth {
+	if from == nil || to == nil {
+		return nil
+	}
+	f := int(*from.Year)*12 + *from.Month
+	t := int(*to.Year)*12 + *to.Month
+	r := t - f + 1
+	return &r
 }
