@@ -8,7 +8,7 @@ require (
 	github.com/getkin/kin-openapi v0.124.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/labstack/echo/v4 v4.12.0
-	github.com/mattn/go-sqlite3 v1.14.22
+	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/pkg/errors v0.9.1
 	github.com/sky0621/golang-utils v0.0.2
 	github.com/spf13/cobra v1.8.0
