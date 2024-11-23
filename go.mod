@@ -12,7 +12,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/sky0621/golang-utils v0.0.2
 	github.com/spf13/cobra v1.8.0
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/xuri/excelize/v2 v2.8.1
 	gopkg.in/ini.v1 v1.67.0
 )
