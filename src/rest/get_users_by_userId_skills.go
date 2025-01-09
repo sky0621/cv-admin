@@ -3,6 +3,7 @@ package rest
 import (
 	"cmp"
 	"context"
+	"log"
 	"slices"
 
 	"github.com/sky0621/cv-admin/src/ent/skilltag"
@@ -33,10 +34,30 @@ func (s *strictServerImpl) GetUsersByUserIdSkills(ctx context.Context, request G
 
 	var userSkillTags []UserSkillTag
 	for _, entSkillTag := range entSkillTags {
+		if entSkillTag == nil {
+			log.Printf("entSkillTag is nil\n")
+			continue
+		}
 		var userSkills []UserSkill
 		for _, entSkill := range entSkillTag.Edges.Skills {
+			if entSkill == nil {
+				log.Printf("entSkillTag[ID:%d][Name:%s] entSkill == nil\n", entSkillTag.ID, entSkillTag.Name)
+				continue
+			}
 			var versions []UserSkillVersion
 			for _, entCareerSkill := range entSkill.Edges.CareerSkills {
+				if entCareerSkill == nil {
+					log.Printf("entSkill[ID:%d][Name:%s] entCareerSkill == nil\n", entSkill.ID, entSkill.Name)
+					continue
+				}
+				if entCareerSkill.Edges.CareerSkillGroup == nil {
+					log.Printf("entCareerSkill[ID:%d] entCareerSkill.Edges.CareerSkillGroup == nil\n", entCareerSkill.ID)
+					continue
+				}
+				if entCareerSkill.Edges.CareerSkillGroup.Edges.Career == nil {
+					log.Printf("entCareerSkill[ID:%d] entCareerSkill.Edges.CareerSkillGroup.Edges.Career == nil\n", entCareerSkill.ID)
+					continue
+				}
 				from := ToSwaggerUserCareerPeriodFrom(entCareerSkill.Edges.CareerSkillGroup.Edges.Career.From)
 				to := ToSwaggerUserCareerPeriodTo(entCareerSkill.Edges.CareerSkillGroup.Edges.Career.To)
 				versions = append(versions, UserSkillVersion{
