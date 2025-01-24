@@ -5,6 +5,7 @@ import (
 	"context"
 	"log"
 	"slices"
+	"sort"
 
 	"github.com/sky0621/cv-admin/src/ent/skilltag"
 
@@ -83,7 +84,44 @@ func (s *strictServerImpl) GetUsersByUserIdSkills(ctx context.Context, request G
 			Skills:  &userSkills,
 		})
 	}
+	// Versionsを新しいもの順にソート
+	for _, userSkillTag := range userSkillTags {
+		if userSkillTag.Skills != nil {
+			for _, skill := range *userSkillTag.Skills {
+				if skill.Versions != nil {
+					sort.SliceStable(*skill.Versions, func(i, j int) bool {
+						vi := (*skill.Versions)[i]
+						vj := (*skill.Versions)[j]
 
+						// FromのYearで比較
+						if vi.From.Year != nil && vj.From.Year != nil {
+							if *vi.From.Year != *vj.From.Year {
+								return *vi.From.Year > *vj.From.Year
+							}
+						}
+						// FromのMonthで比較
+						if vi.From.Month != nil && vj.From.Month != nil {
+							if *vi.From.Month != *vj.From.Month {
+								return *vi.From.Month > *vj.From.Month
+							}
+						}
+						// ToのYearで比較
+						if vi.To.Year != nil && vj.To.Year != nil {
+							if *vi.To.Year != *vj.To.Year {
+								return *vi.To.Year > *vj.To.Year
+							}
+						}
+						// ToのMonthで比較
+						if vi.To.Month != nil && vj.To.Month != nil {
+							return *vi.To.Month > *vj.To.Month
+						}
+
+						return false
+					})
+				}
+			}
+		}
+	}
 	return GetUsersByUserIdSkills200JSONResponse(userSkillTags), nil
 }
 
