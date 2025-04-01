@@ -2,7 +2,7 @@ module github.com/sky0621/cv-admin
 
 go 1.23.0
 
-toolchain go1.23.4
+toolchain go1.24.2
 
 require (
 	entgo.io/ent v0.14.1
