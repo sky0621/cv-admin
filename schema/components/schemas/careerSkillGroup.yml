@@ -1,0 +1,10 @@
+CareerSkillGroup:
+  type: object
+  description: "１キャリアのスキルグループ"
+  properties:
+    label:
+      $ref: "./skill.yml#/SkillGroupLabel"
+    skills:
+      type: array
+      items:
+        $ref: "./careerSkill.yml#/CareerSkill"

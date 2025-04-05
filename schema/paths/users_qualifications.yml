@@ -1,0 +1,45 @@
+usersByUserIdQualifications:
+  parameters:
+    - $ref: "../components/parameters/user.yml#/userId"
+  put:
+    summary: "資格情報群最新化"
+    description: "指定ユーザーの資格情報群を最新化（総洗い替え）する。"
+    tags: [ "users" ]
+    requestBody:
+      description: "資格情報群"
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            description: "１ユーザーの資格情報群"
+            items:
+              $ref: "../components/schemas/user.yml#/UserQualification"
+    responses:
+      "200":
+        description: "OK: 指定ユーザーの資格情報群を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/user.yml#/UserQualification"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"
+  get:
+    summary: "資格情報群取得"
+    description: "指定ユーザーの資格情報群を取得する。"
+    tags: [ "users" ]
+    responses:
+      "200":
+        description: "OK: 指定ユーザーの資格情報群を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/user.yml#/UserQualification"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"

@@ -1,0 +1,45 @@
+usersByUserIdAppeals:
+  parameters:
+    - $ref: "../components/parameters/user.yml#/userId"
+  put:
+    summary: "アピール事項群最新化"
+    description: "指定ユーザーのアピール事項群を最新化（総洗い替え）する。"
+    tags: [ "users" ]
+    requestBody:
+      description: "アピール事項群"
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            description: "１ユーザーのアピール事項群"
+            items:
+              $ref: "../components/schemas/user.yml#/UserAppeal"
+    responses:
+      "200":
+        description: "OK: 指定ユーザーのアピール事項群を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/user.yml#/UserAppeal"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"
+  get:
+    summary: "アピール事項群取得"
+    description: "指定ユーザーのアピール事項群を取得する。"
+    tags: [ "users" ]
+    responses:
+      "200":
+        description: "OK: 指定ユーザーのアピール事項群を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/user.yml#/UserAppeal"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"

@@ -1,0 +1,38 @@
+UserSkillVersion:
+  type: object
+  description: "１ユーザーのスキルVersionを使用期間別に保持したもの"
+  properties:
+    version:
+      $ref: "./skill.yml#/SkillVersion"
+    from:
+      $ref: "./career.yml#/CareerPeriodFrom"
+    to:
+      $ref: "./career.yml#/CareerPeriodTo"
+    period:
+      $ref: "./career.yml#/CareerPeriodMonth"
+
+UserSkill:
+  type: object
+  description: "１ユーザーのスキルを使用Version・使用期間別に保持したもの"
+  properties:
+    name:
+      $ref: "./skill.yml#/SkillName"
+    url:
+      $ref: "./common.yml#/Url"
+    versions:
+      type: array
+      items:
+        $ref: "#/UserSkillVersion"
+    period:
+      $ref: "./career.yml#/CareerPeriodMonth"
+
+UserSkillTag:
+  type: object
+  description: "１ユーザーのスキルタグ及び配下のスキル群を使用Version・使用期間別に保持したもの"
+  properties:
+    tagName:
+      $ref: "./skillTag.yml#/SkillTagName"
+    skills:
+      type: array
+      items:
+        $ref: "#/UserSkill"

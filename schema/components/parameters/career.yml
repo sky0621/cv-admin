@@ -1,0 +1,6 @@
+careerId:
+  name: "byCareerId"
+  in: "path"
+  required: true
+  schema:
+    $ref: "../schemas/career.yml#/CareerId"

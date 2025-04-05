@@ -1,0 +1,84 @@
+openapi: 3.0.3
+
+info:
+  title: CV API
+  description: CV API
+  version: 1.0.0
+
+servers:
+  - url: 'http://localhost:{port}'
+    description: "ローカル環境"
+    variables:
+      port:
+        description: "ポート番号"
+        enum: ["8080","3000"]
+        default: "8080"
+
+tags:
+  - name: "skills"
+    description: "スキルに対するCRUD"
+  - name: "users"
+    description: "ユーザーに対するCRUD"
+
+security: []
+
+paths:
+  "/skilltags":
+    $ref: "./paths/skilltags.yml#/skillTags"
+
+  "/skilltags/{bySkillTagId}":
+    $ref: "./paths/skilltags.yml#/skillTagsBySkillTagId"
+
+  "/skills":
+    $ref: "./paths/skills.yml#/skills"
+
+  "/skillrecords":
+    $ref: "./paths/skillrecords.yml#/skillRecords"
+
+  "/skills/{bySkillId}":
+    $ref: "./paths/skills.yml#/skillsBySkillId"
+
+  "/users":
+    $ref: "./paths/users.yml#/users"
+
+  "/users/{byUserId}":
+    $ref: "./paths/users.yml#/usersByUserId"
+
+  "/users/{byUserId}/attribute":
+    $ref: "./paths/users_attribute.yml#/usersByUserIdAttribute"
+
+  "/users/{byUserId}/activities":
+    $ref: "./paths/users_activities.yml#/usersByUserIdActivities"
+
+  "/users/{byUserId}/qualifications":
+    $ref: "./paths/users_qualifications.yml#/usersByUserIdQualifications"
+
+  "/users/{byUserId}/appeals":
+    $ref: "./paths/users_appeals.yml#/usersByUserIdAppeals"
+
+  "/users/{byUserId}/solutions":
+    $ref: "./paths/users_solutions.yml#/usersByUserIdSolutions"
+
+  "/users/{byUserId}/careergroups":
+    $ref: "./paths/users_careergroups.yml#/usersByUserIdCareerGroups"
+
+  "/users/{byUserId}/careergroups/{byCareerGroupId}":
+    $ref: "./paths/users_careergroups.yml#/usersByUserIdCareerGroupsByCareerGroupId"
+
+  "/users/{byUserId}/careergroups/{byCareerGroupId}/careers":
+    $ref: "./paths/users_careers.yml#/usersByUserIdCareerGroupsByCareerGroupIdCareers"
+
+  "/users/{byUserId}/careergroups/{byCareerGroupId}/careers/{byCareerId}":
+    $ref: "./paths/users_careers.yml#/usersByUserIdCareerGroupsByCareerGroupIdCareersByCareerId"
+
+  "/users/{byUserId}/notes":
+    $ref: "./paths/users_notes.yml#/usersByUserIdNotes"
+
+  "/users/{byUserId}/notes/{byNoteId}":
+    $ref: "./paths/users_notes.yml#/usersByUserIdNotesByNoteId"
+
+  "/users/{byUserId}/notes/{byNoteId}/items":
+    $ref: "./paths/users_notes.yml#/usersByUserIdNotesByNoteIdItems"
+
+  "/users/{byUserId}/skills":
+    $ref: "./paths/users_skills.yml#/usersByUserIdSkills"

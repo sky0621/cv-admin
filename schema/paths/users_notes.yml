@@ -1,0 +1,104 @@
+usersByUserIdNotes:
+  parameters:
+    - $ref: "../components/parameters/user.yml#/userId"
+  post:
+    summary: "注釈新規登録"
+    description: "注釈を新規登録する。"
+    tags: [ "users" ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/userNote.yml#/UserNote"
+    responses:
+      "201":
+        description: "Created: 指定ユーザーの注釈を返却する。"
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/userNote.yml#/UserNote"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"
+  get:
+    summary: "注釈群取得"
+    description: "指定ユーザーの注釈群を取得する。"
+    tags: [ "users" ]
+    responses:
+      "200":
+        description: "OK: 指定ユーザーの注釈群を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/userNote.yml#/UserNote"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"
+
+usersByUserIdNotesByNoteId:
+  parameters:
+    - $ref: "../components/parameters/user.yml#/userId"
+    - $ref: "../components/parameters/note.yml#/noteId"
+  put:
+    summary: "【未実装】注釈更新"
+    description: "１注釈を更新する。"
+    tags: [ "users" ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/userNote.yml#/UserNoteOwn"
+    responses:
+      "200":
+        description: "OK: 指定ユーザーの注釈自身を返却する。"
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/userNote.yml#/UserNoteOwn"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"
+  delete:
+    summary: "【未実装】注釈削除"
+    description: "１注釈を削除する。"
+    tags: [ "users" ]
+    responses:
+      "204":
+        description: "No Content: 指定注釈の削除に成功。"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"
+
+usersByUserIdNotesByNoteIdItems:
+  parameters:
+    - $ref: "../components/parameters/user.yml#/userId"
+    - $ref: "../components/parameters/note.yml#/noteId"
+  put:
+    summary: "【未実装】注釈内要素群最新化"
+    description: "１注釈内の要素群を最新化（総洗い替え）する。"
+    tags: [ "users" ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "../components/schemas/userNote.yml#/UserNoteItem"
+    responses:
+      "200":
+        description: "OK: 指定ユーザーの１注釈内の要素群を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/userNote.yml#/UserNoteItem"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"

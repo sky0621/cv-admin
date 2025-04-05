@@ -1,0 +1,6 @@
+userId:
+  name: "byUserId"
+  in: "path"
+  required: true
+  schema:
+    $ref: "../schemas/user.yml#/UserId"

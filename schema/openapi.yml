@@ -1,120 +1,120 @@
 openapi: 3.0.3
-
 info:
   title: CV API
   description: CV API
   version: 1.0.0
-
 servers:
-  - url: 'http://localhost:{port}'
-    description: "ローカル環境"
+  - url: http://localhost:{port}
+    description: ローカル環境
     variables:
       port:
-        description: "ポート番号"
-        enum: ["8080","3000"]
-        default: "8080"
-
-tags:
-  - name: "skills"
-    description: "スキルに対するCRUD"
-  - name: "users"
-    description: "ユーザーに対するCRUD"
-
+        description: ポート番号
+        enum:
+          - '8080'
+          - '3000'
+        default: '8080'
 security: []
-
+tags:
+  - name: skills
+    description: スキルに対するCRUD
+  - name: users
+    description: ユーザーに対するCRUD
 paths:
-  "/skilltags":
+  /skilltags:
     post:
-      summary: "スキルタグ登録"
-      description: "スキルタグを登録する。"
-      tags: ["skills"]
+      summary: スキルタグ登録
+      description: スキルタグを登録する。
+      tags:
+        - skills
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SkillTag"
+              $ref: '#/components/schemas/SkillTag'
       responses:
-        "201":
-          description: "Created: 作成したスキルタグを返却する。"
+        '201':
+          description: 'Created: 作成したスキルタグを返却する。'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SkillTag"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
+                $ref: '#/components/schemas/SkillTag'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
     get:
-      summary: "全スキルタグ取得"
-      description: "全スキルタグを取得する。"
-      tags: ["skills"]
+      summary: 全スキルタグ取得
+      description: 全スキルタグを取得する。
+      tags:
+        - skills
       responses:
-        "200":
-          description: "OK: 全スキルタグを返却する。"
+        '200':
+          description: 'OK: 全スキルタグを返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/SkillTag"
-
-  "/skilltags/{bySkillTagId}":
+                  $ref: '#/components/schemas/SkillTag'
+  /skilltags/{bySkillTagId}:
     parameters:
-      - $ref: "#/components/parameters/skillTagId"
+      - $ref: '#/components/parameters/skillTagId'
     get:
-      summary: "指定スキルタグ取得"
-      description: "指定スキルタグを取得する。"
-      tags: ["skills"]
+      summary: 指定スキルタグ取得
+      description: 指定スキルタグを取得する。
+      tags:
+        - skills
       responses:
-        "200":
-          description: "OK: 指定スキルタグを返却する。"
+        '200':
+          description: 'OK: 指定スキルタグを返却する。'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/SkillTag"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/skills":
+                $ref: '#/components/schemas/SkillTag'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /skills:
     parameters:
-      - $ref: "#/components/parameters/skillTagIdQuery"
+      - $ref: '#/components/parameters/skillTagIdQuery'
     post:
-      summary: "スキル登録"
-      description: "スキルを登録する。"
-      tags: ["skills"]
+      summary: スキル登録
+      description: スキルを登録する。
+      tags:
+        - skills
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Skill"
+              $ref: '#/components/schemas/Skill'
       responses:
-        "201":
-          description: "Created: 作成したスキルを返却する。"
+        '201':
+          description: 'Created: 作成したスキルを返却する。'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Skill"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
+                $ref: '#/components/schemas/Skill'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
     get:
-      summary: "スキル群取得"
-      description: "全スキルを取得する。パラメータ(tag)が指定された場合は該当するタグを持つスキルを取得する。"
-      tags: ["skills"]
+      summary: スキル群取得
+      description: 全スキルを取得する。パラメータ(tag)が指定された場合は該当するタグを持つスキルを取得する。
+      tags:
+        - skills
       responses:
-        "200":
-          description: "OK: スキル群を返却する。"
+        '200':
+          description: 'OK: スキル群を返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Skill"
-
-  "/skillrecords":
+                  $ref: '#/components/schemas/Skill'
+  /skillrecords:
     post:
-      summary: "スキル一括登録"
-      description: "スキルを一括登録する。"
-      tags: ["skills"]
+      summary: スキル一括登録
+      description: スキルを一括登録する。
+      tags:
+        - skills
       requestBody:
         required: true
         content:
@@ -122,546 +122,558 @@ paths:
             schema:
               type: array
               items:
-                $ref: "#/components/schemas/Skill"
+                $ref: '#/components/schemas/Skill'
       responses:
-        "201":
-          description: "Created: 作成した全スキルを返却する。"
+        '201':
+          description: 'Created: 作成した全スキルを返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Skill"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
-
-  "/skills/{bySkillId}":
+                  $ref: '#/components/schemas/Skill'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
+  /skills/{bySkillId}:
     parameters:
-      - $ref: "#/components/parameters/skillId"
+      - $ref: '#/components/parameters/skillId'
     get:
-      summary: "指定スキル取得"
-      description: "指定スキルを取得する。"
-      tags: ["skills"]
+      summary: 指定スキル取得
+      description: 指定スキルを取得する。
+      tags:
+        - skills
       responses:
-        "200":
-          description: "OK: 指定スキルを返却する。"
+        '200':
+          description: 'OK: 指定スキルを返却する。'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Skill"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/users":
+                $ref: '#/components/schemas/Skill'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /users:
     post:
-      summary: "ユーザーアカウント登録"
-      description: "ユーザーアカウントを登録する。"
-      tags: ["users"]
+      summary: ユーザーアカウント登録
+      description: ユーザーアカウントを登録する。
+      tags:
+        - users
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserAttribute"
+              $ref: '#/components/schemas/UserAttribute'
       responses:
-        "201":
-          description: "Created: 指定ユーザーの属性を返却する。"
+        '201':
+          description: 'Created: 指定ユーザーの属性を返却する。'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserAttribute"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
+                $ref: '#/components/schemas/UserAttribute'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
     get:
-      summary: "ユーザー一覧取得"
-      description: "ユーザー一覧を取得する。"
-      tags: ["users"]
+      summary: ユーザー一覧取得
+      description: ユーザー一覧を取得する。
+      tags:
+        - users
       responses:
-        "200":
-          description: "OK: ユーザーの一覧を返却する。"
+        '200':
+          description: 'OK: ユーザーの一覧を返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserAttribute"
-
-  "/users/{byUserId}":
+                  $ref: '#/components/schemas/UserAttribute'
+  /users/{byUserId}:
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: '#/components/parameters/userId'
     delete:
-      summary: "指定ユーザーアカウント削除"
-      description: "指定ユーザーアカウントを削除する。"
-      tags: ["users"]
+      summary: 指定ユーザーアカウント削除
+      description: 指定ユーザーアカウントを削除する。
+      tags:
+        - users
       responses:
-        "204":
-          description: "No Content: 指定ユーザーアカウントの削除に成功。"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/users/{byUserId}/attribute":
+        '204':
+          description: 'No Content: 指定ユーザーアカウントの削除に成功。'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /users/{byUserId}/attribute:
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: '#/components/parameters/userId'
     put:
-      summary: "属性更新"
-      description: "指定ユーザーの属性を更新する。"
-      tags: ["users"]
+      summary: 属性更新
+      description: 指定ユーザーの属性を更新する。
+      tags:
+        - users
       requestBody:
-        description: "属性"
+        description: 属性
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserAttribute"
+              $ref: '#/components/schemas/UserAttribute'
       responses:
-        "200":
-          description: "OK: 指定ユーザーの属性を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーの属性を返却する。'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserAttribute"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
+                $ref: '#/components/schemas/UserAttribute'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
     get:
-      summary: "属性取得"
-      description: "指定ユーザーの属性を取得する。"
-      tags: ["users"]
+      summary: 属性取得
+      description: 指定ユーザーの属性を取得する。
+      tags:
+        - users
       responses:
-        "200":
-          description: "OK: 指定ユーザーの属性を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーの属性を返却する。'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserAttribute"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/users/{byUserId}/activities":
+                $ref: '#/components/schemas/UserAttribute'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /users/{byUserId}/activities:
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: '#/components/parameters/userId'
     put:
-      summary: "アクティビティ群最新化"
-      description: "指定ユーザーのアクティビティ群を最新化（総洗い替え）する。"
-      tags: ["users"]
+      summary: アクティビティ群最新化
+      description: 指定ユーザーのアクティビティ群を最新化（総洗い替え）する。
+      tags:
+        - users
       requestBody:
-        description: "アクティビティ群"
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              description: "１ユーザーのアクティビティ群"
-              items:
-                $ref: "#/components/schemas/UserActivity"
-      responses:
-        "200":
-          description: "OK: 指定ユーザーのアクティビティ群を返却する。"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/UserActivity"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-    get:
-      summary: "アクティビティ群取得"
-      description: "指定ユーザーのアクティビティ群を取得する。"
-      tags: ["users"]
-      responses:
-        "200":
-          description: "OK: 指定ユーザーのアクティビティ群を返却する。"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/UserActivity"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/users/{byUserId}/qualifications":
-    parameters:
-      - $ref: "#/components/parameters/userId"
-    put:
-      summary: "資格情報群最新化"
-      description: "指定ユーザーの資格情報群を最新化（総洗い替え）する。"
-      tags: ["users"]
-      requestBody:
-        description: "資格情報群"
+        description: アクティビティ群
         required: true
         content:
           application/json:
             schema:
               type: array
-              description: "１ユーザーの資格情報群"
+              description: １ユーザーのアクティビティ群
               items:
-                $ref: "#/components/schemas/UserQualification"
+                $ref: '#/components/schemas/UserActivity'
       responses:
-        "200":
-          description: "OK: 指定ユーザーの資格情報群を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーのアクティビティ群を返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserQualification"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
+                  $ref: '#/components/schemas/UserActivity'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
     get:
-      summary: "資格情報群取得"
-      description: "指定ユーザーの資格情報群を取得する。"
-      tags: ["users"]
+      summary: アクティビティ群取得
+      description: 指定ユーザーのアクティビティ群を取得する。
+      tags:
+        - users
       responses:
-        "200":
-          description: "OK: 指定ユーザーの資格情報群を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーのアクティビティ群を返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserQualification"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/users/{byUserId}/appeals":
+                  $ref: '#/components/schemas/UserActivity'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /users/{byUserId}/qualifications:
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: '#/components/parameters/userId'
     put:
-      summary: "アピール事項群最新化"
-      description: "指定ユーザーのアピール事項群を最新化（総洗い替え）する。"
-      tags: ["users"]
+      summary: 資格情報群最新化
+      description: 指定ユーザーの資格情報群を最新化（総洗い替え）する。
+      tags:
+        - users
       requestBody:
-        description: "アピール事項群"
+        description: 資格情報群
         required: true
         content:
           application/json:
             schema:
               type: array
-              description: "１ユーザーのアピール事項群"
+              description: １ユーザーの資格情報群
               items:
-                $ref: "#/components/schemas/UserAppeal"
+                $ref: '#/components/schemas/UserQualification'
       responses:
-        "200":
-          description: "OK: 指定ユーザーのアピール事項群を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーの資格情報群を返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserAppeal"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
+                  $ref: '#/components/schemas/UserQualification'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
     get:
-      summary: "アピール事項群取得"
-      description: "指定ユーザーのアピール事項群を取得する。"
-      tags: ["users"]
+      summary: 資格情報群取得
+      description: 指定ユーザーの資格情報群を取得する。
+      tags:
+        - users
       responses:
-        "200":
-          description: "OK: 指定ユーザーのアピール事項群を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーの資格情報群を返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserAppeal"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/users/{byUserId}/solutions":
+                  $ref: '#/components/schemas/UserQualification'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /users/{byUserId}/appeals:
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: '#/components/parameters/userId'
     put:
-      summary: "課題解決事例群最新化"
-      description: "指定ユーザーの課題解決事例群を最新化（総洗い替え）する。"
-      tags: ["users"]
+      summary: アピール事項群最新化
+      description: 指定ユーザーのアピール事項群を最新化（総洗い替え）する。
+      tags:
+        - users
       requestBody:
-        description: "課題解決事例群"
+        description: アピール事項群
         required: true
         content:
           application/json:
             schema:
               type: array
-              description: "１ユーザーの課題解決事例群"
+              description: １ユーザーのアピール事項群
               items:
-                $ref: "#/components/schemas/UserSolution"
+                $ref: '#/components/schemas/UserAppeal'
       responses:
-        "200":
-          description: "OK: 指定ユーザーの課題解決事例群を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーのアピール事項群を返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserSolution"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
+                  $ref: '#/components/schemas/UserAppeal'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
     get:
-      summary: "課題解決事例群取得"
-      description: "指定ユーザーの課題解決事例群を取得する。"
-      tags: ["users"]
+      summary: アピール事項群取得
+      description: 指定ユーザーのアピール事項群を取得する。
+      tags:
+        - users
       responses:
-        "200":
-          description: "OK: 指定ユーザーの課題解決事例群を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーのアピール事項群を返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserSolution"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/users/{byUserId}/careergroups":
+                  $ref: '#/components/schemas/UserAppeal'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /users/{byUserId}/solutions:
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: '#/components/parameters/userId'
+    put:
+      summary: 課題解決事例群最新化
+      description: 指定ユーザーの課題解決事例群を最新化（総洗い替え）する。
+      tags:
+        - users
+      requestBody:
+        description: 課題解決事例群
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              description: １ユーザーの課題解決事例群
+              items:
+                $ref: '#/components/schemas/UserSolution'
+      responses:
+        '200':
+          description: 'OK: 指定ユーザーの課題解決事例群を返却する。'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSolution'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+    get:
+      summary: 課題解決事例群取得
+      description: 指定ユーザーの課題解決事例群を取得する。
+      tags:
+        - users
+      responses:
+        '200':
+          description: 'OK: 指定ユーザーの課題解決事例群を返却する。'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserSolution'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /users/{byUserId}/careergroups:
+    parameters:
+      - $ref: '#/components/parameters/userId'
     post:
-      summary: "キャリアグループ新規登録"
-      description: "キャリアグループを新規登録する。"
-      tags: ["users"]
+      summary: キャリアグループ新規登録
+      description: キャリアグループを新規登録する。
+      tags:
+        - users
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserCareerGroup"
+              $ref: '#/components/schemas/UserCareerGroup'
       responses:
-        "201":
-          description: "Created: 指定ユーザーのキャリアグループを返却する。"
+        '201':
+          description: 'Created: 指定ユーザーのキャリアグループを返却する。'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserCareerGroup"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
+                $ref: '#/components/schemas/UserCareerGroup'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
     get:
-      summary: "キャリアグループ群取得"
-      description: "指定ユーザーのキャリアグループ群を取得する。"
-      tags: ["users"]
+      summary: キャリアグループ群取得
+      description: 指定ユーザーのキャリアグループ群を取得する。
+      tags:
+        - users
       responses:
-        "200":
-          description: "OK: 指定ユーザーのキャリアグループ群を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーのキャリアグループ群を返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserCareerGroup"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/users/{byUserId}/careergroups/{byCareerGroupId}":
+                  $ref: '#/components/schemas/UserCareerGroup'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /users/{byUserId}/careergroups/{byCareerGroupId}:
     parameters:
-      - $ref: "#/components/parameters/userId"
-      - $ref: "#/components/parameters/careerGroupId"
+      - $ref: '#/components/parameters/userId'
+      - $ref: '#/components/parameters/careerGroupId'
     get:
-      summary: "１キャリアグループ取得"
-      description: "指定ユーザーの指定１キャリアグループを取得する。"
-      tags: ["users"]
+      summary: １キャリアグループ取得
+      description: 指定ユーザーの指定１キャリアグループを取得する。
+      tags:
+        - users
       responses:
-        "200":
-          description: "OK: 指定ユーザーの指定１キャリアグループを返却する。"
+        '200':
+          description: 'OK: 指定ユーザーの指定１キャリアグループを返却する。'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserCareerGroup"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
+                $ref: '#/components/schemas/UserCareerGroup'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
     put:
-      summary: "【未実装】キャリアグループ更新"
-      description: "１キャリアグループを更新する。"
-      tags: ["users"]
+      summary: 【未実装】キャリアグループ更新
+      description: １キャリアグループを更新する。
+      tags:
+        - users
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserCareerGroupOwn"
+              $ref: '#/components/schemas/UserCareerGroupOwn'
       responses:
-        "200":
-          description: "OK: 指定ユーザーのキャリアグループ自身を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーのキャリアグループ自身を返却する。'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserCareerGroupOwn"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
+                $ref: '#/components/schemas/UserCareerGroupOwn'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
     delete:
-      summary: "【未実装】キャリアグループ削除"
-      description: "１キャリアグループを削除する。"
-      tags: ["users"]
+      summary: 【未実装】キャリアグループ削除
+      description: １キャリアグループを削除する。
+      tags:
+        - users
       responses:
-        "204":
-          description: "No Content: 指定キャリアグループの削除に成功。"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/users/{byUserId}/careergroups/{byCareerGroupId}/careers":
+        '204':
+          description: 'No Content: 指定キャリアグループの削除に成功。'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /users/{byUserId}/careergroups/{byCareerGroupId}/careers:
     parameters:
-      - $ref: "#/components/parameters/userId"
-      - $ref: "#/components/parameters/careerGroupId"
+      - $ref: '#/components/parameters/userId'
+      - $ref: '#/components/parameters/careerGroupId'
     post:
-      summary: "１キャリアグループ内の１キャリア登録"
-      description: "１キャリアグループ内の１キャリアを登録する。"
-      tags: ["users"]
+      summary: １キャリアグループ内の１キャリア登録
+      description: １キャリアグループ内の１キャリアを登録する。
+      tags:
+        - users
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserCareer"
+              $ref: '#/components/schemas/UserCareer'
       responses:
-        "201":
-          description: "Created: 作成した１キャリアを返却する。"
+        '201':
+          description: 'Created: 作成した１キャリアを返却する。'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserCareer"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
+                $ref: '#/components/schemas/UserCareer'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
     put:
-      summary: "【未実装】キャリアグループ内キャリア群最新化"
-      description: "１キャリアグループ内のキャリア群を最新化（総洗い替え）する。"
-      tags: ["users"]
+      summary: 【未実装】キャリアグループ内キャリア群最新化
+      description: １キャリアグループ内のキャリア群を最新化（総洗い替え）する。
+      tags:
+        - users
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: array
-              description: "１ユーザーのキャリアグループのキャリア群"
+              description: １ユーザーのキャリアグループのキャリア群
               items:
-                $ref: "#/components/schemas/UserCareer"
+                $ref: '#/components/schemas/UserCareer'
       responses:
-        "200":
-          description: "OK: 指定ユーザーの１キャリアグループ内のキャリア群を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーの１キャリアグループ内のキャリア群を返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserCareer"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/users/{byUserId}/careergroups/{byCareerGroupId}/careers/{byCareerId}":
+                  $ref: '#/components/schemas/UserCareer'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /users/{byUserId}/careergroups/{byCareerGroupId}/careers/{byCareerId}:
     parameters:
-      - $ref: "#/components/parameters/userId"
-      - $ref: "#/components/parameters/careerGroupId"
-      - $ref: "#/components/parameters/careerId"
+      - $ref: '#/components/parameters/userId'
+      - $ref: '#/components/parameters/careerGroupId'
+      - $ref: '#/components/parameters/careerId'
     get:
-      summary: "１キャリア取得"
-      description: "指定ユーザーの指定１キャリアを取得する。"
-      tags: ["users"]
+      summary: １キャリア取得
+      description: 指定ユーザーの指定１キャリアを取得する。
+      tags:
+        - users
       responses:
-        "200":
-          description: "OK: 指定ユーザーの指定１キャリアを返却する。"
+        '200':
+          description: 'OK: 指定ユーザーの指定１キャリアを返却する。'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserCareer"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/users/{byUserId}/notes":
+                $ref: '#/components/schemas/UserCareer'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /users/{byUserId}/notes:
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: '#/components/parameters/userId'
     post:
-      summary: "注釈新規登録"
-      description: "注釈を新規登録する。"
-      tags: ["users"]
+      summary: 注釈新規登録
+      description: 注釈を新規登録する。
+      tags:
+        - users
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserNote"
+              $ref: '#/components/schemas/UserNote'
       responses:
-        "201":
-          description: "Created: 指定ユーザーの注釈を返却する。"
+        '201':
+          description: 'Created: 指定ユーザーの注釈を返却する。'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserNote"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
+                $ref: '#/components/schemas/UserNote'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
     get:
-      summary: "注釈群取得"
-      description: "指定ユーザーの注釈群を取得する。"
-      tags: ["users"]
+      summary: 注釈群取得
+      description: 指定ユーザーの注釈群を取得する。
+      tags:
+        - users
       responses:
-        "200":
-          description: "OK: 指定ユーザーの注釈群を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーの注釈群を返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserNote"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/users/{byUserId}/notes/{byNoteId}":
+                  $ref: '#/components/schemas/UserNote'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /users/{byUserId}/notes/{byNoteId}:
     parameters:
-      - $ref: "#/components/parameters/userId"
-      - $ref: "#/components/parameters/noteId"
+      - $ref: '#/components/parameters/userId'
+      - $ref: '#/components/parameters/noteId'
     put:
-      summary: "【未実装】注釈更新"
-      description: "１注釈を更新する。"
-      tags: ["users"]
+      summary: 【未実装】注釈更新
+      description: １注釈を更新する。
+      tags:
+        - users
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UserNoteOwn"
+              $ref: '#/components/schemas/UserNoteOwn'
       responses:
-        "200":
-          description: "OK: 指定ユーザーの注釈自身を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーの注釈自身を返却する。'
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/UserNoteOwn"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
+                $ref: '#/components/schemas/UserNoteOwn'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
     delete:
-      summary: "【未実装】注釈削除"
-      description: "１注釈を削除する。"
-      tags: ["users"]
+      summary: 【未実装】注釈削除
+      description: １注釈を削除する。
+      tags:
+        - users
       responses:
-        "204":
-          description: "No Content: 指定注釈の削除に成功。"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/users/{byUserId}/notes/{byNoteId}/items":
+        '204':
+          description: 'No Content: 指定注釈の削除に成功。'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /users/{byUserId}/notes/{byNoteId}/items:
     parameters:
-      - $ref: "#/components/parameters/userId"
-      - $ref: "#/components/parameters/noteId"
+      - $ref: '#/components/parameters/userId'
+      - $ref: '#/components/parameters/noteId'
     put:
-      summary: "【未実装】注釈内要素群最新化"
-      description: "１注釈内の要素群を最新化（総洗い替え）する。"
-      tags: ["users"]
+      summary: 【未実装】注釈内要素群最新化
+      description: １注釈内の要素群を最新化（総洗い替え）する。
+      tags:
+        - users
       requestBody:
         required: true
         content:
@@ -669,524 +681,514 @@ paths:
             schema:
               type: array
               items:
-               $ref: "#/components/schemas/UserNoteItem"
+                $ref: '#/components/schemas/UserNoteItem'
       responses:
-        "200":
-          description: "OK: 指定ユーザーの１注釈内の要素群を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーの１注釈内の要素群を返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserNoteItem"
-        "400":
-          $ref: "#/components/responses/400-BadRequest"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
-  "/users/{byUserId}/skills":
+                  $ref: '#/components/schemas/UserNoteItem'
+        '400':
+          $ref: '#/components/responses/400-BadRequest'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
+  /users/{byUserId}/skills:
     parameters:
-      - $ref: "#/components/parameters/userId"
+      - $ref: '#/components/parameters/userId'
     get:
-      summary: "スキル群取得"
-      description: "指定ユーザーのスキル群を取得する。"
-      tags: ["users"]
+      summary: スキル群取得
+      description: 指定ユーザーのスキル群を取得する。
+      tags:
+        - users
       responses:
-        "200":
-          description: "OK: 指定ユーザーのスキル群を返却する。"
+        '200':
+          description: 'OK: 指定ユーザーのスキル群を返却する。'
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/UserSkillTag"
-        "404":
-          $ref: "#/components/responses/404-NotFound"
-
+                  $ref: '#/components/schemas/UserSkillTag'
+        '404':
+          $ref: '#/components/responses/404-NotFound'
 components:
   schemas:
     SkillTagId:
       type: integer
       format: int
-      description: "スキルタグを一意に識別するキー"
+      description: スキルタグを一意に識別するキー
       example: 1
       x-go-name: SkillTagID
+    SkillTagName:
+      type: string
+      description: スキルタグ名
+      example: AWS
+    SkillTag:
+      type: object
+      description: １スキルタグの属性
+      properties:
+        id:
+          $ref: '#/components/schemas/SkillTagId'
+        name:
+          $ref: '#/components/schemas/SkillTagName'
+    ErrorMessage:
+      type: string
+      description: エラーメッセージ
+      example: too long
+      minLength: 1
+      maxLength: 80
     SkillId:
       type: integer
       format: int
-      description: "スキルを一意に識別するキー"
+      description: スキルを一意に識別するキー
       example: 1
       x-go-name: SkillID
-    SkillTag:
-      type: object
-      description: "１スキルタグの属性"
-      properties:
-        id:
-          $ref: "#/components/schemas/SkillTagId"
-        name:
-          $ref: "#/components/schemas/SkillTagName"
+    SkillName:
+      type: string
+      description: スキル名
+      example: Golang
+    Url:
+      type: string
+      format: uri
+      description: URL
+      example: https:/example.com/205e460b479e2e2248aec07710c08d50
     Skill:
       type: object
-      description: "１スキルの属性"
+      description: １スキルの属性
       properties:
         id:
-          $ref: "#/components/schemas/SkillId"
+          $ref: '#/components/schemas/SkillId'
         name:
-          $ref: "#/components/schemas/SkillName"
+          $ref: '#/components/schemas/SkillName'
         url:
-          $ref: "#/components/schemas/Url"
+          $ref: '#/components/schemas/Url'
         tagId:
-          $ref: "#/components/schemas/SkillTagId"
+          $ref: '#/components/schemas/SkillTagId'
     UserId:
       type: integer
       format: int
-      description: "ユーザーを一意に識別するキー"
+      description: ユーザーを一意に識別するキー
       example: 1
       x-go-name: UserID
     UserName:
       type: string
-      description: "ユーザーの本名"
-      example: "山田太郎"
+      description: ユーザーの本名
+      example: 山田太郎
     UserNickName:
       type: string
-      description: "ユーザーのニックネーム"
-      example: "ドカベン"
-    Url:
-      type: string
-      format: uri
-      description: "URL"
-      example: "https:/example.com/205e460b479e2e2248aec07710c08d50"
+      description: ユーザーのニックネーム
+      example: ドカベン
     Year:
       type: integer
       format: int
-      description: "生年月日の「年」"
+      description: 「年」
       example: 2022
     Month:
       type: integer
       format: int
-      description: "生年月日の「月」"
+      description: 「月」
       example: 9
     Day:
       type: integer
       format: int
-      description: "生年月日の「日」"
+      description: 「日」
       example: 10
     BirthDay:
       type: object
-      description: "生年月日"
-      example: "{year: 2022, month: 9, day:10}"
+      description: 生年月日
+      example: '{year: 2022, month: 9, day:10}'
       properties:
         year:
-          $ref: "#/components/schemas/Year"
+          $ref: '#/components/schemas/Year'
         month:
-          $ref: "#/components/schemas/Month"
+          $ref: '#/components/schemas/Month'
         day:
-          $ref: "#/components/schemas/Day"
+          $ref: '#/components/schemas/Day'
     Job:
       type: string
-      description: "職業"
-      example: "エンジニア"
+      description: 職業
+      example: エンジニア
     BelongTo:
       type: string
-      description: "所属"
-      example: "フリー"
+      description: 所属
+      example: フリー
     PR:
       type: string
-      description: "PR"
-      example: "私は20年以上のキャリアを持ち、〜〜"
+      description: PR
+      example: 私は20年以上のキャリアを持ち、〜〜
+    UserAttribute:
+      type: object
+      description: １ユーザーの属性
+      properties:
+        id:
+          $ref: '#/components/schemas/UserId'
+        name:
+          $ref: '#/components/schemas/UserName'
+        nickname:
+          $ref: '#/components/schemas/UserNickName'
+        avatarUrl:
+          $ref: '#/components/schemas/Url'
+        birthday:
+          $ref: '#/components/schemas/BirthDay'
+        job:
+          $ref: '#/components/schemas/Job'
+        belongTo:
+          $ref: '#/components/schemas/BelongTo'
+        pr:
+          $ref: '#/components/schemas/PR'
     ActivityName:
       type: string
-      description: "アクティビティ名"
-      example: "GitHub"
+      description: アクティビティ名
+      example: GitHub
     ActivityIcon:
       type: string
-      description: "アクティビティアイコン"
-      example: "github"
+      description: アクティビティアイコン
+      example: github
+    UserActivity:
+      type: object
+      description: １ユーザーのアクティビティ
+      properties:
+        name:
+          $ref: '#/components/schemas/ActivityName'
+        url:
+          $ref: '#/components/schemas/Url'
+        icon:
+          $ref: '#/components/schemas/ActivityIcon'
     QualificationName:
       type: string
-      description: "資格名"
-      example: "Oracle Master"
+      description: 資格名
+      example: Oracle Master
     QualificationOrg:
       type: string
-      description: "組織名"
-      example: "Oracle"
+      description: 組織名
+      example: Oracle
     QualificationGotDate:
       type: string
       format: date
-      description: "取得日"
-      example: "2022-09-10"
+      description: 取得日
+      example: '2022-09-10'
     QualificationMemo:
       type: string
-      description: "メモ"
-      example: "期限切れ"
+      description: メモ
+      example: 期限切れ
+    UserQualification:
+      type: object
+      description: １ユーザーの資格情報
+      properties:
+        name:
+          $ref: '#/components/schemas/QualificationName'
+        organization:
+          $ref: '#/components/schemas/QualificationOrg'
+        url:
+          $ref: '#/components/schemas/Url'
+        gotDate:
+          $ref: '#/components/schemas/QualificationGotDate'
+        memo:
+          $ref: '#/components/schemas/QualificationMemo'
     AppealContent:
       type: string
-      description: "アピール事項"
-      example: "20年以上、多様なプロジェクトに参画してきたので、大抵の現場には順応できます。"
+      description: アピール事項
+      example: 20年以上、多様なプロジェクトに参画してきたので、大抵の現場には順応できます。
+    UserAppeal:
+      type: object
+      description: １ユーザーのアピール事項
+      properties:
+        content:
+          $ref: '#/components/schemas/AppealContent'
     SolutionContent:
       type: string
-      description: "課題解決事例"
-      example: "Goroutineの導入で夜間バッチ実行時間を８時間から１時間に短縮した。"
+      description: 課題解決事例
+      example: Goroutineの導入で夜間バッチ実行時間を８時間から１時間に短縮した。
+    UserSolution:
+      type: object
+      description: １ユーザーの課題解決事例
+      properties:
+        content:
+          $ref: '#/components/schemas/SolutionContent'
+    CareerGroupId:
+      type: integer
+      format: int
+      description: キャリアグループを一意に識別するID
+      example: 1
+      x-go-name: CareerGroupID
+    CareerGroupLabel:
+      type: string
+      description: キャリアグループラベル
+      example: 某コンサルティング会社にて就労
     CareerId:
       type: integer
       format: int
-      description: "キャリアを一意に識別するID"
+      description: キャリアを一意に識別するID
       example: 1
       x-go-name: CareerID
     CareerName:
       type: string
-      description: "キャリア名"
-      example: "物流システム開発"
+      description: キャリア名
+      example: 物流システム開発
     CareerDescription:
       type: array
-      description: "キャリア説明"
-      example: "['静的サイトのリニューアル', '動画配信サイト構築']"
+      description: キャリア説明
+      example: '[''静的サイトのリニューアル'', ''動画配信サイト構築'']'
       items:
         type: string
-        description: "キャリア説明１文"
-        example: "静的サイトのリニューアル"
+        description: キャリア説明１文
+        example: 静的サイトのリニューアル
     CareerPeriodFrom:
       type: object
-      description: "キャリア期間年月From"
-      example: "{year: 2021, month: 9}"
+      description: キャリア期間年月From
+      example: '{year: 2021, month: 9}'
       properties:
         year:
-          $ref: "#/components/schemas/Year"
+          $ref: '#/components/schemas/Year'
         month:
-          $ref: "#/components/schemas/Month"
+          $ref: '#/components/schemas/Month'
     CareerPeriodTo:
       type: object
-      description: "キャリア期間年月To"
-      example: "{year: 2022, month: 10}"
+      description: キャリア期間年月To
+      example: '{year: 2022, month: 10}'
       properties:
         year:
-          $ref: "#/components/schemas/Year"
+          $ref: '#/components/schemas/Year'
         month:
-          $ref: "#/components/schemas/Month"
-    CareerPeriodMonth:
-      type: integer
-      format: int
-      description: "キャリア期間(月)"
-      example: 6
-    CareerGroupLabel:
-      type: string
-      description: "キャリアグループラベル"
-      example: "某コンサルティング会社にて就労"
+          $ref: '#/components/schemas/Month'
     TaskName:
       type: string
-      description: "タスク名"
-      example: "バックエンドの機能拡張、不具合改修。"
+      description: タスク名
+      example: バックエンドの機能拡張、不具合改修。
     TaskDescription:
       type: array
-      description: "タスク説明"
-      example: "['・分析APIのベース開発', '・各種バッチ開発']"
+      description: タスク説明
+      example: '[''・分析APIのベース開発'', ''・各種バッチ開発'']'
       items:
         type: string
-        description: "タスク説明１文"
-        example: "・分析APIのベース開発"
-    SkillTagName:
-      type: string
-      description: "スキルタグ名"
-      example: "AWS"
-    SkillName:
-      type: string
-      description: "スキル名"
-      example: "Golang"
-    SkillVersion:
-      type: string
-      description: "スキルバージョン"
-      example: "v1.19"
-    SkillGroupLabel:
-      type: string
-      description: "スキルグループラベル"
-      example: "Backend"
-    NoteId:
-      type: integer
-      format: int
-      description: "注釈を一意に識別するID"
-      example: 1
-      x-go-name: NoteID
-    NoteItemText:
-      type: string
-      description: "注釈内の１要素"
-      example: "GraphQLを使っている"
-    NoteLabel:
-      type: string
-      description: "ラベル"
-      example: "就労条件"
-    NoteMemo:
-      type: string
-      description: "メモ"
-      example: "以下、順不同。"
-    UserAttribute:
-      type: object
-      description: "１ユーザーの属性"
-      properties:
-        id:
-          $ref: "#/components/schemas/UserId"
-        name:
-          $ref: "#/components/schemas/UserName"
-        nickname:
-          $ref: "#/components/schemas/UserNickName"
-        avatarUrl:
-          $ref: "#/components/schemas/Url"
-        birthday:
-          $ref: "#/components/schemas/BirthDay"
-        job:
-          $ref: "#/components/schemas/Job"
-        belongTo:
-          $ref: "#/components/schemas/BelongTo"
-        pr:
-          $ref: "#/components/schemas/PR"
-    UserActivity:
-      type: object
-      description: "１ユーザーのアクティビティ"
-      properties:
-        name:
-          $ref: "#/components/schemas/ActivityName"
-        url:
-          $ref: "#/components/schemas/Url"
-        icon:
-          $ref: "#/components/schemas/ActivityIcon"
-    UserQualification:
-      type: object
-      description: "１ユーザーの資格情報"
-      properties:
-        name:
-          $ref: "#/components/schemas/QualificationName"
-        organization:
-          $ref: "#/components/schemas/QualificationOrg"
-        url:
-          $ref: "#/components/schemas/Url"
-        gotDate:
-          $ref: "#/components/schemas/QualificationGotDate"
-        memo:
-          $ref: "#/components/schemas/QualificationMemo"
-    UserAppeal:
-      type: object
-      description: "１ユーザーのアピール事項"
-      properties:
-        content:
-          $ref: "#/components/schemas/AppealContent"
-    UserSolution:
-      type: object
-      description: "１ユーザーの課題解決事例"
-      properties:
-        content:
-          $ref: "#/components/schemas/SolutionContent"
+        description: タスク説明１文
+        example: ・分析APIのベース開発
     CareerTask:
       type: object
-      description: "１キャリアのタスク"
+      description: １キャリアのタスク
       properties:
         name:
-          $ref: "#/components/schemas/TaskName"
+          $ref: '#/components/schemas/TaskName'
         description:
-          $ref: "#/components/schemas/TaskDescription"
+          $ref: '#/components/schemas/TaskDescription'
+    SkillGroupLabel:
+      type: string
+      description: スキルグループラベル
+      example: Backend
+    SkillVersion:
+      type: string
+      description: スキルバージョン
+      example: v1.19
     CareerSkill:
       type: object
-      description: "１キャリアのスキル"
+      description: １キャリアのスキル
       properties:
         skill:
-          $ref: "#/components/schemas/Skill"
+          $ref: '#/components/schemas/Skill'
         version:
-          $ref: "#/components/schemas/SkillVersion"
-    CareerGroupId:
-      type: integer
-      format: int
-      description: "キャリアグループを一意に識別するID"
-      example: 1
-      x-go-name: CareerGroupID
+          $ref: '#/components/schemas/SkillVersion'
     CareerSkillGroup:
       type: object
-      description: "１キャリアのスキルグループ"
+      description: １キャリアのスキルグループ
       properties:
         label:
-          $ref: "#/components/schemas/SkillGroupLabel"
+          $ref: '#/components/schemas/SkillGroupLabel'
         skills:
           type: array
           items:
-            $ref: "#/components/schemas/CareerSkill"
+            $ref: '#/components/schemas/CareerSkill'
     UserCareer:
       type: object
-      description: "１キャリアグループのキャリア"
+      description: １キャリアグループのキャリア
       properties:
         id:
-          $ref: "#/components/schemas/CareerId"
+          $ref: '#/components/schemas/CareerId'
         name:
-          $ref: "#/components/schemas/CareerName"
+          $ref: '#/components/schemas/CareerName'
         description:
-          $ref: "#/components/schemas/CareerDescription"
+          $ref: '#/components/schemas/CareerDescription'
         from:
-          $ref: "#/components/schemas/CareerPeriodFrom"
+          $ref: '#/components/schemas/CareerPeriodFrom'
         to:
-          $ref: "#/components/schemas/CareerPeriodTo"
+          $ref: '#/components/schemas/CareerPeriodTo'
         tasks:
           type: array
-          description: "１キャリアのタスク群"
+          description: １キャリアのタスク群
           items:
-            $ref: "#/components/schemas/CareerTask"
+            $ref: '#/components/schemas/CareerTask'
         skillGroups:
           type: array
-          description: "１キャリアのスキルグループ群"
+          description: １キャリアのスキルグループ群
           items:
-            $ref: "#/components/schemas/CareerSkillGroup"
+            $ref: '#/components/schemas/CareerSkillGroup'
     UserCareerGroup:
       type: object
-      description: "１ユーザーのキャリアグループ"
+      description: １ユーザーのキャリアグループ
       properties:
         id:
-          $ref: "#/components/schemas/CareerGroupId"
+          $ref: '#/components/schemas/CareerGroupId'
         label:
-          $ref: "#/components/schemas/CareerGroupLabel"
+          $ref: '#/components/schemas/CareerGroupLabel'
         careers:
           type: array
-          description: "１ユーザーのキャリアグループのキャリア群"
+          description: １ユーザーのキャリアグループのキャリア群
           items:
-            $ref: "#/components/schemas/UserCareer"
+            $ref: '#/components/schemas/UserCareer'
     UserCareerGroupOwn:
       type: object
-      description: "１ユーザーのキャリアグループ自身"
+      description: １ユーザーのキャリアグループ自身
       properties:
         id:
-          $ref: "#/components/schemas/CareerGroupId"
+          $ref: '#/components/schemas/CareerGroupId'
         label:
-          $ref: "#/components/schemas/CareerGroupLabel"
+          $ref: '#/components/schemas/CareerGroupLabel'
+    NoteLabel:
+      type: string
+      description: ラベル
+      example: 就労条件
+    NoteMemo:
+      type: string
+      description: メモ
+      example: 以下、順不同。
+    NoteItemText:
+      type: string
+      description: 注釈内の１要素
+      example: GraphQLを使っている
     UserNoteItem:
       type: object
-      description: "１ユーザーの注釈内の１要素"
+      description: １ユーザーの注釈内の１要素
       properties:
         text:
-          $ref: "#/components/schemas/NoteItemText"
-    UserNoteOwn:
-      type: object
-      description: "１ユーザーの注釈自身"
-      properties:
-        label:
-          $ref: "#/components/schemas/NoteLabel"
-        memo:
-          $ref: "#/components/schemas/NoteMemo"
+          $ref: '#/components/schemas/NoteItemText'
     UserNote:
       type: object
-      description: "１ユーザーの注釈"
+      description: １ユーザーの注釈
       properties:
         label:
-          $ref: "#/components/schemas/NoteLabel"
+          $ref: '#/components/schemas/NoteLabel'
         memo:
-          $ref: "#/components/schemas/NoteMemo"
+          $ref: '#/components/schemas/NoteMemo'
         items:
           type: array
           items:
-            $ref: "#/components/schemas/UserNoteItem"
+            $ref: '#/components/schemas/UserNoteItem'
+    NoteId:
+      type: integer
+      format: int
+      description: 注釈を一意に識別するID
+      example: 1
+      x-go-name: NoteID
+    UserNoteOwn:
+      type: object
+      description: １ユーザーの注釈自身
+      properties:
+        label:
+          $ref: '#/components/schemas/NoteLabel'
+        memo:
+          $ref: '#/components/schemas/NoteMemo'
+    CareerPeriodMonth:
+      type: integer
+      format: int
+      description: キャリア期間(月)
+      example: 6
     UserSkillVersion:
       type: object
-      description: "１ユーザーのスキルVersionを使用期間別に保持したもの"
+      description: １ユーザーのスキルVersionを使用期間別に保持したもの
       properties:
         version:
-          $ref: "#/components/schemas/SkillVersion"
+          $ref: '#/components/schemas/SkillVersion'
         from:
-          $ref: "#/components/schemas/CareerPeriodFrom"
+          $ref: '#/components/schemas/CareerPeriodFrom'
         to:
-          $ref: "#/components/schemas/CareerPeriodTo"
+          $ref: '#/components/schemas/CareerPeriodTo'
         period:
-          $ref: "#/components/schemas/CareerPeriodMonth"
+          $ref: '#/components/schemas/CareerPeriodMonth'
     UserSkill:
       type: object
-      description: "１ユーザーのスキルを使用Version・使用期間別に保持したもの"
+      description: １ユーザーのスキルを使用Version・使用期間別に保持したもの
       properties:
         name:
-          $ref: "#/components/schemas/SkillName"
+          $ref: '#/components/schemas/SkillName'
         url:
-          $ref: "#/components/schemas/Url"
+          $ref: '#/components/schemas/Url'
         versions:
           type: array
           items:
-            $ref: "#/components/schemas/UserSkillVersion"
+            $ref: '#/components/schemas/UserSkillVersion'
         period:
-          $ref: "#/components/schemas/CareerPeriodMonth"
+          $ref: '#/components/schemas/CareerPeriodMonth'
     UserSkillTag:
       type: object
-      description: "１ユーザーのスキルタグ及び配下のスキル群を使用Version・使用期間別に保持したもの"
+      description: １ユーザーのスキルタグ及び配下のスキル群を使用Version・使用期間別に保持したもの
       properties:
         tagName:
-          $ref: "#/components/schemas/SkillTagName"
+          $ref: '#/components/schemas/SkillTagName'
         skills:
           type: array
           items:
-            $ref: "#/components/schemas/UserSkill"
-    ErrorMessage:
-      type: string
-      description: "エラーメッセージ"
-      example: "too long"
-      minLength: 1
-      maxLength: 80
-    NotFoundError:
-      type: object
-      properties:
-        message:
-          $ref: "#/components/schemas/ErrorMessage"
-
-  parameters:
-    skillTagIdQuery:
-      name: "tag"
-      in: "query"
-      required: false
-      schema:
-        $ref: "#/components/schemas/SkillTagId"
-    skillTagId:
-      name: "bySkillTagId"
-      in: "path"
-      required: true
-      schema:
-        $ref: "#/components/schemas/SkillTagId"
-    skillId:
-      name: "bySkillId"
-      in: "path"
-      required: true
-      schema:
-        $ref: "#/components/schemas/SkillId"
-    userId:
-      name: "byUserId"
-      in: "path"
-      required: true
-      schema:
-        $ref: "#/components/schemas/UserId"
-    noteId:
-      name: "byNoteId"
-      in: "path"
-      required: true
-      schema:
-        $ref: "#/components/schemas/NoteId"
-    careerGroupId:
-      name: "byCareerGroupId"
-      in: "path"
-      required: true
-      schema:
-        $ref: "#/components/schemas/CareerGroupId"
-    careerId:
-      name: "byCareerId"
-      in: "path"
-      required: true
-      schema:
-        $ref: "#/components/schemas/CareerId"
-
+            $ref: '#/components/schemas/UserSkill'
   responses:
     400-BadRequest:
-      description: "Bad Request: 属性に誤りがある。"
+      description: 'Bad Request: 属性に誤りがある。'
       content:
         application/json:
           schema:
             type: object
             properties:
               message:
-                $ref: "#/components/schemas/ErrorMessage"
+                $ref: '#/components/schemas/ErrorMessage'
     404-NotFound:
-      description: "Not Found: 指定リソースが存在しない。"
+      description: 'Not Found: 指定リソースが存在しない。'
       content:
         application/json:
           schema:
             type: object
             properties:
               message:
-                $ref: "#/components/schemas/ErrorMessage"
-    500-InternalServerError:
-      description: "Internal Server Error"
+                $ref: '#/components/schemas/ErrorMessage'
+  parameters:
+    skillTagId:
+      name: bySkillTagId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/SkillTagId'
+    skillTagIdQuery:
+      name: tag
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/SkillTagId'
+    skillId:
+      name: bySkillId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/SkillId'
+    userId:
+      name: byUserId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/UserId'
+    careerGroupId:
+      name: byCareerGroupId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/CareerGroupId'
+    careerId:
+      name: byCareerId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/CareerId'
+    noteId:
+      name: byNoteId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/NoteId'

@@ -1,0 +1,24 @@
+Url:
+  type: string
+  format: uri
+  description: "URL"
+  example: "https:/example.com/205e460b479e2e2248aec07710c08d50"
+
+Year:
+  type: integer
+  format: int
+  description: "「年」"
+  example: 2022
+
+Month:
+  type: integer
+  format: int
+  description: "「月」"
+  example: 9
+
+Day:
+  type: integer
+  format: int
+  description: "「日」"
+  example: 10
+

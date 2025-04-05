@@ -1,0 +1,22 @@
+UserCareerGroup:
+  type: object
+  description: "１ユーザーのキャリアグループ"
+  properties:
+    id:
+      $ref: "./careerGroup.yml#/CareerGroupId"
+    label:
+      $ref: "./careerGroup.yml#/CareerGroupLabel"
+    careers:
+      type: array
+      description: "１ユーザーのキャリアグループのキャリア群"
+      items:
+        $ref: "./userCareer.yml#/UserCareer"
+
+UserCareerGroupOwn:
+  type: object
+  description: "１ユーザーのキャリアグループ自身"
+  properties:
+    id:
+      $ref: "./careerGroup.yml#/CareerGroupId"
+    label:
+      $ref: "./careerGroup.yml#/CareerGroupLabel"

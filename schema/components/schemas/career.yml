@@ -1,0 +1,46 @@
+CareerId:
+  type: integer
+  format: int
+  description: "キャリアを一意に識別するID"
+  example: 1
+  x-go-name: CareerID
+
+CareerName:
+  type: string
+  description: "キャリア名"
+  example: "物流システム開発"
+
+CareerDescription:
+  type: array
+  description: "キャリア説明"
+  example: "['静的サイトのリニューアル', '動画配信サイト構築']"
+  items:
+    type: string
+    description: "キャリア説明１文"
+    example: "静的サイトのリニューアル"
+
+CareerPeriodFrom:
+  type: object
+  description: "キャリア期間年月From"
+  example: "{year: 2021, month: 9}"
+  properties:
+    year:
+      $ref: "./common.yml#/Year"
+    month:
+      $ref: "./common.yml#/Month"
+
+CareerPeriodTo:
+  type: object
+  description: "キャリア期間年月To"
+  example: "{year: 2022, month: 10}"
+  properties:
+    year:
+      $ref: "./common.yml#/Year"
+    month:
+      $ref: "./common.yml#/Month"
+
+CareerPeriodMonth:
+  type: integer
+  format: int
+  description: "キャリア期間(月)"
+  example: 6

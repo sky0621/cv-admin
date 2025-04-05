@@ -1,0 +1,20 @@
+SkillTagId:
+  type: integer
+  format: int
+  description: "スキルタグを一意に識別するキー"
+  example: 1
+  x-go-name: SkillTagID
+
+SkillTagName:
+  type: string
+  description: "スキルタグ名"
+  example: "AWS"
+
+SkillTag:
+  type: object
+  description: "１スキルタグの属性"
+  properties:
+    id:
+      $ref: "#/SkillTagId"
+    name:
+      $ref: "#/SkillTagName"

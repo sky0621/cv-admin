@@ -1,0 +1,46 @@
+users:
+  post:
+    summary: "ユーザーアカウント登録"
+    description: "ユーザーアカウントを登録する。"
+    tags: [ "users" ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/user.yml#/UserAttribute"
+    responses:
+      "201":
+        description: "Created: 指定ユーザーの属性を返却する。"
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/user.yml#/UserAttribute"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+  get:
+    summary: "ユーザー一覧取得"
+    description: "ユーザー一覧を取得する。"
+    tags: [ "users" ]
+    responses:
+      "200":
+        description: "OK: ユーザーの一覧を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/user.yml#/UserAttribute"
+
+usersByUserId:
+  parameters:
+    - $ref: "../components/parameters/user.yml#/userId"
+  delete:
+    summary: "指定ユーザーアカウント削除"
+    description: "指定ユーザーアカウントを削除する。"
+    tags: [ "users" ]
+    responses:
+      "204":
+        description: "No Content: 指定ユーザーアカウントの削除に成功。"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"

@@ -1,0 +1,68 @@
+usersByUserIdCareerGroupsByCareerGroupIdCareers:
+  parameters:
+    - $ref: "../components/parameters/user.yml#/userId"
+    - $ref: "../components/parameters/careerGroup.yml#/careerGroupId"
+  post:
+    summary: "１キャリアグループ内の１キャリア登録"
+    description: "１キャリアグループ内の１キャリアを登録する。"
+    tags: [ "users" ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/userCareer.yml#/UserCareer"
+    responses:
+      "201":
+        description: "Created: 作成した１キャリアを返却する。"
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/userCareer.yml#/UserCareer"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+  put:
+    summary: "【未実装】キャリアグループ内キャリア群最新化"
+    description: "１キャリアグループ内のキャリア群を最新化（総洗い替え）する。"
+    tags: [ "users" ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            description: "１ユーザーのキャリアグループのキャリア群"
+            items:
+              $ref: "../components/schemas/userCareer.yml#/UserCareer"
+    responses:
+      "200":
+        description: "OK: 指定ユーザーの１キャリアグループ内のキャリア群を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/userCareer.yml#/UserCareer"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"
+
+usersByUserIdCareerGroupsByCareerGroupIdCareersByCareerId:
+  parameters:
+    - $ref: "../components/parameters/user.yml#/userId"
+    - $ref: "../components/parameters/careerGroup.yml#/careerGroupId"
+    - $ref: "../components/parameters/career.yml#/careerId"
+  get:
+    summary: "１キャリア取得"
+    description: "指定ユーザーの指定１キャリアを取得する。"
+    tags: [ "users" ]
+    responses:
+      "200":
+        description: "OK: 指定ユーザーの指定１キャリアを返却する。"
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/userCareer.yml#/UserCareer"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"

@@ -1,0 +1,8 @@
+CareerTask:
+  type: object
+  description: １キャリアのタスク
+  properties:
+    name:
+      $ref: './task.yml#/TaskName'
+    description:
+      $ref: './task.yml#/TaskDescription'

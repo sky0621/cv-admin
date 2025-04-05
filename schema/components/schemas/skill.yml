@@ -1,0 +1,34 @@
+SkillId:
+  type: integer
+  format: int
+  description: "スキルを一意に識別するキー"
+  example: 1
+  x-go-name: SkillID
+
+SkillName:
+  type: string
+  description: スキル名
+  example: "Golang"
+
+SkillVersion:
+  type: string
+  description: "スキルバージョン"
+  example: "v1.19"
+
+SkillGroupLabel:
+  type: string
+  description: "スキルグループラベル"
+  example: "Backend"
+
+Skill:
+  type: object
+  description: "１スキルの属性"
+  properties:
+    id:
+      $ref: "#/SkillId"
+    name:
+      $ref: "#/SkillName"
+    url:
+      $ref: "./common.yml#/Url"
+    tagId:
+      $ref: "./skillTag.yml#/SkillTagId"

@@ -1,0 +1,145 @@
+UserId:
+  type: integer
+  format: int
+  description: "ユーザーを一意に識別するキー"
+  example: 1
+  x-go-name: UserID
+
+UserName:
+  type: string
+  description: "ユーザーの本名"
+  example: "山田太郎"
+
+UserNickName:
+  type: string
+  description: "ユーザーのニックネーム"
+  example: "ドカベン"
+
+BirthDay:
+  type: object
+  description: "生年月日"
+  example: "{year: 2022, month: 9, day:10}"
+  properties:
+    year:
+      $ref: "./common.yml#/Year"
+    month:
+      $ref: "./common.yml#/Month"
+    day:
+      $ref: "./common.yml#/Day"
+
+Job:
+  type: string
+  description: "職業"
+  example: "エンジニア"
+
+BelongTo:
+  type: string
+  description: "所属"
+  example: "フリー"
+
+PR:
+  type: string
+  description: "PR"
+  example: "私は20年以上のキャリアを持ち、〜〜"
+
+ActivityName:
+  type: string
+  description: "アクティビティ名"
+  example: "GitHub"
+
+ActivityIcon:
+  type: string
+  description: "アクティビティアイコン"
+  example: "github"
+
+QualificationName:
+  type: string
+  description: "資格名"
+  example: "Oracle Master"
+
+QualificationOrg:
+  type: string
+  description: "組織名"
+  example: "Oracle"
+
+QualificationGotDate:
+  type: string
+  format: date
+  description: "取得日"
+  example: "2022-09-10"
+
+QualificationMemo:
+  type: string
+  description: "メモ"
+  example: "期限切れ"
+
+AppealContent:
+  type: string
+  description: "アピール事項"
+  example: "20年以上、多様なプロジェクトに参画してきたので、大抵の現場には順応できます。"
+
+SolutionContent:
+  type: string
+  description: "課題解決事例"
+  example: "Goroutineの導入で夜間バッチ実行時間を８時間から１時間に短縮した。"
+
+UserAppeal:
+  type: object
+  description: "１ユーザーのアピール事項"
+  properties:
+    content:
+      $ref: "#/AppealContent"
+
+UserSolution:
+  type: object
+  description: "１ユーザーの課題解決事例"
+  properties:
+    content:
+      $ref: "#/SolutionContent"
+
+UserAttribute:
+  type: object
+  description: "１ユーザーの属性"
+  properties:
+    id:
+      $ref: "#/UserId"
+    name:
+      $ref: "#/UserName"
+    nickname:
+      $ref: "#/UserNickName"
+    avatarUrl:
+      $ref: "./common.yml#/Url"
+    birthday:
+      $ref: "#/BirthDay"
+    job:
+      $ref: "#/Job"
+    belongTo:
+      $ref: "#/BelongTo"
+    pr:
+      $ref: "#/PR"
+
+UserActivity:
+  type: object
+  description: "１ユーザーのアクティビティ"
+  properties:
+    name:
+      $ref: "#/ActivityName"
+    url:
+      $ref: "./common.yml#/Url"
+    icon:
+      $ref: "#/ActivityIcon"
+
+UserQualification:
+  type: object
+  description: "１ユーザーの資格情報"
+  properties:
+    name:
+      $ref: "#/QualificationName"
+    organization:
+      $ref: "#/QualificationOrg"
+    url:
+      $ref: "./common.yml#/Url"
+    gotDate:
+      $ref: "#/QualificationGotDate"
+    memo:
+      $ref: "#/QualificationMemo"

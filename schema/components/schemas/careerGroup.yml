@@ -1,0 +1,11 @@
+CareerGroupId:
+  type: integer
+  format: int
+  description: "キャリアグループを一意に識別するID"
+  example: 1
+  x-go-name: CareerGroupID
+
+CareerGroupLabel:
+  type: string
+  description: "キャリアグループラベル"
+  example: "某コンサルティング会社にて就労"

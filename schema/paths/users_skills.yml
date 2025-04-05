@@ -1,0 +1,18 @@
+usersByUserIdSkills:
+  parameters:
+    - $ref: "../components/parameters/user.yml#/userId"
+  get:
+    summary: "スキル群取得"
+    description: "指定ユーザーのスキル群を取得する。"
+    tags: [ "users" ]
+    responses:
+      "200":
+        description: "OK: 指定ユーザーのスキル群を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/userSkill.yml#/UserSkillTag"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"

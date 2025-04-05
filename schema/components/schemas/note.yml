@@ -1,0 +1,21 @@
+NoteId:
+  type: integer
+  format: int
+  description: "注釈を一意に識別するID"
+  example: 1
+  x-go-name: NoteID
+
+NoteItemText:
+  type: string
+  description: "注釈内の１要素"
+  example: "GraphQLを使っている"
+
+NoteLabel:
+  type: string
+  description: "ラベル"
+  example: "就労条件"
+
+NoteMemo:
+  type: string
+  description: "メモ"
+  example: "以下、順不同。"

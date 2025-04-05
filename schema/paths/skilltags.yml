@@ -1,0 +1,50 @@
+skillTags:
+  post:
+    summary: "スキルタグ登録"
+    description: "スキルタグを登録する。"
+    tags: [ "skills" ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/skillTag.yml#/SkillTag"
+    responses:
+      "201":
+        description: "Created: 作成したスキルタグを返却する。"
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/skillTag.yml#/SkillTag"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+  get:
+    summary: "全スキルタグ取得"
+    description: "全スキルタグを取得する。"
+    tags: [ "skills" ]
+    responses:
+      "200":
+        description: "OK: 全スキルタグを返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/skillTag.yml#/SkillTag"
+
+skillTagsBySkillTagId:
+  parameters:
+    - $ref: "../components/parameters/skillTag.yml#/skillTagId"
+  get:
+    summary: "指定スキルタグ取得"
+    description: "指定スキルタグを取得する。"
+    tags: [ "skills" ]
+    responses:
+      "200":
+        description: "OK: 指定スキルタグを返却する。"
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/skillTag.yml#/SkillTag"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"

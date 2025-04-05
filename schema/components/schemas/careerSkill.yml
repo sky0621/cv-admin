@@ -1,0 +1,8 @@
+CareerSkill:
+  type: object
+  description: "１キャリアのスキル"
+  properties:
+    skill:
+      $ref: "./skill.yml#/Skill"
+    version:
+      $ref: "./skill.yml#/SkillVersion"

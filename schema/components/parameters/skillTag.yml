@@ -1,0 +1,13 @@
+skillTagIdQuery:
+  name: "tag"
+  in: "query"
+  required: false
+  schema:
+    $ref: "../schemas/skillTag.yml#/SkillTagId"
+
+skillTagId:
+  name: "bySkillTagId"
+  in: "path"
+  required: true
+  schema:
+    $ref: "../schemas/skillTag.yml#/SkillTagId"

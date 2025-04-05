@@ -23,3 +23,5 @@
 skill_sheet.xlsx
 .~lock.skill_sheet.xlsx#
 
+bin/
+

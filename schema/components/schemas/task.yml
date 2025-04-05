@@ -1,0 +1,13 @@
+TaskName:
+  type: string
+  description: タスク名
+  example: バックエンドの機能拡張、不具合改修。
+
+TaskDescription:
+  type: array
+  description: タスク説明
+  example: '[''・分析APIのベース開発'', ''・各種バッチ開発'']'
+  items:
+    type: string
+    description: タスク説明１文
+    example: ・分析APIのベース開発

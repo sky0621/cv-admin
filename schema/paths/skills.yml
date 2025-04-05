@@ -1,0 +1,52 @@
+skills:
+  parameters:
+    - $ref: "../components/parameters/skillTag.yml#/skillTagIdQuery"
+  post:
+    summary: "スキル登録"
+    description: "スキルを登録する。"
+    tags: [ "skills" ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/skill.yml#/Skill"
+    responses:
+      "201":
+        description: "Created: 作成したスキルを返却する。"
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/skill.yml#/Skill"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+  get:
+    summary: "スキル群取得"
+    description: "全スキルを取得する。パラメータ(tag)が指定された場合は該当するタグを持つスキルを取得する。"
+    tags: [ "skills" ]
+    responses:
+      "200":
+        description: "OK: スキル群を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/skill.yml#/Skill"
+
+skillsBySkillId:
+  parameters:
+    - $ref: "../components/parameters/skill.yml#/skillId"
+  get:
+    summary: "指定スキル取得"
+    description: "指定スキルを取得する。"
+    tags: [ "skills" ]
+    responses:
+      "200":
+        description: "OK: 指定スキルを返却する。"
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/skill.yml#/Skill"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"

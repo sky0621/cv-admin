@@ -1,0 +1,45 @@
+usersByUserIdSolutions:
+  parameters:
+    - $ref: "../components/parameters/user.yml#/userId"
+  put:
+    summary: "課題解決事例群最新化"
+    description: "指定ユーザーの課題解決事例群を最新化（総洗い替え）する。"
+    tags: [ "users" ]
+    requestBody:
+      description: "課題解決事例群"
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            description: "１ユーザーの課題解決事例群"
+            items:
+              $ref: "../components/schemas/user.yml#/UserSolution"
+    responses:
+      "200":
+        description: "OK: 指定ユーザーの課題解決事例群を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/user.yml#/UserSolution"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"
+  get:
+    summary: "課題解決事例群取得"
+    description: "指定ユーザーの課題解決事例群を取得する。"
+    tags: [ "users" ]
+    responses:
+      "200":
+        description: "OK: 指定ユーザーの課題解決事例群を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/user.yml#/UserSolution"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"

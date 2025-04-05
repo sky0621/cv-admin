@@ -1,0 +1,12 @@
+ErrorMessage:
+  type: string
+  description: "エラーメッセージ"
+  example: "too long"
+  minLength: 1
+  maxLength: 80
+
+NotFoundError:
+  type: object
+  properties:
+    message:
+      $ref: "#/ErrorMessage"

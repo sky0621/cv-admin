@@ -1,0 +1,45 @@
+usersByUserIdActivities:
+  parameters:
+    - $ref: "../components/parameters/user.yml#/userId"
+  put:
+    summary: "アクティビティ群最新化"
+    description: "指定ユーザーのアクティビティ群を最新化（総洗い替え）する。"
+    tags: [ "users" ]
+    requestBody:
+      description: "アクティビティ群"
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            description: "１ユーザーのアクティビティ群"
+            items:
+              $ref: "../components/schemas/user.yml#/UserActivity"
+    responses:
+      "200":
+        description: "OK: 指定ユーザーのアクティビティ群を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/user.yml#/UserActivity"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"
+  get:
+    summary: "アクティビティ群取得"
+    description: "指定ユーザーのアクティビティ群を取得する。"
+    tags: [ "users" ]
+    responses:
+      "200":
+        description: "OK: 指定ユーザーのアクティビティ群を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/user.yml#/UserActivity"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"

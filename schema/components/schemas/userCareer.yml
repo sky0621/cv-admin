@@ -1,0 +1,24 @@
+UserCareer:
+  type: object
+  description: "１キャリアグループのキャリア"
+  properties:
+    id:
+      $ref: "./career.yml#/CareerId"
+    name:
+      $ref: "./career.yml#/CareerName"
+    description:
+      $ref: "./career.yml#/CareerDescription"
+    from:
+      $ref: "./career.yml#/CareerPeriodFrom"
+    to:
+      $ref: "./career.yml#/CareerPeriodTo"
+    tasks:
+      type: array
+      description: "１キャリアのタスク群"
+      items:
+        $ref: "./careerTask.yml#/CareerTask"
+    skillGroups:
+      type: array
+      description: "１キャリアのスキルグループ群"
+      items:
+        $ref: "./careerSkillGroup.yml#/CareerSkillGroup"

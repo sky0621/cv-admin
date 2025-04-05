@@ -1,0 +1,28 @@
+UserNoteItem:
+  type: object
+  description: "１ユーザーの注釈内の１要素"
+  properties:
+    text:
+      $ref: "./note.yml#/NoteItemText"
+
+UserNoteOwn:
+  type: object
+  description: "１ユーザーの注釈自身"
+  properties:
+    label:
+      $ref: "./note.yml#/NoteLabel"
+    memo:
+      $ref: "./note.yml#/NoteMemo"
+
+UserNote:
+  type: object
+  description: "１ユーザーの注釈"
+  properties:
+    label:
+      $ref: "./note.yml#/NoteLabel"
+    memo:
+      $ref: "./note.yml#/NoteMemo"
+    items:
+      type: array
+      items:
+        $ref: "#/UserNoteItem"

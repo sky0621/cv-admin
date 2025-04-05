@@ -1,0 +1,87 @@
+usersByUserIdCareerGroups:
+  parameters:
+    - $ref: "../components/parameters/user.yml#/userId"
+  post:
+    summary: "キャリアグループ新規登録"
+    description: "キャリアグループを新規登録する。"
+    tags: [ "users" ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/userCareerGroup.yml#/UserCareerGroup"
+    responses:
+      "201":
+        description: "Created: 指定ユーザーのキャリアグループを返却する。"
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/userCareerGroup.yml#/UserCareerGroup"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"
+  get:
+    summary: "キャリアグループ群取得"
+    description: "指定ユーザーのキャリアグループ群を取得する。"
+    tags: [ "users" ]
+    responses:
+      "200":
+        description: "OK: 指定ユーザーのキャリアグループ群を返却する。"
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "../components/schemas/userCareerGroup.yml#/UserCareerGroup"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"
+
+usersByUserIdCareerGroupsByCareerGroupId:
+  parameters:
+    - $ref: "../components/parameters/user.yml#/userId"
+    - $ref: "../components/parameters/careerGroup.yml#/careerGroupId"
+  get:
+    summary: "１キャリアグループ取得"
+    description: "指定ユーザーの指定１キャリアグループを取得する。"
+    tags: [ "users" ]
+    responses:
+      "200":
+        description: "OK: 指定ユーザーの指定１キャリアグループを返却する。"
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/userCareerGroup.yml#/UserCareerGroup"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"
+  put:
+    summary: "【未実装】キャリアグループ更新"
+    description: "１キャリアグループを更新する。"
+    tags: [ "users" ]
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/userCareerGroup.yml#/UserCareerGroupOwn"
+    responses:
+      "200":
+        description: "OK: 指定ユーザーのキャリアグループ自身を返却する。"
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/userCareerGroup.yml#/UserCareerGroupOwn"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"
+  delete:
+    summary: "【未実装】キャリアグループ削除"
+    description: "１キャリアグループを削除する。"
+    tags: [ "users" ]
+    responses:
+      "204":
+        description: "No Content: 指定キャリアグループの削除に成功。"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"

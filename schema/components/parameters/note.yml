@@ -1,0 +1,6 @@
+noteId:
+  name: "byNoteId"
+  in: "path"
+  required: true
+  schema:
+    $ref: "../schemas/note.yml#/NoteId"

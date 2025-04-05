@@ -1,0 +1,38 @@
+usersByUserIdAttribute:
+  parameters:
+    - $ref: "../components/parameters/user.yml#/userId"
+  put:
+    summary: "属性更新"
+    description: "指定ユーザーの属性を更新する。"
+    tags: [ "users" ]
+    requestBody:
+      description: "属性"
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/user.yml#/UserAttribute"
+    responses:
+      "200":
+        description: "OK: 指定ユーザーの属性を返却する。"
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/user.yml#/UserAttribute"
+      "400":
+        $ref: "../components/responses/error.yml#/400-BadRequest"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"
+  get:
+    summary: "属性取得"
+    description: "指定ユーザーの属性を取得する。"
+    tags: [ "users" ]
+    responses:
+      "200":
+        description: "OK: 指定ユーザーの属性を返却する。"
+        content:
+          application/json:
+            schema:
+              $ref: "../components/schemas/user.yml#/UserAttribute"
+      "404":
+        $ref: "../components/responses/error.yml#/404-NotFound"

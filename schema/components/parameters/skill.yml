@@ -1,0 +1,6 @@
+skillId:
+  name: "bySkillId"
+  in: "path"
+  required: true
+  schema:
+    $ref: "../schemas/skill.yml#/SkillId"
