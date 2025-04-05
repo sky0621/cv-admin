@@ -3,7 +3,7 @@ module github.com/sky0621/cv-admin
 go 1.24.2
 
 require (
-	entgo.io/ent v0.14.1
+	entgo.io/ent v0.14.4
 	github.com/getkin/kin-openapi v0.131.0
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/labstack/echo/v4 v4.13.3
@@ -18,7 +18,7 @@ require (
 )
 
 require (
-	ariga.io/atlas v0.29.1 // indirect
+	ariga.io/atlas v0.31.1-0.20250212144724-069be8033e83 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
@@ -57,6 +57,7 @@ require (
 	github.com/xuri/efp v0.0.0-20241211021726-c4e992084aa6 // indirect
 	github.com/xuri/nfp v0.0.0-20240318013403-ab9948c2c4a7 // indirect
 	github.com/zclconf/go-cty v1.15.1 // indirect
+	github.com/zclconf/go-cty-yaml v1.1.0 // indirect
 	golang.org/x/crypto v0.36.0 // indirect
 	golang.org/x/mod v0.24.0 // indirect
 	golang.org/x/net v0.37.0 // indirect
